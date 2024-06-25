@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Spinner styles */
 .spinner {
     display: inline-block;
@@ -24,6 +25,9 @@ button:disabled {
     opacity: 0.7;
 }
 
-button:disabled:after {
-    content: '...';
+/* Nunito Sans Font */
+
+.font-nunito-sans{
+    font-family: "Nunito Sans", sans-serif;
 }
+
