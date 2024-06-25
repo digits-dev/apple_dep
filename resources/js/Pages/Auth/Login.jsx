@@ -35,9 +35,9 @@ const LoginPage = () => {
     return (
         <div className="bg-login-bg-color h-screen flex items-center justify-center">
             {/* MAIN CONTAINER */}
-            <div className="w-[900px] h-[600px] bg-white rounded-lg flex overflow-hidden p-8">
+            <div className="max-w-[900px] max-h-[600px] w-full h-full bg-white rounded-lg flex overflow-hidden p-8">
                 {/* CONTAINER 1 */}
-                <div className="h-full">
+                <div className="h-full hidden sm:block">
                     <div className="h-full w-[300px] bg-white border-8 border-black rounded-[40px] overflow-hidden flex flex-col">
                         <div className="bg-white w-full p-2 flex items-center justify-between relative px-5">
                             <div className="font-nunito-sans text-[13px] font-semibold ml-3">
@@ -72,8 +72,8 @@ const LoginPage = () => {
                     </div>
                 </div>
                 {/* CONTAINER 2 */}
-                <div className="h-full w-full flex items-center justify-center p-14">
-                    <div className="bg-white h-full w-full flex flex-col justify-center p-10 border-[1px] border-black rounded-[10px]">
+                <div className="h-full w-full flex items-center justify-center sm:p-[30px]">
+                    <div className="bg-white h-full w-full flex flex-col justify-center p-10 sm:p-5 border-[1px] border-black rounded-[10px]">
                         <div className="font-nunito-sans font-extrabold text-[24px] mb-5 text-center">
                             Sign In
                         </div>
@@ -114,7 +114,7 @@ const LoginPage = () => {
                                 <div className="border-2 border-black rounded-[10px] overflow-hidden flex items-center">
                                     <div className="border-r-2 h-full p-[10px] border-black">
                                         <img
-                                            src="/images/login-page/email-icon.png"
+                                            src="/images/login-page/password-icon.png"
                                             className="w-[22px] h-[22px]"
                                         />
                                     </div>
