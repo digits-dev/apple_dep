@@ -133,6 +133,11 @@ const LoginPage = () => {
                                         {errors.password}
                                     </div>
                                 )}
+                                 {errors.no_datas && (
+                                    <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
+                                        {errors.no_datas}
+                                    </div>
+                                )}
                             </div>
                             <button
                                 type="submit"
