@@ -5,7 +5,7 @@ const Slider = () => {
     const slides = [
         <div
             key={1}
-            className="bg-white h-[464.5px] w-[284px] flex items-center justify-center"
+            className="bg-white h-[488.5px] w-[284px] flex items-center justify-center"
         >
             <div className="font-nunito-sans font-bold text-[24px]">
                 welcome
@@ -13,7 +13,7 @@ const Slider = () => {
         </div>,
         <div
             key={2}
-            className="bg-mobile-gradient h-[464.5px] w-[284px] flex items-center justify-center flex-col px-5 gap-y-4"
+            className="bg-mobile-gradient h-[488.5px] w-[284px] flex items-center justify-center flex-col px-5 gap-y-4"
         >
             <div className="flex">
                 <img

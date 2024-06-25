@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Inertia } from "@inertiajs/inertia";
 import { usePage } from "@inertiajs/inertia-react";
 import Slider from "../../Components/LoginPage/Slider";
@@ -8,6 +8,23 @@ const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -35,13 +52,13 @@ const LoginPage = () => {
     return (
         <div className="bg-login-bg-color h-screen flex items-center justify-center">
             {/* MAIN CONTAINER */}
-            <div className="max-w-[900px] max-h-[600px] w-full h-full bg-white rounded-lg flex overflow-hidden p-8">
+            <div className="max-w-[900px] max-h-[600px] w-full h-full bg-white rounded-lg flex overflow-hidden p-5">
                 {/* CONTAINER 1 */}
                 <div className="h-full hidden sm:block">
                     <div className="h-full w-[300px] bg-white border-8 border-black rounded-[40px] overflow-hidden flex flex-col">
                         <div className="bg-white w-full p-2 flex items-center justify-between relative px-5">
                             <div className="font-nunito-sans text-[13px] font-semibold ml-3">
-                                10:24
+                                {formatTime(currentTime)}
                             </div>
                             <div className="absolute left-1/2 transform -translate-x-1/2">
                                 <div className="bg-black w-24 p-1 rounded-[50px] flex justify-end px-2">
@@ -73,7 +90,7 @@ const LoginPage = () => {
                 </div>
                 {/* CONTAINER 2 */}
                 <div className="h-full w-full flex items-center justify-center sm:p-[30px]">
-                    <div className="bg-white h-full w-full flex flex-col justify-center p-10 sm:p-5 border-[1px] border-black rounded-[10px]">
+                    <div className="bg-white h-full w-full flex flex-col justify-center p-10 border-[1px] border-black rounded-[10px]">
                         <div className="font-nunito-sans font-extrabold text-[24px] mb-5 text-center">
                             Sign In
                         </div>
