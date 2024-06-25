@@ -3,6 +3,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia; // We are going to use this class to render React components
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Admin\MenusController;
+use App\Helpers\CommonHelpers;
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,4 +23,30 @@ Route::post('login-save', [LoginController::class, 'authenticate'])->name('login
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->middleware('auth')->name('sidebar');
 });
+
+Route::group([
+    'middleware' => ['auth'],
+    'prefix' => config('adm_url.ADMIN_PATH'),
+    'namespace' => 'App\Http\Controllers',
+], function () {
+   
+    // Todo: change table
+    $modules = [];
+    try {
+        $modules = DB::table('adm_modules')->whereIn('controller', CommonHelpers::getOthersControllerFiles())->get();
+    } catch (\Exception $e) {
+        Log::error("Load adm moduls is failed. Caused = " . $e->getMessage());
+    }
+
+    foreach ($modules as $v) {
+        if (@$v->path && @$v->controller) {
+            try {
+                CommonHelpers::routeOtherController($v->path, $v->controller, 'app\Http\Controllers');
+            } catch (\Exception $e) {
+                Log::error("Path = ".$v->path."\nController = ".$v->controller."\nError = ".$e->getMessage());
+            }
+        }
+    }
+})->middleware('auth');

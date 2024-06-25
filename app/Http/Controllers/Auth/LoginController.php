@@ -8,6 +8,7 @@ use App\Providers\AppServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
 use DB;
@@ -32,15 +33,28 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
         $users = DB::table("users")->where("email", $credentials['email'])->first();
-  
+        $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            Session::put('admin_id', $users->id);
+            Session::put('admin_is_superadmin', $session_details['priv']->is_superadmin);
+            Session::put("admin_privileges", $session_details['priv']->id);
+            Session::put('admin_privileges_roles', $session_details['roles']);
+            Session::put('theme_color', $session_details['priv']->theme_color);
             return redirect()->intended('dashboard');
         }
         return back()->withErrors([
             'mobile_number' => 'The provided credentials do not match our records',
             'password' => 'Incorrect email or password'
         ])->onlyInput(['mobile_number', 'password']);
+    }
+
+    public function getOtherSessionDetails($id){
+        $data = [];
+        $data['priv'] = DB::table("adm_privileges")->where("id", $id)->first();
+        $data['roles'] = DB::table('adm_privileges_roles')->where('id_adm_privileges', $id)->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
+		return $data;
     }
 
     public function logout(Request $request): RedirectResponse

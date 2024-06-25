@@ -1,7 +1,7 @@
 import React from 'react';
 import { Inertia } from '@inertiajs/inertia';
 
-const Navbar = () => {
+const AppNavbar = () => {
     const handleLogout = (e) => {
         e.preventDefault();
         Inertia.post('logout');
@@ -10,7 +10,7 @@ const Navbar = () => {
     return (
         <nav>
             <ul>
-                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/dashboard">Apple Dev</a></li>
                 <li>
                     <form onSubmit={handleLogout}>
                         <button type="submit">Logout</button>
@@ -21,4 +21,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default AppNavbar;
