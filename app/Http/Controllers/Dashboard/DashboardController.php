@@ -18,8 +18,6 @@ class DashboardController extends Controller
 
     public function index(): Response
     {
-        $data = [];
-        $data['user_name'] = Auth::user()->name;
-        return Inertia::render('Dashboard' , $data);
+        return Inertia::render('Dashboard');
     }
 }

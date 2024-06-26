@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { router } from "@inertiajs/react";
+import React, { useEffect, useState } from "react";
+import { router, usePage } from "@inertiajs/react";
 
-const AppNavbar = ({ user_name }) => {
+const AppNavbar = () => {
+    const { auth } = usePage().props;
     const [showMenu, setShowMenu] = useState(false);
     const handleLogout = (e) => {
         e.preventDefault();
@@ -11,6 +12,10 @@ const AppNavbar = ({ user_name }) => {
     const handleToggle = () => {
         setShowMenu(!showMenu);
     };
+
+    useEffect(()=>{
+        console.log(auth)
+    })
 
     return (
         <div className="bg-white h-[70px] flex items-center justify-between mx-10">
@@ -30,7 +35,7 @@ const AppNavbar = ({ user_name }) => {
                             className="w-10 h-10"
                         />
                         <p className="font-nunito-sans font-semibold">
-                            {user_name}
+                            {auth.user.name}
                         </p>
                     </div>
                     <div className="px-5 py-2">Profile</div>

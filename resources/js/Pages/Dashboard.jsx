@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Link, router,usePage  } from "@inertiajs/react";
+import { Link, router, usePage  } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 
-const Dashboard = ({ user_name }) => {
+const Dashboard = () => {
     const { auth } = usePage().props;
 
     useEffect(() => {
@@ -18,7 +18,7 @@ const Dashboard = ({ user_name }) => {
     }, [auth.user]);
 
     return (
-        <Layout user_name={user_name}>
+        <Layout>
             <span>asdasd</span>
         </Layout>
     );
