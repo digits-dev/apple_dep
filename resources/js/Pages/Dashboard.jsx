@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router  } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 
 const Dashboard = () => {

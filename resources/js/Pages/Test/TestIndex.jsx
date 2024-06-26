@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/inertia-react";
+import { Link, usePage } from "@inertiajs/react";
 import Layout from "../../Layouts/layout/layout";
 
 const TestIndex = () => {

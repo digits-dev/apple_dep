@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/inertia-react";
+import { Link } from "@inertiajs/react";
 import useViewport from "../../Hooks/useViewport";
 
 
@@ -19,7 +19,7 @@ const Pagination = ({ paginate }) => {
                 </Link>
                 <Link
                     href={paginate.prev_page_url}
-                    className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-gray-500  shadow-md`}
+                    className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-gray-500 shadow-md`}
                 >
                  Next »
                 </Link>
@@ -27,7 +27,7 @@ const Pagination = ({ paginate }) => {
             // Desktop View
             :
             <>
-                <span className="text-gray-700 font-medium">
+                <span className="text-gray-500 font-medium">
                     Showing {paginate.from} to {paginate.to} of {paginate.total} results.
                 </span>
 

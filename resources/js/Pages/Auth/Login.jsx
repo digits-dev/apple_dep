@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Inertia } from "@inertiajs/inertia";
-import { usePage } from "@inertiajs/inertia-react";
+import { usePage, router } from "@inertiajs/react";
 import Slider from "../../Components/LoginPage/Slider";
 
 const LoginPage = () => {
@@ -29,7 +28,7 @@ const LoginPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        Inertia.post(
+        router.post(
             "login-save",
             {
                 email,

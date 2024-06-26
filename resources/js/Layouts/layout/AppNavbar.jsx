@@ -1,10 +1,11 @@
 import React from 'react';
-import { Inertia } from '@inertiajs/inertia';
+import { router } from "@inertiajs/react";
+
 
 const AppNavbar = () => {
     const handleLogout = (e) => {
         e.preventDefault();
-        Inertia.post('logout');
+        router.post("logout");
     };
 
     return (
