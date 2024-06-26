@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use DB;
+use Illuminate\Contracts\Session\Session;
 
 class DashboardController extends Controller
 {
+
     public function index(): Response
     {
-        return Inertia::render('Dashboard');
+        $data = [];
+        $data['user_name'] = Auth::user()->name;
+        return Inertia::render('Dashboard' , $data);
     }
 }

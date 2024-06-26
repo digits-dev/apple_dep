@@ -49,7 +49,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="bg-login-bg-color h-screen flex items-center justify-center">
+        <div className="bg-white sm:bg-login-bg-color h-screen flex items-center justify-center">
             {/* MAIN CONTAINER */}
             <div className="max-w-[900px] max-h-[600px] w-full h-full bg-white rounded-lg flex overflow-hidden p-5">
                 {/* CONTAINER 1 */}
@@ -90,7 +90,7 @@ const LoginPage = () => {
                 {/* CONTAINER 2 */}
                 <div className="h-full w-full flex items-center justify-center sm:p-[30px]">
                     <div className="bg-white h-full w-full flex flex-col justify-center p-10 border-[1px] border-black rounded-[10px]">
-                        <div className="font-nunito-sans font-extrabold text-[24px] mb-5 text-center">
+                        <div className="font-nunito-sans font-extrabold text-[24px] mb-10 text-center">
                             Sign In
                         </div>
                         <form onSubmit={handleSubmit}>

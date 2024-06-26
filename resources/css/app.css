@@ -31,3 +31,9 @@ button:disabled {
     font-family: "Nunito Sans", sans-serif;
 }
 
+/* Box Shadow */
+
+.pop-up-boxshadow{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
