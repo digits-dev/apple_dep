@@ -12,11 +12,7 @@ const AppNavbar = () => {
     const handleToggle = () => {
         setShowMenu(!showMenu);
     };
-
-    useEffect(()=>{
-        console.log(auth)
-    })
-
+    
     return (
         <div className="bg-white h-[70px] flex items-center justify-between mx-10">
             <p className="font-nunito-sans font-extrabold text-[20px]">
