@@ -18,8 +18,11 @@ class LoginController extends Controller
     /**
      * Display the login view.
      */
-    public function index(): Response
+    public function index()
     {
+        if(auth()->check()){
+            return redirect()->intended('dashboard');
+        }
         return Inertia::render('Auth/Login');
     }
 
@@ -34,7 +37,7 @@ class LoginController extends Controller
         ]);
         $users = DB::table("users")->where("email", $credentials['email'])->first();
         if(!$users){
-            $error = 'The provided credentials do not match our records';
+            $error = 'No privilege set, Please contact administrator!';
             return redirect('login')->withErrors(['no_datas' => $error]);
         }
         $session_details = self::getOtherSessionDetails($users->id_adm_privileges);

@@ -17,14 +17,15 @@ use Illuminate\Support\Facades\DB;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
 Route::post('login-save', [LoginController::class, 'authenticate'])->name('login-save');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->middleware('auth')->name('sidebar');
+    Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
     Route::get('/table', [TestController::class, 'getTable']);
 });
 
