@@ -18,7 +18,7 @@ const AppNavbar = () => {
     })
 
     return (
-        <div className="bg-white h-[70px] flex items-center justify-between mx-10">
+        <div className="bg-white h-[70px] flex items-center justify-between px-10 py-5">
             <p className="font-nunito-sans font-extrabold text-[20px]">
                 Dashboard
             </p>
@@ -29,7 +29,7 @@ const AppNavbar = () => {
             />
             {showMenu && (
                 <div className="absolute right-6 top-[65px] bg-white py-3 rounded-[5px] pop-up-boxshadow">
-                    <div className="flex items-center gap-5 border-b-[1px] px-5 pb-2">
+                    <div className="flex items-center gap-5 border-b-[1px] px-5 pb-2 min-w-72 max-w-[300px]">
                         <img
                             src="/images/navigation/user-icon.png"
                             className="w-10 h-10"
@@ -38,14 +38,35 @@ const AppNavbar = () => {
                             {auth.user.name}
                         </p>
                     </div>
-                    <div className="px-5 py-2">Profile</div>
-                    <div className="px-5 py-2">Change Password</div>
-                    <div className="border-t-[1px] px-5 pt-2">
-                        <form onSubmit={handleLogout}>
-                            <button type="submit" className="font-nunito-sans">
-                                Logout
-                            </button>
-                        </form>
+                    <div className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer">
+                        <img
+                            src="/images/navigation/profile-icon.png"
+                            className="w-[22px] h-[22px] mr-3"
+                        />
+                        <span className="font-nunito-sans text-[16px]">
+                            Profile
+                        </span>
+                    </div>
+                    <div className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer">
+                        <img
+                            src="/images/navigation/lock-icon.png"
+                            className="w-[22px] h-[22px] mr-3"
+                        />
+                        <span className="font-nunito-sans">
+                            Change Password
+                        </span>
+                    </div>
+                    <div
+                        className="border-t-[1px]  pt-2 "
+                        onClick={handleLogout}
+                    >
+                        <div className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer">
+                            <img
+                                src="/images/navigation/logout-icon.png"
+                                className="w-[22px] h-[22px] mr-3"
+                            />
+                            <span className="font-nunito-sans">Logout</span>
+                        </div>
                     </div>
                 </div>
             )}
