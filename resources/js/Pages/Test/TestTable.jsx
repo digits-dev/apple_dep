@@ -19,7 +19,7 @@ const TestTable = ({ users, queryParams }) => {
     };
 
     return (
-        <Layout>
+        <>
             <table className="w-full">
                 <thead>
                     <tr>
@@ -51,11 +51,7 @@ const TestTable = ({ users, queryParams }) => {
                                 <td className="p-2">{item.name}</td>
                                 <td className="p-2">{item.email}</td>
                                 <td className="p-2">
-                                    <button
-                                        type="button"
-                                    >
-                                        Delete
-                                    </button>
+                                    <button type="button">Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -63,7 +59,7 @@ const TestTable = ({ users, queryParams }) => {
             </table>
 
             <Pagination paginate={users} />
-        </Layout>
+        </>
     );
 };
 
