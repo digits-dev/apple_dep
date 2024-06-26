@@ -61,28 +61,7 @@ const AppSidebar = () => {
                 </li>
                 {links.map((menu, index) => (
                     <li key={index}>
-                        {menu.children ? (
-                            <>
-                                <div onClick={() => toggleMenu(index)}>
-                                    {menu.name}
-                                </div>
-                                <ul
-                                    className={`submenu ${
-                                        openMenu === index ? "open" : ""
-                                    }`}
-                                >
-                                    {menu.children.map((submenu, subIndex) => (
-                                        <li key={subIndex}>
-                                            <Link href={submenu.url}>
-                                                {submenu.name}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </>
-                        ) : (
-                            <Link href={menu.url}>{menu.name}</Link>
-                        )}
+                        <Link href={menu.url}>{menu.name}</Link>
                     </li>
                 ))}
             </ul>
