@@ -9,9 +9,10 @@ const AppSidebar = () => {
     const toggleMenu = (index) => {
         setOpenMenu(openMenu === index ? null : index);
     };
-  
+
     useEffect(() => {
-        axios.get("/sidebar")
+        axios
+            .get("/sidebar")
             .then((response) => {
                 setLinks(response.data);
             })
@@ -43,24 +44,59 @@ const AppSidebar = () => {
             <div className="flex gap-x-4 items-center">
                 <img
                     src="/images/login-page/btb-logo-white.png"
-                    className="w-10 cursor-pointer duration-500"
+                    className={`w-10 cursor-pointer duration-500 ${
+                        open && "rotate-[360deg]"
+                    }`}
                 />
-                <p
-                    className={`text-white origin-left font-medium text-[24px] ${
+                <div
+                    className={`text-white origin-left font-medium flex items-center ${
                         !open && "scale-0"
                     }`}
                 >
-                    DEP
-                </p>
+                    <div className="h-[50px] w-[1.5px] bg-white"></div>
+                    <p className="ml-5 font-semibold text-[25px]">DEP</p>
+                </div>
             </div>
-            <ul className="bg-white mt-10">
-                <li>
-                    <Link href="dashboard">Dashboard</Link>
-                </li>
-                {links.map((menu, index) => (
-                    <li key={index}>
-                        <Link href={menu.url}>{menu.name}</Link>
+            <ul
+                className={`mt-20 max-h-[500px] overflow-x-hidden ${
+                    open ? "overflow-y-auto" : "overflow-y-hidden"
+                }`}
+            >
+                <Link href="dashboard">
+                    <li className="text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 active">
+                        <img
+                            src="/images/navigation/dashboard-icon.png"
+                            className="w-[24px] h-[24px]"
+                        />
+                        <p
+                            className={`font-nunito-sans font-semibold ${
+                                !open && "scale-0"
+                            }`}
+                        >
+                            Dashboard
+                        </p>
                     </li>
+                </Link>
+
+                {links.map((menu, index) => (
+                    <Link href={menu.url}>
+                        <li
+                            key={index}
+                            className="text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2"
+                        >
+                            <img
+                                src={menu.icon}
+                                className="w-[24px] h-[24px]"
+                            />
+                            <p
+                                className={`font-nunito-sans font-semibold ${
+                                    !open && "scale-0"
+                                }`}
+                            >
+                                {menu.name}
+                            </p>
+                        </li>
+                    </Link>
                 ))}
             </ul>
         </div>

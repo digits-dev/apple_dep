@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const AppFooter = () => {
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
     return (
         <div className="layout-footer p-[10px] px-5 flex justify-between">
             <div className="font-nunito-sans text-[12px] font-semibold">
-                Copyright © 2024. All Rights Reserved
+                Copyright © {currentYear}. All Rights Reserved
             </div>
             <div className="font-nunito-sans text-[12px] font-semibold">
                 Powered by Digits

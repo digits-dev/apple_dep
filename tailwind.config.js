@@ -17,6 +17,7 @@ module.exports = {
                 secondary: "#797878",
                 primary: "#282222",
                 stroke: "9f9d9d",
+                "sidebar-hover-color": "#323232",
             },
             backgroundImage: {
                 "mobile-gradient":

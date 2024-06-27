@@ -37,3 +37,33 @@ button:disabled {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+/* SIDEBAR ACTIVE */
+.active{
+    background: #323232;
+}
+
+/* SCROLLBAR */
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    }
+    
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #313030; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    opacity: 0.7;
+}
+
+.scroll-bar-hide{
+    scrollbar-width: 0px;
+}
+
