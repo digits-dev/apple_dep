@@ -1,11 +1,11 @@
 import { Link, usePage } from "@inertiajs/react";
 import Layout from "../../Layouts/layout/layout";
-
+import AppContent from "../../Layouts/layout/AppContent";
 const TestIndex = () => {
     return (
-        <>
-            <div>This is Test</div>
-        </>
+        <AppContent>
+            <span>test</span>
+        </AppContent>
     );
 };
 

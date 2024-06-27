@@ -6,14 +6,12 @@ const AppSidebar = () => {
     const [openMenu, setOpenMenu] = useState(null);
     const [open, setOpen] = useState(true);
     const [links, setLinks] = useState([]);
-
     const toggleMenu = (index) => {
         setOpenMenu(openMenu === index ? null : index);
     };
-
+  
     useEffect(() => {
-        axios
-            .get("/sidebar")
+        axios.get("/sidebar")
             .then((response) => {
                 setLinks(response.data);
             })

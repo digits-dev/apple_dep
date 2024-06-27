@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Dashboard;
-
+use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\AppServiceProvider;
@@ -18,6 +18,10 @@ class DashboardController extends Controller
 
     public function index(): Response
     {
-        return Inertia::render('Dashboard');
+        $data = [];
+        $sidebarMenus = CommonHelpers::sidebarMenu();
+        return Inertia::render('Dashboard/Dashboard', [
+            'menus' => $sidebarMenus,
+        ]);
     }
 }
