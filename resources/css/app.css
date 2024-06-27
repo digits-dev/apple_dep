@@ -67,3 +67,8 @@ button:disabled {
     scrollbar-width: 0px;
 }
 
+.single-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

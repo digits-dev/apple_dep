@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { router, usePage } from "@inertiajs/react";
+import { NavbarContext } from "../../Context/NavbarContext";
 
 const AppNavbar = () => {
+    const { title } = useContext(NavbarContext);
     const { auth } = usePage().props;
     const [showMenu, setShowMenu] = useState(false);
     const handleLogout = (e) => {
@@ -12,11 +14,11 @@ const AppNavbar = () => {
     const handleToggle = () => {
         setShowMenu(!showMenu);
     };
-    
+
     return (
         <div className="bg-white h-[70px] flex items-center justify-between px-10 py-5">
             <p className="font-nunito-sans font-extrabold text-[20px]">
-                Dashboard
+                {title}
             </p>
             <img
                 src="/images/navigation/user-icon.png"

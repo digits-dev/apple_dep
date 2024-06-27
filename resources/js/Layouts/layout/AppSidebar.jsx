@@ -1,13 +1,67 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "@inertiajs/react";
 import axios from "axios";
+import { NavbarContext } from "../../Context/NavbarContext";
+
+const capitalizeWords = (str) => {
+    const smallWords = [
+        "a",
+        "an",
+        "and",
+        "as",
+        "at",
+        "but",
+        "by",
+        "for",
+        "if",
+        "in",
+        "nor",
+        "of",
+        "on",
+        "or",
+        "so",
+        "the",
+        "to",
+        "up",
+        "yet",
+    ];
+
+    return str
+        .split("_")
+        .map((word, index) => {
+            if (index === 0 && word === word.toUpperCase()) {
+                return word;
+            } else if (!smallWords.includes(word.toLowerCase())) {
+                return (
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                );
+            } else {
+                return word.toLowerCase();
+            }
+        })
+        .join(" ");
+};
+
+const formatActiveSlug = (pathname) => {
+    const segments = pathname.split("/");
+    const lastSegment = segments.pop() || segments.pop();
+    return lastSegment;
+};
+
+const formatSlug = (pathname) => {
+    const segments = pathname.split("/");
+    const lastSegment = segments.pop() || segments.pop();
+    return capitalizeWords(lastSegment);
+};
 
 const AppSidebar = () => {
-    const [openMenu, setOpenMenu] = useState(null);
     const [open, setOpen] = useState(true);
     const [links, setLinks] = useState([]);
-    const toggleMenu = (index) => {
-        setOpenMenu(openMenu === index ? null : index);
+
+    const { setTitle } = useContext(NavbarContext);
+
+    const handleMenuClick = (newTitle) => {
+        setTitle(newTitle);
     };
 
     useEffect(() => {
@@ -23,6 +77,8 @@ const AppSidebar = () => {
                 );
             });
     }, []);
+
+    console.log(links);
 
     return (
         <div
@@ -62,16 +118,26 @@ const AppSidebar = () => {
                     open ? "overflow-y-auto" : "overflow-y-hidden"
                 }`}
             >
-                <Link href="dashboard">
-                    <li className="text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 active">
+                <Link
+                    href="dashboard"
+                    onClick={() => handleMenuClick("Dashboard")}
+                >
+                    <li
+                        className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                            formatActiveSlug(window.location.pathname) ===
+                            "dashboard"
+                                ? "active"
+                                : ""
+                        }`}
+                    >
                         <img
                             src="/images/navigation/dashboard-icon.png"
                             className="w-[24px] h-[24px]"
                         />
                         <p
-                            className={`font-nunito-sans font-semibold ${
-                                !open && "scale-0"
-                            }`}
+                            className={`font-nunito-sans font-semibold single-line ${
+                                !open && "hidden"
+                            } `}
                         >
                             Dashboard
                         </p>
@@ -79,19 +145,27 @@ const AppSidebar = () => {
                 </Link>
 
                 {links.map((menu, index) => (
-                    <Link href={menu.url}>
+                    <Link
+                        href={menu.url}
+                        onClick={() => handleMenuClick(formatSlug(menu.slug))}
+                    >
                         <li
                             key={index}
-                            className="text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2"
+                            className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                                formatActiveSlug(window.location.pathname) ===
+                                menu.slug
+                                    ? "active"
+                                    : ""
+                            }`}
                         >
                             <img
                                 src={menu.icon}
                                 className="w-[24px] h-[24px]"
                             />
                             <p
-                                className={`font-nunito-sans font-semibold ${
-                                    !open && "scale-0"
-                                }`}
+                                className={`font-nunito-sans font-semibold single-line ${
+                                    !open && "hidden"
+                                } `}
                             >
                                 {menu.name}
                             </p>
