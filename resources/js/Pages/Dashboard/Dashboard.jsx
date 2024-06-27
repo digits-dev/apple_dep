@@ -3,9 +3,9 @@ import { Link, router, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import AppContent from "../../Layouts/layout/AppContent";
 
-const Dashboard = ({header_name}) => {
+const Dashboard = () => {
     const { auth } = usePage().props;
-   
+
     useEffect(() => {
         if (auth.user) {
             // Push a new state to the history
@@ -28,7 +28,6 @@ const Dashboard = ({header_name}) => {
 
     return (
         <AppContent>
-            <header>{header_name}</header>
             <span>asdasd</span>
         </AppContent>
     );
