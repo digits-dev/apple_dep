@@ -22,9 +22,20 @@ class TestController extends Controller{
         $query = User::query();
         $sortField = request("sortBy", 'created_at');
         $sortDirection = request("sortDir", "desc");
+        $perPage = request("perPage", "10");
 
-        $users = $query->orderBy($sortField, $sortDirection)
-        ->paginate(10)->withQueryString();
+        if (request("name")) {
+            $query->where("name", "like", "%" . request("name") . "%");
+        }
+   
+
+        $users = $query->when(request('search'), function($query){
+            $searchVal = request('search');
+            $query->where("name", 'like', "%$searchVal%")
+                ->orWhere("email", 'like', "%$searchVal%");
+        })->
+        orderBy($sortField, $sortDirection)
+        ->paginate($perPage)->withQueryString();
 
         return Inertia::render('Test/TestTable', [
             'users' => $users,
