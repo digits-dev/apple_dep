@@ -33,8 +33,8 @@ const TableSearch = ({queryParams}) => {
   };
 
   return (
-    <search>
-        <input type="text" name="search" id="search" placeholder='Search'
+    <search className='font-nunito-sans'>
+        <input className="border border-secondary rounded-lg overflow-hidden h-10 w-[400px] px-4 text-sm outline-none" type="text" name="search" id="search" placeholder='Search'
             value={searchValue}
             onChange={handleInputChange}
             />

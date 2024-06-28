@@ -7,12 +7,13 @@ import { NavbarProvider } from "../../Context/NavbarContext";
 
 const Layout = ({ children }) => {
     return (
+
         <NavbarProvider>
             <div className="h-screen bg-mobile-gradient flex">
                 <AppSidebar />
-                <div className="bg-red-100 w-full flex flex-col">
+                <div className="bg-red-100 w-full flex flex-col overflow-hidden">
                     <AppNavbar />
-                    <div className="bg-white flex-1 w-full flex flex-col overflow-auto">
+                    <div className="bg-white flex-1 w-full flex flex-col overflow-auto ">
                         <div className="flex-1">
                             <AppContent>{children}</AppContent>
                         </div>

@@ -13,7 +13,7 @@ module.exports = {
                 "camera-color": "#342D2D",
                 "screen-color": "#E8E8E8",
                 "status-success": "#57C769",
-                "status-error": "#57C769",
+                "status-error": "#EF5656",
                 secondary: "#797878",
                 primary: "#282222",
                 stroke: "9f9d9d",
@@ -23,6 +23,9 @@ module.exports = {
                 "mobile-gradient":
                     "linear-gradient(to bottom, #060505, #333232)",
             },
+            fontFamily: {
+                'nunito-sans': ["Nunito Sans", 'sans-serif'],
+            }
         },
     },
     plugins: [],
