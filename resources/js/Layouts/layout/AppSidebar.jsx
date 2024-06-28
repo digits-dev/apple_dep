@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { NavbarContext } from "../../Context/NavbarContext";
+import SidebarAccordion from "../../Components/Sidebar/SidebarAccordion";
 
 const capitalizeWords = (str) => {
     const smallWords = [
@@ -57,26 +58,14 @@ const formatSlug = (pathname) => {
 const AppSidebar = () => {
     const { auth } = usePage().props;
     const [open, setOpen] = useState(true);
-    const [links, setLinks] = useState([]);
+
     const { setTitle } = useContext(NavbarContext);
 
     const handleMenuClick = (newTitle) => {
         setTitle(newTitle);
     };
 
-    useEffect(() => {
-        axios
-            .get("/sidebar")
-            .then((response) => {
-                setLinks(response.data);
-            })
-            .catch((error) => {
-                console.error(
-                    "There was an error fetching the sidebar data!",
-                    error
-                );
-            });
-    }, []);
+    // console.log(links);
 
     return (
         <div  className={`${open ? "w-72" : "w-20" } duration-300 p-5 pt-5 h-full relative`}>
@@ -137,33 +126,10 @@ const AppSidebar = () => {
                         </p>
                     </li>
                 </Link>
-
-                {links.map((menu, index) => (
-                    <Link href={menu.url} onClick={() => handleMenuClick(formatSlug(menu.slug))}>
-                        <li
-                            key={index}
-                            className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
-                                formatActiveSlug(window.location.pathname) ===
-                                menu.slug
-                                    ? "active"
-                                    : ""
-                            }`}
-                        >
-                            <img
-                                src={menu.icon}
-                                className="w-[24px] h-[24px]"
-                            />
-                            <p
-                                className={`font-nunito-sans font-semibold single-line ${
-                                    !open && "hidden"
-                                } `}
-                            >
-                                {menu.name}
-                            </p>
-                        </li>
-                    </Link>
-                ))}
             </ul>
+            
+            <SidebarAccordion open={open} />
+            
             {auth.sessions.admin_is_superadmin? 
             <div className="text-white">
                 <span>Super Admin</span>

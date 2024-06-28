@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     return (
         <AppContent>
-            <span>asdasd</span>
+            <span>This is Dashboard</span>
         </AppContent>
     );
 };
