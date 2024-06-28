@@ -145,7 +145,18 @@ class AdmModules extends Seeder
                 'icon' => 'images/navigation/dashboard-icon.png',
                 'path' => 'dashboard',
                 'table_name' => 'dashboard',
-                'controller' => 'Dashboard\DashboardContent',
+                'controller' => 'Dashboard\DashboardController',
+                'is_protected' => 1,
+                'is_active' => 1,
+            ],
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'List Of Orders',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'list_of_orders',
+                'table_name' => 'list_of_orders',
+                'controller' => 'ListOfOrders\ListOfOrdersController',
                 'is_protected' => 1,
                 'is_active' => 1,
             ]

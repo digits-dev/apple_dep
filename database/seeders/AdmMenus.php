@@ -40,6 +40,44 @@ class AdmMenus extends Seeder
                 'sorting'           => 1
             ]
         );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'Sub Master',
+            ],
+            [
+                'name'              => 'Sub Master',
+                'type'              => 'URL',
+                'path'              => '#',
+                'slug'              => '#',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 1,
+                'id_adm_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'List Of Orders',
+            ],
+            [
+                'name'              => 'List Of Orders',
+                'type'              => 'Route',
+                'path'              => 'ListOfOrders\ListOfOrdersControllerGetIndex',
+                'slug'              => 'list_of_orders',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 1,
+                'id_adm_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
 }
