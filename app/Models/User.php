@@ -42,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function scopeGetData($query){
+        return $query->leftJoin('adm_privileges','users.id_adm_privileges','adm_privileges.id')
+            ->select('users.*',
+            'users.name as user_name',
+                    'users.id as u_id',
+                    'adm_privileges.*',
+                    'adm_privileges.name as privilege_name')
+                    ->get();
+    }
 }

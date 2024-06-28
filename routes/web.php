@@ -5,6 +5,7 @@ use Inertia\Inertia; // We are going to use this class to render React component
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\MenusController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Helpers\CommonHelpers;
 use Illuminate\Support\Facades\DB;
 /*
@@ -27,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
     Route::get('/table', [TestController::class, 'getTable']);
+
+    //USERS
+    Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
 });
 
 Route::group([
@@ -47,6 +51,42 @@ Route::group([
         if (@$v->path && @$v->controller) {
             try {
                 CommonHelpers::routeOtherController($v->path, $v->controller, 'app\Http\Controllers');
+            } catch (\Exception $e) {
+                Log::error("Path = ".$v->path."\nController = ".$v->controller."\nError = ".$e->getMessage());
+            }
+        }
+    }
+})->middleware('auth');
+
+//ADMIN ROUTE
+Route::group([
+    'middleware' => ['auth'],
+    'prefix' => config('ad_url.ADMIN_PATH'),
+    'namespace' => 'App\Http\Controllers\Admin',
+], function () {
+   
+    // Todo: change table
+    if (request()->is(config('ad_url.ADMIN_PATH'))) {
+        $menus = DB::table('adm_menuses')->where('is_dashboard', 1)->first();
+        if ($menus) {
+            Route::get('/', 'Dashboard\DashboardContentGetIndex');
+        } else {
+            CommonHelpers::routeController('/', 'AdminController', 'App\Http\Controllers\Admin');
+        }
+    }
+
+    // Todo: change table
+    $modules = [];
+    try {
+        $modules = DB::table('adm_modules')->whereIn('controller', CommonHelpers::getMainControllerFiles())->get();
+    } catch (\Exception $e) {
+        Log::error("Load ad moduls is failed. Caused = " . $e->getMessage());
+    }
+
+    foreach ($modules as $v) {
+        if (@$v->path && @$v->controller) {
+            try {
+                CommonHelpers::routeController($v->path, $v->controller, 'app\Http\Controllers\Admin');
             } catch (\Exception $e) {
                 Log::error("Path = ".$v->path."\nController = ".$v->controller."\nError = ".$e->getMessage());
             }

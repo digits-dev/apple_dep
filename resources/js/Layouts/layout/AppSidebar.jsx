@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { NavbarContext } from "../../Context/NavbarContext";
 
@@ -55,9 +55,9 @@ const formatSlug = (pathname) => {
 };
 
 const AppSidebar = () => {
+    const { auth } = usePage().props;
     const [open, setOpen] = useState(true);
     const [links, setLinks] = useState([]);
-
     const { setTitle } = useContext(NavbarContext);
 
     const handleMenuClick = (newTitle) => {
@@ -78,14 +78,8 @@ const AppSidebar = () => {
             });
     }, []);
 
-    console.log(links);
-
     return (
-        <div
-            className={`${
-                open ? "w-72" : "w-20"
-            } duration-300 p-5 pt-5 h-full relative`}
-        >
+        <div  className={`${open ? "w-72" : "w-20" } duration-300 p-5 pt-5 h-full relative`}>
             {/* BUTTON */}
             <div
                 className="bg-login-bg-color absolute cursor-pointer rounded-full -right-3 top-[20px] border-2 border-black p-2 flex items-center justify-center"
@@ -145,10 +139,7 @@ const AppSidebar = () => {
                 </Link>
 
                 {links.map((menu, index) => (
-                    <Link
-                        href={menu.url}
-                        onClick={() => handleMenuClick(formatSlug(menu.slug))}
-                    >
+                    <Link href={menu.url} onClick={() => handleMenuClick(formatSlug(menu.slug))}>
                         <li
                             key={index}
                             className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
@@ -173,6 +164,34 @@ const AppSidebar = () => {
                     </Link>
                 ))}
             </ul>
+            {auth.sessions.admin_is_superadmin? 
+            <div className="text-white">
+                <span>Super Admin</span>
+                <ul>
+                    <Link href="privileges"
+                        onClick={() => handleMenuClick("Privileges")}
+                    >
+                        <li className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                            formatActiveSlug(window.location.pathname) === "privileges" ? "active" : ""}`}
+                        >
+                            <img src="/images/navigation/dashboard-icon.png" className="w-[24px] h-[24px]"/>
+                            <p className={`font-nunito-sans font-semibold single-line ${!open && "hidden"} `}>Privileges</p>
+                        </li>
+                    </Link>
+                    <Link href="users"
+                        onClick={() => handleMenuClick("Users")}
+                    >
+                        <li className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                            formatActiveSlug(window.location.pathname) === "users" ? "active" : ""}`}
+                        >
+                            <img src="/images/navigation/dashboard-icon.png" className="w-[24px] h-[24px]"/>
+                            <p className={`font-nunito-sans font-semibold single-line ${!open && "hidden"} `}>User Management</p>
+                        </li>
+                    </Link>
+                </ul>
+            </div> : ''
+            }
+
         </div>
     );
 };

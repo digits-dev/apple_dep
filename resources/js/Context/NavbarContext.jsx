@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
 export const NavbarContext = createContext();
+
 const capitalizeWords = (str) => {
     const smallWords = [
         "a",
@@ -45,6 +46,7 @@ const formatPathname = (pathname) => {
     const lastSegment = segments.pop() || segments.pop();
     return capitalizeWords(lastSegment);
 };
+
 export const NavbarProvider = ({ children }) => {
     const [title, setTitle] = useState(
         formatPathname(window.location.pathname)
