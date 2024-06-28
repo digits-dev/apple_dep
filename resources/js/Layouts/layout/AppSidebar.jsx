@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "@inertiajs/react";
-import axios from "axios";
 import { NavbarContext } from "../../Context/NavbarContext";
+import SidebarAccordion from "../../Components/Sidebar/SidebarAccordion";
 
 const capitalizeWords = (str) => {
     const smallWords = [
@@ -56,7 +56,6 @@ const formatSlug = (pathname) => {
 
 const AppSidebar = () => {
     const [open, setOpen] = useState(true);
-    const [links, setLinks] = useState([]);
 
     const { setTitle } = useContext(NavbarContext);
 
@@ -64,21 +63,7 @@ const AppSidebar = () => {
         setTitle(newTitle);
     };
 
-    useEffect(() => {
-        axios
-            .get("/sidebar")
-            .then((response) => {
-                setLinks(response.data);
-            })
-            .catch((error) => {
-                console.error(
-                    "There was an error fetching the sidebar data!",
-                    error
-                );
-            });
-    }, []);
-
-    console.log(links);
+    // console.log(links);
 
     return (
         <div
@@ -143,36 +128,8 @@ const AppSidebar = () => {
                         </p>
                     </li>
                 </Link>
-
-                {links.map((menu, index) => (
-                    <Link
-                        href={menu.url}
-                        onClick={() => handleMenuClick(formatSlug(menu.slug))}
-                    >
-                        <li
-                            key={index}
-                            className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
-                                formatActiveSlug(window.location.pathname) ===
-                                menu.slug
-                                    ? "active"
-                                    : ""
-                            }`}
-                        >
-                            <img
-                                src={menu.icon}
-                                className="w-[24px] h-[24px]"
-                            />
-                            <p
-                                className={`font-nunito-sans font-semibold single-line ${
-                                    !open && "hidden"
-                                } `}
-                            >
-                                {menu.name}
-                            </p>
-                        </li>
-                    </Link>
-                ))}
             </ul>
+            <SidebarAccordion open={open} />
         </div>
     );
 };
