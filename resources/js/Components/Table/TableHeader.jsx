@@ -1,15 +1,17 @@
 import { router } from '@inertiajs/react';
 import React from 'react'
+import DescIcon from './Icons/DescIcon';
+import SortIcon from './Icons/SortIcon';
+import AscIcon from './Icons/AscIcon';
 
 const TableHeader = ({
   name,
+  children,
   sortable = true,
   queryParams = null,
-  children,
   justify = "between",
   width = "md",
-  stickyLeftOrder = null,
-  stickyRightOrder = null,
+  sticky
 }) => {
 
   const sort_field = queryParams?.sortBy;
@@ -33,74 +35,55 @@ const TableHeader = ({
 
   };
 
-  const colWidth = {
+  const widthClass = {
     auto: "w-auto",
     sm: 'min-w-20',
     md: 'min-w-40',
     lg: 'min-w-80',
   }[width];
 
-  const justifyValue = {
+  const justifyClass = {
     start: "justify-start",
     center: "justify-center",
     between: "justify-between",
     end: "justify-end"
   }[justify];
 
-  // const stickyOrderVal = {
-  //   first: `sticky ${alignment}-0`,
-  //   second: `sticky ${alignment}-40`,
-  //   third: `sticky ${alignment}-60`,
-  //   fourth: `sticky ${alignment}-80`,
-  // }[stickyOrder];
-
-  const stickyLeftOrderVal = {
-    first: `sticky left-0`,
-    second: `sticky left-40`,
-    third: `sticky left-60`,
-    fourth: `sticky left-80`,
-  }[stickyLeftOrder];
-
-  const stickyRightOrderVal = {
-    first: `sticky right-0`,
-    second: `sticky right-40`,
-    third: `sticky right-60`,
-    fourth: `sticky right-80`,
-  }[stickyRightOrder];
-
+  const stickyClass = {
+    left: 'sticky left-0 after:absolute after:top-0 after:right-0  after:h-full after:w-[0.1px] after:bg-secondary',
+    right: 'sticky right-0 before:absolute before:left-0  before:h-full before:w-[0.1px] before:bg-secondary',
+  }[sticky];
 
   return (
-  
-    <th onClick={(e) => handleSort(name)} className={`text-secondary font-nunito-sans border-b  border-secondary text-sm bg-white  ${colWidth} ${stickyLeftOrder && stickyLeftOrderVal} ${stickyRightOrder && stickyRightOrderVal}`}>
-      <div className={`px-6 py-3.5 flex items-center gap-3 ${sortable && "cursor-pointer"} ${justifyValue}`}>
-        {children}
-        {sortable && (
-          <div>
-
-          { sort_field && sort_direction &&
-              sort_field === name && sort_direction === "desc" ?
-              <span className='inline-block mb-0.5'>
-                <svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.5 7L8.39711 0.25H0.602886L4.5 7Z" fill="#797878"/>
-                </svg> 
-              </span>
-              : sort_field === name && sort_direction === "asc" ?
-              <span className='inline-block mb-0.5'>
-                <svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.5 0L8.39711 6.75H0.602886L4.5 0Z" fill="#797878"/>
-                </svg>
-              </span>
-              :
-              <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.5 15L8.39711 8.25H0.602886L4.5 15Z" fill="#797878"/>
-                <path d="M4.5 0L8.39711 6.75H0.602886L4.5 0Z" fill="#797878"/>
-              </svg>
-          }
-          </div>
-        )}
-      </div>
-    </th>
-  )
+		<th
+			onClick={(e) => handleSort(name)}
+			className={`text-secondary font-nunito-sans  text-sm bg-white ${widthClass} ${stickyClass}`}>
+			<div className={`px-6 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
+				{children}
+				{sortable && (
+					<div>
+						{sort_field &&
+						sort_direction &&
+						//  DESCENDING
+						sort_field === name &&
+						sort_direction === "desc" ? (
+							<span className="inline-block mb-0.5">
+								<DescIcon />
+							</span>
+						) : //  ASCENDING
+						sort_field === name && sort_direction === "asc" ? (
+							<span className="inline-block mb-0.5">
+								<AscIcon/>
+							</span>
+						) : (
+							// BOTH ICON
+							<SortIcon />
+						)}
+					</div>
+				)}
+			</div>
+		</th>
+  );
 }
 
 export default TableHeader

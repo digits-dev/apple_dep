@@ -1,45 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { router } from "@inertiajs/react";
+import React, { useEffect, useRef, useState } from "react";
+import { router, usePage } from "@inertiajs/react";
+import debounce from "lodash/debounce";
 
-const TableSearch = ({queryParams}) => {
- const [searchValue, setSearchValue] = useState("");
- const path = window.location.pathname;
+const TableSearch = ({ queryParams }) => {
+	const [searchValue, setSearchValue] = useState(queryParams?.search || "");
+	const path = window.location.pathname;
 
- useEffect(() => {
+	useEffect(() => {
+		if (searchValue !== "") {
+			const debouncedSearch = debounce(() => {
+				router.get(path, { ...queryParams, search: searchValue, page: 1 }, { preserveState: true, replace: true });
+			}, 500);
 
-    let delayDebounceFn = null;
+			debouncedSearch();
 
-    if (searchValue !== '') {
+			return () => debouncedSearch.cancel();
+		} else {
+			const { search, page, ...params } = queryParams;
+			router.get(path, { ...params }, { preserveState: true });
+		}
+	}, [searchValue]);
 
-      delayDebounceFn = setTimeout(() => {
-        router.get(path, {...queryParams, search: searchValue, page: 1}, {preserveState: true});
-      }, 500);
-      
-    } else {
-      const { search, ...updatedParams } = queryParams;
-      router.get(path, updatedParams, {preserveState: true});
-    }
+	return (
+		<search className="font-nunito-sans">
+			<input
+				className="border border-secondary rounded-lg overflow-hidden h-10 w-[400px] px-4 text-sm outline-none"
+				type="text"
+				name="search"
+				id="search"
+				placeholder="Search"
+				value={searchValue}
+				onChange={(e) => setSearchValue(e.target.value)}
+			/>
+		</search>
+	);
+};
 
-    return () => {
-      if (delayDebounceFn) {
-        clearTimeout(delayDebounceFn);
-      }
-    };
-    
-  }, [searchValue, queryParams?.search]); 
-
-  const handleInputChange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  return (
-    <search className='font-nunito-sans'>
-        <input className="border border-secondary rounded-lg overflow-hidden h-10 w-[400px] px-4 text-sm outline-none" type="text" name="search" id="search" placeholder='Search'
-            value={searchValue}
-            onChange={handleInputChange}
-            />
-    </search>
-  )
-}
-
-export default TableSearch
+export default TableSearch;

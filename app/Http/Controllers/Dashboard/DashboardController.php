@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Dashboard;
+
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
@@ -16,9 +17,9 @@ use Illuminate\Contracts\Session\Session;
 class DashboardController extends Controller
 {
 
-    public function index(): Response
+    public function GetIndex(): Response
     {
-        $data = [];
+        $data         = [];
         $sidebarMenus = CommonHelpers::sidebarMenu();
         return Inertia::render('Dashboard/Dashboard', [
             'menus' => $sidebarMenus,

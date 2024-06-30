@@ -2,7 +2,7 @@ import React from 'react'
 
 const Row = ({children}) => {
   return (
-    <tr className={`border-b border-secondary last:border-none text-sm`}>
+    <tr className={`border-b border-secondary text-sm`}>
         {children}
     </tr>
   )
