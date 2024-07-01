@@ -54,7 +54,7 @@ class AdmMenus extends Seeder
                 'icon'              => 'images/navigation/dashboard-icon.png',
                 'parent_id'         => 0,
                 'is_active'         => 1,
-                'is_dashboard'      => 1,
+                'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
                 'sorting'           => 1
             ]
@@ -73,7 +73,7 @@ class AdmMenus extends Seeder
                 'icon'              => 'images/navigation/dashboard-icon.png',
                 'parent_id'         => 2,
                 'is_active'         => 1,
-                'is_dashboard'      => 1,
+                'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
                 'sorting'           => 1
             ]

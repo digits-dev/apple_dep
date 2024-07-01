@@ -39,7 +39,7 @@ const SidebarAccordion = ({ open }) => {
             "up",
             "yet",
         ];
-    
+
         return str
             .split("_")
             .map((word, index) => {
@@ -47,7 +47,8 @@ const SidebarAccordion = ({ open }) => {
                     return word;
                 } else if (!smallWords.includes(word.toLowerCase())) {
                     return (
-                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
                     );
                 } else {
                     return word.toLowerCase();
@@ -61,7 +62,7 @@ const SidebarAccordion = ({ open }) => {
         const lastSegment = segments.pop() || segments.pop();
         return capitalizeWords(lastSegment);
     };
-    
+
     useEffect(() => {
         axios
             .get("/sidebar")
@@ -76,6 +77,8 @@ const SidebarAccordion = ({ open }) => {
             });
     }, []);
 
+    console.log(links);
+
     const handleMenuClick = (newTitle) => {
         setTitle(newTitle);
     };
@@ -87,7 +90,6 @@ const SidebarAccordion = ({ open }) => {
                     key={index}
                     className=" text-white text-[14px] font-nunito-sans mb-2"
                 >
-             
                     <Link
                         href={item.url}
                         onClick={() => handleMenuClick(formatSlug(item.slug))}

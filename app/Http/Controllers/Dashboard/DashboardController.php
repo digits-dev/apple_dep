@@ -17,7 +17,7 @@ use Illuminate\Contracts\Session\Session;
 class DashboardController extends Controller
 {
 
-    public function GetIndex(): Response
+    public function getIndex(): Response
     {
         $data         = [];
         $sidebarMenus = CommonHelpers::sidebarMenu();
