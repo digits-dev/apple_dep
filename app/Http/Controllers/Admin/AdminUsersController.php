@@ -32,18 +32,14 @@ use Inertia\Response;
       
     
         public function getIndex(){
-            $query = User::query();
-
-            // $query->when(request('search'), function ($query, $search) {
-            //     $query->where('name', 'LIKE', "%$search%")
-            //         ->orWhere('email', "LIKE", "%$search%");
-            // });
+            $query = User::getData();
+            $query->when(request('search'), function ($query, $search) {
+                $query->where('users.name', 'LIKE', "%$search%")
+                    ->orWhere('users.email', "LIKE", "%$search%");
+            });
     
-        
-            $data_users = User::getData()->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-
+            $data_users = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
             $privileges = DB::table('adm_privileges')->select('*')->get();
-
             return Inertia::render('Users/Users', [
                 'users' => $data_users,
                 'options' => $privileges,
@@ -89,21 +85,14 @@ use Inertia\Response;
         }
 
         public function postEditSave(Request $request){
-            User::where('id',$request->user_id)->update([
-                'first_name' => $request->first_name,
-                'middle_name' => $request->middle_name ?? 'N/A',
-                'last_name' => $request->last_name,
-                'employee_id' => $request->employee_id,
-                'department_id' => $request->department,
-                'password'  => hash::make('qwerty'),
-                'hire_location_id' => $request->location,
-                'id_ad_privileges' => $request->privilege,
-                'company_id'       => $request->company,
-                'hire_date' => $request->hire_date,
-                'position' => $request->position,
-                'status' => $request->status
+            $update = User::where('id',$request->u_id)->update([
+                'name' => $request->name,
+                'password'  => hash::make($request->password),
+              
             ]);
-            return CommonHelpers::redirect(CommonHelpers::adminpath('users'), "Data updated!", "success");
+            if($update){
+                return json_encode(["message"=>"Update success!", "type"=>"success"]);
+            }
         }
 
         public function getSubmaster(){

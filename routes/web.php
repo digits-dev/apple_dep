@@ -31,9 +31,8 @@ Route::middleware(['auth'])->group(function () {
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
-
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
-
+    Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export'])->name('test.export');

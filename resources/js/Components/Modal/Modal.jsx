@@ -6,7 +6,7 @@ const Modal = ({ show, onClose, children }) => {
     }
 
     return (
-        <div className="modal-backdrop">
+        <div className="modal-backdrop z-[100]">
             <div className="modal">
                 <button className="float-right ml-2 bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-2 py-1" onClick={onClose}>X</button>
                 {children}

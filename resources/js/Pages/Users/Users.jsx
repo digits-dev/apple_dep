@@ -19,20 +19,19 @@ import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import RowActions from "../../Components/Table/RowActions";
 import RowAction from "../../Components/Table/RowAction";
+import TableButton from "../../Components/Table/Buttons/TableButton";
+import EditIcon from "../../Components/Table/Icons/EditIcon";
 
 const Users = ({users, options, queryParams}) => {
     queryParams = queryParams || {};
-
-    const [loading, setLoading] = useState(false);
-
-    console.log(users);
-
 	router.on("start", () => setLoading(true));
 	router.on("finish", () => setLoading(false));
-    // const { base_url } = usePage().props;
+    const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState(options);
     const [successMessage, setSuccessMessage] = useState('');
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editUser, setEditUser] = useState(null);
 
     // CREATE USERS
     const handleCreate = () => {
@@ -42,6 +41,7 @@ const Users = ({users, options, queryParams}) => {
         setShowCreateModal(false);
     };
 
+    //CREATE
     const CreateUserForm = ({ onClose }) => {
         const [errorMessage, setErrorMessage] = useState('');
         const [errors, setErrors] = useState({});
@@ -64,7 +64,7 @@ const Users = ({users, options, queryParams}) => {
             }));
             setClearErrors(key);
             setErrors(prevErrors => ({ ...prevErrors, [key]: '' }));
-          }
+        }
 
         const validate = () => {
             const newErrors = {};
@@ -109,6 +109,7 @@ const Users = ({users, options, queryParams}) => {
     
         return (
             <form onSubmit={handleSubmit}>
+                <span className="font-nunito-sans font-semibold text-center">Create User</span>
                 {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                 <div className="flex flex-col mb-1 w-full">
                     <label className="font-nunito-sans font-semibold">Name</label>
@@ -145,12 +146,99 @@ const Users = ({users, options, queryParams}) => {
         );
     };
 
+    //EDIT
+    const handleEdit = (user) => {
+        setEditUser(user);
+        setShowEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+    };
+
+    const EditUserForm = ({ user, onClose }) => {
+
+        const [editForms, setEditForms] = useState({
+            u_id: user?.u_id,
+            name: user?.user_name || '',
+            email: user?.email || '',
+            privilege_id: user?.id_adm_privileges || '',
+            password: ''
+        });
+
+        function handleChange(e) {
+            const key = e.target.name;
+            const value = e.target.value
+            setEditForms(editForms => ({
+                ...editForms,
+                [key]: value,
+            }));
+        }
+    
+        const handleSubmit = async (e) =>{
+            e.preventDefault();
+            setLoading(true);
+            try {
+                const response = await axios.post("/postEditSave", editForms, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },  
+                });
+                if(response.data.type == 'success'){
+                    setSuccessMessage(response.data.message); 
+                    setShowCreateModal(false);
+                }else{
+                    setErrorMessage(response.data.message); 
+                }
+                
+            } catch (error) {
+                if (error.response && error.response.status === 422) {
+                    setErrors(error.response.data.errors);
+                } else {
+                    setErrors({ general: 'An error occurred. Please try again.' });
+                }
+            } finally {
+                setLoading(false);
+            }
+                
+        };
+    
+        return (
+            <form onSubmit={handleSubmit}>
+                 <input type="hidden" value={editForms.u_id} onChange={e => setData('u_id', e.target.value)} />
+                <div>
+                    <label className="font-nunito-sans font-semibold">Name</label>
+                    <input type="text"
+                           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                           name="name" 
+                           value={editForms.name} 
+                           onChange={handleChange} />
+                </div>
+                <div>
+                    <label className="font-nunito-sans font-semibold">Email</label>
+                    <input type="email" 
+                           name="email" 
+                           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                           value={editForms.email} 
+                           onChange={handleChange} readOnly/>
+                </div>
+                <div>
+                    <label className="font-nunito-sans font-semibold">Password</label>
+                    <input type="password" 
+                           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                           name="password" 
+                           value={editForms.password} 
+                           onChange={handleChange} />
+                </div>
+                <button type="submit">Update</button>
+            </form>
+        );
+    };
+
     return (
         <AppContent>
             <div>
                 {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
-                <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2 mr-1" onClick={handleCreate}>Create User</button>
-                <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2" onClick={handleCreate}>Bulk Actions</button>
                 
                 <hr/>
 
@@ -158,12 +246,11 @@ const Users = ({users, options, queryParams}) => {
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
                     <Import  />
-                    <Export  path="/test-export"/>
                     <Filters />
               
-                    {/* <TableButton>Add Customer</TableButton>
-                <TableButton>Add Action</TableButton>
-                <TableButton>Add Status</TableButton> */}
+                    <TableButton onClick={handleCreate}>Create User</TableButton>
+                    <TableButton onClick={handleCreate}>Bulk Actions</TableButton>
+              
                 </TopPanel>
 
 			    <ContentPanel>
@@ -206,7 +293,7 @@ const Users = ({users, options, queryParams}) => {
 					<tbody>
 
                         {users && users.data.map((user, index) => (
-                            <Row key={user.name + user.id}>
+                            <Row key={user.user_name + user.u_id}>
                                 <RowData 
                                     isLoading={loading}
                                 >
@@ -236,11 +323,7 @@ const Users = ({users, options, queryParams}) => {
                                         action="view"
                                         size="md"
                                     />
-                                    <RowAction
-                                        action="edit"
-                                        size="md"
-                                    />
-                      
+                                   <button onClick={() => handleEdit(user)}> <EditIcon classes="h-5 w-5" /></button>
                                     </RowActions>
                                 </RowData>
                             </Row>
@@ -249,15 +332,15 @@ const Users = ({users, options, queryParams}) => {
                     </tbody>
                 </TableContainer>
 
-
 				<Pagination paginate={users} />
 			    </ContentPanel>
-            
-
-
 
                 <Modal show={showCreateModal} onClose={handleCloseCreateModal}>
                     <CreateUserForm onClose={handleCloseCreateModal} />
+                </Modal>
+
+                <Modal show={showEditModal} onClose={handleCloseEditModal}>
+                    <EditUserForm user={editUser} onClose={handleCloseEditModal} />
                 </Modal>
             </div>
         </AppContent>
