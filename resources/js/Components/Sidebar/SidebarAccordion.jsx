@@ -32,52 +32,6 @@ const SidebarAccordion = ({ open }) => {
         }
     };
 
-    const capitalizeWords = (str) => {
-        const smallWords = [
-            "a",
-            "an",
-            "and",
-            "as",
-            "at",
-            "but",
-            "by",
-            "for",
-            "if",
-            "in",
-            "nor",
-            "of",
-            "on",
-            "or",
-            "so",
-            "the",
-            "to",
-            "up",
-            "yet",
-        ];
-
-        return str
-            .split("_")
-            .map((word, index) => {
-                if (index === 0 && word === word.toUpperCase()) {
-                    return word;
-                } else if (!smallWords.includes(word.toLowerCase())) {
-                    return (
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    );
-                } else {
-                    return word.toLowerCase();
-                }
-            })
-            .join(" ");
-    };
-
-    const formatSlug = (pathname) => {
-        const segments = pathname.split("/");
-        const lastSegment = segments.pop() || segments.pop();
-        return capitalizeWords(lastSegment);
-    };
-
     const formatActiveSlug = (pathname) => {
         const segments = pathname.split("/");
         const lastSegment = segments.pop() || segments.pop();
@@ -182,9 +136,7 @@ const SidebarAccordion = ({ open }) => {
                     ) : (
                         <Link
                             href={item.url}
-                            onClick={() =>
-                                handleMenuClick(formatSlug(item.slug))
-                            }
+                            onClick={() => handleMenuClick(item.name)}
                         >
                             <div
                                 className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] ${
@@ -242,9 +194,7 @@ const SidebarAccordion = ({ open }) => {
                                     <Link
                                         href={child.url}
                                         onClick={() =>
-                                            handleMenuClick(
-                                                formatSlug(child.slug)
-                                            )
+                                            handleMenuClick(child.name)
                                         }
                                         key={childIndex}
                                     >
