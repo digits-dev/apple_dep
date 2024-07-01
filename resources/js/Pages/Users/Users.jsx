@@ -186,7 +186,7 @@ const Users = ({users, options, queryParams}) => {
                 });
                 if(response.data.type == 'success'){
                     setSuccessMessage(response.data.message); 
-                    setShowCreateModal(false);
+                    setShowEditModal(false);
                 }else{
                     setErrorMessage(response.data.message); 
                 }
@@ -235,7 +235,11 @@ const Users = ({users, options, queryParams}) => {
                            value={editForms.password} 
                            onChange={handleChange} />
                 </div>
-                <button type="submit">Update</button>
+                <button type="submit" 
+                        className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"
+                        disabled={loading}>
+                            {loading ? 'Updating...' : 'Update'}
+                        </button>
             </form>
         );
     };
