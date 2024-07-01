@@ -104,12 +104,12 @@ const SidebarAccordion = ({ open }) => {
     };
 
     return (
-        <div>
-            <ul
-                className={`mt-20 max-h-[500px] overflow-x-hidden ${
-                    open ? "overflow-y-auto" : "overflow-y-hidden"
-                }`}
-            >
+        <div
+            className={`mt-20 max-h-[500px] overflow-x-hidden ${
+                open ? "overflow-y-auto" : "overflow-y-hidden"
+            }`}
+        >
+            <ul>
                 <Link
                     href="dashboard"
                     onClick={() => {

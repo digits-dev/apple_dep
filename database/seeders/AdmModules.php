@@ -146,7 +146,7 @@ class AdmModules extends Seeder
                 'path' => 'dashboard',
                 'table_name' => 'dashboard',
                 'controller' => 'Dashboard\DashboardController',
-                'is_protected' => 1,
+                'is_protected' => 0,
                 'is_active' => 1,
             ],
             [
@@ -157,7 +157,78 @@ class AdmModules extends Seeder
                 'path' => 'list_of_orders',
                 'table_name' => 'list_of_orders',
                 'controller' => 'ListOfOrders\ListOfOrdersController',
-                'is_protected' => 1,
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'DEP Devices',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'dep_devices',
+                'table_name' => 'dep_devices',
+                'controller' => 'DepDevices\DepDevicesController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Enrollment List',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'enrollment_list',
+                'table_name' => 'enrollment_list',
+                'controller' => 'EnrollmentList\EnrollmentListController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Customer',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'customer',
+                'table_name' => 'customer',
+                'controller' => 'Customer\CustomerController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Actions',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'action',
+                'table_name' => 'action',
+                'controller' => 'Action\ActionController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'DEP Status',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'dep_status',
+                'table_name' => 'dep_status',
+                'controller' => 'DepStatus\DepStatusController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Enrollment Status',
+                'icon' => 'images/navigation/dashboard-icon.png',
+                'path' => 'enrollment_status',
+                'table_name' => 'enrollment_status',
+                'controller' => 'EnrollmentStatus\EnrollmentStatusController',
+                'is_protected' => 0,
                 'is_active' => 1,
             ]
         ];

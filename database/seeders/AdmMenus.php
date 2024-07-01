@@ -56,7 +56,7 @@ class AdmMenus extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
-                'sorting'           => 1
+                'sorting'           => 4
             ]
         );
 
@@ -71,11 +71,126 @@ class AdmMenus extends Seeder
                 'slug'              => 'list_of_orders',
                 'color'             => NULL,
                 'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'DEP Devices',
+            ],
+            [
+                'name'              => 'DEP Devices',
+                'type'              => 'Route',
+                'path'              => 'DepDevices\DepDevicesControllerGetIndex',
+                'slug'              => 'dep_devices',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'Enrollment List',
+            ],
+            [
+                'name'              => 'Enrollment List',
+                'type'              => 'Route',
+                'path'              => 'EnrollmentList\EnrollmentListControllerGetIndex',
+                'slug'              => 'enrollment_list',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'Customer',
+            ],
+            [
+                'name'              => 'Customer',
+                'type'              => 'Route',
+                'path'              => 'Customer\CustomerControllerGetIndex',
+                'slug'              => 'customer',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
                 'parent_id'         => 2,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
                 'sorting'           => 1
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'Actions',
+            ],
+            [
+                'name'              => 'Actions',
+                'type'              => 'Route',
+                'path'              => 'Action\ActionControllerGetIndex',
+                'slug'              => 'actions',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'DEP Status',
+            ],
+            [
+                'name'              => 'DEP Status',
+                'type'              => 'Route',
+                'path'              => 'DepStatus\DepStatusControllerGetIndex',
+                'slug'              => 'dep_status',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'Enrollment Status',
+            ],
+            [
+                'name'              => 'Enrollment Status',
+                'type'              => 'Route',
+                'path'              => 'EnrollmentStatus\EnrollmentStatusControllerGetIndex',
+                'slug'              => 'enrollment_status',
+                'color'             => NULL,
+                'icon'              => 'images/navigation/dashboard-icon.png',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 4
             ]
         );
     }
