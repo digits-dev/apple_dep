@@ -1,11 +1,11 @@
 import AppContent from "../../Layouts/layout/AppContent";
 
-const ListOfOrders = () => {
+const DepDevices = () => {
     return (
         <AppContent>
-            <span>This is List of orders</span>
+            <span>This is DEP Devices</span>
         </AppContent>
     );
 };
 
-export default ListOfOrders;
+export default DepDevices;

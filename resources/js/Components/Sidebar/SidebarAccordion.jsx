@@ -32,52 +32,6 @@ const SidebarAccordion = ({ open }) => {
         }
     };
 
-    const capitalizeWords = (str) => {
-        const smallWords = [
-            "a",
-            "an",
-            "and",
-            "as",
-            "at",
-            "but",
-            "by",
-            "for",
-            "if",
-            "in",
-            "nor",
-            "of",
-            "on",
-            "or",
-            "so",
-            "the",
-            "to",
-            "up",
-            "yet",
-        ];
-
-        return str
-            .split("_")
-            .map((word, index) => {
-                if (index === 0 && word === word.toUpperCase()) {
-                    return word;
-                } else if (!smallWords.includes(word.toLowerCase())) {
-                    return (
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    );
-                } else {
-                    return word.toLowerCase();
-                }
-            })
-            .join(" ");
-    };
-
-    const formatSlug = (pathname) => {
-        const segments = pathname.split("/");
-        const lastSegment = segments.pop() || segments.pop();
-        return capitalizeWords(lastSegment);
-    };
-
     const formatActiveSlug = (pathname) => {
         const segments = pathname.split("/");
         const lastSegment = segments.pop() || segments.pop();
@@ -104,12 +58,12 @@ const SidebarAccordion = ({ open }) => {
     };
 
     return (
-        <div>
-            <ul
-                className={`mt-20 max-h-[500px] overflow-x-hidden ${
-                    open ? "overflow-y-auto" : "overflow-y-hidden"
-                }`}
-            >
+        <div
+            className={`mt-20 max-h-[500px] overflow-x-hidden ${
+                open ? "overflow-y-auto" : "overflow-y-hidden"
+            }`}
+        >
+            <ul>
                 <Link
                     href="dashboard"
                     onClick={() => {
@@ -149,10 +103,9 @@ const SidebarAccordion = ({ open }) => {
                             className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px]`}
                             onClick={() => handleToggle(index)}
                         >
-                            <img
-                                src="/images/navigation/dashboard-icon.png"
-                                className="w-[24px] h-[24px]"
-                            />
+                            <i
+                                className={`w-[24px] h-[24px] ${item.icon} text-[24px]`}
+                            ></i>
                             <span
                                 className={`pl-4 flex-1 font-semibold  ${
                                     !open && "hidden"
@@ -182,9 +135,7 @@ const SidebarAccordion = ({ open }) => {
                     ) : (
                         <Link
                             href={item.url}
-                            onClick={() =>
-                                handleMenuClick(formatSlug(item.slug))
-                            }
+                            onClick={() => handleMenuClick(item.name)}
                         >
                             <div
                                 className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] ${
@@ -196,10 +147,9 @@ const SidebarAccordion = ({ open }) => {
                                 }`}
                                 onClick={() => handleToggle(index)}
                             >
-                                <img
-                                    src="/images/navigation/dashboard-icon.png"
-                                    className="w-[24px] h-[24px]"
-                                />
+                                <i
+                                    className={`w-[24px] h-[24px] ${item.icon} text-[24px] text-center`}
+                                ></i>
                                 <span
                                     className={`pl-4 flex-1 font-semibold single-lines ${
                                         !open && "hidden"
@@ -242,9 +192,7 @@ const SidebarAccordion = ({ open }) => {
                                     <Link
                                         href={child.url}
                                         onClick={() =>
-                                            handleMenuClick(
-                                                formatSlug(child.slug)
-                                            )
+                                            handleMenuClick(child.name)
                                         }
                                         key={childIndex}
                                     >
@@ -278,12 +226,13 @@ const SidebarAccordion = ({ open }) => {
                                                         : ""
                                                 }`}
                                             >
-                                                <img
-                                                    src="/images/navigation/dashboard-icon.png"
+                                                <i
                                                     className={`w-[18px] h-[18px] ${
+                                                        child.icon
+                                                    } text-[18px] text-center  ${
                                                         !open && "hidden"
-                                                    } `}
-                                                />
+                                                    }`}
+                                                ></i>
                                                 <p
                                                     className={`text-[12px] scale-0`}
                                                 >
