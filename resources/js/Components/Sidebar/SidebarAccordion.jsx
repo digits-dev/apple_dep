@@ -10,6 +10,21 @@ const SidebarAccordion = ({ open }) => {
     const { setTitle } = useContext(NavbarContext);
     const { auth } = usePage().props;
 
+    const SuperAdminMenus = [
+        {
+            title: "Privileges",
+            url: "privileges",
+            image: "/images/navigation/privileges-icon.png",
+        },
+        {
+            title: "User Management",
+            url: "users",
+            image: "/images/navigation/user-management-icon.png",
+        },
+    ];
+
+    console.log(SuperAdminMenus);
+
     const handleToggle = (index) => {
         if (activeIndex === index) {
             setIsOpen(!isOpen);
@@ -313,59 +328,37 @@ const SidebarAccordion = ({ open }) => {
                     >
                         {open ? <div>Super Admin</div> : <div>S-Ad</div>}
                     </div>
+                    {/* MENUS */}
                     <ul className="mt-5">
-                        <Link
-                            href="privileges"
-                            onClick={() => handleMenuClick("Privileges")}
-                        >
-                            <li
-                                className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
-                                    formatActiveSlug(
-                                        window.location.pathname
-                                    ) === "privileges"
-                                        ? "active"
-                                        : ""
-                                }`}
+                        {SuperAdminMenus.map((menu, index) => (
+                            <Link
+                                href={menu.url}
+                                onClick={() => handleMenuClick(menu.title)}
+                                key={index}
                             >
-                                <img
-                                    src="/images/navigation/dashboard-icon.png"
-                                    className="w-[24px] h-[24px]"
-                                />
-                                <p
-                                    className={`font-nunito-sans font-semibold single-line ${
-                                        !open && "hidden"
-                                    } `}
+                                <li
+                                    className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                                        formatActiveSlug(
+                                            window.location.pathname
+                                        ) === menu.url
+                                            ? "active"
+                                            : ""
+                                    }`}
                                 >
-                                    Privileges
-                                </p>
-                            </li>
-                        </Link>
-                        <Link
-                            href="users"
-                            onClick={() => handleMenuClick("Users")}
-                        >
-                            <li
-                                className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
-                                    formatActiveSlug(
-                                        window.location.pathname
-                                    ) === "users"
-                                        ? "active"
-                                        : ""
-                                }`}
-                            >
-                                <img
-                                    src="/images/navigation/dashboard-icon.png"
-                                    className="w-[24px] h-[24px]"
-                                />
-                                <p
-                                    className={`font-nunito-sans font-semibold single-line ${
-                                        !open && "hidden"
-                                    } `}
-                                >
-                                    User Management
-                                </p>
-                            </li>
-                        </Link>
+                                    <img
+                                        src={menu.image}
+                                        className="w-[24px] h-[24px]"
+                                    />
+                                    <p
+                                        className={`font-nunito-sans font-semibold single-line ${
+                                            !open && "hidden"
+                                        } `}
+                                    >
+                                        {menu.title}
+                                    </p>
+                                </li>
+                            </Link>
+                        ))}
                     </ul>
                 </div>
             ) : (
