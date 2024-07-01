@@ -14,7 +14,7 @@ const RowData = ({
 
   return (
     <td className={`px-6 py-3 bg-white  ${stickyClass} ${center && "text-center"}`}>
-      {isLoading ? <span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-500 ">&nbsp;&nbsp;</span> : children}
+      {isLoading ? <span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-200 ">&nbsp;&nbsp;</span> : children}
     </td>
   )
 }
