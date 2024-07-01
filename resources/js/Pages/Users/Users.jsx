@@ -10,6 +10,8 @@ const Users = ({users, options}) => {
     console.log(window.location.hostname);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState(options);
+    const [successMessage, setSuccessMessage] = useState('');
+
     // CREATE USERS
     const handleCreate = () => {
         setShowCreateModal(true);
@@ -19,7 +21,7 @@ const Users = ({users, options}) => {
     };
 
     const CreateUserForm = ({ onClose }) => {
-        const [successMessage, setSuccessMessage] = useState('');
+        const [errorMessage, setErrorMessage] = useState('');
         const [errors, setErrors] = useState({});
         const [serverErrors, setServerErrors] = useState({});
         const [clearErrors, setClearErrors] = useState({});
@@ -59,12 +61,18 @@ const Users = ({users, options}) => {
                 } else {
                     setLoading(true);
                     try {
-                        const response = await axios.post("/postAddSave", {
-                            forms
+                        const response = await axios.post("/postAddSave", forms, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },  
                         });
-            
-                        setSuccessMessage(response.data.message); 
-                  
+                        if(response.data.type == 'success'){
+                            setSuccessMessage(response.data.message); 
+                            setShowCreateModal(false);
+                        }else{
+                            setErrorMessage(response.data.message); 
+                        }
+                       
                     } catch (error) {
                         if (error.response && error.response.status === 422) {
                             setErrors(error.response.data.errors);
@@ -79,7 +87,7 @@ const Users = ({users, options}) => {
     
         return (
             <form onSubmit={handleSubmit}>
-                {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
+                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                 <div className="flex flex-col mb-1 w-full">
                     <label className="font-nunito-sans font-semibold">Name</label>
                     <input type="text" name="name" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
@@ -119,7 +127,7 @@ const Users = ({users, options}) => {
     return (
         <AppContent>
             <div>
-             
+                {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
                 <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2 mr-1" onClick={handleCreate}>Create User</button>
                 <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2" onClick={handleCreate}>Bulk Actions</button>
                 

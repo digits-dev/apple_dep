@@ -44,7 +44,6 @@ use Inertia\Response;
         }
 
         public function postAddSave(Request $request){
-            dd($request->all(),$request->forms->email);
             $users = DB::table("users")->where("email", $request->email)->first();
             $request->validate([
                 'email' => 'required',
