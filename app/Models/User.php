@@ -50,8 +50,8 @@ class User extends Authenticatable
             'users.name as user_name',
                     'users.id as u_id',
                     'adm_privileges.*',
-                    'adm_privileges.name as privilege_name')
-                    ->get();
+                    'adm_privileges.name as privilege_name');
+                
     }
 
     public static function boot(){

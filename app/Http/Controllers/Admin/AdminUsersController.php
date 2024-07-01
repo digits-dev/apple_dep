@@ -17,17 +17,37 @@ use Inertia\Response;
 
         private $table_name;
         private $primary_key;
+        private $sortBy;
+        private $sortDir;
+        private $perPage;
+
         public function __construct() {
             $this->table_name  = 'users';
             $this->primary_key = 'id';
+            $this->sortBy = request()->get('sortBy', 'users.created_at');
+            $this->sortDir = request()->get('sortDir', 'desc');
+            $this->perPage = request()->get('perPage', 10);
         }
-
+        
+      
+    
         public function getIndex(){
-            $data_users = User::getData();
+            $query = User::query();
+
+            // $query->when(request('search'), function ($query, $search) {
+            //     $query->where('name', 'LIKE', "%$search%")
+            //         ->orWhere('email', "LIKE", "%$search%");
+            // });
+    
+        
+            $data_users = User::getData()->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+
             $privileges = DB::table('adm_privileges')->select('*')->get();
+
             return Inertia::render('Users/Users', [
                 'users' => $data_users,
-                'options' => $privileges
+                'options' => $privileges,
+                'queryParams' => request()->query()
             ]);
         }
 

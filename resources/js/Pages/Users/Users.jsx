@@ -4,8 +4,31 @@ import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import axios from "axios";
+import RowData from "../../Components/Table/RowData";
+import TableContainer from "../../Components/Table/TableContainer";
+import TopPanel from "../../Components/Table/TopPanel";
+import TableSearch from "../../Components/Table/TableSearch";
+import PerPage from "../../Components/Table/PerPage";
+import Import from "../../Components/Table/Buttons/Import";
+import Export from "../../Components/Table/Buttons/Export";
+import Filters from "../../Components/Table/Buttons/Filters";
+import ContentPanel from "../../Components/Table/ContentPanel";
+import Thead from "../../Components/Table/Thead";
+import Row from "../../Components/Table/Row";
+import TableHeader from "../../Components/Table/TableHeader";
+import Pagination from "../../Components/Table/Pagination";
+import RowActions from "../../Components/Table/RowActions";
+import RowAction from "../../Components/Table/RowAction";
 
-const Users = ({users, options}) => {
+const Users = ({users, options, queryParams}) => {
+    queryParams = queryParams || {};
+
+    const [loading, setLoading] = useState(false);
+
+    console.log(users);
+
+	router.on("start", () => setLoading(true));
+	router.on("finish", () => setLoading(false));
     // const { base_url } = usePage().props;
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState(options);
@@ -130,24 +153,109 @@ const Users = ({users, options}) => {
                 <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2" onClick={handleCreate}>Bulk Actions</button>
                 
                 <hr/>
-                  <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Privilege Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((user, index) => (
-                            <tr key={user.name + user.id + index}>
-                                <td>{user.user_name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.name}</td>
-                            </tr>
+
+                <TopPanel>
+                    <TableSearch queryParams={queryParams} />
+                    <PerPage queryParams={queryParams} />
+                    <Import  />
+                    <Export  path="/test-export"/>
+                    <Filters />
+              
+                    {/* <TableButton>Add Customer</TableButton>
+                <TableButton>Add Action</TableButton>
+                <TableButton>Add Status</TableButton> */}
+                </TopPanel>
+
+			    <ContentPanel>
+				<TableContainer>
+					<Thead>
+						<Row>
+							<TableHeader
+								name="user_name"
+								queryParams={queryParams}
+                                width="sm"
+							>
+								Name
+							</TableHeader>
+
+							<TableHeader
+                                name="email"
+							>
+								Email
+							</TableHeader>
+
+                            <TableHeader
+								name="privilege_name"
+								queryParams={queryParams}
+								width="sm"
+							>
+								Privilege Name
+							</TableHeader>
+
+                            <TableHeader
+								sortable={false}
+								width="auto"
+								sticky="right"
+                                justify="center"
+                                >
+								Action
+							</TableHeader>
+						</Row>
+					</Thead>
+
+					<tbody>
+
+                        {users && users.data.map((user, index) => (
+                            <Row key={user.name + user.id}>
+                                <RowData 
+                                    isLoading={loading}
+                                >
+                                    {user.user_name}
+                                </RowData>
+
+                                <RowData 
+                                    isLoading={loading}
+                                >
+                                    {user.email}
+                                </RowData>
+
+                                <RowData 
+                                    isLoading={loading}
+                                >
+                                    {user.privilege_name}
+                                </RowData>
+
+                                <RowData 
+                                    isLoading={loading}
+                                    sticky="right"
+                                    width="sm"
+                                    center
+                                >
+                                   <RowActions>
+                                    <RowAction
+                                        action="view"
+                                        size="md"
+                                    />
+                                    <RowAction
+                                        action="edit"
+                                        size="md"
+                                    />
+                      
+                                    </RowActions>
+                                </RowData>
+                            </Row>
+                        
                         ))}
                     </tbody>
-                </table>
+                </TableContainer>
+
+
+				<Pagination paginate={users} />
+			    </ContentPanel>
+            
+
+
+
                 <Modal show={showCreateModal} onClose={handleCloseCreateModal}>
                     <CreateUserForm onClose={handleCloseCreateModal} />
                 </Modal>

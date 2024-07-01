@@ -1,8 +1,8 @@
 import React from 'react'
 
-const TableButton = ({children}) => {
+const TableButton = ({children, onClick}) => {
   return (
-    <button className='bg-primary text-white px-5 py-2 rounded-lg font-nunito-sans text-sm border border-secondary'>{children}</button>
+    <button onClick={onClick} className='bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 '>{children}</button>
   )
 }
 

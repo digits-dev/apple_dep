@@ -1,10 +1,17 @@
-import React from 'react'
-import TableButton from './TableButton'
+import React from 'react';
+import TableButton from './TableButton';
 
-const Export = () => {
+const Export = ({path}) => {
+
+
+
   return (
-    <TableButton>Export</TableButton>
+    <button className='bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border border-secondary'><a className='px-5 py-2.5' href={path}>Export</a></button>
   )
 }
 
 export default Export
+
+
+
+// w-full h-full inline-block px-5 py-2.5

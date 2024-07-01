@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { router } from "@inertiajs/react";
+import React, { useState } from "react";
+import { router, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -19,16 +19,21 @@ import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import RowActions from "../../Components/Table/RowActions";
 
-const TestTable = ({ users, queryParams }) => {
+const TestTable = ({ users, queryParams, test }) => {
 	queryParams = queryParams || {};
+
+	const [loading, setLoading] = useState(false);
+
+	router.on("start", () => setLoading(true));
+	router.on("finish", () => setLoading(false));
 
 	return (
 		<>
 			<TopPanel>
 				<TableSearch queryParams={queryParams} />
 				<PerPage queryParams={queryParams} />
-				<Import />
-				<Export />
+				<Import  />
+				<Export  path="/test-export"/>
 				<Filters />
 				{/* <TableButton>Add Customer</TableButton>
             <TableButton>Add Action</TableButton>
@@ -100,6 +105,7 @@ const TestTable = ({ users, queryParams }) => {
 								width="sm">
 								Status
 							</TableHeader>
+							
 							<TableHeader
 								sortable={false}
 								width="auto"
@@ -114,22 +120,30 @@ const TestTable = ({ users, queryParams }) => {
 							users.data.map((item) => (
 								<Row key={item.name + item.id}>
 									<RowData
+										isLoading={loading}
 										center
-										sticky="left">
+										sticky="left"
+									>
 										{item.id}
 									</RowData>
 
-									<RowData>{item.name}</RowData>
-									<RowData>{item.email}</RowData>
-									<RowData>{item.email}</RowData>
-									<RowData>{item.email}</RowData>
-									<RowData>{item.email}</RowData>
-									<RowData>{item.email}</RowData>
-									<RowData>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.name}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
+									<RowData isLoading={loading}>{item.email}</RowData>
 
-									<RowStatus status={item.status ? "success" : "error"}>{item.status ? "Success" : "Error"}</RowStatus>
+									<RowStatus
+										isLoading={loading}
+										status={item.status ? "success" : "error"}
+									>
+										{item.status ? "Success" : "Error"}
+									</RowStatus>
 
 									<RowData
+										isLoading={loading}
 										sticky="right"
 										center>
 										{/* <RowAction

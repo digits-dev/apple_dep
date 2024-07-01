@@ -31,7 +31,13 @@ Route::middleware(['auth'])->group(function () {
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
+
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
+
+
+    //EXPORTS
+    Route::get('/test-export', [TestController::class, 'export'])->name('test.export');
+
 });
 
 Route::group([
@@ -94,3 +100,4 @@ Route::group([
         }
     }
 })->middleware('auth');
+
