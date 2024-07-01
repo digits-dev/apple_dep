@@ -152,7 +152,7 @@ class AdmModules extends Seeder
             [
 
                 'created_at' => date('Y-m-d H:i:s'),
-                'name' => 'List Of Orders',
+                'name' => 'List of Orders',
                 'icon' => 'images/navigation/dashboard-icon.png',
                 'path' => 'list_of_orders',
                 'table_name' => 'list_of_orders',

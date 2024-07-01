@@ -62,10 +62,10 @@ class AdmMenus extends Seeder
 
         DB::table('adm_menuses')->updateOrInsert(
             [
-                'name'              => 'List Of Orders',
+                'name'              => 'List of Orders',
             ],
             [
-                'name'              => 'List Of Orders',
+                'name'              => 'List of Orders',
                 'type'              => 'Route',
                 'path'              => 'ListOfOrders\ListOfOrdersControllerGetIndex',
                 'slug'              => 'list_of_orders',
