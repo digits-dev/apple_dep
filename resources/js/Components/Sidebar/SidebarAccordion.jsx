@@ -23,8 +23,6 @@ const SidebarAccordion = ({ open }) => {
         },
     ];
 
-    console.log(SuperAdminMenus);
-
     const handleToggle = (index) => {
         if (activeIndex === index) {
             setIsOpen(!isOpen);
@@ -248,6 +246,7 @@ const SidebarAccordion = ({ open }) => {
                                                 formatSlug(child.slug)
                                             )
                                         }
+                                        key={childIndex}
                                     >
                                         <div
                                             className={` ml-3  transition-opacity duration-500 flex relative ${

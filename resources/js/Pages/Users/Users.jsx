@@ -7,7 +7,6 @@ import axios from "axios";
 
 const Users = ({users, options}) => {
     // const { base_url } = usePage().props;
-    console.log(window.location.hostname);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState(options);
     const [successMessage, setSuccessMessage] = useState('');
@@ -119,7 +118,6 @@ const Users = ({users, options}) => {
                         disabled={loading}>
                             {loading ? 'Submitting...' : 'Submit'}
                         </button>
-                {/* {successMessage && <div className="success-message">{successMessage}</div>} */}
             </form>
         );
     };
@@ -142,7 +140,7 @@ const Users = ({users, options}) => {
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
-                            <tr key={user.id}>
+                            <tr key={user.name + user.id + index}>
                                 <td>{user.user_name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.name}</td>
