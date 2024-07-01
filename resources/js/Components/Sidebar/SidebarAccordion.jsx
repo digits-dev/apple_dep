@@ -103,10 +103,9 @@ const SidebarAccordion = ({ open }) => {
                             className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px]`}
                             onClick={() => handleToggle(index)}
                         >
-                            <img
-                                src="/images/navigation/dashboard-icon.png"
-                                className="w-[24px] h-[24px]"
-                            />
+                            <i
+                                className={`w-[24px] h-[24px] ${item.icon} text-[24px]`}
+                            ></i>
                             <span
                                 className={`pl-4 flex-1 font-semibold  ${
                                     !open && "hidden"
@@ -148,10 +147,9 @@ const SidebarAccordion = ({ open }) => {
                                 }`}
                                 onClick={() => handleToggle(index)}
                             >
-                                <img
-                                    src="/images/navigation/dashboard-icon.png"
-                                    className="w-[24px] h-[24px]"
-                                />
+                                <i
+                                    className={`w-[24px] h-[24px] ${item.icon} text-[24px] text-center`}
+                                ></i>
                                 <span
                                     className={`pl-4 flex-1 font-semibold single-lines ${
                                         !open && "hidden"
@@ -228,12 +226,13 @@ const SidebarAccordion = ({ open }) => {
                                                         : ""
                                                 }`}
                                             >
-                                                <img
-                                                    src="/images/navigation/dashboard-icon.png"
+                                                <i
                                                     className={`w-[18px] h-[18px] ${
+                                                        child.icon
+                                                    } text-[18px] text-center  ${
                                                         !open && "hidden"
-                                                    } `}
-                                                />
+                                                    }`}
+                                                ></i>
                                                 <p
                                                     className={`text-[12px] scale-0`}
                                                 >
