@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+
     ];
 
     /**
@@ -51,5 +52,15 @@ class User extends Authenticatable
                     'adm_privileges.*',
                     'adm_privileges.name as privilege_name')
                     ->get();
+    }
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($model){
+            $model->email = request()->input('email');
+            $model->name = request()->input('name');
+            $model->id_adm_privileges = request()->input('privilege_id');
+            $model->password = 'qwerty';
+        });
     }
 }

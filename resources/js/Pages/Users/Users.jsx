@@ -3,7 +3,11 @@ import React, { useEffect, useState, useContext } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
+import axios from "axios";
+
 const Users = ({users, options}) => {
+    // const { base_url } = usePage().props;
+    console.log(window.location.hostname);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedOption, setSelectedOption] = useState(options);
     // CREATE USERS
@@ -15,52 +19,106 @@ const Users = ({users, options}) => {
     };
 
     const CreateUserForm = ({ onClose }) => {
-        const { data, setData, post, reset, errors } = useForm({
+        const [successMessage, setSuccessMessage] = useState('');
+        const [errors, setErrors] = useState({});
+        const [serverErrors, setServerErrors] = useState({});
+        const [clearErrors, setClearErrors] = useState({});
+        const [loading, setLoading] = useState(false);
+        const [forms, setforms] = useState({
             name: '',
             email: '',
             privilege_id: '',
             password: ''
-        });
+        })
+
+        function handleChange(e) {
+            const key = e.target.name;
+            const value = e.target.value
+            setforms(forms => ({
+                ...forms,
+                [key]: value,
+            }));
+            setClearErrors(key);
+            setErrors(prevErrors => ({ ...prevErrors, [key]: '' }));
+          }
+
+        const validate = () => {
+            const newErrors = {};
+            if (!forms.name) newErrors.name = 'Name is required';
+            if (!forms.email) newErrors.email = 'Email is required';
+            if (!forms.privilege_id) newErrors.privilege_id = 'Privilege is required';
+            if (!forms.password) newErrors.password = 'Password is required';
+            return newErrors;
+        };
     
-        const handleSubmit = (e) => {
+        const handleSubmit = async (e) => {
             e.preventDefault();
-            post('create-user', {
-                onSuccess: () => {
-                    reset();
-                    onClose();
+            const newErrors = validate();
+                if (Object.keys(newErrors).length > 0) {
+                  setErrors(newErrors);
+                } else {
+                    setLoading(true);
+                    try {
+                        const response = await axios.post("/postAddSave", {
+                            forms
+                        });
+            
+                        setSuccessMessage(response.data.message); 
+                  
+                    } catch (error) {
+                        if (error.response && error.response.status === 422) {
+                            setErrors(error.response.data.errors);
+                        } else {
+                            setErrors({ general: 'An error occurred. Please try again.' });
+                        }
+                    } finally {
+                        setLoading(false);
+                    }
                 }
-            });
         };
     
         return (
             <form onSubmit={handleSubmit}>
+                {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
                 <div className="flex flex-col mb-1 w-full">
                     <label className="font-nunito-sans font-semibold">Name</label>
-                    <input type="text" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={data.name} onChange={e => setData('name', e.target.value)} />
-                    {errors.name && <div>{errors.name}</div>}
+                    <input type="text" name="name" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                           value={forms.name} 
+                           onChange={handleChange} />
+                      {(errors.name || serverErrors.name) && <div className="font-nunito-sans font-bold text-red-600">{errors.name || serverErrors.name}</div>}
                 </div>
                 <div className="flex flex-col">
                     <label className="font-nunito-sans font-semibold">Email</label>
-                    <input type="email" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={data.email} onChange={e => setData('email', e.target.value)} />
-                    {errors.email && <div>{errors.email}</div>}
+                    <input type="email" name="email" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                           value={forms.email} 
+                           onChange={handleChange} />
+                     {(errors.email || serverErrors.email) && <div className="font-nunito-sans font-bold text-red-600">{errors.email || serverErrors.email}</div>}
                 </div>
                 <div className="flex flex-col">
                     <label className="font-nunito-sans font-semibold">Privileges</label>
-                    <DropdownSelect options={options} value={selectedOption} onChange={e => setData('privilege_id', e.target.value)} />
+                    <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options} value={forms.privilege_id} onChange={handleChange} />
+                    {(errors.privilege_id || serverErrors.privilege_id) && <div className="font-nunito-sans font-bold text-red-600">{errors.privilege_id || serverErrors.privilege_id}</div>}
                 </div>
                 <div className="flex flex-col">
                     <label className="font-nunito-sans font-semibold">Password</label>
-                    <input type="password" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={data.password} onChange={e => setData('password', e.target.value)} />
-                    {errors.password && <div>{errors.password}</div>}
+                    <input type="password" name="password" className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                           value={forms.password} 
+                           onChange={handleChange} />
+                    {(errors.password || serverErrors.password) && <div className="font-nunito-sans font-bold text-red-600">{errors.password || serverErrors.password}</div>}
                 </div>
-                <button className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70" type="submit">Create</button>
+                <button type="submit" 
+                        className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"
+                        disabled={loading}>
+                            {loading ? 'Submitting...' : 'Submit'}
+                        </button>
+                {/* {successMessage && <div className="success-message">{successMessage}</div>} */}
             </form>
         );
     };
 
     return (
         <AppContent>
-            <div className="md:bg-black sm:bg-yellow-500">
+            <div>
              
                 <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2 mr-1" onClick={handleCreate}>Create User</button>
                 <button className="bg-black hover:bg-black-600 text-white text-sm font-bold rounded px-3 py-2" onClick={handleCreate}>Bulk Actions</button>

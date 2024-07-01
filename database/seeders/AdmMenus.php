@@ -29,7 +29,7 @@ class AdmMenus extends Seeder
             [
                 'name'              => 'Dashboard',
                 'type'              => 'Route',
-                'path'              => 'Dashboard\DashboardContentGetIndex',
+                'path'              => 'Dashboard\DashboardControllerGetIndex',
                 'slug'              => 'dashboard',
                 'color'             => NULL,
                 'icon'              => 'images/navigation/dashboard-icon.png',

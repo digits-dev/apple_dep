@@ -44,41 +44,19 @@ use Inertia\Response;
         }
 
         public function postAddSave(Request $request){
+            dd($request->all(),$request->forms->email);
             $users = DB::table("users")->where("email", $request->email)->first();
-            dd($request->all());
             $request->validate([
                 'email' => 'required',
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'employee_id' => 'required',
-                'department' => 'required',
-                'hire_date' => 'required',
-                'position' => 'required',
-                'privilege' => 'required',
-                'company' => 'required',
-                'location' => 'required'
+                'name' => 'required',
+                'privilege_id' => 'required'
             ]);
-
+         
             if(!$users){
-                $data = [
-                    'email' => $request->email,
-                    'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name ?? 'N/A',
-                    'last_name' => $request->last_name,
-                    'employee_id' => $request->employee_id,
-                    'department_id' => $request->department,
-                    'password'  => hash::make('qwerty'),
-                    'hire_location_id' => $request->location,
-                    'id_ad_privileges' => $request->privilege,
-                    'company_id'       => $request->company,
-                    'hire_date' => $request->hire_date,
-                    'position' => $request->position,
-                ];
-            
-                User::create($data);
-                return CommonHelpers::redirect(CommonHelpers::adminpath('users'), "Date Saved!", "success");
+                User::create([$request]);
+                return json_encode(["message"=>"Date Saved!", "type"=>"success"]);
             }else{
-                return CommonHelpers::redirect(CommonHelpers::adminpath('users'), "Users Exist!", "danger");
+                return json_encode(["message"=>"Users Exist!", "type"=>"danger"]);
             }
         }
 
