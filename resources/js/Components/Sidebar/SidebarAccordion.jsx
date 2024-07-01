@@ -333,7 +333,10 @@ const SidebarAccordion = ({ open }) => {
                         {SuperAdminMenus.map((menu, index) => (
                             <Link
                                 href={menu.url}
-                                onClick={() => handleMenuClick(menu.title)}
+                                onClick={() => {
+                                    handleMenuClick(menu.title);
+                                    setIsOpen(false);
+                                }}
                                 key={index}
                             >
                                 <li
