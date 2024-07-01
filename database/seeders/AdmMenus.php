@@ -144,7 +144,7 @@ class AdmMenus extends Seeder
                 'name'              => 'Actions',
                 'type'              => 'Route',
                 'path'              => 'Action\ActionControllerGetIndex',
-                'slug'              => 'actions',
+                'slug'              => 'action',
                 'color'             => NULL,
                 'icon'              => 'images/navigation/dashboard-icon.png',
                 'parent_id'         => 2,
