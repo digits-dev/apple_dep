@@ -26,7 +26,7 @@ const AppNavbar = () => {
                 onClick={handleToggle}
             />
             {showMenu && (
-                <div className="absolute right-6 top-[65px] bg-white py-3 rounded-[5px] pop-up-boxshadow">
+                <div className="absolute right-6 top-[65px] bg-white py-3 rounded-[5px] pop-up-boxshadow z-[100] ">
                     <div className="flex items-center gap-5 border-b-[1px] px-5 pb-2 min-w-72 max-w-[300px]">
                         <img
                             src="/images/navigation/user-icon.png"
