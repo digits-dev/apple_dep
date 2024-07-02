@@ -4,6 +4,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 
 createInertiaApp({
+    title: title => `Apple DEP | ${title ? `${title}` : 'System'}`,
     resolve: (name) => {
         const pages = import.meta.glob("./Pages/**/*.jsx", { eager: true });
         let page = pages[`./Pages/${name}.jsx`];

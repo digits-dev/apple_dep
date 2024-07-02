@@ -1,4 +1,4 @@
-import { Link, usePage, useForm, router  } from "@inertiajs/react";
+import { Link, usePage, useForm, router, Head  } from "@inertiajs/react";
 import React, { useEffect, useState, useContext } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
@@ -308,6 +308,8 @@ const Users = ({users, options, queryParams}) => {
     };
 
     return (
+        <>
+        <Head title="Users Management" />
         <AppContent>
             <div>
                 {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
@@ -444,6 +446,7 @@ const Users = ({users, options, queryParams}) => {
                 </Modal>
             </div>
         </AppContent>
+        </>
     );
 };
 
