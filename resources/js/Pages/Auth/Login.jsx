@@ -170,6 +170,11 @@ const LoginPage = () => {
                                         {errors.no_datas}
                                     </div>
                                 )}
+                                 {errors.acc_deact && (
+                                    <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
+                                        {errors.acc_deact}
+                                    </div>
+                                )}
                             </div>
                             <button
                                 type="submit"

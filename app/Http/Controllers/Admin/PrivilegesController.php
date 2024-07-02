@@ -16,12 +16,12 @@ class PrivilegesController extends Controller{
     private $table_name;
     private $primary_key;
     public function __construct() {
-        $this->table_name  =  'ad_privileges';
+        $this->table_name  =  'adm_privileges';
         $this->primary_key = 'id';
     }
 
     public function getIndex(){
-        $privileges = Privileges::getData();
+        $privileges = AdmPrivileges::getData();
         return Inertia::render('Privileges/Privileges', [
             'privileges' => $privileges
         ]);

@@ -42,6 +42,12 @@ class LoginController extends Controller
         }
         $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
 
+        if($users->status == 0 || $users->status == 'INACTIVE'){
+            $accDeact = "Account Doesn't Exist/Deactivated";
+            Session::flush();
+            return redirect('login')->withErrors(['acc_deact'=>$accDeact]);
+        }
+        
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             Session::put('admin_id', $users->id);
