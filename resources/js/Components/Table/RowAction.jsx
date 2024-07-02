@@ -4,7 +4,7 @@ import EyeIcon from "./Icons/EyeIcon";
 import AddIcon from "./Icons/AddIcon";
 import EditIcon from "./Icons/EditIcon";
 
-const RowAction = ({ action, size, href }) => {
+const RowAction = ({ action, size, href, onClick, type = 'link'}) => {
 	const iconSize = {
 		sm: "h-4 w-4",
 		md: "h-5 w-5",
@@ -18,11 +18,19 @@ const RowAction = ({ action, size, href }) => {
 	}[action];
 
 	return (
+	<>
+		{type == 'button' ? 	
+			<button onClick={onClick}>
+				{icon}
+			</button> 
+		: 
 		<Link
 			as="button"
-			href={href}>
+			href={href}
+		>
 			{icon}
-		</Link>
+		</Link>}
+	</>
 	);
 };
 

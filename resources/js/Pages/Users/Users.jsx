@@ -331,7 +331,15 @@ const Users = ({users, options, queryParams}) => {
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
                     <Import  />
-                    <Filters />
+                    {/* <Filters>
+                        <InputComponent name={'field1'} placeholder="placeholder of field1" value={field1} onChange={setField1}/>
+                        <InputComponent name={'field1'} placeholder="placeholder of field1" value={field1} onChange={setField1}/>
+                        <InputComponent name={'field2'} placeholder="placeholder of field2"/>
+                        <InputComponent name={'field3'} placeholder="placeholder of field3"/>
+                        <Select name="first_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                        <Select name="middle_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                        <Select name="last" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                    </Filters> */}
               
                     <TableButton onClick={handleCreate}>Create User</TableButton>
                 </TopPanel>
@@ -425,7 +433,12 @@ const Users = ({users, options, queryParams}) => {
                                         action="view"
                                         size="md"
                                     />
-                                   <button onClick={() => handleEdit(user)}> <EditIcon classes="h-5 w-5" /></button>
+                                    <RowAction
+                                        type="button"
+                                        action="edit"
+                                        size="md"
+                                        onClick={() => handleEdit(user)}
+                                    />
                                     </RowActions>
                                 </RowData>
                             </Row>
