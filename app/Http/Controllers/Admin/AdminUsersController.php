@@ -39,12 +39,23 @@ use Inertia\Response;
             });
     
             $data_users = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-            $privileges = DB::table('adm_privileges')->select('*')->get();
+            $submasters = self::getSubmaster();
             return Inertia::render('Users/Users', [
                 'users' => $data_users,
-                'options' => $privileges,
+                'options' => ['privileges'=>$submasters['privileges'], 'status'=>$submasters['status']],
                 'queryParams' => request()->query()
             ]);
+        }
+
+        public function postGetUsers(){
+            $query = User::getData();
+            $query->when(request('search'), function ($query, $search) {
+                $query->where('users.name', 'LIKE', "%$search%")
+                    ->orWhere('users.email', "LIKE", "%$search%");
+            });
+
+            $data_users = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+            return ['users'=>$data_users,'queryParams' => request()->query()];
         }
 
         public function getAddUser(){
@@ -66,7 +77,7 @@ use Inertia\Response;
                 'name' => 'required',
                 'privilege_id' => 'required'
             ]);
-         
+            
             if(!$users){
                 User::create([$request]);
                 return json_encode(["message"=>"Date Saved!", "type"=>"success"]);
@@ -88,6 +99,7 @@ use Inertia\Response;
             $update = User::where('id',$request->u_id)->update([
                 'name' => $request->name,
                 'password'  => hash::make($request->password),
+                'status'  => $request->status,
               
             ]);
             if($update){
@@ -97,10 +109,9 @@ use Inertia\Response;
 
         public function getSubmaster(){
             $data = [];
-            $data['departments'] = DB::table('departments')->select('*')->where('status','ACTIVE')->get();
-            $data['privileges'] = DB::table('ad_privileges')->select('*')->get();
-            $data['companies'] = DB::table('companies')->select('*')->where('status','ACTIVE')->get();
-            $data['locations'] = DB::table('locations')->select('*')->where('status','ACTIVE')->get();
+            $data['status'] = DB::table('statuses')->select('*')->get();
+            $data['privileges'] = DB::table('adm_privileges')->select('*')->get();
+    
             return $data;
         }
 
