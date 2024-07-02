@@ -22,6 +22,7 @@ import RowAction from "../../Components/Table/RowAction";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import EditIcon from "../../Components/Table/Icons/EditIcon";
 import Checkbox from "../../Components/Checkbox/Checkbox";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const Users = ({users, options, queryParams}) => {
     queryParams = queryParams || {};
@@ -29,15 +30,16 @@ const Users = ({users, options, queryParams}) => {
 	router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(options);
     const [successMessage, setSuccessMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [editUser, setEditUser] = useState(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(null);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isCheck, setIsCheck] = useState([]);
-
+    const [formMessage, setFormMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    
     //BULK ACTIONS
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -72,18 +74,32 @@ const Users = ({users, options, queryParams}) => {
         }
     };
   
-    const handleActionClick = (value) => {
-        setSelectedValue(value);
-        console.log(selectedValue);
+    const handleActionClick = async (value) => {
+        const bulk_action_type = value;
         const Ids = Array.from(document.querySelectorAll("input[name='users_id[]']:checked")).map(input => parseInt(input.id));
-        console.log(Ids)
+        console.log(Ids,bulk_action_type)
         if (Ids.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Nothing selected!',
-                confirmButtonColor: '#367fa9',
+            setFormMessage('Nothing selected!'); 
+            setMessageType('Error');
+        }
+        try {
+            const response = await axios.post("/deactivate-users", {Ids,bulk_action_type}, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },  
             });
-            return;
+            if(response.data.status == 'success'){
+                setSuccessMessage(response.data.message); 
+                router.reload({ only: ['users'] });
+                setIsCheck([]);
+                setIsCheckAll(false);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors);
+            } else {
+                setErrors({ general: 'An error occurred. Please try again.' });
+            }
         }
     };
 
@@ -95,9 +111,8 @@ const Users = ({users, options, queryParams}) => {
         setShowCreateModal(false);
     };
 
-    //CREATE
     const CreateUserForm = ({ onClose }) => {
-        const [errorMessage, setErrorMessage] = useState('');
+        
         const [errors, setErrors] = useState({});
         const [serverErrors, setServerErrors] = useState({});
         const [clearErrors, setClearErrors] = useState({});
@@ -143,13 +158,13 @@ const Users = ({users, options, queryParams}) => {
                             },  
                         });
                         if(response.data.type == 'success'){
-                            setSuccessMessage(response.data.message); 
+                            setFormMessage(response.data.message); 
+                            setMessageType(response.data.type);
                             setShowCreateModal(false);
                             router.reload({ only: ['users'] })
                         }else{
                             setErrorMessage(response.data.message); 
                         }
-                       
                     } catch (error) {
                         if (error.response && error.response.status === 422) {
                             setErrors(error.response.data.errors);
@@ -211,8 +226,7 @@ const Users = ({users, options, queryParams}) => {
         setShowEditModal(false);
     };
 
-    const EditUserForm = ({ user, onClose }) => {
-
+    const EditUserForm = ({ user }) => {
         const [editForms, setEditForms] = useState({
             u_id: user?.u_id,
             name: user?.user_name || '',
@@ -240,8 +254,9 @@ const Users = ({users, options, queryParams}) => {
                         'Content-Type': 'multipart/form-data',
                     },  
                 });
-                if(response.data.type == 'success'){
-                    setSuccessMessage(response.data.message); 
+                if(response.data.type === 'success'){
+                    setFormMessage(response.data.message); 
+                    setMessageType(response.data.type);
                     setShowEditModal(false);
                     router.reload({ only: ['users'] })
                 }else{
@@ -250,9 +265,9 @@ const Users = ({users, options, queryParams}) => {
                 
             } catch (error) {
                 if (error.response && error.response.status === 422) {
-                    setErrors(error.response.data.errors);
+                    //setErrors(error.response.data.errors);
                 } else {
-                    setErrors({ general: 'An error occurred. Please try again.' });
+                    //setErrors({ general: 'An error occurred. Please try again.' });
                 }
             } finally {
                 setLoading(false);
@@ -283,7 +298,6 @@ const Users = ({users, options, queryParams}) => {
                 <div>
                     <label className="font-nunito-sans font-semibold">Privileges</label>
                     <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options.privileges} value={editForms.privilege_id} onChange={handleChange} />
-                   
                 </div>
                 <div>
                     <label className="font-nunito-sans font-semibold">Password</label>
@@ -313,7 +327,7 @@ const Users = ({users, options, queryParams}) => {
         <AppContent>
             <div>
                 {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
-                
+                {formMessage && <div className={messageType == 'success' ? 'text-green-500 font-bold':'text-red-500 font-bold' }>{formMessage}</div>}
                 <hr/>
                 <ContentPanel>
                 <TopPanel>
@@ -332,109 +346,69 @@ const Users = ({users, options, queryParams}) => {
                     <PerPage queryParams={queryParams} />
                     <Import  />
                     <Filters />
-              
                     <TableButton onClick={handleCreate}>Create User</TableButton>
                 </TopPanel>
 
 				<TableContainer>
 					<Thead>
 						<Row>
-                            <TableHeader
-								name="users_id"
-                                width="sm"
-							>
-							    <Checkbox type="checkbox"
-                                        name="selectAll"
-                                        id="selectAll"
-                                        handleClick={handleSelectAll}
-                                        isChecked={isCheckAll}
-                                />
+                            <TableHeader name="users_id" width="sm">
+							    <Checkbox type="checkbox" name="selectAll" id="selectAll" handleClick={handleSelectAll} isChecked={isCheckAll}/>
 							</TableHeader>
-							<TableHeader
-								name="user_name"
-								queryParams={queryParams}
-                                width="sm"
-							>
+
+							<TableHeader name="user_name" queryParams={queryParams} width="sm">
 								Name
 							</TableHeader>
 
-							<TableHeader
-                                name="email"
-							>
+							<TableHeader name="email">
 								Email
 							</TableHeader>
 
-                            <TableHeader
-								name="privilege_name"
-								queryParams={queryParams}
-								width="sm"
-							>
+                            <TableHeader name="privilege_name" queryParams={queryParams} width="sm">
 								Privilege Name
 							</TableHeader>
+                            <TableHeader name="privilege_name" queryParams={queryParams} width="sm">
+								Status
+							</TableHeader>
 
-                            <TableHeader
-								sortable={false}
-								width="auto"
-								sticky="right"
-                                justify="center"
-                                >
+                            <TableHeader sortable={false} width="auto" sticky="right" justify="center">
 								Action
 							</TableHeader>
 						</Row>
 					</Thead>
 
 					<tbody>
-
                         {users && users?.data.map((user, index) => (
                             <Row key={user.user_name + user.u_id + index}>
                                 <RowData>
-                                    <Checkbox 
-                                        type="checkbox"
-                                        name="users_id[]"
-                                        id={user.u_id}
-                                        handleClick={handleClick} 
-                                        isChecked={isCheck.includes(user.u_id)}
-                                    />
+                                    <Checkbox type="checkbox" name="users_id[]" id={user.u_id} handleClick={handleClick} isChecked={isCheck.includes(user.u_id)}/>
                                 </RowData>
-                                <RowData 
-                                    isLoading={loading}
-                                >
+                                <RowData isLoading={loading}>
                                     {user.user_name}
                                 </RowData>
-
-                                <RowData 
-                                    isLoading={loading}
-                                >
+                                <RowData isLoading={loading}>
                                     {user.email}
                                 </RowData>
-
-                                <RowData 
-                                    isLoading={loading}
-                                >
+                                <RowData isLoading={loading}>
                                     {user.privilege_name}
                                 </RowData>
-
-                                <RowData 
-                                    isLoading={loading}
-                                    sticky="right"
-                                    width="sm"
-                                    center
-                                >
+                                <RowStatus isLoading={loading} status={user.status ? "success" : "error"}>
+									{user.status ? "Active" : "Inactive"}
+								</RowStatus>
+                                <RowData isLoading={loading} sticky="right" width="sm" center>
                                    <RowActions>
-                                    <RowAction
-                                        action="view"
-                                        size="md"
-                                    />
-                                   <button onClick={() => handleEdit(user)}> <EditIcon classes="h-5 w-5" /></button>
+                                    <RowAction action="view" size="md"/>
+                                        <button onClick={() => handleEdit(user)}> <EditIcon classes="h-5 w-5" /></button>
                                     </RowActions>
                                 </RowData>
                             </Row>
-                        
                         ))}
                     </tbody>
                 </TableContainer>
-
-				<Pagination paginate={users} />
+                <div onClick={()=>{setIsCheckAll(false),setIsCheck([]);}}>
+                    <Pagination  paginate={users} />
+                </div>
+				
 			    </ContentPanel>
 
                 <Modal show={showCreateModal} onClose={handleCloseCreateModal}>

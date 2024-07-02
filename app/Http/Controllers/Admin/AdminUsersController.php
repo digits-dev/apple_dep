@@ -80,7 +80,7 @@ use Inertia\Response;
             
             if(!$users){
                 User::create([$request]);
-                return json_encode(["message"=>"Date Saved!", "type"=>"success"]);
+                return json_encode(["message"=>"Data Saved!", "type"=>"success"]);
             }else{
                 return json_encode(["message"=>"Users Exist!", "type"=>"danger"]);
             }
@@ -147,17 +147,18 @@ use Inertia\Response;
         }
 
         public function setStatus(Request $request){
-            if($request->bulk_action_type == 0){
-                foreach($request->Ids as $set_ids){
-                    User::where('id',$set_ids)->update(['status'=> 0]);
-                }
-            }else{
+   
+            if($request->bulk_action_type == 1){
                 foreach($request->Ids as $set_ids){
                     User::where('id',$set_ids)->update(['status'=> 1]);
                 }
+            }else{
+                foreach($request->Ids as $set_ids){
+                    User::where('id',$set_ids)->update(['status'=> 0]);
+                }
             }
           
-           $data = ['msg'=>'Data updated!', 'status'=>'success'];
+           $data = ['message'=>'Data updated!', 'status'=>'success'];
            return json_encode($data);
         }
     }
