@@ -21,6 +21,7 @@ import RowActions from "../../Components/Table/RowActions";
 import RowAction from "../../Components/Table/RowAction";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import EditIcon from "../../Components/Table/Icons/EditIcon";
+import Checkbox from "../../Components/Checkbox/Checkbox";
 
 const Users = ({users, options, queryParams}) => {
     queryParams = queryParams || {};
@@ -32,6 +33,59 @@ const Users = ({users, options, queryParams}) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [editUser, setEditUser] = useState(null);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [selectedValue, setSelectedValue] = useState(null);
+    const [isCheckAll, setIsCheckAll] = useState(false);
+    const [isCheck, setIsCheck] = useState([]);
+
+    //BULK ACTIONS
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.dropbtn')) {
+                setDropdownVisible(false);
+            }
+        };
+
+        window.addEventListener('click', handleClickOutside);
+        return () => {
+            window.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
+    const handleDropdownToggle = () => {
+        setDropdownVisible(!dropdownVisible);
+    };
+
+    const handleSelectAll = () =>{
+        setIsCheckAll(!isCheckAll);
+        setIsCheck(users.data.map(item => item.u_id));
+        if (isCheckAll) {
+            setIsCheck([]);
+        }
+    }
+
+    const handleClick = e => {
+        const { id, checked } = e.target;
+        setIsCheck([...isCheck, parseInt(id)]);
+        if (!checked) {
+          setIsCheck(isCheck.filter(item => item !== parseInt(id)));
+        }
+    };
+  
+    const handleActionClick = (value) => {
+        setSelectedValue(value);
+        console.log(selectedValue);
+        const Ids = Array.from(document.querySelectorAll("input[name='users_id[]']:checked")).map(input => parseInt(input.id));
+        console.log(Ids)
+        if (Ids.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Nothing selected!',
+                confirmButtonColor: '#367fa9',
+            });
+            return;
+        }
+    };
 
     // CREATE USERS
     const handleCreate = () => {
@@ -91,6 +145,7 @@ const Users = ({users, options, queryParams}) => {
                         if(response.data.type == 'success'){
                             setSuccessMessage(response.data.message); 
                             setShowCreateModal(false);
+                            router.reload({ only: ['users'] })
                         }else{
                             setErrorMessage(response.data.message); 
                         }
@@ -127,7 +182,7 @@ const Users = ({users, options, queryParams}) => {
                 </div>
                 <div className="flex flex-col">
                     <label className="font-nunito-sans font-semibold">Privileges</label>
-                    <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options} value={forms.privilege_id} onChange={handleChange} />
+                    <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options.privileges} value={forms.privilege_id} onChange={handleChange} />
                     {(errors.privilege_id || serverErrors.privilege_id) && <div className="font-nunito-sans font-bold text-red-600">{errors.privilege_id || serverErrors.privilege_id}</div>}
                 </div>
                 <div className="flex flex-col">
@@ -163,7 +218,8 @@ const Users = ({users, options, queryParams}) => {
             name: user?.user_name || '',
             email: user?.email || '',
             privilege_id: user?.id_adm_privileges || '',
-            password: ''
+            password: '',
+            status: user?.status
         });
 
         function handleChange(e) {
@@ -187,6 +243,7 @@ const Users = ({users, options, queryParams}) => {
                 if(response.data.type == 'success'){
                     setSuccessMessage(response.data.message); 
                     setShowEditModal(false);
+                    router.reload({ only: ['users'] })
                 }else{
                     setErrorMessage(response.data.message); 
                 }
@@ -206,6 +263,14 @@ const Users = ({users, options, queryParams}) => {
         return (
             <form onSubmit={handleSubmit}>
                  <input type="hidden" value={editForms.u_id} onChange={e => setData('u_id', e.target.value)} />
+                 <div>
+                    <label className="font-nunito-sans font-semibold">Email</label>
+                    <input type="email" 
+                           name="email" 
+                           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                           value={editForms.email} 
+                           onChange={handleChange} disabled/>
+                </div>
                 <div>
                     <label className="font-nunito-sans font-semibold">Name</label>
                     <input type="text"
@@ -214,17 +279,10 @@ const Users = ({users, options, queryParams}) => {
                            value={editForms.name} 
                            onChange={handleChange} />
                 </div>
-                <div>
-                    <label className="font-nunito-sans font-semibold">Email</label>
-                    <input type="email" 
-                           name="email" 
-                           className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                           value={editForms.email} 
-                           onChange={handleChange} readOnly/>
-                </div>
+           
                 <div>
                     <label className="font-nunito-sans font-semibold">Privileges</label>
-                    <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options} value={editForms.privilege_id} onChange={handleChange} />
+                    <DropdownSelect defaultSelect="Select a Privilege" name="privilege_id" options={options.privileges} value={editForms.privilege_id} onChange={handleChange} />
                    
                 </div>
                 <div>
@@ -234,6 +292,11 @@ const Users = ({users, options, queryParams}) => {
                            name="password" 
                            value={editForms.password} 
                            onChange={handleChange} />
+                </div>
+                <div>
+                    <label className="font-nunito-sans font-semibold">Privileges</label>
+                    <DropdownSelect defaultSelect="Select a status" name="status" options={options.status} value={editForms.status} onChange={handleChange} />
+                   
                 </div>
                 <button type="submit" 
                         className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"
@@ -252,22 +315,41 @@ const Users = ({users, options, queryParams}) => {
                 {successMessage && <div style={{ color: 'green' }}>{successMessage}</div>}
                 
                 <hr/>
-
+                <ContentPanel>
                 <TopPanel>
+                    <div className="dropdown">
+                        <TableButton onClick={handleDropdownToggle}>  <i className="fa fa-check-square"></i> Bulk Actions</TableButton>
+                        <div id="myDropdown" className={`dropdown-content ${dropdownVisible ? 'show' : ''}`}>
+                            <span onClick={() => handleActionClick(1)}>
+                                <i className="fa fa-check-circle"></i> Set Active
+                            </span>
+                            <span onClick={() => handleActionClick(0)}>
+                                <i className="fa fa-times-circle"></i> Set Inactive
+                            </span>
+                        </div>
+                    </div>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
                     <Import  />
                     <Filters />
               
                     <TableButton onClick={handleCreate}>Create User</TableButton>
-                    <TableButton onClick={handleCreate}>Bulk Actions</TableButton>
-              
                 </TopPanel>
 
-			    <ContentPanel>
 				<TableContainer>
 					<Thead>
 						<Row>
+                            <TableHeader
+								name="users_id"
+                                width="sm"
+							>
+							    <Checkbox type="checkbox"
+                                        name="selectAll"
+                                        id="selectAll"
+                                        handleClick={handleSelectAll}
+                                        isChecked={isCheckAll}
+                                />
+							</TableHeader>
 							<TableHeader
 								name="user_name"
 								queryParams={queryParams}
@@ -303,8 +385,17 @@ const Users = ({users, options, queryParams}) => {
 
 					<tbody>
 
-                        {users && users.data.map((user, index) => (
-                            <Row key={user.user_name + user.u_id}>
+                        {users && users?.data.map((user, index) => (
+                            <Row key={user.user_name + user.u_id + index}>
+                                <RowData>
+                                    <Checkbox 
+                                        type="checkbox"
+                                        name="users_id[]"
+                                        id={user.u_id}
+                                        handleClick={handleClick} 
+                                        isChecked={isCheck.includes(user.u_id)}
+                                    />
+                                </RowData>
                                 <RowData 
                                     isLoading={loading}
                                 >
