@@ -23,6 +23,12 @@ const SidebarAccordion = ({ open }) => {
         },
     ];
 
+    useEffect(() => {
+        if (!open) {
+            setIsOpen(false);
+        }
+    }, [open]);
+
     const handleToggle = (index) => {
         if (activeIndex === index) {
             setIsOpen(!isOpen);
@@ -59,7 +65,7 @@ const SidebarAccordion = ({ open }) => {
 
     return (
         <div
-            className={`mt-20 max-h-[500px] overflow-x-hidden ${
+            className={`mt-20 max-h-[calc(100%_-_10rem)] overflow-x-hidden ${
                 open ? "overflow-y-auto" : "overflow-y-hidden"
             }`}
         >
@@ -91,9 +97,6 @@ const SidebarAccordion = ({ open }) => {
                             Dashboard
                         </p>
                     </li>
-                    {/* <span className="text-red-500 absolute -top-[] left-[calc(100%_+_1px)] z-[9999] bg-white">
-                        asdasdasdasdasdadssd
-                    </span> */}
                 </Link>
             </ul>
             {links.map((item, index) => (

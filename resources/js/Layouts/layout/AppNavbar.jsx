@@ -16,7 +16,7 @@ const AppNavbar = () => {
     };
 
     return (
-        <div className="bg-white h-[70px] flex items-center justify-between px-10 py-5">
+        <div className="bg-white h-[70px] flex items-center justify-between px-10 py-5 select-none">
             <p className="font-nunito-sans font-extrabold text-[20px]">
                 {title}
             </p>

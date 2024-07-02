@@ -10,7 +10,7 @@ const AppSidebar = () => {
         <div
             className={`${
                 open ? "w-72" : "w-20"
-            } duration-300 p-5 pt-5 h-full relative`}
+            } duration-300 p-5 pt-5 h-full relative select-none`}
         >
             {/* BUTTON */}
             <div
