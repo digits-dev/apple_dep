@@ -91,6 +91,9 @@ const SidebarAccordion = ({ open }) => {
                             Dashboard
                         </p>
                     </li>
+                    {/* <span className="text-red-500 absolute -top-[] left-[calc(100%_+_1px)] z-[9999] bg-white">
+                        asdasdasdasdasdadssd
+                    </span> */}
                 </Link>
             </ul>
             {links.map((item, index) => (
@@ -138,7 +141,7 @@ const SidebarAccordion = ({ open }) => {
                             onClick={() => handleMenuClick(item.name)}
                         >
                             <div
-                                className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] ${
+                                className={`relative flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] ${
                                     formatActiveSlug(
                                         window.location.pathname
                                     ) === item.slug
@@ -192,7 +195,9 @@ const SidebarAccordion = ({ open }) => {
                                     <Link
                                         href={child.url}
                                         onClick={() =>
-                                            handleMenuClick(child.name)
+                                            handleMenuClick(
+                                                item.name + " - " + child.name
+                                            )
                                         }
                                         key={childIndex}
                                     >

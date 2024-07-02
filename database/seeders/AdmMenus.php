@@ -43,10 +43,10 @@ class AdmMenus extends Seeder
 
         DB::table('adm_menuses')->updateOrInsert(
             [
-                'name'              => 'Sub Master',
+                'name'              => 'Submaster',
             ],
             [
-                'name'              => 'Sub Master',
+                'name'              => 'Submaster',
                 'type'              => 'URL',
                 'path'              => '#',
                 'slug'              => '#',

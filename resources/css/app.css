@@ -114,6 +114,7 @@ button:disabled {
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: #313030; 
+    border-radius: 0;
 }
 
 /* Handle on hover */

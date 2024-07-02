@@ -7,7 +7,6 @@ import { NavbarProvider } from "../../Context/NavbarContext";
 
 const Layout = ({ children }) => {
     return (
-
         <NavbarProvider>
             <div className="h-screen bg-mobile-gradient flex">
                 <AppSidebar />

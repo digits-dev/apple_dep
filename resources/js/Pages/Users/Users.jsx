@@ -397,8 +397,16 @@ const Users = ({users, options, queryParams}) => {
 								</RowStatus>
                                 <RowData isLoading={loading} sticky="right" width="sm" center>
                                    <RowActions>
-                                    <RowAction action="view" size="md"/>
-                                        <button onClick={() => handleEdit(user)}> <EditIcon classes="h-5 w-5" /></button>
+                                    <RowAction
+                                        action="view"
+                                        size="md"
+                                    />
+                                    <RowAction
+                                        type="button"
+                                        action="edit"
+                                        size="md"
+                                        onClick={() => handleEdit(user)}
+                                    />
                                     </RowActions>
                                 </RowData>
                             </Row>

@@ -18,11 +18,16 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import RowActions from "../../Components/Table/RowActions";
+import InputComponent from "../../Components/Forms/Input";
+import Select from "../../Components/Forms/Select";
 
 const TestTable = ({ users, queryParams, test }) => {
 	queryParams = queryParams || {};
 
 	const [loading, setLoading] = useState(false);
+
+	const [field1, setField1] = useState('');
+
 
 	router.on("start", () => setLoading(true));
 	router.on("finish", () => setLoading(false));
@@ -34,7 +39,14 @@ const TestTable = ({ users, queryParams, test }) => {
 				<PerPage queryParams={queryParams} />
 				<Import  />
 				<Export  path="/test-export"/>
-				<Filters />
+				<Filters>
+                        <InputComponent name={'field1'} placeholder="placeholder of field1" value={field1} onChange={setField1}/>
+                        <InputComponent name={'field2'} placeholder="placeholder of field2"/>
+                        <InputComponent name={'field3'} placeholder="placeholder of field3"/>
+                        <Select name="first_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                        <Select name="middle_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                        <Select name="last" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
+                </Filters>
 				{/* <TableButton>Add Customer</TableButton>
             <TableButton>Add Action</TableButton>
             <TableButton>Add Status</TableButton> */}
