@@ -49,11 +49,11 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="bg-white sm:bg-login-bg-color h-screen flex items-center justify-center">
+        <div className="bg-white md:bg-login-bg-color h-screen flex items-center justify-center">
             {/* MAIN CONTAINER */}
             <div className="max-w-[900px] max-h-[600px] w-full h-full bg-white rounded-lg flex overflow-hidden p-5">
                 {/* CONTAINER 1 */}
-                <div className="h-full hidden sm:block">
+                <div className="h-full hidden md:block">
                     <div className="h-full w-[300px] bg-white border-8 border-black rounded-[40px] overflow-hidden flex flex-col">
                         <div className="bg-white w-full p-2 flex items-center justify-between relative px-5">
                             <div className="font-nunito-sans text-[13px] font-semibold ml-3">
@@ -88,8 +88,24 @@ const LoginPage = () => {
                     </div>
                 </div>
                 {/* CONTAINER 2 */}
-                <div className="h-full w-full flex items-center justify-center sm:p-[30px]">
+                <div className="h-full w-full flex items-center justify-center md:p-[30px]">
                     <div className="bg-white h-full w-full flex flex-col justify-center p-10 border-[1px] border-black rounded-[10px]">
+                        <div className="flex flex-col item-center justify-center mb-10 md:hidden">
+                            <div className="flex justify-center">
+                                <img
+                                    src="/images/login-page/btb-logo-black.png"
+                                    className="w-[63px] h-63px]"
+                                />
+                                <div className="h-[57px] w-[2px] bg-black ml-[9px] mr-[18px]"></div>
+                                <img
+                                    src="/images/login-page/digits-logo-colored.png"
+                                    className="w-[48px] h-[57px]"
+                                />
+                            </div>
+                            <p className="text-black font-nunito-sans font-bold text-[18px] text-center">
+                                Device Enrollment Program
+                            </p>
+                        </div>
                         <div className="font-nunito-sans font-extrabold text-[24px] mb-10 text-center">
                             Sign In
                         </div>
@@ -149,7 +165,7 @@ const LoginPage = () => {
                                         {errors.password}
                                     </div>
                                 )}
-                                 {errors.no_datas && (
+                                {errors.no_datas && (
                                     <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
                                         {errors.no_datas}
                                     </div>
