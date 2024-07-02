@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Link } from "@inertiajs/react";
 import useViewport from "../../Hooks/useViewport";
 
@@ -36,22 +36,32 @@ const Pagination = ({ paginate }) => {
                 </span>
 
                 <nav className="inline-flex p-2">
-                    {paginate.links.map((link, index) => (
+                    {paginate.links.map((link, index) => {
+                        const Label = index == 0
+                            ? <i className="fa-solid fa-chevron-left text-sm"></i>
+                            : paginate.links.length - 1 == index
+                            ? <i className="fa-solid fa-chevron-right text-sm"></i>
+                            : link.label;
+
+                        return <Fragment key={"page" + link.label + 'index' + index}>
+                        {link.url ? 
+
                         <Link
-                            key={link.label + index + link.id}
                             href={link.url}
                             preserveScroll
                             preserveState
                             className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-gray-500 
                                 ${link.active && "bg-gray-700 text-white"} ${!link.url && "cursor-not-allowed "}`}
                         >
-                            {index == 0
-                                ? <i className="fa-solid fa-chevron-left text-sm"></i>
-                                : paginate.links.length - 1 == index
-                                ? <i className="fa-solid fa-chevron-right text-sm"></i>
-                                : link.label}
-                        </Link>
-                    ))}
+                            {Label}
+                        </Link> :
+
+                        <span className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-gray-500 
+                            cursor-not-allowed `}>
+                                {Label}
+                        </span>}
+                      </Fragment>
+})}
                 </nav>
             </>
             }
