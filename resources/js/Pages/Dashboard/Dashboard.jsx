@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import AppContent from "../../Layouts/layout/AppContent";
 
@@ -26,10 +26,14 @@ const Dashboard = () => {
         }
     }, [auth.user]);
 
+
     return (
+        <>
+        <Head title="Dashboard" />
         <AppContent>
             <span>This is Dashboard</span>
         </AppContent>
+        </>
     );
 };
 
