@@ -449,7 +449,7 @@ const Users = ({ users, options, queryParams }) => {
                     <TableContainer>
                         <Thead>
                             <Row>
-                                <TableHeader name="users_id" width="sm">
+                                <TableHeader name="users_id" width="sm" sortable={false} justify="center">
                                     <Checkbox
                                         type="checkbox"
                                         name="selectAll"
@@ -501,7 +501,7 @@ const Users = ({ users, options, queryParams }) => {
                                     <Row
                                         key={user.user_name + user.u_id + index}
                                     >
-                                        <RowData>
+                                        <RowData center>
                                             <Checkbox
                                                 type="checkbox"
                                                 name="users_id[]"
