@@ -21,9 +21,9 @@ const TableSearch = ({ queryParams }) => {
 		}
 	}, [searchValue]);
 	return (
-		<search className="font-nunito-sans">
+		<search className="font-nunito-sans w-full max-w-[400px]">
 			<input
-				className="border border-secondary rounded-lg overflow-hidden h-10 w-[350px] block px-4 text-sm outline-none"
+				className="border border-secondary rounded-lg overflow-hidden h-10 w-full block px-4 text-sm outline-none"
 				type="text"
 				name="search"
 				id="search"

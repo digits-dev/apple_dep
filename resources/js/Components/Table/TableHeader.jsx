@@ -39,7 +39,7 @@ const TableHeader = ({
     auto: "w-auto",
     sm: 'min-w-20',
     md: 'min-w-40',
-    lg: 'min-w-80',
+    lg: 'min-w-60',
   }[width];
 
   const justifyClass = {
@@ -51,13 +51,13 @@ const TableHeader = ({
 
   const stickyClass = {
     left: 'sticky left-0 after:absolute after:top-0 after:right-0  after:h-full after:w-[0.1px] after:bg-secondary',
-    right: 'sticky right-0 before:absolute before:left-0  before:h-full before:w-[0.1px] before:bg-secondary',
+    right: 'sticky right-0 before:absolute before:top-0 before:left-0  before:h-full before:w-[0.1px] before:bg-secondary',
   }[sticky];
 
   return (
 		<th
 			onClick={(e) => handleSort(name)}
-			className={`text-secondary font-nunito-sans  text-sm bg-white ${widthClass} ${stickyClass}`}>
+			className={`text-secondary font-nunito-sans text-sm bg-white ${widthClass} ${stickyClass}`}>
 			<div className={`px-6 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
 				{children}
 				{sortable && (
