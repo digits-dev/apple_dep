@@ -77,7 +77,6 @@ const Users = ({ users, options, queryParams }) => {
         const Ids = Array.from(
             document.querySelectorAll("input[name='users_id[]']:checked")
         ).map((input) => parseInt(input.id));
-        console.log(bulk_action_type);
         if (Ids.length === 0) {
             setFormMessage("Nothing selected!");
             setMessageType("Error");
