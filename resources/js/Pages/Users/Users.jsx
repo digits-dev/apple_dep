@@ -77,32 +77,45 @@ const Users = ({ users, options, queryParams }) => {
         const Ids = Array.from(
             document.querySelectorAll("input[name='users_id[]']:checked")
         ).map((input) => parseInt(input.id));
-        console.log(Ids, bulk_action_type);
+        console.log(bulk_action_type);
         if (Ids.length === 0) {
             setFormMessage("Nothing selected!");
             setMessageType("Error");
             setTimeout(() => setFormMessage(""), 3000);
-        }
-        try {
-            const response = await axios.post(
-                "/deactivate-users",
-                { Ids, bulk_action_type },
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+        } else {
+            Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    !bulk_action_type == 0 ? "Active" : "Inactive"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await axios.post(
+                            "/deactivate-users",
+                            { Ids, bulk_action_type },
+                            {
+                                headers: {
+                                    "Content-Type": "multipart/form-data",
+                                },
+                            }
+                        );
+                        if (response.data.status == "success") {
+                            setFormMessage(response.data.message);
+                            setMessageType(response.data.status);
+                            setTimeout(() => setFormMessage(""), 3000);
+                            router.reload({ only: ["users"] });
+                            setIsCheck([]);
+                            setIsCheckAll(false);
+                        }
+                    } catch (error) {}
                 }
-            );
-            if (response.data.status == "success") {
-                setFormMessage(response.data.message);
-                setMessageType(response.data.status);
-                setTimeout(() => setFormMessage(""), 3000);
-
-                router.reload({ only: ["users"] });
-                setIsCheck([]);
-                setIsCheckAll(false);
-            }
-        } catch (error) {}
+            });
+        }
     };
 
     // CREATE USERS
@@ -417,8 +430,7 @@ const Users = ({ users, options, queryParams }) => {
                     <TopPanel>
                         <div className="dropdown">
                             <TableButton onClick={handleDropdownToggle}>
-                                {" "}
-                                <i className="fa fa-check-square"></i> Bulk
+                                <i className="fa fa-check-square mr-2"></i> Bulk
                                 Actions
                             </TableButton>
                             <div
@@ -427,11 +439,17 @@ const Users = ({ users, options, queryParams }) => {
                                     dropdownVisible ? "show" : ""
                                 }`}
                             >
-                                <span onClick={() => handleActionClick(1)}>
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={() => handleActionClick(1)}
+                                >
                                     <i className="fa fa-check-circle"></i> Set
                                     Active
                                 </span>
-                                <span onClick={() => handleActionClick(0)}>
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={() => handleActionClick(0)}
+                                >
                                     <i className="fa fa-times-circle"></i> Set
                                     Inactive
                                 </span>
