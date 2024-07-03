@@ -20,11 +20,10 @@ const TableSearch = ({ queryParams }) => {
 			router.get(path, { ...params }, { preserveState: true });
 		}
 	}, [searchValue]);
-
 	return (
 		<search className="font-nunito-sans">
 			<input
-				className="border border-secondary rounded-lg overflow-hidden h-10 w-[400px] px-4 text-sm outline-none"
+				className="border border-secondary rounded-lg overflow-hidden h-10 w-[350px] block px-4 text-sm outline-none"
 				type="text"
 				name="search"
 				id="search"

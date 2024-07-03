@@ -18,7 +18,7 @@ const Select = ({ options, onChange, value, name, selectedId }) => {
             ))}
             </select>
             
-            <span class="absolute top-1/2 right-5 -translate-y-1/2   pointer-events-none">
+            <span className="absolute top-1/2 right-5 -translate-y-1/2   pointer-events-none">
                 <DescIcon/>
             </span>
         </div>
