@@ -22,7 +22,6 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
-import InputComponent from "../../Components/Forms/Input";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -346,32 +345,32 @@ const Users = ({ users, options, queryParams }) => {
                     value={editForms.u_id}
                     onChange={(e) => setData("u_id", e.target.value)}
                 />
-                <div>
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Email
                     </label>
                     <input
                         type="email"
                         name="email"
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         value={editForms.email}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Name
                     </label>
                     <input
                         type="text"
-                        className="block w-full rounded-md border-0 DropdownSelectpy-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         name="name"
                         value={editForms.name}
                         onChange={handleChange}
                     />
                 </div>
 
-                <div>
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Privileges
                     </label>
@@ -383,21 +382,21 @@ const Users = ({ users, options, queryParams }) => {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Password
                     </label>
                     <input
                         type="password"
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         name="password"
                         value={editForms.password}
                         onChange={handleChange}
                     />
                 </div>
-                <div>
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
-                        Privileges
+                        Status
                     </label>
                     <DropdownSelect
                         defaultSelect="Select a status"
