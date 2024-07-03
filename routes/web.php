@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\Test\TestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia; // We are going to use this class to render React components
@@ -37,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export'])->name('test.export');
+    Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export'])->name('orders.export');
 
 });
 
