@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Action;
 use App\Models\Customer;
 use App\Models\Device;
 use App\Models\EnrollmentList;
@@ -26,6 +27,8 @@ class DatabaseSeeder extends Seeder
         // EnrollmentList::factory(25)->create();
 
         // Customer::factory(25)->create();
+
+        // Action::factory(25)->create();
 
         $this->call([AdmModules::class]);
         $this->call([AdmMenus::class]);

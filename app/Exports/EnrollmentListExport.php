@@ -38,7 +38,7 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
 
     public function map($item): array {
 
-       $users = [
+       $enrollmentLists = [
                     $item->sales_order_no,
                     $item->item_code,
                     $item->serial_number,
@@ -49,7 +49,7 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
                     $item->created_date,
                 ];
        
-        return $users;
+        return $enrollmentLists;
     }
 
     public function query(){       

@@ -34,14 +34,14 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
 
     public function map($item): array {
 
-       $users = [
+       $devices = [
                     $item->item_code,
                     $item->item_description,
                     $item->serial_number,
                     $item->customer_name ,
                 ];
        
-        return $users;
+        return $devices;
     }
 
     public function query(){       

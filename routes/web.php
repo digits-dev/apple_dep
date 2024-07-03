@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Action\ActionController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DepDevices\DepDevicesController;
 use App\Http\Controllers\EnrollmentList\EnrollmentListController;
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dep-devices-export', [DepDevicesController::class, 'export']);
     Route::get('/enrollment-list-export', [EnrollmentListController::class, 'export']);
     Route::get('/customers-export', [CustomerController::class, 'export']);
+    Route::get('/actions-export', [ActionController::class, 'export']);
 
 });
 

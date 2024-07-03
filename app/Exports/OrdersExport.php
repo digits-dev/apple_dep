@@ -35,7 +35,7 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
 
     public function map($item): array {
 
-       $users = [
+       $orders = [
                     $item->sales_order_no,
                     $item->customer_name,
                     $item->order_ref_no,
@@ -44,7 +44,7 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
                     $item->order_date,
                 ];
        
-        return $users;
+        return $orders;
     }
 
     public function query(){       

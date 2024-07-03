@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -11,7 +12,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
 
-class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class ActionsExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
     use Exportable;
     public $query;
@@ -22,8 +23,8 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
 
     public function headings(): array {
         $headers = [
-                    "Customer ID",
-                    "Customer Name",
+                    "Action ID",
+                    "Action Name",
                     "Record Creation Date",
                 ];
 
@@ -32,13 +33,13 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
 
     public function map($item): array {
 
-       $customers = [
+       $actions = [
                     $item->id,
-                    $item->customer_name,
+                    $item->action_name,
                     $item->created_date,
                 ];
        
-        return $customers;
+        return $actions;
     }
 
     public function query(){       
@@ -50,6 +51,4 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
         $sheet->getStyle('1:1')->getFont()->setBold(true);
         $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
-
-
 }
