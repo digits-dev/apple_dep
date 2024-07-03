@@ -57,7 +57,7 @@ const Customer = ({ customers, queryParams }) => {
                     <Thead>
                         <Row>
                             <TableHeader
-                                name="item_code"
+                                name="id"
                                 queryParams={queryParams}
                             >
                               Customer ID
@@ -71,7 +71,7 @@ const Customer = ({ customers, queryParams }) => {
                             </TableHeader>
     
                             <TableHeader
-                                name="customer_name"
+                                name="created_date"
                                 queryParams={queryParams}
                             >
                                 Record Creation Date
