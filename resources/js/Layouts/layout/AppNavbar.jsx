@@ -8,7 +8,18 @@ const AppNavbar = () => {
     const [showMenu, setShowMenu] = useState(false);
     const handleLogout = (e) => {
         e.preventDefault();
-        router.post("logout");
+        Swal.fire({
+            title: `<p class="font-nunito-sans text-3xl" >Do you want to Logout</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#000000",
+            icon: "question",
+            iconColor: "#000000",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                router.post("logout");
+            }
+        });
     };
 
     const handleToggle = () => {
