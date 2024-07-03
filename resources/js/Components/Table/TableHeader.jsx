@@ -40,6 +40,8 @@ const TableHeader = ({
     sm: 'min-w-20',
     md: 'min-w-40',
     lg: 'min-w-60',
+    xl: 'min-w-72',
+    '2xl': 'min-w-80',
   }[width];
 
   const justifyClass = {
@@ -57,8 +59,8 @@ const TableHeader = ({
   return (
 		<th
 			onClick={(e) => handleSort(name)}
-			className={`text-secondary font-nunito-sans text-sm  bg-white ${widthClass} ${stickyClass}`}>
-			<div className={`px-6 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
+			className={`text-secondary font-nunito-sans text-sm bg-white ${widthClass} ${stickyClass}`}>
+			<div className={`px-5 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
 				{children}
 				{sortable && (
 					<div>
