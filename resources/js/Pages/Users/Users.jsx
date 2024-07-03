@@ -394,7 +394,7 @@ const Users = ({ users, options, queryParams }) => {
                         onChange={handleChange}
                     />
                 </div>
-                <div className="flex flex-col mb-3 w-full">
+                <div className="flex flex-col  w-full">
                     <label className="font-nunito-sans font-semibold">
                         Status
                     </label>
@@ -408,7 +408,7 @@ const Users = ({ users, options, queryParams }) => {
                 </div>
                 <button
                     type="submit"
-                    className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"
+                    className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70 mb-2"
                     disabled={loading}
                 >
                     {loading ? "Updating..." : "Update"}
@@ -560,10 +560,6 @@ const Users = ({ users, options, queryParams }) => {
                                             center
                                         >
                                             <RowActions>
-                                                <RowAction
-                                                    action="view"
-                                                    size="md"
-                                                />
                                                 <RowAction
                                                     type="button"
                                                     action="edit"
