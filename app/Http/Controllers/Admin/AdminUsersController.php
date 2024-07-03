@@ -96,10 +96,16 @@ use Inertia\Response;
         }
 
         public function postEditSave(Request $request){
+            $oldPass = User::where('id',$request->u_id)->first();
+            if($request->password){
+                $password = hash::make($request->password);
+            }else{
+                $password = $oldPass->password;
+            }
             $update = User::where('id',$request->u_id)->update([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password'  => hash::make($request->password),
+                'password'  => $password,
                 'status'  => $request->status,
               
             ]);

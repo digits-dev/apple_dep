@@ -545,12 +545,12 @@ const Users = ({ users, options, queryParams }) => {
                                         <RowStatus
                                             isLoading={loading}
                                             status={
-                                                user.status
+                                                user.status == 1
                                                     ? "success"
                                                     : "error"
                                             }
                                         >
-                                            {user.status
+                                            {user.status == 1
                                                 ? "Active"
                                                 : "Inactive"}
                                         </RowStatus>
