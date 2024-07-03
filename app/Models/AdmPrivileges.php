@@ -10,6 +10,6 @@ class AdmPrivileges extends Model
     use HasFactory;
 
     public function scopeGetData($query){
-        return $query->select('*')->get();
+        return $query;
     }
 }
