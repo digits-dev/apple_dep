@@ -1,6 +1,5 @@
-import { Head } from "@inertiajs/react";
+import { Head,  router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
-import { router, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";

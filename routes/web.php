@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\DepDevices\DepDevicesController;
 use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\Test\TestController;
 use Illuminate\Support\Facades\Route;
@@ -37,8 +38,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
 
     //EXPORTS
-    Route::get('/test-export', [TestController::class, 'export'])->name('test.export');
-    Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export'])->name('orders.export');
+    Route::get('/test-export', [TestController::class, 'export']);
+    Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);
+    Route::get('/dep-devices-export', [DepDevicesController::class, 'export']);
 
 });
 

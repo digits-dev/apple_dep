@@ -55,10 +55,8 @@ class TestExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize
 
     public function styles(Worksheet $sheet)
     {
-        return [
-            1    => ['font' => ['bold' => true]],
-
-            'A' => ['alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]],
-        ];
+        $sheet->getStyle('1:1')->getFont()->setBold(true);
+        $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
+
 }

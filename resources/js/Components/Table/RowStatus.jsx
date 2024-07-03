@@ -17,7 +17,7 @@ const RowStatus = ({
   return (
     <td className={`${center && 'text-center'} px-6 py-3 bg-white`}>
 			{isLoading ? (
-				<span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-500">&nbsp;&nbsp;</span>
+				<span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-200">&nbsp;&nbsp;</span>
 			) : (
 				<span className={`mx-auto rounded-full text-white px-3 py-1 ${statusColor} `}>{children}</span>
 			)}

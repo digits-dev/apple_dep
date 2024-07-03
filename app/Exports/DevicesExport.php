@@ -5,13 +5,14 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
 
-class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithColumnWidths
 {
     use Exportable;
     public $query;
@@ -22,26 +23,22 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
 
     public function headings(): array {
         $headers = [
-                    "Sales Order #",
+                    "Item Code",
+                    "Item Description",
+                    "Serial Number",
                     "Customer Name",
-                    "Order Ref #",
-                    "DEP Order",
-                    "Enrollment Status",
-                    "Order Date",
                 ];
-        return $headers;
 
+        return $headers;
     }
 
     public function map($item): array {
 
        $users = [
-                    $item->sales_order_no,
-                    $item->customer_name,
-                    $item->order_ref_no,
-                    $item->dep_order ? "Yes" : "No",
-                    $item->enrollment_status  ? "Enrollment Success" : "Enrollment Error",
-                    $item->order_date,
+                    $item->item_code,
+                    $item->item_description,
+                    $item->serial_number,
+                    $item->customer_name ,
                 ];
        
         return $users;
@@ -50,12 +47,18 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
     public function query(){       
         return $this->query;
     }
-
-
+    
     public function styles(Worksheet $sheet)
     {
         $sheet->getStyle('1:1')->getFont()->setBold(true);
         $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
 
+   
+    public function columnWidths(): array
+    {
+        return [
+            'B' => 45, 
+        ];
+    }
 }

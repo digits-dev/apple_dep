@@ -57,7 +57,7 @@ const TableHeader = ({
   return (
 		<th
 			onClick={(e) => handleSort(name)}
-			className={`text-secondary font-nunito-sans text-sm bg-white ${widthClass} ${stickyClass}`}>
+			className={`text-secondary font-nunito-sans text-sm  bg-white ${widthClass} ${stickyClass}`}>
 			<div className={`px-6 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
 				{children}
 				{sortable && (
