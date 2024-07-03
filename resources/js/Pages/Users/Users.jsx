@@ -22,6 +22,7 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import InputComponent from "../../Components/Forms/Input";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -196,21 +197,18 @@ const Users = ({ users, options, queryParams }) => {
         };
 
         return (
-            <form onSubmit={handleSubmit}>
-                <span className="font-nunito-sans font-semibold text-center">
-                    Create User
-                </span>
+            <form onSubmit={handleSubmit} className="p-2">
                 {errorMessage && (
                     <div style={{ color: "red" }}>{errorMessage}</div>
                 )}
-                <div className="flex flex-col mb-1 w-full">
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Name
                     </label>
                     <input
                         type="text"
                         name="name"
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         value={forms.name}
                         onChange={handleChange}
                     />
@@ -220,14 +218,15 @@ const Users = ({ users, options, queryParams }) => {
                         </div>
                     )}
                 </div>
-                <div className="flex flex-col">
+
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Email
                     </label>
                     <input
                         type="email"
                         name="email"
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         value={forms.email}
                         onChange={handleChange}
                     />
@@ -237,8 +236,8 @@ const Users = ({ users, options, queryParams }) => {
                         </div>
                     )}
                 </div>
-                <div className="flex flex-col">
-                    <label className="font-nunito-sans font-semibold">
+                <div className="flex flex-col mb-3 w-full">
+                    <label className="font-nunito-sans font-semibold mb-1">
                         Privileges
                     </label>
                     <DropdownSelect
@@ -254,14 +253,14 @@ const Users = ({ users, options, queryParams }) => {
                         </div>
                     )}
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col mb-3 w-full">
                     <label className="font-nunito-sans font-semibold">
                         Password
                     </label>
                     <input
                         type="password"
                         name="password"
-                        className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                         value={forms.password}
                         onChange={handleChange}
                     />
@@ -467,7 +466,12 @@ const Users = ({ users, options, queryParams }) => {
                     <TableContainer>
                         <Thead>
                             <Row>
-                                <TableHeader name="users_id" width="sm" sortable={false} justify="center">
+                                <TableHeader
+                                    name="users_id"
+                                    width="sm"
+                                    sortable={false}
+                                    justify="center"
+                                >
                                     <Checkbox
                                         type="checkbox"
                                         name="selectAll"
@@ -585,11 +589,19 @@ const Users = ({ users, options, queryParams }) => {
                     </div>
                 </ContentPanel>
 
-                <Modal show={showCreateModal} onClose={handleCloseCreateModal}>
+                <Modal
+                    show={showCreateModal}
+                    onClose={handleCloseCreateModal}
+                    title="Create User"
+                >
                     <CreateUserForm onClose={handleCloseCreateModal} />
                 </Modal>
 
-                <Modal show={showEditModal} onClose={handleCloseEditModal}>
+                <Modal
+                    show={showEditModal}
+                    onClose={handleCloseEditModal}
+                    title="Edit User"
+                >
                     <EditUserForm
                         user={editUser}
                         onClose={handleCloseEditModal}

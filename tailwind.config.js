@@ -24,8 +24,11 @@ module.exports = {
                     "linear-gradient(to bottom, #060505, #333232)",
             },
             fontFamily: {
-                'nunito-sans': ["Nunito Sans", 'sans-serif'],
-            }
+                "nunito-sans": ["Nunito Sans", "sans-serif"],
+            },
+            boxShadow: {
+                custom: "0 2px 10px rgba(0, 0, 0, 0.1)",
+            },
         },
     },
     plugins: [],
