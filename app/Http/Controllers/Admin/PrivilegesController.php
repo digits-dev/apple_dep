@@ -15,15 +15,26 @@ use Inertia\Response;
 class PrivilegesController extends Controller{
     private $table_name;
     private $primary_key;
+    private $sortBy;
+    private $sortDir;
+    private $perPage;
     public function __construct() {
         $this->table_name  =  'adm_privileges';
         $this->primary_key = 'id';
+        $this->sortBy = request()->get('sortBy', 'adm_privileges.created_at');
+        $this->sortDir = request()->get('sortDir', 'desc');
+        $this->perPage = request()->get('perPage', 10);
     }
 
     public function getIndex(){
-        $privileges = AdmPrivileges::getData();
+        $query = AdmPrivileges::getData();
+        $query->when(request('search'), function ($query, $search) {
+            $query->where('adm_privileges.name', 'LIKE', "%$search%");
+        });
+        $privileges = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
         return Inertia::render('Privileges/Privileges', [
-            'privileges' => $privileges
+            'privileges' => $privileges,
+            'queryParams' => request()->query()
         ]);
     }
 
