@@ -14,7 +14,7 @@ const Modal = ({ show, onClose, children, title }) => {
                     </p>
                     <p
                         onClick={onClose}
-                        className="cursor-pointer font-nunito-sans text-gray-500 text-sm"
+                        className="cursor-pointer font-nunito-sans text-red-500 text-sm"
                     >
                         Close
                     </p>
