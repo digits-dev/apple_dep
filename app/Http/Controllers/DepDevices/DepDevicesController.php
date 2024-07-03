@@ -27,9 +27,9 @@ class DepDevicesController extends Controller
             $query->where('item_code', 'LIKE', "%$search%");
         });
 
-        $orders = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $devices = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
 
-        return Inertia::render('DepDevices/DepDevices', [ 'devices' => $orders, 'queryParams' => request()->query()]);
+        return Inertia::render('DepDevices/DepDevices', [ 'devices' => $devices, 'queryParams' => request()->query()]);
     }
 
     public function export()

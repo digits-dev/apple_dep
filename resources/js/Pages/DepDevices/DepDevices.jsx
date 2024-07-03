@@ -96,7 +96,7 @@ const DepDevices = ({ devices, queryParams }) => {
 					<tbody>
 						{devices &&
 							devices.data.map((item) => (
-								<Row key={item.sales_order_no} >
+								<Row key={item.sales_order_no + item.serial_number + item.id} >
 									<RowData
 										isLoading={loading}
 										center
