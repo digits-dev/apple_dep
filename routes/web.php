@@ -4,6 +4,7 @@ use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DepDevices\DepDevicesController;
 use App\Http\Controllers\DepStatus\DepStatusController;
 use App\Http\Controllers\EnrollmentList\EnrollmentListController;
+use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
 use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\Test\TestController;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customers-export', [CustomerController::class, 'export']);
     Route::get('/actions-export', [ActionController::class, 'export']);
     Route::get('/dep-status-export', [DepStatusController::class, 'export']);
+    Route::get('/enrollment-status-export', [EnrollmentStatusController::class, 'export']);
 
 });
 
