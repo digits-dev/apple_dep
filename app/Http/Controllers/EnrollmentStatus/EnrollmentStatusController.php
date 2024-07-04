@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EnrollmentStatus;
 use App\Exports\EnrollmentStatusExport;
 use App\Imports\ImportEnrollmentStatus;
+use App\ImportTemplates\ImportEnrollmentStatusTemplate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\EnrollmentStatus;
@@ -79,6 +80,12 @@ class EnrollmentStatusController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Enrollment Status Template".".xlsx";
+        return Excel::download(new ImportEnrollmentStatusTemplate, $filename);
     }
   
 }

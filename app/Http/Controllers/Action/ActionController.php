@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Action;
 use App\Exports\ActionsExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportActions;
+use App\ImportTemplates\ImportActionsTemplate;
 use App\Models\Action;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,12 @@ class ActionController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Actions Template".".xlsx";
+        return Excel::download(new ImportActionsTemplate, $filename);
     }
   
 }

@@ -39,7 +39,7 @@ const Customer = ({ customers, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    <Import importPath='/customers-import'/>
+                    <Import importPath='/customers-import' templatePath="/customers-import-template"/>
                     <Export path="/customers-export"/>
                 </TopPanel>
     

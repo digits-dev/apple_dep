@@ -59,10 +59,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
 
+    //IMPORTS
     Route::post('/customers-import', [CustomerController::class, 'import']);
     Route::post('/actions-import', [ActionController::class, 'import']);
     Route::post('/dep-status-import', [DepStatusController::class, 'import']);
     Route::post('/enrollment-status-import', [EnrollmentStatusController::class, 'import']);
+
+    //IMPORTS TEMPLATE
+    Route::get('/customers-import-template', [CustomerController::class, 'downloadTemplate']);
+    Route::get('/actions-import-template', [ActionController::class, 'downloadTemplate']);
+    Route::get('/dep-status-import-template', [DepStatusController::class, 'downloadTemplate']);
+    Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
 
 });
 

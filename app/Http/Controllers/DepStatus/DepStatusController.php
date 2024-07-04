@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DepStatus;
 use App\Exports\DepStatusExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportDepStatus;
+use App\ImportTemplates\ImportDepStatusTemplate;
 use App\Models\DepStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,5 +80,11 @@ class DepStatusController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Dep Status Template".".xlsx";
+        return Excel::download(new ImportDepStatusTemplate, $filename);
     }
 }

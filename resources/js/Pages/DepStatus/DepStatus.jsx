@@ -40,7 +40,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    <Import importPath='/dep-status-import'/>
+                    <Import importPath='/dep-status-import' templatePath="/dep-status-import-template"/>
                     <Export  path="/dep-status-export"/>
                 </TopPanel>
 
