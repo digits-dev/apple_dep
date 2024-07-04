@@ -52,8 +52,8 @@ const TableHeader = ({
   }[justify];
 
   const stickyClass = {
-    left: 'sticky left-0 after:absolute after:top-0 after:right-0  after:h-full after:w-[0.1px] after:bg-secondary',
-    right: 'sticky right-0 before:absolute before:top-0 before:left-0  before:h-full before:w-[0.1px] before:bg-secondary',
+    left: 'sticky left-0 after:absolute after:top-0 after:right-0  after:h-full after:w-[0.60px] after:bg-secondary',
+    right: 'sticky right-0 before:absolute before:top-0 before:left-0  before:h-full before:w-[0.60px] before:bg-secondary',
   }[sticky];
 
   return (

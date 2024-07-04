@@ -8,8 +8,8 @@ const RowData = ({
 }) => {
 
   const stickyClass = {
-		left: "sticky left-0 after:absolute after:top-0 after:right-0 z-40  after:h-full after:w-[0.1px] after:bg-secondary bg-white",
-		right: "sticky right-0 before:absolute before:top-0 before:left-0  z-40  before:h-full before:w-[0.1px] before:bg-secondary",
+		left: "sticky left-0 top-0 z-40 after:absolute after:top-0 after:right-0 after:z-40  after:h-full after:w-[0.60px] after:bg-secondary bg-white",
+		right: "sticky right-0 top-0 z-40 before:absolute before:top-0 before:left-0  before:z-40  before:h-full before:w-[0.60px] before:bg-secondary bg-white",
 	}[sticky];
 
   return (
