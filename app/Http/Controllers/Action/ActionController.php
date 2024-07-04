@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Action;
 use App\Exports\ActionsExport;
 use App\Http\Controllers\Controller;
+use App\Imports\ImportActions;
 use App\Models\Action;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -56,6 +58,28 @@ class ActionController extends Controller
         ]);
 
         return $query;
+    }
+
+    public function import(Request $request)
+    {   
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+    
+        try {
+            $importFile = $request->file('file');
+
+            Excel::import(new ImportActions, $importFile);
+    
+            return to_route('/action');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // Handle validation errors during import
+            return back()->with('error', 'Validation error: ' . $e-> $e->getMessage());
+        } catch (\Exception $e) {
+            // Handle other errors
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+      
     }
   
 }

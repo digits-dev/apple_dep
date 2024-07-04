@@ -39,6 +39,7 @@ const Action = ({ actions, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
+                    <Import importPath="/actions-import"/>
                     <Export  path="/actions-export"/>
                 </TopPanel>
     
