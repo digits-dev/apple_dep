@@ -1,4 +1,4 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
@@ -8,6 +8,9 @@ import Thead from "../../Components/Table/Thead";
 import TableHeader from "../../Components/Table/TableHeader";
 import Row from "../../Components/Table/Row";
 import RowData from "../../Components/Table/RowData";
+import TableSearch from "../../Components/Table/TableSearch";
+import PerPage from "../../Components/Table/PerPage";
+import TableButton from "../../Components/Table/Buttons/TableButton";
 
 
 const Privileges = ({privileges, queryParams}) => {
@@ -22,7 +25,11 @@ const Privileges = ({privileges, queryParams}) => {
          <AppContent>
             <ContentPanel>
                 <TopPanel>
-
+                    <TableSearch queryParams={queryParams} />
+                    <PerPage queryParams={queryParams} />
+                    <Link  href="create-privileges" as="button" className='bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2'>
+                        <i className="fa fa-plus-circle"></i> Add Privilege
+                    </Link>
                 </TopPanel>
                 <TableContainer>
                     <Thead>

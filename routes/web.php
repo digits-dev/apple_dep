@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\MenusController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Admin\PrivilegesController;
 use App\Helpers\CommonHelpers;
 use Illuminate\Support\Facades\DB;
 /*
@@ -41,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
+    //PRIVILEGES
+    Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);
