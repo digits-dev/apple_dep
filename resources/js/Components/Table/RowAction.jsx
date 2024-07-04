@@ -20,12 +20,12 @@ const RowAction = ({ action, size, href, onClick, type = 'link'}) => {
 	return (
 	<>
 		{type == 'button' ? 	
-			<button className="hover:bg-black/10 rounded-md p-0.5 active:scale-105" onClick={onClick}>
+			<button className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full " onClick={onClick}>
 				{icon}
 			</button> 
 		: 
 		<Link
-			className="hover:bg-black/10 rounded-md p-0.5 active:scale-105"
+			className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full"
 			as="button"
 			href={href}
 		>
