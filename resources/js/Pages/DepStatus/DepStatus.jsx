@@ -81,7 +81,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <tbody>
                         {dep_statuses &&
                             dep_statuses.data.map((item) => (
-                                <Row key={item.sales_order_no + item.serial_number + item.id} >
+                                <Row key={item.id} >
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>

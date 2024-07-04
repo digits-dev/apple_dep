@@ -81,7 +81,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                     <tbody>
                         {enrollment_status &&
                             enrollment_status.data.map((item) => (
-                                <Row key={item.sales_order_no + item.serial_number + item.id} >
+                                <Row key={item.id} >
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
