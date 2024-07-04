@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { NavbarContext } from "../../Context/NavbarContext";
 
@@ -6,6 +6,21 @@ const AppNavbar = () => {
     const { title } = useContext(NavbarContext);
     const { auth } = usePage().props;
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
+
+    const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setShowMenu(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const handleLogout = (e) => {
         e.preventDefault();
         Swal.fire({
@@ -27,7 +42,10 @@ const AppNavbar = () => {
     };
 
     return (
-        <div className="bg-white h-[70px] flex items-center justify-between px-10 py-5 select-none">
+        <div
+            className="bg-white h-[70px] flex items-center justify-between px-10 py-5 select-none"
+            ref={menuRef}
+        >
             <p className="font-nunito-sans font-extrabold text-[20px]">
                 {title}
             </p>
