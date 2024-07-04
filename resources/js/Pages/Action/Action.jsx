@@ -27,9 +27,6 @@ const Action = ({ actions, queryParams }) => {
 
     const [loading, setLoading] = useState(false);
     
-    const [field1, setField1] = useState('');
-    
-    
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
     
@@ -42,14 +39,6 @@ const Action = ({ actions, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    <Filters>
-                            <InputComponent name={'field1'} placeholder="placeholder of field1" value={field1} onChange={setField1}/>
-                            <InputComponent name={'field2'} placeholder="placeholder of field2"/>
-                            <InputComponent name={'field3'} placeholder="placeholder of field3"/>
-                            <Select name="first_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-                            <Select name="middle_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-                            <Select name="last" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-                    </Filters>
                     <Export  path="/actions-export"/>
                 </TopPanel>
     
