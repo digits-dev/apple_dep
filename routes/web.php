@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
 
+    Route::post('/customers-import', [CustomerController::class, 'import']);
+
 });
 
 Route::group([

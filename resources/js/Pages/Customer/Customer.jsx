@@ -39,7 +39,8 @@ const Customer = ({ customers, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    <Export  path="/customers-export"/>
+                    <Import importPath='/customers-import'/>
+                    <Export path="/customers-export"/>
                 </TopPanel>
     
                 <TableContainer>
