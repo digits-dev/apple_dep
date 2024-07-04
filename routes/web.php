@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/customers-import', [CustomerController::class, 'import']);
     Route::post('/actions-import', [ActionController::class, 'import']);
     Route::post('/dep-status-import', [DepStatusController::class, 'import']);
+    Route::post('/enrollment-status-import', [EnrollmentStatusController::class, 'import']);
 
 });
 
