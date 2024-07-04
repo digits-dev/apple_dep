@@ -55,6 +55,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dep-status-export', [DepStatusController::class, 'export']);
     Route::get('/enrollment-status-export', [EnrollmentStatusController::class, 'export']);
 
+    //List of Orders
+    Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
+    Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
+
+    Route::post('/customers-import', [CustomerController::class, 'import']);
+    Route::post('/actions-import', [ActionController::class, 'import']);
+    Route::post('/dep-status-import', [DepStatusController::class, 'import']);
+    Route::post('/enrollment-status-import', [EnrollmentStatusController::class, 'import']);
+
 });
 
 Route::group([

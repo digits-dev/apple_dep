@@ -8,7 +8,7 @@ const Pagination = ({ paginate }) => {
     const mobileView = width < 640 ? true : false ;
 
     return (
-        <div className="flex justify-between items-center w-full px-2 gap-2">
+        <div className="flex justify-between items-center w-full px-2 gap-2 mt-5">
             {mobileView ? 
             <>
                 <Link

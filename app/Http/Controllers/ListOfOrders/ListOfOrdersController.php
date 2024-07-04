@@ -36,6 +36,16 @@ class ListOfOrdersController extends Controller
         return Inertia::render('ListOfOrders/ListOfOrders', [ 'orders' => $orders, 'queryParams' => request()->query()]);
     }
 
+    
+    public function show(Order $order)
+    {
+        return Inertia::render('ListOfOrders/OrderDetails', [ 'order' => $order]);
+    }
+
+    public function edit(Order $order){
+        return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order]);
+    }
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');

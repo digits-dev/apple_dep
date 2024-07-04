@@ -40,6 +40,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
+                    <Import importPath="/enrollment-status-import"/>
                     <Export  path="/enrollment-status-export"/>
                 </TopPanel>
 
@@ -81,7 +82,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                     <tbody>
                         {enrollment_status &&
                             enrollment_status.data.map((item) => (
-                                <Row key={item.sales_order_no + item.serial_number + item.id} >
+                                <Row key={item.id} >
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>

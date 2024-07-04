@@ -1,4 +1,4 @@
-import { Head,  router } from "@inertiajs/react";
+import { Head,  router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
@@ -30,9 +30,11 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
 	const [field1, setField1] = useState('');
 
+	// const {} = usePage();
 
 	router.on("start", () => setLoading(true));
 	router.on("finish", () => setLoading(false));
+
 
 	return (
 		<>
@@ -143,10 +145,12 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
 										<RowActions>
 											<RowAction
+												href={orders.path + `/${item.id}`}
 												action="view"
 												size="md"
 											/>
 											<RowAction
+												href={orders.path + `/${item.id}/edit`}
 												action="edit"
 												size="md"
 											/>

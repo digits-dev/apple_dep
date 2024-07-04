@@ -1,9 +1,9 @@
 import React from "react";
 
-const TableContainer = ({children}) => {
+const TableContainer = ({children, autoHeight}) => {
     return (
-         <div className="w-full overflow-hidden mb-5 border border-secondary rounded-lg text-secondary ">
-                <div className="w-full h-[500px] overflow-auto">
+         <div className="w-full overflow-hidden  border border-secondary rounded-lg text-secondary ">
+                <div className={`w-full ${autoHeight ? 'min-h-[100px] max-h-[500px]' : 'h-[500px]'} overflow-auto`}>
                     <table className="w-full ">
                     {children}
                 </table>

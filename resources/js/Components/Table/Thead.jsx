@@ -1,6 +1,8 @@
 const Thead = ({children}) => {
   return (
-     <thead className="sticky top-0 z-50 before:absolute before:bottom-0 before:left-0  before:h-[0.1px] before:w-full before:bg-secondary">{children}</thead>
+     <thead className="sticky bg-white top-0 left-0 z-50 before:z-50  after:absolute after:bottom-0 after:left-0  after:h-[0.60px] after:w-full after:bg-secondary ">
+        {children}
+     </thead>
   )
 }
 export default Thead
