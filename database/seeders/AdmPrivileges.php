@@ -24,12 +24,6 @@ class AdmPrivileges extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'name' => 'Admin HR',
-                'is_superadmin' => 0,
-                'theme_color'   => 'skin-green',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
                 'name' => 'User',
                 'is_superadmin' => 0,
                 'theme_color'   => 'skin-green',
