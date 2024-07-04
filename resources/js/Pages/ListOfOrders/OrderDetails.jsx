@@ -10,6 +10,7 @@ import Row from '../../Components/Table/Row';
 import TableHeader from '../../Components/Table/TableHeader';
 import RowData from '../../Components/Table/RowData';
 import { useEffect } from 'react';
+import Tabs from '../../Components/Table/Tabs';
 
 const OrderDetails = ({order}) => {
     const { setTitle } = useContext(NavbarContext);
@@ -17,6 +18,12 @@ const OrderDetails = ({order}) => {
     useEffect(() => {
         setTitle('Order Details');
     }, []);
+
+    const tabs = [
+        { id: 1, label: 'JSON Response Received', content: 'Content of Tab 1', jsonContent: {name:'joel', age:16} },
+        { id: 2, label: 'JSON Request Submitted', content: 'Content of Tab 2' },
+        { id: 3, label: 'Transaction Logs', content: 'Content of Tab 3' },
+      ];
 
   return (
     <>
@@ -68,9 +75,7 @@ const OrderDetails = ({order}) => {
                 </TableContainer>
             </ContentPanel>
 
-
-
-            
+            <Tabs tabs={tabs}/>
         </AppContent>
     </>
   )
