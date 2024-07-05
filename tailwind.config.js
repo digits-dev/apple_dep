@@ -22,6 +22,8 @@ module.exports = {
             backgroundImage: {
                 "mobile-gradient":
                     "linear-gradient(to bottom, #060505, #333232)",
+                "overview-gradient":
+                    "linear-gradient(to bottom, #060505, #787575)",
             },
             fontFamily: {
                 "nunito-sans": ["Nunito Sans", "sans-serif"],

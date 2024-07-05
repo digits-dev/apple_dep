@@ -48,13 +48,6 @@ button:disabled {
     opacity: 0.7;
 }
 
-/* Nunito Sans Font */
-
-.font-nunito-sans{
-    font-family: "Nunito Sans", sans-serif;
-}
-
-
 .custom-select {
     position: relative;
     width: 55px;
@@ -131,9 +124,9 @@ button:disabled {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+}
 
-  .modal-backdrop {
+.modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -143,65 +136,64 @@ button:disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}
 
-  .modal {
+.modal {
     background: white;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 30%;
-   }
+}
 
-   .dropdown {
-        position: relative;
-        display: inline-block;
-  
-    }
+.dropdown {
+    position: relative;
+    display: inline-block;
 
-    .dropbtn {
-        background-color: #f9f9f9;
-        color: black;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;
-    }
+}
 
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 9999;
-    }
+.dropbtn {
+    background-color: #f9f9f9;
+    color: black;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
 
-    .dropdown-content span {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 9999;
+}
 
-    .dropdown-content span:hover {
-        background-color: #f1f1f1;
-    }
+.dropdown-content span {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
 
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
+.dropdown-content span:hover {
+    background-color: #f1f1f1;
+}
 
-    .dropdown:hover .dropbtn {
-        background-color: #3e8e41;
-    }
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
-    .show {
-        display: block;
-    }
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
 
+.show {
+    display: block;
+}
 
-@keyframes slide-in-left {
+@keyframes slideInLeft {
     0% {
         transform: translateX(-100%);
         opacity: 0;
@@ -211,7 +203,7 @@ button:disabled {
         opacity: 1;
     }
 }
-    
-.toast-container {
-    animation: slide-in-left 0.5s ease-out;
+
+.slide-in-left {
+    animation: slideInLeft 0.5s forwards;
 }

@@ -71,7 +71,7 @@ const SidebarAccordion = ({ open }) => {
         >
             <ul>
                 <Link
-                    href="dashboard"
+                    href={`${window.location.origin}/dashboard`}
                     onClick={() => {
                         handleMenuClick("Dashboard");
                         setIsOpen(false);
