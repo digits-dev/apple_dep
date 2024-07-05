@@ -16,7 +16,9 @@ const EnrollReturnDevices = ({ order }) => {
     const { setTitle } = useContext(NavbarContext);
 
     useEffect(() => {
-        setTitle("Enroll/Return Devices");
+        setTimeout(()=>{
+            setTitle("Enroll/Return Devices");
+        }, 50);
     }, []);
 
     return (

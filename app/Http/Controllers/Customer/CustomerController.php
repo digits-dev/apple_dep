@@ -40,6 +40,22 @@ class CustomerController extends Controller
         return Inertia::render('Customer/Customer', [ 'customers' => $customers, 'queryParams' => request()->query()]);
     }
 
+    public function store(Request $request){
+
+        $request->validate([
+            'customer_name' => 'required|unique:customers,customer_name',
+        ]);
+        
+        Customer::create(['customer_name'=> $request->input('customer_name')]);
+    }
+    public function update(Request $request, Customer $customer){
+        $request->validate([
+            'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
+        ]);
+
+        $customer->update(['customer_name'=> $request->input('customer_name')]);
+    }
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');

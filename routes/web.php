@@ -71,6 +71,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dep-status-import-template', [DepStatusController::class, 'downloadTemplate']);
     Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
 
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+
 });
 
 Route::group([
