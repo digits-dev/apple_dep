@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import Modal from "../../Components/Modal/Modal";
 import DepStatusForm from "./DepStatusForm";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
  
@@ -90,7 +91,14 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                 Record Creation Date
                             </TableHeader>
 
-                
+                            <TableHeader
+                                    name="status"
+                                    queryParams={queryParams}
+                                    justify="center"
+                            >
+                                    Status
+                            </TableHeader>
+
                             <TableHeader
                                 sortable={false}
                                 width="auto"
@@ -110,6 +118,13 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                     </RowData>
                                     <RowData isLoading={loading}>{item.dep_status}</RowData>
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowStatus
+                                            isLoading={loading}
+                                            status={item.status ? "success" : "error"}
+                                            center
+                                    >
+                                            {item.status ? "Active" : "Inactive"}
+                                    </RowStatus>
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"

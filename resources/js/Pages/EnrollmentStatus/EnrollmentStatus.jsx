@@ -96,6 +96,13 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                 Record Creation Date
                             </TableHeader>
 
+                            <TableHeader
+                                    name="status"
+                                    queryParams={queryParams}
+                                    justify="center"
+                            >
+                                    Status
+                            </TableHeader>
                 
                             <TableHeader
                                 sortable={false}
@@ -116,6 +123,13 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     </RowData>
                                     <RowData isLoading={loading}>{item.enrollment_status}</RowData>
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowStatus
+                                            isLoading={loading}
+                                            status={item.status ? "success" : "error"}
+                                            center
+                                    >
+                                            {item.status ? "Active" : "Inactive"}
+                                    </RowStatus>
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"

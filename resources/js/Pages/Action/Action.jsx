@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import ActionForm from "./ActionForm";
 import Modal from "../../Components/Modal/Modal";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const Action = ({ actions, queryParams }) => {
     queryParams = queryParams || {};
@@ -29,7 +30,7 @@ const Action = ({ actions, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
 
     const handleShowCreate = () => {
@@ -87,6 +88,14 @@ const Action = ({ actions, queryParams }) => {
                             >
                                 Record Creation Date
                             </TableHeader>
+
+                            <TableHeader
+                                    name="status"
+                                    queryParams={queryParams}
+                                    justify="center"
+                                >
+                                    Status
+                            </TableHeader>
     
                   
                             <TableHeader
@@ -108,10 +117,17 @@ const Action = ({ actions, queryParams }) => {
                                     </RowData>
                                     <RowData isLoading={loading}>{item.action_name}</RowData>
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowStatus
+                                            isLoading={loading}
+                                            status={item.status ? "success" : "error"}
+                                            center
+                                    >
+                                            {item.status ? "Active" : "Inactive"}
+                                    </RowStatus>
                                     <RowData isLoading={loading} center>
                                          <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.action_name});}}
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.action_name, status:item.status});}}
                                             action="edit"
                                             size="md"
                                         />

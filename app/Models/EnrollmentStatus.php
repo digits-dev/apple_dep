@@ -9,5 +9,5 @@ class EnrollmentStatus extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['enrollment_status'];
+    protected $fillable = ['enrollment_status', 'status'];
 }

@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import CustomerForm from "./CustomerForm";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
@@ -86,6 +87,14 @@ const Customer = ({ customers, queryParams }) => {
                             >
                                 Record Creation Date
                             </TableHeader>
+
+                            <TableHeader
+                                    name="status"
+                                    queryParams={queryParams}
+                                    justify="center"
+                            >
+                                    Status
+                            </TableHeader>
     
                   
                             <TableHeader
@@ -107,6 +116,13 @@ const Customer = ({ customers, queryParams }) => {
                                     </RowData>
                                     <RowData isLoading={loading}>{item.customer_name}</RowData>
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowStatus
+                                            isLoading={loading}
+                                            status={item.status ? "success" : "error"}
+                                            center
+                                    >
+                                            {item.status ? "Active" : "Inactive"}
+                                    </RowStatus>
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"

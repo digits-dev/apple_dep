@@ -53,9 +53,10 @@ class ActionController extends Controller
     public function update(Request $request, Action $action){
         $request->validate([
             'action_name' => "required|unique:actions,action_name,$action->id,id",
+            'status' => 'required',
         ]);
-
-        $action->update(['action_name'=> $request->input('action_name')]);
+        
+        $action->update(['action_name'=> $request->input('action_name'), 'status' => $request->input('status')]);
     }
 
     public function export()

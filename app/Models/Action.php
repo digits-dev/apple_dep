@@ -9,5 +9,5 @@ class Action extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['action_name'];
+    protected $fillable = ['action_name', 'status'];
 }

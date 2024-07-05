@@ -12,7 +12,7 @@ const Select = ({ options, onChange, value, name, selectedId }) => {
             <select id={name} name={name} value={value} onChange={onChange} className="appearance-none p-2 text-sm outline-none border border-gray-300 rounded-lg bg-white w-full cursor-pointer">
             <option value="" >Select {FormatLabelName(name)}</option>
             {options.map((option, index) => (
-                <option key={index} value={option.id} selected={option.id === selectedId}>
+                <option key={index} value={option.id} defaultValue={selectedId}>
                 {option.name}
                 </option>
             ))}
