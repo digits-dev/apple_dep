@@ -198,7 +198,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
             <DissapearingToast type={messageType} message={formMessage} />
             <ContentPanel>
             <form onSubmit={rows ? handleCreate : handleEdit}>
-                <InputComponent  type="text" name="name" inputChange={handleInputChange} displayName="Privilege Name" placeholder="Privilege Name" value={rows ? rows.name : forms.name}></InputComponent>
+                <InputComponent  type="text" name="name" onChange={handleInputChange} displayName="Privilege Name" placeholder="Privilege Name" value={rows ? rows.name : forms.name}></InputComponent>
                 {(errors.name) && (
                     <div className="font-nunito-sans font-bold text-red-600">
                         {errors.name}
@@ -206,8 +206,8 @@ const AddPrivileges = ({modules, row, role_data}) => {
                 )}
                 <div id='set_as_superadmin' onClick={handleSetAsSuperadmin}>
                     <label>Set as Superadmin</label>
-                    <InputComponent inputChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="Yes" value="1"></InputComponent>
-                    <InputComponent inputChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="No" value="0"></InputComponent>
+                    <InputComponent onChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="Yes" value="1"></InputComponent>
+                    <InputComponent onChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="No" value="0"></InputComponent>
                     {(errors.is_superadmin) && (
                         <div className="font-nunito-sans font-bold text-red-600">
                             {errors.is_superadmin}
