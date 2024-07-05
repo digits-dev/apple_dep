@@ -20,7 +20,10 @@ import TableContainer from "../../Components/Table/TableContainer";
 import RowActions from "../../Components/Table/RowActions";
 import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Modal from "../../Components/Modal/Modal";
+import EnrollmentStatusForm from "./EnrollmentStatusForm";
+import DissapearingToast from "../../Components/Toast/DissapearingToast";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
  
@@ -31,15 +34,40 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
 
+    const [showCreate, setShowCreate] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
+    const [message, setMessage] = useState('');
+
+    const handleShowCreate = () => {
+        setShowCreate(!showCreate);
+    }
+
+    const handleShowEdit = () => {
+        setShowEdit(!showEdit);
+    }
+
+    useEffect(()=>{ 
+        const timeout = setTimeout(()=>setMessage(''), 3000);
+    
+        return () => clearTimeout(timeout);
+
+     },[message])
+
+
     return (
         <>
         <Head title="Enrollment Status" />
         <AppContent>
+            <DissapearingToast type="success" message={message}/>
         
             <ContentPanel>
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
+                    <TableButton onClick={handleShowCreate}>
+                        Add Enrollment Status
+                    </TableButton>
                     <Import importPath="/enrollment-status-import" templatePath="/enrollment-status-import-template"/>
                     <Export  path="/enrollment-status-export"/>
                 </TopPanel>
@@ -90,6 +118,8 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
                                     <RowData isLoading={loading} center>
                                         <RowAction
+                                            type="button"
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.enrollment_status});}}
                                             action="edit"
                                             size="md"
                                         />
@@ -101,6 +131,22 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
 
                 <Pagination paginate={enrollment_status} />
             </ContentPanel>
+
+            <Modal
+                show={showCreate}
+                onClose={handleShowCreate}
+                title="Add Status"
+            >
+                <EnrollmentStatusForm handleShow={()=>{handleShowCreate(); setMessage('Created Status');}} action="create" />
+            </Modal>
+
+            <Modal
+                show={showEdit}
+                onClose={handleShowEdit}
+                title="Edit Status"
+            >
+                <EnrollmentStatusForm handleShow={()=>{handleShowEdit(); setMessage('Updated Status');}} action="edit" updateFormValues={updateFormValues} />
+            </Modal>
         </AppContent>
         </>
     );

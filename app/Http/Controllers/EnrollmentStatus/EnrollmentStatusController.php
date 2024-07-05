@@ -39,6 +39,25 @@ class EnrollmentStatusController extends Controller
         return Inertia::render('EnrollmentStatus/EnrollmentStatus', [ 'enrollment_status' => $enrollmentStatus, 'queryParams' => request()->query()]);
     }
 
+    
+    public function store(Request $request){
+
+        $request->validate([
+            'enrollment_status' => 'required|unique:enrollment_statuses,enrollment_status',
+        ]);
+        
+        EnrollmentStatus::create(['enrollment_status'=> $request->input('enrollment_status')]);
+    }
+    
+    public function update(Request $request, EnrollmentStatus $enrollment_status){
+        $request->validate([
+            'enrollment_status' => "required|unique:enrollment_statuses,enrollment_status,$enrollment_status->id,id",
+        ]);
+
+        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status')]);
+    }
+
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');
