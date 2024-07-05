@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 use App\Exports\CustomerExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportCustomer;
+use App\ImportTemplates\ImportCustomerTemplate;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,12 @@ class CustomerController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Customer Template".".xlsx";
+        return Excel::download(new ImportCustomerTemplate, $filename);
     }
   
 }

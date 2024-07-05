@@ -2,26 +2,27 @@
 
 namespace App\Imports;
 
-use App\Models\Action;
+use App\Models\DepStatus;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class ImportActions implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithValidation
+class ImportDepStatus implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithValidation
 {
+ 
     public function model(array $row)
     {
 
-        $exists = DB::table('actions')->where('action_name', $row['action_name'])->first();
+        $exists = DB::table('dep_statuses')->where('dep_status', $row['dep_status'])->first();
 
         if($exists) {
             return null;
         }
 
-        return new Action([
-            'action_name' => $row['action_name'],
+        return new DepStatus([
+            'dep_status' => $row['dep_status'],
         ]);
 
     }
@@ -30,7 +31,7 @@ class ImportActions implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVal
     public function rules(): array
     {
         return [ 
-            '*.action_name' => 'required',
+            '*.dep_status' => 'required',
         ];
     }
 }

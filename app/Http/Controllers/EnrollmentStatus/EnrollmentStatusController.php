@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\EnrollmentStatus;
 use App\Exports\EnrollmentStatusExport;
+use App\Imports\ImportEnrollmentStatus;
+use App\ImportTemplates\ImportEnrollmentStatusTemplate;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\EnrollmentStatus;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +58,34 @@ class EnrollmentStatusController extends Controller
         ]);
 
         return $query;
+    }
+
+    public function import(Request $request)
+    {   
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+    
+        try {
+            $importFile = $request->file('file');
+
+            Excel::import(new ImportEnrollmentStatus, $importFile);
+    
+            return to_route('/enrollment_status');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // Handle validation errors during import
+            return back()->with('error', 'Validation error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // Handle other errors
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+      
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Enrollment Status Template".".xlsx";
+        return Excel::download(new ImportEnrollmentStatusTemplate, $filename);
     }
   
 }

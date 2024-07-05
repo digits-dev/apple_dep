@@ -8,7 +8,7 @@ const Select = ({ options, onChange, value, name, selectedId }) => {
     <div>
         <label htmlFor={name} className='block text-sm font-medium text-gray-700'>{FormatLabelName(name)}</label>
 
-        <div class="relative mt-1 ">
+        <div className="relative mt-1 ">
             <select id={name} name={name} value={value} onChange={onChange} className="appearance-none p-2 text-sm outline-none border border-gray-300 rounded-lg bg-white w-full cursor-pointer">
             <option value="" >Select {FormatLabelName(name)}</option>
             {options.map((option, index) => (

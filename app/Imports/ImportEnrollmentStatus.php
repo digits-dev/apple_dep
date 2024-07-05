@@ -3,25 +3,27 @@
 namespace App\Imports;
 
 use App\Models\Action;
+use App\Models\EnrollmentStatus;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class ImportActions implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithValidation
+class ImportEnrollmentStatus implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithValidation
+
 {
-    public function model(array $row)
+       public function model(array $row)
     {
 
-        $exists = DB::table('actions')->where('action_name', $row['action_name'])->first();
+        $exists = DB::table('enrollment_statuses')->where('enrollment_status', $row['enrollment_status'])->first();
 
         if($exists) {
             return null;
         }
 
-        return new Action([
-            'action_name' => $row['action_name'],
+        return new EnrollmentStatus([
+            'enrollment_status' => $row['enrollment_status'],
         ]);
 
     }
@@ -30,7 +32,7 @@ class ImportActions implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVal
     public function rules(): array
     {
         return [ 
-            '*.action_name' => 'required',
+            '*.enrollment_status' => 'required',
         ];
     }
 }

@@ -40,6 +40,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 <TopPanel>
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
+                    <Import importPath="/enrollment-status-import" templatePath="/enrollment-status-import-template"/>
                     <Export  path="/enrollment-status-export"/>
                 </TopPanel>
 

@@ -18,6 +18,7 @@ import TableContainer from "../../Components/Table/TableContainer";
 import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const EnrollmentList = ({ enrollmentLists, queryParams }) => {
     queryParams = queryParams || {};
@@ -141,9 +142,16 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
 									<RowData isLoading={loading}>{item.item_code}</RowData>
 									<RowData isLoading={loading} center>{item.serial_number}</RowData>
 									<RowData isLoading={loading} >{item.transaction_id}</RowData>
-									<RowData isLoading={loading} center>{item.dep_status ? "Success" : "Error"}</RowData>
+									<RowData isLoading={loading} center>{item.dep_status}</RowData>
 									<RowData isLoading={loading} center>{item.status_message}</RowData>
-									<RowData isLoading={loading} center>{item.enrollment_status}</RowData>
+									{/* <RowData isLoading={loading} center>{item.enrollment_status}</RowData> */}
+									<RowStatus
+										isLoading={loading}
+										status={item.enrollment_status == 'Completed' ? "completed" : "failed"}
+										center
+									>
+										{item.enrollment_status}
+									</RowStatus>
 									<RowData isLoading={loading} center>{item.created_date}</RowData>
                                     <RowData
 										isLoading={loading}

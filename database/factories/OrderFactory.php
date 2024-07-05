@@ -21,7 +21,7 @@ class OrderFactory extends Factory
             'customer_name' => 'Acme Corporation',
             'order_ref_no' => fake()->numerify('###########'),
             'dep_order' => 1,
-            'enrollment_status' => rand(0,1),
+            'enrollment_status' => fake()->randomElement(['Completed', "Failed"]),
             'order_date' => date('Y-m-d'),
         ];
     }

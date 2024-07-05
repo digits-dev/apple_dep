@@ -486,7 +486,7 @@ const Users = ({ users, options, queryParams }) => {
                                     Name
                                 </TableHeader>
 
-                                <TableHeader name="email">Email</TableHeader>
+                                <TableHeader name="email" queryParams={queryParams}>Email</TableHeader>
 
                                 <TableHeader
                                     name="privilege_name"
