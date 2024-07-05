@@ -83,7 +83,7 @@ class PrivilegesController extends Controller{
         if (!CommonHelpers::isCreate()) {
             echo 'error';
         }
-
+   
         $savePriv = [
             "name" => $request->name,
             "is_superadmin" => $request->is_superadmin,
@@ -105,19 +105,19 @@ class PrivilegesController extends Controller{
                 $arrs['is_read'] = @$data['is_read'] ?: 0;
                 $arrs['is_edit'] = @$data['is_edit'] ?: 0;
                 $arrs['is_delete'] = @$data['is_delete'] ?: 0;
-                $arrs['id_ad_privileges'] = $id;
-                $arrs['id_ad_modules'] = $id_modul;
-                DB::table("ad_privileges_roles")->insert($arrs);
+                $arrs['id_adm_privileges'] = $id;
+                $arrs['id_adm_modules'] = $id_modul;
+                DB::table("adm_privileges_roles")->insert($arrs);
 
-                $module = DB::table('ad_modules')->where('id', $id_modul)->first();
+                $module = DB::table('adm_modules')->where('id', $id_modul)->first();
             }
         }
 
         //Refresh Session Roles
-        $roles = DB::table('ad_privileges_roles')->where('id_ad_privileges', CommonHelpers::myPrivilegeId())->join('ad_modules', 'ad_modules.id', '=', 'id_ad_modules')->select('ad_modules.name', 'ad_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
+        $roles = DB::table('adm_privileges_roles')->where('id_adm_privileges', CommonHelpers::myPrivilegeId())->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
         Session::put('admin_privileges_roles', $roles);
 
-        CommonHelpers::redirect(CommonHelpers::mainpath(), "Created Successfully", 'success');
+        return json_encode(["message"=>"Created successfully!", "type"=>"success"]);
     }
 
     public function postEditSave(Request $request, $id){
