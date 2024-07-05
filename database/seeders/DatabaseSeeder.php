@@ -22,11 +22,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(20)->create();
 
-        Order::factory(20)->create();
+        // Order::factory(20)->create();
 
         // Device::factory(25)->create();
 
-        EnrollmentList::factory(25)->create();
+        // EnrollmentList::factory(25)->create();
 
         // Customer::factory(25)->create();
 
@@ -36,10 +36,10 @@ class DatabaseSeeder extends Seeder
 
         // EnrollmentStatus::factory(25)->create();
 
-        // $this->call([AdmModules::class]);
-        // $this->call([AdmMenus::class]);
-        // $this->call([AdmPrivileges::class]);
-        // $this->call([AdmMenuPrivileges::class]);
+        $this->call([AdmModules::class]);
+        $this->call([AdmMenus::class]);
+        $this->call([AdmPrivileges::class]);
+        $this->call([AdmMenuPrivileges::class]);
 
     }
 }
