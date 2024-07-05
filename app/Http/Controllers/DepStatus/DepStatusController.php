@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DepStatus;
 use App\Exports\DepStatusExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportDepStatus;
+use App\ImportTemplates\ImportDepStatusTemplate;
 use App\Models\DepStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,24 @@ class DepStatusController extends Controller
 
         return Inertia::render('DepStatus/DepStatus', [ 'dep_statuses' => $dep_statuses, 'queryParams' => request()->query()]);
     }
+
+    public function store(Request $request){
+
+        $request->validate([
+            'dep_status' => 'required|unique:dep_statuses,dep_status',
+        ]);
+        
+        DepStatus::create(['dep_status'=> $request->input('dep_status')]);
+    }
+    
+    public function update(Request $request, DepStatus $dep_status){
+        $request->validate([
+            'dep_status' => "required|unique:dep_statuses,dep_status,$dep_status->id,id",
+        ]);
+
+        $dep_status->update(['dep_status'=> $request->input('dep_status')]);
+    }
+
 
     public function export()
     {
@@ -79,5 +98,11 @@ class DepStatusController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Dep Status Template".".xlsx";
+        return Excel::download(new ImportDepStatusTemplate, $filename);
     }
 }

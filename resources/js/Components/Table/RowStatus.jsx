@@ -11,6 +11,8 @@ const RowStatus = ({
   const statusColor = {
       success: "bg-status-success",
       error: "bg-status-error",
+      completed: "bg-status-success",
+      failed:"bg-status-error",
   }[status];
 
 

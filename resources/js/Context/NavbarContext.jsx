@@ -48,9 +48,11 @@ const formatPathname = (pathname) => {
 };
 
 export const NavbarProvider = ({ children }) => {
-    const [title, setTitle] = useState(
-        formatPathname(window.location.pathname)
-    );
+    const [title, setTitle] = useState();
+
+    useEffect(() => {
+        setTitle(formatPathname(window.location.pathname));
+    }, [window.location.pathname]);
 
     return (
         <NavbarContext.Provider value={{ title, setTitle }}>

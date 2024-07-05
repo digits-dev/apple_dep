@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react'
+import { Head, Link } from '@inertiajs/react'
 import React from 'react'
 import { NavbarContext } from '../../Context/NavbarContext';
 import { useContext } from 'react';
@@ -11,6 +11,7 @@ import TableHeader from '../../Components/Table/TableHeader';
 import RowData from '../../Components/Table/RowData';
 import { useEffect } from 'react';
 import Tabs from '../../Components/Table/Tabs';
+import TableButton from '../../Components/Table/Buttons/TableButton';
 
 const OrderDetails = ({order}) => {
     const { setTitle } = useContext(NavbarContext);
@@ -30,19 +31,24 @@ const OrderDetails = ({order}) => {
         <Head title="Order Detailss" />
         <AppContent>
             <ContentPanel>
-                <div className='flex gap-10  text-gray-800 mb-8'>
-                    <div className='font-bold'>
-                        <p>Customer:</p>
-                        <p>Sales Order #:</p>
-                        <p>Order Ref #:</p>
-                        <p>Order Date:</p>
+             
+                <div className='flex justify-between items-start  text-gray-800 mb-8'>
+                    <div className='flex gap-10 '>
+                        <div className='font-bold'>
+                            <p>Customer:</p>
+                            <p>Sales Order #:</p>
+                            <p>Order Ref #:</p>
+                            <p>Order Date:</p>
+                        </div>
+                        <div className='font-medium'>
+                            <p>{order.customer_name}</p>
+                            <p>{order.sales_order_no}</p>
+                            <p>{order.order_ref_no}</p>
+                            <p>{order.order_date}</p>
+                        </div> 
                     </div>
-                    <div className='font-medium'>
-                        <p>{order.customer_name}</p>
-                        <p>{order.sales_order_no}</p>
-                        <p>{order.order_ref_no}</p>
-                        <p>{order.order_date}</p>
-                    </div>
+                    
+                    <Link href='/list_of_orders' as='button' ><TableButton>Back</TableButton></Link>
                 </div>
 
                 <TableContainer>

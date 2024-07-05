@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Action;
 use App\Exports\ActionsExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportActions;
+use App\ImportTemplates\ImportActionsTemplate;
 use App\Models\Action;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,24 @@ class ActionController extends Controller
         $actions = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
 
         return Inertia::render('Action/Action', [ 'actions' => $actions, 'queryParams' => request()->query()]);
+    }
+
+    
+    public function store(Request $request){
+
+        $request->validate([
+            'action_name' => 'required|unique:actions,action_name',
+        ]);
+        
+        Action::create(['action_name'=> $request->input('action_name')]);
+    }
+    
+    public function update(Request $request, Action $action){
+        $request->validate([
+            'action_name' => "required|unique:actions,action_name,$action->id,id",
+        ]);
+
+        $action->update(['action_name'=> $request->input('action_name')]);
     }
 
     public function export()
@@ -80,6 +99,12 @@ class ActionController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Actions Template".".xlsx";
+        return Excel::download(new ImportActionsTemplate, $filename);
     }
   
 }

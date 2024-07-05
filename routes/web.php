@@ -60,10 +60,29 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
 
+    //IMPORTS
     Route::post('/customers-import', [CustomerController::class, 'import']);
     Route::post('/actions-import', [ActionController::class, 'import']);
     Route::post('/dep-status-import', [DepStatusController::class, 'import']);
     Route::post('/enrollment-status-import', [EnrollmentStatusController::class, 'import']);
+
+    //IMPORTS TEMPLATE
+    Route::get('/customers-import-template', [CustomerController::class, 'downloadTemplate']);
+    Route::get('/actions-import-template', [ActionController::class, 'downloadTemplate']);
+    Route::get('/dep-status-import-template', [DepStatusController::class, 'downloadTemplate']);
+    Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
+
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+
+    Route::post('/actions', [ActionController::class, 'store']);
+    Route::put('/actions/{action}', [ActionController::class, 'update']);
+
+    Route::post('/dep_statuses', [DepStatusController::class, 'store']);
+    Route::put('/dep_statuses/{dep_status}', [DepStatusController::class, 'update']);
+
+    Route::post('/enrollment_statuses', [EnrollmentStatusController::class, 'store']);
+    Route::put('/enrollment_statuses/{enrollment_status}', [EnrollmentStatusController::class, 'update']);
 
 });
 

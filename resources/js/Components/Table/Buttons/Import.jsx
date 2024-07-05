@@ -7,7 +7,7 @@ const Import = ({importPath, templatePath}) => {
 
   const [show, setShow] = useState(false);
 
-  const { data, setData, post, progress, errors, reset  } = useForm({
+  const { data, setData, post, progress, errors, reset, clearErrors  } = useForm({
     file: null,
   })
 
@@ -48,17 +48,12 @@ const Import = ({importPath, templatePath}) => {
 
           </div>
 
-
-          
           {/* Buttons */}
           <div className='h-10 flex gap-4 justify-center items-center text-sm'>
             <button className='py-2 px-4 bg-primary border-[0.1px] border-primary text-white rounded-md' type="submit">Import</button>
-            <button onClick={handleShow} className='py-2 px-4 bg-gray-100 border-[0.1px] border-primary text-gray-900 rounded-md' type="button">Cancel</button>
+            <button onClick={()=>{handleShow(); reset(); clearErrors();}} className='py-2 px-4 bg-gray-100 border-[0.1px] border-primary text-gray-900 rounded-md' type="button">Cancel</button>
           </div>
         </form>
-
-
-      
       </div>
     </div>
     }
@@ -67,5 +62,3 @@ const Import = ({importPath, templatePath}) => {
 }
 
 export default Import
-
-// h-1/2 w-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-400

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EnrollmentStatus;
 use App\Exports\EnrollmentStatusExport;
 use App\Imports\ImportEnrollmentStatus;
+use App\ImportTemplates\ImportEnrollmentStatusTemplate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\EnrollmentStatus;
@@ -37,6 +38,25 @@ class EnrollmentStatusController extends Controller
 
         return Inertia::render('EnrollmentStatus/EnrollmentStatus', [ 'enrollment_status' => $enrollmentStatus, 'queryParams' => request()->query()]);
     }
+
+    
+    public function store(Request $request){
+
+        $request->validate([
+            'enrollment_status' => 'required|unique:enrollment_statuses,enrollment_status',
+        ]);
+        
+        EnrollmentStatus::create(['enrollment_status'=> $request->input('enrollment_status')]);
+    }
+    
+    public function update(Request $request, EnrollmentStatus $enrollment_status){
+        $request->validate([
+            'enrollment_status' => "required|unique:enrollment_statuses,enrollment_status,$enrollment_status->id,id",
+        ]);
+
+        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status')]);
+    }
+
 
     public function export()
     {
@@ -79,6 +99,12 @@ class EnrollmentStatusController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
       
+    }
+
+    public function downloadTemplate()
+    {
+        $filename = "Import Enrollment Status Template".".xlsx";
+        return Excel::download(new ImportEnrollmentStatusTemplate, $filename);
     }
   
 }

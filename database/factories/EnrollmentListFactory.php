@@ -21,9 +21,9 @@ class EnrollmentListFactory extends Factory
             'item_code' => fake()->numerify('########'),
             'serial_number' => fake()->numerify('#######'),
             'transaction_id' => fake()->numerify('######') . 'asea-asedawec2-aw3qcawe',
-            'dep_status' => rand(0,1),
+            'dep_status' => fake()->randomElement(['Success', "Error"]),
             'status_message' => fake()->sentence(),
-            'enrollment_status' => fake()->randomElement(['Success', "Error"]),
+            'enrollment_status' => fake()->randomElement(['Completed', "Failed"]),
         ];
     }
 }
