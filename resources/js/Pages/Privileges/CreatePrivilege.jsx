@@ -45,12 +45,17 @@ const AddPrivileges = ({modules, row, role_data}) => {
     const handleSelectAll = (e,permission) => {
         const { type, checked } = e.target;
         const actualValue = type === 'checkbox' ? (checked ? "1" : "") : value;
+         setSelectAll((prevState) => ({
+            ...prevState,
+            [permission]: !prevState[permission],
+        }));
         // Update roles state based on new select all state
         modules.map((item) => {
+            const isChecked = !roles[item.id]?.is_visible;
             setRoles((prevRoles) => ({
                 ...prevRoles,
                 [item.id]: {
-                    [permission]: !prevRoles[item.id]?.[permission],
+                    [permission]: isChecked,
                 },
             }));
 
@@ -66,10 +71,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
             });
         });
 
-        setSelectAll((prevState) => ({
-            ...prevState,
-            [permission]: !prevState[permission],
-        }));
+       
     };
 
     const handleCheckboxChange = (e, moduleId, permission) => {
@@ -285,6 +287,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
                         </thead>
                         <tbody>
                         {modules.map((modul, index) => {
+                            console.log(roles[modul.id].is_create);
                             return (
                                 <tr key={modul.id}>
                                     <td>{index + 1}</td>
@@ -350,6 +353,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
                                             value='1'
                                         />
                                     </td>
+                                  
                                 </tr>
                             );
                         })}                        

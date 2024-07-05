@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
     //PRIVILEGES
     Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');
+    Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');
     Route::post('/privilege/postAddSave', [PrivilegesController::class, 'postAddSave'])->name('postAddSave');
 
     //EXPORTS

@@ -69,12 +69,17 @@ class PrivilegesController extends Controller{
         if (!CommonHelpers::isCreate()){
             echo 'error!';
         }
-        
-        $data = [];
-        $data['row'] = DB::table($this->table_name)->where("id", $id)->first();
-        $data['page_title'] = "Edit Data";
-        $data['modules'] = DB::table("adm_modules")->where('is_protected', 0)->where('deleted_at', null)->select("ad_modules.*")->orderby("name", "asc")->get();
-        return view('admin/privileges/create-privilege', $data);
+        $row = DB::table($this->table_name)->where("id", $id)->first();
+        $modules = DB::table("adm_modules")->where('is_protected', 0)->where('deleted_at', null)->select("adm_modules.*")->orderby("name", "asc")->get();
+        $roles = DB::table('adm_privileges_roles')
+         ->whereIn('id_adm_modules', $modules->pluck('id'))
+         ->get()
+         ->groupBy('id_adm_modules');
+        return Inertia::render('Privileges/CreatePrivilege', [
+            'modules' => $modules,
+            'row'=> $row,
+            'role_data' => $roles
+        ]);
         
     }
 
@@ -124,7 +129,7 @@ class PrivilegesController extends Controller{
         if (!CommonHelpers::isUpdate()){
             echo 'error!';
         }
-    
+        dd($request->all());
         $savePriv = [
             "name" => $request->name,
             "is_superadmin" => $request->is_superadmin,

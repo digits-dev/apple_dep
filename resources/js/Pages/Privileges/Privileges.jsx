@@ -11,6 +11,8 @@ import RowData from "../../Components/Table/RowData";
 import TableSearch from "../../Components/Table/TableSearch";
 import PerPage from "../../Components/Table/PerPage";
 import TableButton from "../../Components/Table/Buttons/TableButton";
+import RowActions from "../../Components/Table/RowActions";
+import RowAction from "../../Components/Table/RowAction";
 
 
 const Privileges = ({privileges, queryParams}) => {
@@ -43,6 +45,9 @@ const Privileges = ({privileges, queryParams}) => {
                             <TableHeader name="super_admin" queryParams={queryParams} width="sm">
                                 Super Admin
                             </TableHeader>
+                            <TableHeader sortable={false} width="auto" sticky="right" justify="center">
+                                Action
+                            </TableHeader>
                         </Row>
                     </Thead>
                     <tbody>
@@ -57,6 +62,13 @@ const Privileges = ({privileges, queryParams}) => {
                                <RowData isLoading={loading}>
                                     {item.is_superadmin ? 'Superadmin' : 'Standard'}
                                </RowData>
+                               <RowData isLoading={loading} sticky="right" width="sm" center>
+                                    <RowActions>
+                                    <Link  href={`edit-privileges/${item.id}`}  className='bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border px-5 py-2'>
+                                        <i className="fa fa-edit"></i>
+                                    </Link>
+                                    </RowActions>
+                                </RowData>
                             </Row>
                         ))
                         }
