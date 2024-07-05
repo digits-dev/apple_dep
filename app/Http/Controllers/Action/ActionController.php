@@ -40,6 +40,24 @@ class ActionController extends Controller
         return Inertia::render('Action/Action', [ 'actions' => $actions, 'queryParams' => request()->query()]);
     }
 
+    
+    public function store(Request $request){
+
+        $request->validate([
+            'action_name' => 'required|unique:actions,action_name',
+        ]);
+        
+        Action::create(['action_name'=> $request->input('action_name')]);
+    }
+    
+    public function update(Request $request, Action $action){
+        $request->validate([
+            'action_name' => "required|unique:actions,action_name,$action->id,id",
+        ]);
+
+        $action->update(['action_name'=> $request->input('action_name')]);
+    }
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');

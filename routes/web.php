@@ -74,6 +74,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/customers', [CustomerController::class, 'store']);
     Route::put('/customers/{customer}', [CustomerController::class, 'update']);
 
+    Route::post('/actions', [ActionController::class, 'store']);
+    Route::put('/actions/{action}', [ActionController::class, 'update']);
+
 });
 
 Route::group([

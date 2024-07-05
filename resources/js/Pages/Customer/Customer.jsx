@@ -23,6 +23,9 @@ const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
 
     const [loading, setLoading] = useState(false);
+    router.on("start", () => setLoading(true));
+    router.on("finish", () => setLoading(false));
+
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
@@ -35,9 +38,6 @@ const Customer = ({ customers, queryParams }) => {
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
     }
-    
-    router.on("start", () => setLoading(true));
-    router.on("finish", () => setLoading(false));
 
     useEffect(()=>{ 
         const timeout = setTimeout(()=>setMessage(''), 3000);
@@ -128,7 +128,7 @@ const Customer = ({ customers, queryParams }) => {
                 onClose={handleShowCreate}
                 title="Add Customer"
             >
-                <CustomerForm handleShow={()=>{handleShowCreate(); setMessage('Created Customer'); setOpenToast(true);}} action="create" />
+                <CustomerForm handleShow={()=>{handleShowCreate(); setMessage('Created Customer');}} action="create" />
             </Modal>
 
             <Modal
@@ -136,7 +136,7 @@ const Customer = ({ customers, queryParams }) => {
                 onClose={handleShowEdit}
                 title="Edit Customer"
             >
-                <CustomerForm handleShow={()=>{handleShowEdit(); setMessage('Updated Customer'); setOpenToast(true);}} action="edit" updateFormValues={updateFormValues} />
+                <CustomerForm handleShow={()=>{handleShowEdit(); setMessage('Updated Customer');}} action="edit" updateFormValues={updateFormValues} />
             </Modal>
 
         
