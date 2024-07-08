@@ -43,21 +43,21 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
     const ListofOrdersEditActions = () => {
         return (
-            <div className="flex flex-col gap-y-3 py-2 text-white font-nunito-sans font-bold">
+            <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
                 <Link
-                    className="bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                     href={orderPath + `/${orderId}/edit`}
                 >
                     Enroll/Return Devices
                 </Link>
                 <Link
-                    className="bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                     href="#"
                 >
                     Override Order
                 </Link>
                 <Link
-                    className="bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                     href="#"
                 >
                     Void Order
