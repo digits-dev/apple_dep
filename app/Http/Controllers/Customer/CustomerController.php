@@ -57,6 +57,24 @@ class CustomerController extends Controller
         $customer->update(['customer_name'=> $request->input('customer_name'), 'status' => $request->input('status')]);
     }
 
+    public function bulkUpdate(Request $request){
+
+        $ids = $request->input('ids');
+        $status = $request->input('status');
+
+        $request->validate([
+            'ids' => 'required',
+            'ids.*' => 'exists:customers,id',
+            'status' => 'required', 
+        ]);
+
+        Customer::whereIn('id', $ids)->update(['status' => $status]);
+
+        $data = ['message'=>'Data updated!', 'status'=>'success'];
+
+        return response()->json($data);
+    }
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');

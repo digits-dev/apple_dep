@@ -22,7 +22,7 @@ const TableHeader = ({
   const handleSort = (name) => {
     let updatedParams = null;
 
-    if (name === queryParams.sortBy) {
+    if (name === queryParams?.sortBy) {
         const sortDir = sort_direction === "asc" ? "desc" : "asc";
         updatedParams = {...queryParams, sortDir: sortDir};
 
@@ -58,7 +58,7 @@ const TableHeader = ({
 
   return (
 		<th
-			onClick={(e) => handleSort(name)}
+			onClick={sortable ? (() => handleSort(name)) : undefined}
 			className={`text-secondary font-nunito-sans text-sm bg-white ${widthClass} ${stickyClass}`}>
 			<div className={`px-5 py-3.5 flex items-center gap-3  left- ${sortable && "cursor-pointer"} ${justifyClass}`}>
 				{children}

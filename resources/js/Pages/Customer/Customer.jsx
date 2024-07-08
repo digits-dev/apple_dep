@@ -19,6 +19,9 @@ import Modal from "../../Components/Modal/Modal";
 import CustomerForm from "./CustomerForm";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import RowStatus from "../../Components/Table/RowStatus";
+import Checkbox from "../../Components/Checkbox/Checkbox";
+import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import axios from "axios";
 
 const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
@@ -29,12 +32,11 @@ const Customer = ({ customers, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({
-        currentValue: "",
-        currentId: "",
-        status: Boolean,
-    });
-    const [message, setMessage] = useState("");
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
+    const [message, setMessage] = useState('');
+	const [messageType, setMessageType] = useState("");
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
@@ -44,20 +46,88 @@ const Customer = ({ customers, queryParams }) => {
         setShowEdit(!showEdit);
     };
 
-    useEffect(() => {
-        const timeout = setTimeout(() => setMessage(""), 3000);
+    const handleCheckboxChange = (itemId) => {
+		if (selectedItems.includes(itemId)) {
+		  setSelectedItems(selectedItems.filter(id => id !== itemId));
+		} else {
+		  setSelectedItems([...selectedItems, itemId]);
+		}
+	  };
 
-        return () => clearTimeout(timeout);
-    }, [message]);
+      const handleSelectAll = () => {
+		if (selectAll) {
+		  setSelectedItems([]);
+		} else {
+		  const allItemIds = customers.data.map(item => item.id);
+		  setSelectedItems(allItemIds);
+		}
+		setSelectAll(!selectAll);
+	  };
 
+      const resetCheckbox = () => {
+        setSelectedItems([]);
+        setSelectAll(false);
+      }
+
+      const handleActionSelected = (action) => {
+		const actionType = action;
+
+		if(selectedItems.length === 0){
+			setMessage("Nothing selected!");
+            setMessageType("Error");
+            setTimeout(() => setMessage(""), 3000);
+		} else{
+			Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    actionType ? "Active" : "Inactive"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+
+                        const response = await axios.put(
+                            "/customers/bulkupdate",
+                            {
+                                ids: selectedItems,
+                                status: actionType
+                            }
+                        );
+
+                        if (response.data.status == "success") {
+                            setMessage(response.data.message);
+                            setMessageType(response.data.status);
+                            setTimeout(() => setMessage(""), 3000);
+
+                            router.reload({ only: ["customers"] });
+
+                            resetCheckbox();
+                        }
+                    } catch (error) {}
+                }
+            });
+		}
+	  };
+
+      const actions = [
+        { label: <span><i className="fa fa-check-circle mr-2"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2"></i> Set Inactive</span>, value: 0 },
+      ];
+    
+    
     return (
         <>
             <Head title="Customer" />
             <AppContent>
-                <DissapearingToast type="success" message={message} />
+                <DissapearingToast type={messageType} message={message} />
 
                 <ContentPanel>
                     <TopPanel>
+                    <BulkActions actions={actions} onActionSelected={handleActionSelected} />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         {/* <TableButton onClick={handleShowCreate}>
@@ -73,6 +143,19 @@ const Customer = ({ customers, queryParams }) => {
                     <TableContainer>
                         <Thead>
                             <Row>
+                            <TableHeader
+                                    width="sm"
+                                    sortable={false}
+                                    justify="center"
+                                >
+                                    <Checkbox
+                                        type="checkbox"
+                                        name="selectAll"
+                                        id="selectAll"
+                                        handleClick={handleSelectAll}
+                                        isChecked={selectAll}
+                                    />
+                            </TableHeader>
                                 <TableHeader
                                     name="id"
                                     queryParams={queryParams}
@@ -100,32 +183,38 @@ const Customer = ({ customers, queryParams }) => {
                                     justify="center"
                                 >
                                     Status
-                                </TableHeader>
-
-                                <TableHeader
-                                    sortable={false}
-                                    width="auto"
-                                    justify="center"
-                                >
-                                    Action
-                                </TableHeader>
-                            </Row>
-                        </Thead>
-
-                        <tbody>
-                            {customers &&
-                                customers.data.map((item) => (
-                                    <Row key={item.id}>
-                                        <RowData isLoading={loading}>
-                                            {item.id}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.customer_name}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.created_date}
-                                        </RowData>
-                                        <RowStatus
+                            </TableHeader>
+    
+                  
+                            <TableHeader
+								sortable={false}
+								width="auto"
+                                justify="center"
+							>
+								Action
+							</TableHeader>
+                        </Row>
+                    </Thead>
+    
+                    <tbody>
+                        {customers &&
+                            customers.data.map((item) => (
+                                <Row key={item.id} >
+                                    <RowData center>
+                                        <Checkbox
+                                            type="checkbox"
+                                            name="users_id[]"
+                                            id={item.id}
+                                            handleClick={()=>handleCheckboxChange(item.id)}
+                                            isChecked={selectedItems.includes(item.id)}
+                                        />
+                                    </RowData>
+                                    <RowData isLoading={loading} >
+                                        {item.id}
+                                    </RowData>
+                                    <RowData isLoading={loading}>{item.customer_name}</RowData>
+                                    <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowStatus
                                             isLoading={loading}
                                             status={
                                                 item.status
@@ -133,64 +222,43 @@ const Customer = ({ customers, queryParams }) => {
                                                     : "error"
                                             }
                                             center
-                                        >
-                                            {item.status
-                                                ? "Active"
-                                                : "Inactive"}
-                                        </RowStatus>
-                                        <RowData isLoading={loading} center>
-                                            <RowAction
-                                                type="button"
-                                                onClick={() => {
-                                                    handleShowEdit();
-                                                    setUpdateFormValues({
-                                                        currentId: item.id,
-                                                        currentValue:
-                                                            item.customer_name,
-                                                        status: item.status,
-                                                    });
-                                                }}
-                                                action="edit"
-                                                size="md"
-                                            />
-                                        </RowData>
-                                    </Row>
-                                ))}
-                        </tbody>
-                    </TableContainer>
+                                    >
+                                            {item.status ? "Active" : "Inactive"}
+                                    </RowStatus>
+                                    <RowData isLoading={loading} center>
+                                        <RowAction
+                                            type="button"
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.customer_name, status:item.status});}}
+                                            action="edit"
+                                            size="md"
+                                        />
+                                    </RowData>
+                                </Row>
+                            ))}
+                    </tbody>
+                </TableContainer>
+    
+                <Pagination paginate={customers} onClick={resetCheckbox} />
+            </ContentPanel>
 
-                    <Pagination paginate={customers} />
-                </ContentPanel>
+            <Modal
+                show={showCreate}
+                onClose={handleShowCreate}
+                title="Add Customer"
+            >
+                <CustomerForm handleShow={()=>{handleShowCreate(); setMessage('Created Customer');}} action="create" />
+            </Modal>
 
-                <Modal
-                    show={showCreate}
-                    onClose={handleShowCreate}
-                    title="Add Customer"
-                >
-                    <CustomerForm
-                        handleShow={() => {
-                            handleShowCreate();
-                            setMessage("Created Customer");
-                        }}
-                        action="create"
-                    />
-                </Modal>
+            <Modal
+                show={showEdit}
+                onClose={handleShowEdit}
+                title="Edit Customer"
+            >
+                <CustomerForm handleShow={()=>{handleShowEdit(); setMessage('Updated Customer');}} action="edit" updateFormValues={updateFormValues} />
+            </Modal>
 
-                <Modal
-                    show={showEdit}
-                    onClose={handleShowEdit}
-                    title="Edit Customer"
-                >
-                    <CustomerForm
-                        handleShow={() => {
-                            handleShowEdit();
-                            setMessage("Updated Customer");
-                        }}
-                        action="edit"
-                        updateFormValues={updateFormValues}
-                    />
-                </Modal>
-            </AppContent>
+        
+        </AppContent>
         </>
     );
 };
