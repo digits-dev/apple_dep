@@ -51,9 +51,10 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer){
         $request->validate([
             'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
+            'status' => 'required',
         ]);
 
-        $customer->update(['customer_name'=> $request->input('customer_name')]);
+        $customer->update(['customer_name'=> $request->input('customer_name'), 'status' => $request->input('status')]);
     }
 
     public function export()

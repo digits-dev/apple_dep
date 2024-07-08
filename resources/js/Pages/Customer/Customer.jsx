@@ -29,7 +29,7 @@ const Customer = ({ customers, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
 
     const handleShowCreate = () => {
@@ -126,7 +126,7 @@ const Customer = ({ customers, queryParams }) => {
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.customer_name});}}
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.customer_name, status:item.status});}}
                                             action="edit"
                                             size="md"
                                         />
