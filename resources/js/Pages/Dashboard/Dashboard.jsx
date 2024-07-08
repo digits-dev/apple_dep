@@ -4,7 +4,7 @@ import AppContent from "../../Layouts/layout/AppContent";
 import Overview from "../../Components/Dashboard/Overview";
 import Orders from "../../Components/Dashboard/Orders";
 
-const Dashboard = ({ customer, orders, devices }) => {
+const Dashboard = ({ customer, orders, devices, orders_count_wdate }) => {
     const { auth } = usePage().props;
 
     useEffect(() => {
@@ -36,7 +36,7 @@ const Dashboard = ({ customer, orders, devices }) => {
                     orders={orders}
                     devices={devices}
                 />
-                <Orders />
+                <Orders orders_count_wdate={orders_count_wdate} />
             </AppContent>
         </>
     );

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContentPanel from "../Table/ContentPanel";
 import Chart from "react-apexcharts";
 
-const Orders = () => {
+const Orders = ({ orders_count_wdate }) => {
+    console.log(orders_count_wdate);
+
     const [chartOptions, setChartOptions] = useState({
         chart: {
             type: "line",
@@ -17,16 +19,7 @@ const Orders = () => {
         },
         xaxis: {
             type: "datetime",
-            categories: [
-                "2024-01-01",
-                "2024-02-01",
-                "2024-02-05",
-                "2024-03-01",
-                "2024-04-01",
-                "2024-05-01",
-                "2024-06-01",
-                "2024-07-01",
-            ],
+            categories: [],
         },
         colors: ["#595757"],
     });
@@ -35,9 +28,32 @@ const Orders = () => {
         {
             type: "area",
             name: "Orders",
-            data: [30, 40, 35, 50, 49, 70, 80, 1000],
+            data: [],
         },
     ]);
+
+    useEffect(() => {
+        if (orders_count_wdate && orders_count_wdate.length > 0) {
+            const dates = orders_count_wdate.map((order) => order.date);
+            const counts = orders_count_wdate.map((order) => order.count);
+
+            setChartOptions((prevOptions) => ({
+                ...prevOptions,
+                xaxis: {
+                    ...prevOptions.xaxis,
+                    categories: dates,
+                },
+            }));
+
+            setChartSeries([
+                {
+                    type: "area",
+                    name: "Orders",
+                    data: counts,
+                },
+            ]);
+        }
+    }, [orders_count_wdate]);
 
     return (
         <>
