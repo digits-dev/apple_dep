@@ -31,7 +31,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
 
     const handleShowCreate = () => {
@@ -128,7 +128,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.dep_status});}}
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.dep_status, status:item.status});}}
                                             action="edit"
                                             size="md"
                                         />

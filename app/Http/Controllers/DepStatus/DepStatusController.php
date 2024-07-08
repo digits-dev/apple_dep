@@ -51,9 +51,10 @@ class DepStatusController extends Controller
     public function update(Request $request, DepStatus $dep_status){
         $request->validate([
             'dep_status' => "required|unique:dep_statuses,dep_status,$dep_status->id,id",
+            'status' => 'required',
         ]);
 
-        $dep_status->update(['dep_status'=> $request->input('dep_status')]);
+        $dep_status->update(['dep_status'=> $request->input('dep_status'), 'status' => $request->input('status')]);
     }
 
 

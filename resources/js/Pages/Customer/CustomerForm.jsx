@@ -21,7 +21,7 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
 
     return (
         <>
-        <form onSubmit={handleSubmit}>
+        <form className='space-y-4' onSubmit={handleSubmit}>
             <InputComponent name="customer_name" value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}/>
             {errors.customer_name && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.customer_name}</em></span>}
            
