@@ -52,9 +52,10 @@ class EnrollmentStatusController extends Controller
     public function update(Request $request, EnrollmentStatus $enrollment_status){
         $request->validate([
             'enrollment_status' => "required|unique:enrollment_statuses,enrollment_status,$enrollment_status->id,id",
+            'status' => 'required',
         ]);
 
-        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status')]);
+        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status'),  'status' => $request->input('status')]);
     }
 
 
