@@ -22,6 +22,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
     queryParams = queryParams || {};
@@ -30,6 +31,14 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Submaster - DEP Status");
+        }, 5);
+    }, []);
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);

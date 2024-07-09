@@ -22,6 +22,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const Action = ({ actions, queryParams }) => {
     queryParams = queryParams || {};
@@ -30,6 +31,14 @@ const Action = ({ actions, queryParams }) => {
     
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Submaster - Actions");
+        }, 5);
+    }, []);
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);

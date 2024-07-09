@@ -9,9 +9,7 @@ import ContentPanel from "../../Components/Table/ContentPanel";
 import RowData from "../../Components/Table/RowData";
 import RowAction from "../../Components/Table/RowAction";
 import Row from "../../Components/Table/Row";
-import Import from "../../Components/Table/Buttons/Import";
 import Export from "../../Components/Table/Buttons/Export";
-import TableButton from "../../Components/Table/Buttons/TableButton";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import { useEffect, useState } from "react";
@@ -22,6 +20,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import axios from "axios";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
@@ -29,6 +28,14 @@ const Customer = ({ customers, queryParams }) => {
     const [loading, setLoading] = useState(false);
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Submaster - Customer");
+        }, 5);
+    }, []);
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);

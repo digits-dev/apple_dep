@@ -230,6 +230,18 @@ class AdmModules extends Seeder
                 'controller' => 'EnrollmentStatus\EnrollmentStatusController',
                 'is_protected' => 0,
                 'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Item Master',
+                'icon' => 'fa-solid fa-box-archive',
+                'path' => 'item_master',
+                'table_name' => 'item_master',
+                'controller' => 'ItemMaster\ItemMasterController',
+                'is_protected' => 0,
+                'is_active' => 1,
             ]
         ];
 

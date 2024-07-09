@@ -11,22 +11,33 @@ const Pagination = ({ paginate, onClick }) => {
         <div onClick={onClick} className="flex justify-between items-center w-full px-2 gap-2 mt-5">
             {mobileView ? 
             <>
-                <Link
-                    href={paginate.prev_page_url}
-                    preserveState
-                    preserveScroll
-                    className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-gray-500 shadow-md ${!paginate.prev_page_url && "opacity-50 cursor-not-allowed"} `}
-                >
-                 « Previous
-                </Link>
-                <Link
-                    href={paginate.next_page_url}
-                    preserveState
-                    preserveScroll
-                    className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-gray-500 shadow-md ${!paginate.next_page_url && "opacity-50 cursor-not-allowed"}`}
-                >
-                 Next »
-                </Link>
+                {paginate.prev_page_url ? 
+                    <Link
+                        href={paginate.prev_page_url}
+                        preserveState
+                        preserveScroll
+                        className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-primary hover:bg-secondary shadow-md `}
+                    >
+                    « Previous
+                    </Link> : 
+                    <span className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-primary shadow-md opacity-50 cursor-not-allowed`}>
+                        « Previous
+                    </span>
+                }
+
+                {paginate.next_page_url ? 
+                    <Link
+                        href={paginate.next_page_url}
+                        preserveState
+                        preserveScroll
+                        className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-primary hover:bg-secondary shadow-md `}
+                    >
+                    Next »
+                    </Link> :    
+                    <span className={`text-white block px-4 py-2 font-medium text-sm  rounded-md  bg-primary shadow-md opacity-50 cursor-not-allowed`}>
+                        Next »
+                    </span>
+                }
             </> 
             // Desktop View
             :
@@ -50,13 +61,13 @@ const Pagination = ({ paginate, onClick }) => {
                             href={link.url}
                             preserveScroll
                             preserveState
-                            className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-gray-500 
-                                ${link.active && "bg-gray-700 text-white"} ${!link.url && "cursor-not-allowed "}`}
+                            className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-primary hover:bg-secondary 
+                                ${link.active && "bg-secondary text-white"} ${!link.url && "cursor-not-allowed "}`}
                         >
                             {Label}
                         </Link> :
 
-                        <span className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-gray-500 
+                        <span className={`text-white inline-block px-4 py-2 font-medium text-sm first:border-l-0 last:border-r-0 first:rounded-tl-md first:rounded-bl-md last:rounded-tr-md last:rounded-br-md   border-l-[0.1px] border-r-[0.1px] border-gray-100 bg-primary hover:bg-secondary 
                             cursor-not-allowed `}>
                                 {Label}
                         </span>}
