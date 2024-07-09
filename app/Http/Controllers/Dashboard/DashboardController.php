@@ -4,25 +4,35 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\AppServiceProvider;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Customer;
+use App\Models\Device;
+use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-use DB;
-use Illuminate\Contracts\Session\Session;
 
 class DashboardController extends Controller
 {
 
     public function getIndex(): Response
     {
-        $data         = [];
+        $data = [];
+        $data['customer_count'] = Customer::count();
+        $data['orders_count'] = Order::count();
+        $data['devices'] = Device::count();
+        $data['orders_count_wdate'] = Order::select(DB::raw('DATE(order_date) as date'), DB::raw('count(*) as count'))
+                    ->groupBy('date')
+                    ->orderBy('date', 'desc')
+                    ->get();
+
         $sidebarMenus = CommonHelpers::sidebarMenu();
+        
         return Inertia::render('Dashboard/Dashboard', [
             'menus' => $sidebarMenus,
+            'customer' => $data['customer_count'],
+            'orders' => $data['orders_count'],
+            'devices' => $data['devices'],
+            'orders_count_wdate' => $data['orders_count_wdate'],
         ]);
     }
 }

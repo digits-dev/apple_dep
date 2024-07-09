@@ -36,7 +36,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
 
     const handleShowCreate = () => {
@@ -133,7 +133,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.enrollment_status});}}
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.enrollment_status, status:item.status});}}
                                             action="edit"
                                             size="md"
                                         />

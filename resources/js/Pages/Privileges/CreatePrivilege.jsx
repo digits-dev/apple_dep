@@ -10,8 +10,9 @@ import Checkbox from "../../Components/Checkbox/Checkbox";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import axios from "axios";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import RadioButton from "../../Components/Checkbox/RadioButton";
 
-const AddPrivileges = ({modules, row, role_data}) => {
+const AddPrivileges = ({ modules, row, role_data }) => {
     const { setTitle } = useContext(NavbarContext);
     const [roles, setRoles] = useState([]);
     const [rows, setRows] = useState([]);
@@ -33,19 +34,19 @@ const AddPrivileges = ({modules, row, role_data}) => {
         name: "",
         is_superadmin: "",
         privileges: {},
-        theme_color: ""
+        theme_color: "",
     });
 
-    useEffect(()=>{
-        setTitle('Add Privileges');
+    useEffect(() => {
+        setTitle("Add Privileges");
         setRoles(role_data);
         setRows(row);
-    },[]);
+    }, []);
 
-    const handleSelectAll = (e,permission) => {
+    const handleSelectAll = (e, permission) => {
         const { type, checked } = e.target;
-        const actualValue = type === 'checkbox' ? (checked ? "1" : "") : value;
-         setSelectAll((prevState) => ({
+        const actualValue = type === "checkbox" ? (checked ? "1" : "") : value;
+        setSelectAll((prevState) => ({
             ...prevState,
             [permission]: !prevState[permission],
         }));
@@ -65,18 +66,16 @@ const AddPrivileges = ({modules, row, role_data}) => {
                     ...forms.privileges,
                     [item.id]: {
                         ...forms.privileges[item.id],
-                        [permission]: actualValue
-                    }
-                }      
+                        [permission]: actualValue,
+                    },
+                },
             });
         });
-
-       
     };
 
     const handleCheckboxChange = (e, moduleId, permission) => {
         const { name, value, type, checked } = e.target;
-        const actualValue = type === 'checkbox' ? (checked ? "1" : "") : value;
+        const actualValue = type === "checkbox" ? (checked ? "1" : "") : value;
         const nameParts = name.split(/[\[\]]/).filter(Boolean);
         if (nameParts.length === 3) {
             setForms({
@@ -85,11 +84,11 @@ const AddPrivileges = ({modules, row, role_data}) => {
                     ...forms.privileges,
                     [nameParts[1]]: {
                         ...forms.privileges[nameParts[1]],
-                        [nameParts[2]]: actualValue
-                    }
-                }
+                        [nameParts[2]]: actualValue,
+                    },
+                },
             });
-        } 
+        }
         // Update roles based on the changed permissions
         setRoles((prevRoles) => ({
             ...prevRoles,
@@ -100,9 +99,9 @@ const AddPrivileges = ({modules, row, role_data}) => {
         }));
     };
 
-    const handleSelectHorizontal = (e,moduleId) => {
+    const handleSelectHorizontal = (e, moduleId) => {
         const { type, checked } = e.target;
-        const actualValue = type === 'checkbox' ? (checked ? "1" : "0") : value;
+        const actualValue = type === "checkbox" ? (checked ? "1" : "0") : value;
 
         const isChecked = !roles[moduleId]?.is_visible;
         setRoles((prevRoles) => ({
@@ -127,8 +126,8 @@ const AddPrivileges = ({modules, row, role_data}) => {
                     is_read: actualValue,
                     is_edit: actualValue,
                     is_delete: actualValue,
-                }
-            }      
+                },
+            },
         });
     };
 
@@ -159,11 +158,15 @@ const AddPrivileges = ({modules, row, role_data}) => {
         } else {
             setLoading(true);
             try {
-                const response = await axios.post("/privilege/postAddSave", forms, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
+                const response = await axios.post(
+                    "/privilege/postAddSave",
+                    forms,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
                 if (response.data.type == "success") {
                     setFormMessage(response.data.message);
                     setMessageType(response.data.type);
@@ -188,186 +191,338 @@ const AddPrivileges = ({modules, row, role_data}) => {
 
     const handleSetAsSuperadmin = (e) => {
         console.log(e.target.value);
-    }
+    };
 
     const handleEdit = async (e) => {
         e.preventDefault();
     };
 
-    return(
-    <>
-         <AppContent>
-            <DissapearingToast type={messageType} message={formMessage} />
-            <ContentPanel>
-            <form onSubmit={rows ? handleCreate : handleEdit}>
-                <InputComponent  type="text" name="name" onChange={handleInputChange} displayName="Privilege Name" placeholder="Privilege Name" value={rows ? rows.name : forms.name}></InputComponent>
-                {(errors.name) && (
-                    <div className="font-nunito-sans font-bold text-red-600">
-                        {errors.name}
-                    </div>
-                )}
-                <div id='set_as_superadmin' onClick={handleSetAsSuperadmin}>
-                    <label>Set as Superadmin</label>
-                    <InputComponent onChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="Yes" value="1"></InputComponent>
-                    <InputComponent onChange={handleInputChange} checked={rows.is_superadmin} type="radio" name="is_superadmin" displayName="No" value="0"></InputComponent>
-                    {(errors.is_superadmin) && (
-                        <div className="font-nunito-sans font-bold text-red-600">
-                            {errors.is_superadmin}
-                        </div>
-                    )}
-                </div>
-                <Select onChange={handleInputChange} name="theme_color" options={themeColor} />
-                <div id='privileges_configuration'>
-                    <label> Privileges Configuration</label>
-                    <table >
-                        <thead>
-                            <tr>
-                                <th width='3%'> No.</th>
-                                <th width='60%'> Module's Name</th>
-                                <th>&nbsp;</th>
-                                <th>View</th>
-                                <th>Create</th>
-                                <th>Read</th>
-                                <th>Update</th>
-                                <th>Delete</th>
-                                <th>&nbsp;</th>
-                            </tr>
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <td>
-                                    <Checkbox 
-                                        name='Check all vertical' 
-                                        type='checkbox' 
-                                        id='is_visible' 
-                                        isChecked={selectAll.is_visible} 
-                                        handleClick={(e) => handleSelectAll(e,'is_visible')}
-                                    />
-                                </td>
-                                <td>
-                                    <Checkbox 
-                                        name='Check all vertical' 
-                                        type='checkbox' 
-                                        id='is_create' 
-                                        isChecked={selectAll.is_create}
-                                        handleClick={(e) => handleSelectAll(e,'is_create')}
-                                    />
-                                </td>
-                                <td>
-                                    <Checkbox 
-                                        name='Check all vertical' 
-                                        type='checkbox' 
-                                        id='is_read' 
-                                        isChecked={selectAll.is_read}
-                                        handleClick={(e) => handleSelectAll(e,'is_read')}
-                                    />
-                                </td>
-                                <td>
-                                    <Checkbox 
-                                        name='Check all vertical' 
-                                        type='checkbox' 
-                                        id='is_edit' 
-                                        isChecked={selectAll.is_edit}
-                                        handleClick={(e) => handleSelectAll(e,'is_edit')}
-                                    />
-                                </td>
-                                <td>
-                                    <Checkbox 
-                                        name='Check all vertical' 
-                                        type='checkbox' 
-                                        id='is_delete' 
-                                        isChecked={selectAll.is_delete}
-                                        handleClick={(e) => handleSelectAll(e,'is_delete')}
-                                    />
-                                </td>
-                                <td></td>
+    return (
+        <>
+            <AppContent>
+                <DissapearingToast type={messageType} message={formMessage} />
+                <form onSubmit={rows ? handleCreate : handleEdit}>
+                    <ContentPanel marginBottom={2}>
+                        <InputComponent
+                            type="text"
+                            name="name"
+                            onChange={handleInputChange}
+                            displayName="Privilege Name"
+                            placeholder="Privilege Name"
+                            value={rows ? rows.name : forms.name}
+                        ></InputComponent>
+                        {errors.name && (
+                            <div className="font-nunito-sans font-bold text-red-600 text-sm mt-1">
+                                {errors.name}
+                            </div>
+                        )}
+                        <div
+                            id="set_as_superadmin"
+                            onClick={handleSetAsSuperadmin}
+                            className="mb-2"
+                        >
+                            <label className="block text-sm font-bold text-gray-700 font-nunito-sans mt-2">
+                                Set as Superadmin
+                            </label>
+                            <RadioButton
+                                label="Yes"
+                                onChange={handleInputChange}
+                                checked={rows.is_superadmin}
+                                name="is_superadmin"
+                                displayName="Yes"
+                                value="1"
+                            />
+                            <RadioButton
+                                label="No"
+                                onChange={handleInputChange}
+                                checked={rows.is_superadmin}
+                                type="radio"
+                                name="is_superadmin"
+                                displayName="No"
+                                value="0"
+                            />
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {modules.map((modul, index) => {
-                            console.log(roles[index][modul.id].is_create);
-                            return (
-                                <tr key={modul.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{modul.name}</td>
-                                    <td className='info'>
-                                        <Checkbox
-                                            type='checkbox'
-                                            title='Check All Horizontal'
-                                            isChecked={roles[modul.id]?.is_visible && roles[modul.id]?.is_create && roles[modul.id]?.is_read && roles[modul.id]?.is_edit && roles[modul.id]?.is_delete} 
-                                            handleClick={(e) => handleSelectHorizontal(e,modul.id)}
-                                            className='select_horizontal'
-                                        />
-                                    </td>
-                                    <td>
-                                        <Checkbox
-                                            type='checkbox'
-                                            className='is_visible'
-                                            id='is_visible' 
-                                            name={`privileges[${modul.id}][is_visible]`}
-                                            isChecked={roles[index][modul.id]?.is_visible || false} 
-                                            handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_visible')}
-                                            value='1'
-                                        />
-                                    </td>
-                                    <td className='warning'>
-                                        <Checkbox
-                                            type='checkbox'
-                                            className='is_create'
-                                            id='is_create'
-                                            name={`privileges[${modul.id}][is_create]`}
-                                            isChecked={roles[modul.id]?.is_create || false} 
-                                            handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_create')}
-                                            value='1'
-                                        />
-                                    </td>
-                                    <td className='info'>
-                                        <Checkbox
-                                            type='checkbox'
-                                            className='is_read'
-                                            name={`privileges[${modul.id}][is_read]`}
-                                            isChecked={roles[modul.id]?.is_read || false} 
-                                            handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_read')}
-                                            value='1'
-                                        />
-                                    </td>
-                                    <td className='success'>
-                                        <Checkbox
-                                            type='checkbox'
-                                            className='is_edit'
-                                            name={`privileges[${modul.id}][is_edit]`}
-                                            isChecked={roles[modul.id]?.is_edit || false} 
-                                            handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_edit')}
-                                            value='1'
-                                        />
-                                    </td>
-                                    <td className='danger'>
-                                        <Checkbox
-                                            type='checkbox'
-                                            className='is_delete'
-                                            name={`privileges[${modul.id}][is_delete]`}
-                                            isChecked={roles[modul.id]?.is_delete || false} 
-                                            handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_delete')}
-                                            value='1'
-                                        />
-                                    </td>
-                                  
-                                </tr>
-                            );
-                        })}                        
-                        </tbody>
-                    </table>
-                </div>
-                <TableButton type="submit">
-                    Save
-                </TableButton>
-             </form>
-            </ContentPanel>
-         </AppContent>
-    </>
+                            {errors.is_superadmin && (
+                                <div className="font-nunito-sans font-bold text-red-600 text-sm mt-1">
+                                    {errors.is_superadmin}
+                                </div>
+                            )}
+                        </div>
+                        <Select
+                            onChange={handleInputChange}
+                            name="theme_color"
+                            options={themeColor}
+                        />
+                    </ContentPanel>
+                    <ContentPanel>
+                        <label className="block text-sm font-bold text-gray-700 font-nunito-sans mb-2">
+                            Privileges Configuration
+                        </label>
+                        <div
+                            id="privileges_configuration"
+                            className="flex flex-col mt-5 ml-2 overflow-x-auto overflow-y-hidden"
+                        >
+                            <table>
+                                <thead>
+                                    <tr className="font-nunito-sans font-extrabold h-12 text-white">
+                                        <th width="3%" className="bg-gray-500">
+                                            No.
+                                        </th>
+                                        <th width="60%" className="bg-gray-500">
+                                            Module's Name
+                                        </th>
+                                        <th className="bg-gray-500">&nbsp;</th>
+                                        <th className="bg-gray-500">View</th>
+                                        <th className="bg-gray-500">Create</th>
+                                        <th className="bg-gray-500">Read</th>
+                                        <th className="bg-gray-500">Update</th>
+                                        <th className="bg-gray-500">Delete</th>
+                                    </tr>
+                                    <tr>
+                                        <th className="bg-blue-100">&nbsp;</th>
+                                        <th className="bg-blue-100">&nbsp;</th>
+                                        <th className="bg-blue-100 ">&nbsp;</th>
+                                        <td className="bg-blue-100 flex justify-center">
+                                            <Checkbox
+                                                name="Check all vertical"
+                                                type="checkbox"
+                                                id="is_visible"
+                                                isChecked={selectAll.is_visible}
+                                                handleClick={(e) =>
+                                                    handleSelectAll(
+                                                        e,
+                                                        "is_visible"
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                        <td className="bg-blue-100">
+                                            <div className="bg-blue-100 bg- flex justify-center">
+                                                <Checkbox
+                                                    name="Check all vertical"
+                                                    type="checkbox"
+                                                    id="is_create"
+                                                    isChecked={
+                                                        selectAll.is_create
+                                                    }
+                                                    handleClick={(e) =>
+                                                        handleSelectAll(
+                                                            e,
+                                                            "is_create"
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="bg-blue-100 bg- flex justify-center">
+                                            <Checkbox
+                                                name="Check all vertical"
+                                                type="checkbox"
+                                                id="is_read"
+                                                isChecked={selectAll.is_read}
+                                                handleClick={(e) =>
+                                                    handleSelectAll(
+                                                        e,
+                                                        "is_read"
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                        <td className="bg-blue-100">
+                                            <div className="flex justify-center">
+                                                <Checkbox
+                                                    name="Check all vertical"
+                                                    type="checkbox"
+                                                    id="is_edit"
+                                                    isChecked={
+                                                        selectAll.is_edit
+                                                    }
+                                                    handleClick={(e) =>
+                                                        handleSelectAll(
+                                                            e,
+                                                            "is_edit"
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="flex justify-center bg-blue-100">
+                                            <Checkbox
+                                                name="Check all vertical"
+                                                type="checkbox"
+                                                id="is_delete"
+                                                isChecked={selectAll.is_delete}
+                                                handleClick={(e) =>
+                                                    handleSelectAll(
+                                                        e,
+                                                        "is_delete"
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {modules.map((modul, index) => {
+                                        return (
+                                            <tr key={modul.id}>
+                                                <td className="text-center font-nunito-sans font-semibold">
+                                                    {index + 1}
+                                                </td>
+                                                <td className="text-center font-nunito-sans font-semibold">
+                                                    {modul.name}
+                                                </td>
+                                                <td className="info bg-blue-100">
+                                                    <div className="flex justify-center ">
+                                                        <Checkbox
+                                                            type="checkbox"
+                                                            title="Check All Horizontal"
+                                                            isChecked={
+                                                                roles[modul.id]
+                                                                    ?.is_visible &&
+                                                                roles[modul.id]
+                                                                    ?.is_create &&
+                                                                roles[modul.id]
+                                                                    ?.is_read &&
+                                                                roles[modul.id]
+                                                                    ?.is_edit &&
+                                                                roles[modul.id]
+                                                                    ?.is_delete
+                                                            }
+                                                            handleClick={(e) =>
+                                                                handleSelectHorizontal(
+                                                                    e,
+                                                                    modul.id
+                                                                )
+                                                            }
+                                                            className="select_horizontal"
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="bg-gray-100 flex justify-center ">
+                                                    <Checkbox
+                                                        type="checkbox"
+                                                        className="is_visible"
+                                                        id="is_visible"
+                                                        name={`privileges[${modul.id}][is_visible]`}
+                                                        isChecked={
+                                                            roles[modul.id]
+                                                                ?.is_visible ||
+                                                            false
+                                                        }
+                                                        handleClick={(e) =>
+                                                            handleCheckboxChange(
+                                                                e,
+                                                                modul.id,
+                                                                "is_visible"
+                                                            )
+                                                        }
+                                                        value="1"
+                                                    />
+                                                </td>
+                                                <td className="warning bg-yellow-100">
+                                                    <div className="flex justify-center ">
+                                                        <Checkbox
+                                                            type="checkbox"
+                                                            className="is_create"
+                                                            id="is_create"
+                                                            name={`privileges[${modul.id}][is_create]`}
+                                                            isChecked={
+                                                                roles[modul.id]
+                                                                    ?.is_create ||
+                                                                false
+                                                            }
+                                                            handleClick={(e) =>
+                                                                handleCheckboxChange(
+                                                                    e,
+                                                                    modul.id,
+                                                                    "is_create"
+                                                                )
+                                                            }
+                                                            value="1"
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="info flex justify-center bg-indigo-200">
+                                                    <Checkbox
+                                                        type="checkbox"
+                                                        className="is_read"
+                                                        name={`privileges[${modul.id}][is_read]`}
+                                                        isChecked={
+                                                            roles[modul.id]
+                                                                ?.is_read ||
+                                                            false
+                                                        }
+                                                        handleClick={(e) =>
+                                                            handleCheckboxChange(
+                                                                e,
+                                                                modul.id,
+                                                                "is_read"
+                                                            )
+                                                        }
+                                                        value="1"
+                                                    />
+                                                </td>
+                                                <td className="success bg-green-200">
+                                                    <div className="flex justify-center">
+                                                        <Checkbox
+                                                            type="checkbox"
+                                                            className="is_edit"
+                                                            name={`privileges[${modul.id}][is_edit]`}
+                                                            isChecked={
+                                                                roles[modul.id]
+                                                                    ?.is_edit ||
+                                                                false
+                                                            }
+                                                            handleClick={(e) =>
+                                                                handleCheckboxChange(
+                                                                    e,
+                                                                    modul.id,
+                                                                    "is_edit"
+                                                                )
+                                                            }
+                                                            value="1"
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="danger bg-red-200 flex justify-center">
+                                                    <Checkbox
+                                                        type="checkbox"
+                                                        className="is_delete"
+                                                        name={`privileges[${modul.id}][is_delete]`}
+                                                        isChecked={
+                                                            roles[modul.id]
+                                                                ?.is_delete ||
+                                                            false
+                                                        }
+                                                        handleClick={(e) =>
+                                                            handleCheckboxChange(
+                                                                e,
+                                                                modul.id,
+                                                                "is_delete"
+                                                            )
+                                                        }
+                                                        value="1"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="mt-5 flex justify-between">
+                            <Link href="/privileges" as="button">
+                                <TableButton>Back</TableButton>
+                            </Link>
+                            <TableButton type="submit">Save</TableButton>
+                        </div>
+                    </ContentPanel>
+                </form>
+            </AppContent>
+        </>
     );
-}
+};
 
 export default AddPrivileges;

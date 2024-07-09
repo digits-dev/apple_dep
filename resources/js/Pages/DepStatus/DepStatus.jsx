@@ -1,4 +1,4 @@
-import { Head,  router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -21,7 +21,6 @@ import DepStatusForm from "./DepStatusForm";
 import RowStatus from "../../Components/Table/RowStatus";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
- 
     queryParams = queryParams || {};
 
     const [loading, setLoading] = useState(false);
@@ -31,136 +30,170 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:''});
-    const [message, setMessage] = useState('');
+    const [updateFormValues, setUpdateFormValues] = useState({
+        currentValue: "",
+        currentId: "",
+        status: Boolean,
+    });
+    const [message, setMessage] = useState("");
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
-    }
+    };
 
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
-    }
+    };
 
-    useEffect(()=>{ 
-        const timeout = setTimeout(()=>setMessage(''), 3000);
-    
+    useEffect(() => {
+        const timeout = setTimeout(() => setMessage(""), 3000);
+
         return () => clearTimeout(timeout);
-
-     },[message])
-
+    }, [message]);
 
     return (
         <>
-        <Head title="DEP Status" />
-        <AppContent>
-            <DissapearingToast type="success" message={message}/>
-        
-            <ContentPanel>
-                <TopPanel>
-                    <TableSearch queryParams={queryParams} />
-                    <PerPage queryParams={queryParams} />
-                    <TableButton onClick={handleShowCreate}>
-                        Add Dep Status
-                    </TableButton>
-                    <Import importPath='/dep-status-import' templatePath="/dep-status-import-template"/>
-                    <Export  path="/dep-status-export"/>
-                </TopPanel>
+            <Head title="DEP Status" />
+            <AppContent>
+                <DissapearingToast type="success" message={message} />
 
-                <TableContainer>
-                    <Thead>
-                        <Row>
-                            <TableHeader
-                                name="id"
-                                queryParams={queryParams}
-                            >
-                            DEP Status ID
-                            </TableHeader>
+                <ContentPanel>
+                    <TopPanel>
+                        <TableSearch queryParams={queryParams} />
+                        <PerPage queryParams={queryParams} />
+                        <TableButton onClick={handleShowCreate}>
+                            Add DEP Status
+                        </TableButton>
+                        <Import
+                            importPath="/dep-status-import"
+                            templatePath="/dep-status-import-template"
+                        />
+                        <Export path="/dep-status-export" />
+                    </TopPanel>
 
-                            <TableHeader
-                                name="dep_status"
-                                queryParams={queryParams}
-                            >
-                                DEP Status
-                            </TableHeader>
+                    <TableContainer>
+                        <Thead>
+                            <Row>
+                                <TableHeader
+                                    name="id"
+                                    queryParams={queryParams}
+                                >
+                                    DEP Status ID
+                                </TableHeader>
 
-                            <TableHeader
-                                name="created_date"
-                                queryParams={queryParams}
-                            >
-                                Record Creation Date
-                            </TableHeader>
+                                <TableHeader
+                                    name="dep_status"
+                                    queryParams={queryParams}
+                                >
+                                    DEP Status
+                                </TableHeader>
 
-                            <TableHeader
+                                <TableHeader
+                                    name="created_date"
+                                    queryParams={queryParams}
+                                >
+                                    Record Creation Date
+                                </TableHeader>
+
+                                <TableHeader
                                     name="status"
                                     queryParams={queryParams}
                                     justify="center"
-                            >
+                                >
                                     Status
-                            </TableHeader>
+                                </TableHeader>
 
-                            <TableHeader
-                                sortable={false}
-                                width="auto"
-                                justify="center"
-                            >
-                                Action
-                            </TableHeader>
-                        </Row>
-                    </Thead>
-
-                    <tbody>
-                        {dep_statuses &&
-                            dep_statuses.data.map((item) => (
-                                <Row key={item.id} >
-                                    <RowData isLoading={loading} >
-                                        {item.id}
-                                    </RowData>
-                                    <RowData isLoading={loading}>{item.dep_status}</RowData>
-                                    <RowData isLoading={loading} >{item.created_date}</RowData>
-                                    <RowStatus
-                                            isLoading={loading}
-                                            status={item.status ? "success" : "error"}
-                                            center
-                                    >
-                                            {item.status ? "Active" : "Inactive"}
-                                    </RowStatus>
-                                    <RowData isLoading={loading} center>
-                                        <RowAction
-                                            type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.dep_status});}}
-                                            action="edit"
-                                            size="md"
-                                        />
-                                    </RowData>
+                                <TableHeader
+                                    sortable={false}
+                                    width="auto"
+                                    justify="center"
+                                >
+                                    Action
+                                </TableHeader>
                             </Row>
-                            ))}
-                    </tbody>
-                </TableContainer>
+                        </Thead>
 
-                <Pagination paginate={dep_statuses} />
-            </ContentPanel>
+                        <tbody>
+                            {dep_statuses &&
+                                dep_statuses.data.map((item) => (
+                                    <Row key={item.id}>
+                                        <RowData isLoading={loading}>
+                                            {item.id}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.dep_status}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.created_date}
+                                        </RowData>
+                                        <RowStatus
+                                            isLoading={loading}
+                                            status={
+                                                item.status
+                                                    ? "success"
+                                                    : "error"
+                                            }
+                                            center
+                                        >
+                                            {item.status
+                                                ? "Active"
+                                                : "Inactive"}
+                                        </RowStatus>
+                                        <RowData isLoading={loading} center>
+                                            <RowAction
+                                                type="button"
+                                                onClick={() => {
+                                                    handleShowEdit();
+                                                    setUpdateFormValues({
+                                                        currentId: item.id,
+                                                        currentValue:
+                                                            item.dep_status,
+                                                        status: item.status,
+                                                    });
+                                                }}
+                                                action="edit"
+                                                size="md"
+                                            />
+                                        </RowData>
+                                    </Row>
+                                ))}
+                        </tbody>
+                    </TableContainer>
 
-            <Modal
-                show={showCreate}
-                onClose={handleShowCreate}
-                title="Add Status"
-            >
-                <DepStatusForm handleShow={()=>{handleShowCreate(); setMessage('Created Status');}} action="create" />
-            </Modal>
+                    <Pagination paginate={dep_statuses} />
+                </ContentPanel>
 
-            <Modal
-                show={showEdit}
-                onClose={handleShowEdit}
-                title="Edit Status"
-            >
-                <DepStatusForm handleShow={()=>{handleShowEdit(); setMessage('Updated Status');}} action="edit" updateFormValues={updateFormValues} />
-            </Modal>
-        </AppContent>
+                <Modal
+                    show={showCreate}
+                    onClose={handleShowCreate}
+                    title="Add Status"
+                >
+                    <DepStatusForm
+                        handleShow={() => {
+                            handleShowCreate();
+                            setMessage("Created Status");
+                        }}
+                        action="create"
+                    />
+                </Modal>
+
+                <Modal
+                    show={showEdit}
+                    onClose={handleShowEdit}
+                    title="Edit Status"
+                >
+                    <DepStatusForm
+                        handleShow={() => {
+                            handleShowEdit();
+                            setMessage("Updated Status");
+                        }}
+                        action="edit"
+                        updateFormValues={updateFormValues}
+                    />
+                </Modal>
+            </AppContent>
         </>
     );
 };
 
 export default DepStatus;
-
-

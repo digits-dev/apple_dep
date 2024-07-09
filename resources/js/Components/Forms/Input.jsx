@@ -10,11 +10,13 @@ const InputComponent = ({
     displayName,
     checked,
 }) => {
-
     return (
         <div className="">
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 font">
-                {displayName || FormatLabelName(name) }
+            <label
+                htmlFor={name}
+                className="block text-sm font-bold text-gray-700 font-nunito-sans"
+            >
+                {displayName || FormatLabelName(name)}
             </label>
             <input
                 id={name}

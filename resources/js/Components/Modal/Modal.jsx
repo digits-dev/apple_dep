@@ -12,12 +12,10 @@ const Modal = ({ show, onClose, children, title }) => {
                     <p className="font-nunito-sans font-extrabold text-lg">
                         {title}
                     </p>
-                    <p
+                    <i
+                        className="fa-solid fa-x text-red-500 font-extrabold text-md cursor-pointer"
                         onClick={onClose}
-                        className="cursor-pointer font-nunito-sans text-red-500 text-sm"
-                    >
-                        Close
-                    </p>
+                    ></i>
                 </div>
                 <main className="py-3 px-5">{children}</main>
             </div>

@@ -3,12 +3,12 @@ import { Link } from "@inertiajs/react";
 import useViewport from "../../Hooks/useViewport";
 
 
-const Pagination = ({ paginate }) => {
+const Pagination = ({ paginate, onClick }) => {
     const { width } = useViewport();
     const mobileView = width < 640 ? true : false ;
 
     return (
-        <div className="flex justify-between items-center w-full px-2 gap-2 mt-5">
+        <div onClick={onClick} className="flex justify-between items-center w-full px-2 gap-2 mt-5">
             {mobileView ? 
             <>
                 <Link
@@ -61,7 +61,7 @@ const Pagination = ({ paginate }) => {
                                 {Label}
                         </span>}
                       </Fragment>
-})}
+                    })}
                 </nav>
             </>
             }
