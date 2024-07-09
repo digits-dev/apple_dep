@@ -287,7 +287,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
                         </thead>
                         <tbody>
                         {modules.map((modul, index) => {
-                            console.log(roles[modul.id].is_create);
+                            console.log(roles[index][modul.id].is_create);
                             return (
                                 <tr key={modul.id}>
                                     <td>{index + 1}</td>
@@ -307,7 +307,7 @@ const AddPrivileges = ({modules, row, role_data}) => {
                                             className='is_visible'
                                             id='is_visible' 
                                             name={`privileges[${modul.id}][is_visible]`}
-                                            isChecked={roles[modul.id]?.is_visible || false} 
+                                            isChecked={roles[index][modul.id]?.is_visible || false} 
                                             handleClick={(e) => handleCheckboxChange(e,modul.id, 'is_visible')}
                                             value='1'
                                         />
