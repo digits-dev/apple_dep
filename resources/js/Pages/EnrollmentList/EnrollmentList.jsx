@@ -1,6 +1,5 @@
 import { Head,  router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
-import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";
@@ -12,7 +11,6 @@ import RowAction from "../../Components/Table/RowAction";
 import Row from "../../Components/Table/Row";
 import Export from "../../Components/Table/Buttons/Export";
 import Filters from "../../Components/Table/Buttons/Filters";
-import TableButton from "../../Components/Table/Buttons/TableButton";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import InputComponent from "../../Components/Forms/Input";
@@ -142,9 +140,14 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
 									<RowData isLoading={loading}>{item.item_code}</RowData>
 									<RowData isLoading={loading} center>{item.serial_number}</RowData>
 									<RowData isLoading={loading} >{item.transaction_id}</RowData>
-									<RowData isLoading={loading} center>{item.dep_status}</RowData>
+									<RowStatus
+										isLoading={loading}
+										status={item.dep_status == 'Success' ? "success" : "error"}
+										center
+									>
+										{item.dep_status}
+									</RowStatus>
 									<RowData isLoading={loading} center>{item.status_message}</RowData>
-									{/* <RowData isLoading={loading} center>{item.enrollment_status}</RowData> */}
 									<RowStatus
 										isLoading={loading}
 										status={item.enrollment_status == 'Completed' ? "completed" : "failed"}

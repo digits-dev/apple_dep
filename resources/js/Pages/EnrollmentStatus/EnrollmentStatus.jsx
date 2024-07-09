@@ -1,6 +1,5 @@
 import { Head,  router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
-import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";
@@ -13,17 +12,16 @@ import RowAction from "../../Components/Table/RowAction";
 import Row from "../../Components/Table/Row";
 import Import from "../../Components/Table/Buttons/Import";
 import Export from "../../Components/Table/Buttons/Export";
-import Filters from "../../Components/Table/Buttons/Filters";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
-import RowActions from "../../Components/Table/RowActions";
-import InputComponent from "../../Components/Forms/Input";
-import Select from "../../Components/Forms/Select";
 import { useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import EnrollmentStatusForm from "./EnrollmentStatusForm";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import Checkbox from "../../Components/Checkbox/Checkbox";
+import axios from "axios";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
  
@@ -38,6 +36,9 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
+	const [messageType, setMessageType] = useState("");
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
@@ -47,22 +48,87 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
         setShowEdit(!showEdit);
     }
 
-    useEffect(()=>{ 
-        const timeout = setTimeout(()=>setMessage(''), 3000);
-    
-        return () => clearTimeout(timeout);
+    const handleCheckboxChange = (itemId) => {
+		if (selectedItems.includes(itemId)) {
+		  setSelectedItems(selectedItems.filter(id => id !== itemId));
+		} else {
+		  setSelectedItems([...selectedItems, itemId]);
+		}
+	};
 
-     },[message])
+    const handleSelectAll = () => {
+		if (selectAll) {
+		  setSelectedItems([]);
+		} else {
+		  const allItemIds = enrollment_status?.data.map(item => item.id);
+		  setSelectedItems(allItemIds);
+		}
+		setSelectAll(!selectAll);
+	};
 
+    const resetCheckbox = () => {
+        setSelectedItems([]);
+        setSelectAll(false);
+    }
+
+    const handleActionSelected = (action) => {
+		const actionType = action;
+
+		if(selectedItems?.length === 0){
+			setMessage("Nothing selected!");
+            setMessageType("Error");
+            setTimeout(() => setMessage(""), 3000);
+		} else{
+			Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    actionType ? "Active" : "Inactive"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+
+                        const response = await axios.put(
+                            "/enrollment_statuses/bulkupdate",
+                            {
+                                ids: selectedItems,
+                                status: actionType
+                            }
+                        );
+
+                        if (response.data.status == "success") {
+                            setMessage(response.data.message);
+                            setMessageType(response.data.status);
+                            setTimeout(() => setMessage(""), 3000);
+
+                            router.reload({ only: ["enrollment_status"] });
+
+                            resetCheckbox();
+                        }
+                    } catch (error) {}
+                }
+            });
+		}
+	};
+
+    const bulkActions = [
+        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+    ];
 
     return (
         <>
         <Head title="Enrollment Status" />
         <AppContent>
-            <DissapearingToast type="success" message={message}/>
-        
+            <DissapearingToast type={messageType} message={message} />
+
             <ContentPanel>
                 <TopPanel>
+                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
                     <TableButton onClick={handleShowCreate}>
@@ -75,6 +141,20 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 <TableContainer>
                     <Thead>
                         <Row>
+                            <TableHeader
+                                    width="sm"
+                                    sortable={false}
+                                    justify="center"
+                            >
+                                <Checkbox
+                                    type="checkbox"
+                                    name="selectAll"
+                                    id="selectAll"
+                                    handleClick={handleSelectAll}
+                                    isChecked={selectAll}
+                                />
+                            </TableHeader>
+
                             <TableHeader
                                 name="id"
                                 queryParams={queryParams}
@@ -118,6 +198,14 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                         {enrollment_status &&
                             enrollment_status.data.map((item) => (
                                 <Row key={item.id} >
+                                    <RowData center>
+                                        <Checkbox
+                                            type="checkbox"
+                                            id={item.id}
+                                            handleClick={()=>handleCheckboxChange(item.id)}
+                                            isChecked={selectedItems.includes(item.id)}
+                                        />
+                                    </RowData>
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
@@ -143,7 +231,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                     </tbody>
                 </TableContainer>
 
-                <Pagination paginate={enrollment_status} />
+                <Pagination paginate={enrollment_status} onClick={resetCheckbox} />
             </ContentPanel>
 
             <Modal
@@ -151,7 +239,14 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 onClose={handleShowCreate}
                 title="Add Status"
             >
-                <EnrollmentStatusForm handleShow={()=>{handleShowCreate(); setMessage('Created Status');}} action="create" />
+                <EnrollmentStatusForm 
+                    handleShow={()=>{
+                        handleShowCreate(); 
+                        setMessageType('success');
+                        setMessage('Created Status'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="create" />
             </Modal>
 
             <Modal
@@ -159,7 +254,16 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 onClose={handleShowEdit}
                 title="Edit Status"
             >
-                <EnrollmentStatusForm handleShow={()=>{handleShowEdit(); setMessage('Updated Status');}} action="edit" updateFormValues={updateFormValues} />
+                <EnrollmentStatusForm 
+                    handleShow={()=>{
+                        handleShowEdit(); 
+                        setMessageType('success');
+                        setMessage('Updated Status'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="edit" 
+                    updateFormValues={updateFormValues} 
+                />
             </Modal>
         </AppContent>
         </>

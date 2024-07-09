@@ -54,7 +54,7 @@ const Privileges = ({ privileges, queryParams }) => {
                                     Name
                                 </TableHeader>
                                 <TableHeader
-                                    name="super_admin"
+                                    name="is_superadmin"
                                     queryParams={queryParams}
                                     width="sm"
                                 >

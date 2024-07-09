@@ -19,6 +19,9 @@ import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import ActionForm from "./ActionForm";
 import Modal from "../../Components/Modal/Modal";
 import RowStatus from "../../Components/Table/RowStatus";
+import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import Checkbox from "../../Components/Checkbox/Checkbox";
+import axios from "axios";
 
 const Action = ({ actions, queryParams }) => {
     queryParams = queryParams || {};
@@ -32,6 +35,9 @@ const Action = ({ actions, queryParams }) => {
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
     const [message, setMessage] = useState('');
+	const [messageType, setMessageType] = useState("");
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
@@ -40,15 +46,88 @@ const Action = ({ actions, queryParams }) => {
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
     }
-    
+
+    const handleCheckboxChange = (itemId) => {
+		if (selectedItems.includes(itemId)) {
+		  setSelectedItems(selectedItems.filter(id => id !== itemId));
+		} else {
+		  setSelectedItems([...selectedItems, itemId]);
+		}
+	};
+
+    const handleSelectAll = () => {
+		if (selectAll) {
+		  setSelectedItems([]);
+		} else {
+		  const allItemIds = actions?.data.map(item => item.id);
+		  setSelectedItems(allItemIds);
+		}
+		setSelectAll(!selectAll);
+	};
+
+    const resetCheckbox = () => {
+        setSelectedItems([]);
+        setSelectAll(false);
+    }
+
+    const handleActionSelected = (action) => {
+		const actionType = action;
+
+		if(selectedItems?.length === 0){
+			setMessage("Nothing selected!");
+            setMessageType("Error");
+            setTimeout(() => setMessage(""), 3000);
+		} else{
+			Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    actionType ? "Active" : "Inactive"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+
+                        const response = await axios.put(
+                            "/actions/bulkupdate",
+                            {
+                                ids: selectedItems,
+                                status: actionType
+                            }
+                        );
+
+                        if (response.data.status == "success") {
+                            setMessage(response.data.message);
+                            setMessageType(response.data.status);
+                            setTimeout(() => setMessage(""), 3000);
+
+                            router.reload({ only: ["actions"] });
+
+                            resetCheckbox();
+                        }
+                    } catch (error) {}
+                }
+            });
+		}
+	};
+
+    const bulkActions = [
+        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+    ];
+
     return (
         <>
         <Head title="Actions" />
         <AppContent>
-            <DissapearingToast type="success" message={message}/>
+            <DissapearingToast type={messageType} message={message} />
         
             <ContentPanel>
                 <TopPanel>
+                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
                     <TableButton onClick={handleShowCreate}>
@@ -62,6 +141,19 @@ const Action = ({ actions, queryParams }) => {
                     <Thead>
                         <Row>
                             <TableHeader
+                                width="sm"
+                                sortable={false}
+                                justify="center"
+                            >
+                                <Checkbox
+                                    type="checkbox"
+                                    name="selectAll"
+                                    id="selectAll"
+                                    handleClick={handleSelectAll}
+                                    isChecked={selectAll}
+                                />
+                            </TableHeader>
+                            <TableHeader
                                 name="id"
                                 queryParams={queryParams}
                             >
@@ -69,7 +161,7 @@ const Action = ({ actions, queryParams }) => {
                             </TableHeader>
     
                             <TableHeader
-                                name="customer_name"
+                                name="action_name"
                                 queryParams={queryParams}
                             >
                                 Action Name
@@ -105,6 +197,14 @@ const Action = ({ actions, queryParams }) => {
                         {actions &&
                             actions.data.map((item) => (
                                 <Row key={item.id} >
+                                    <RowData center>
+                                        <Checkbox
+                                            type="checkbox"
+                                            id={item.id}
+                                            handleClick={()=>handleCheckboxChange(item.id)}
+                                            isChecked={selectedItems.includes(item.id)}
+                                        />
+                                    </RowData>
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
@@ -130,7 +230,7 @@ const Action = ({ actions, queryParams }) => {
                     </tbody>
                 </TableContainer>
     
-                <Pagination paginate={actions} />
+                <Pagination paginate={actions} onClick={resetCheckbox} />
             </ContentPanel>
 
             <Modal
@@ -138,7 +238,14 @@ const Action = ({ actions, queryParams }) => {
                 onClose={handleShowCreate}
                 title="Add Action"
             >
-                <ActionForm handleShow={()=>{handleShowCreate(); setMessage('Created Action'); setTimeout(() => setMessage(""), 3000);}} action="create" />
+                <ActionForm 
+                    handleShow={()=>{
+                        handleShowCreate(); 
+                        setMessageType('success');
+                        setMessage('Created Action'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="create" />
             </Modal>
 
             <Modal
@@ -146,7 +253,15 @@ const Action = ({ actions, queryParams }) => {
                 onClose={handleShowEdit}
                 title="Edit Action"
             >
-                <ActionForm handleShow={()=>{handleShowEdit(); setMessage('Updated Action'); setTimeout(() => setMessage(""), 3000);}} action="edit" updateFormValues={updateFormValues} />
+                <ActionForm 
+                    handleShow={()=>{
+                        handleShowEdit(); 
+                        setMessageType('success');
+                        setMessage('Updated Action'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="edit" 
+                    updateFormValues={updateFormValues} />
             </Modal>
 
         </AppContent>

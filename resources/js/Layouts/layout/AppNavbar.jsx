@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { NavbarContext } from "../../Context/NavbarContext";
 
 const AppNavbar = () => {
@@ -74,7 +74,10 @@ const AppNavbar = () => {
                             Profile
                         </span>
                     </div>
-                    <div className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer">
+                    <Link
+                        href="change_password"
+                        className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer"
+                    >
                         <img
                             src="/images/navigation/lock-icon.png"
                             className="w-[22px] h-[22px] mr-3"
@@ -82,7 +85,7 @@ const AppNavbar = () => {
                         <span className="font-nunito-sans">
                             Change Password
                         </span>
-                    </div>
+                    </Link>
                     <div
                         className="border-t-[1px]  pt-2 "
                         onClick={handleLogout}

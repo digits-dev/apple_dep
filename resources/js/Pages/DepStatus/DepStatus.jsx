@@ -19,6 +19,9 @@ import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import Modal from "../../Components/Modal/Modal";
 import DepStatusForm from "./DepStatusForm";
 import RowStatus from "../../Components/Table/RowStatus";
+import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import Checkbox from "../../Components/Checkbox/Checkbox";
+import axios from "axios";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
     queryParams = queryParams || {};
@@ -30,12 +33,11 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({
-        currentValue: "",
-        currentId: "",
-        status: Boolean,
-    });
-    const [message, setMessage] = useState("");
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
+    const [message, setMessage] = useState('');
+	const [messageType, setMessageType] = useState("");
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
@@ -45,20 +47,87 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
         setShowEdit(!showEdit);
     };
 
-    useEffect(() => {
-        const timeout = setTimeout(() => setMessage(""), 3000);
+    const handleCheckboxChange = (itemId) => {
+		if (selectedItems.includes(itemId)) {
+		  setSelectedItems(selectedItems.filter(id => id !== itemId));
+		} else {
+		  setSelectedItems([...selectedItems, itemId]);
+		}
+	};
 
-        return () => clearTimeout(timeout);
-    }, [message]);
+    const handleSelectAll = () => {
+		if (selectAll) {
+		  setSelectedItems([]);
+		} else {
+		  const allItemIds = dep_statuses?.data.map(item => item.id);
+		  setSelectedItems(allItemIds);
+		}
+		setSelectAll(!selectAll);
+	};
+
+    const resetCheckbox = () => {
+        setSelectedItems([]);
+        setSelectAll(false);
+    }
+
+    const handleActionSelected = (action) => {
+		const actionType = action;
+
+		if(selectedItems?.length === 0){
+			setMessage("Nothing selected!");
+            setMessageType("Error");
+            setTimeout(() => setMessage(""), 3000);
+		} else{
+			Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    actionType ? "Active" : "Inactive"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+
+                        const response = await axios.put(
+                            "/dep_statuses/bulkupdate",
+                            {
+                                ids: selectedItems,
+                                status: actionType
+                            }
+                        );
+
+                        if (response.data.status == "success") {
+                            setMessage(response.data.message);
+                            setMessageType(response.data.status);
+                            setTimeout(() => setMessage(""), 3000);
+
+                            router.reload({ only: ["dep_statuses"] });
+
+                            resetCheckbox();
+                        }
+                    } catch (error) {}
+                }
+            });
+		}
+	};
+
+    const bulkActions = [
+        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+    ];
 
     return (
         <>
             <Head title="DEP Status" />
             <AppContent>
-                <DissapearingToast type="success" message={message} />
+                <DissapearingToast type={messageType} message={message} />
 
                 <ContentPanel>
                     <TopPanel>
+                        <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         <TableButton onClick={handleShowCreate}>
@@ -74,6 +143,20 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <TableContainer>
                         <Thead>
                             <Row>
+                                <TableHeader
+                                    width="sm"
+                                    sortable={false}
+                                    justify="center"
+                                >
+                                    <Checkbox
+                                        type="checkbox"
+                                        name="selectAll"
+                                        id="selectAll"
+                                        handleClick={handleSelectAll}
+                                        isChecked={selectAll}
+                                    />
+                                </TableHeader>
+
                                 <TableHeader
                                     name="id"
                                     queryParams={queryParams}
@@ -117,6 +200,14 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                             {dep_statuses &&
                                 dep_statuses.data.map((item) => (
                                     <Row key={item.id}>
+                                        <RowData center>
+                                            <Checkbox
+                                                type="checkbox"
+                                                id={item.id}
+                                                handleClick={()=>handleCheckboxChange(item.id)}
+                                                isChecked={selectedItems.includes(item.id)}
+                                            />
+                                        </RowData>
                                         <RowData isLoading={loading}>
                                             {item.id}
                                         </RowData>
@@ -160,7 +251,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                         </tbody>
                     </TableContainer>
 
-                    <Pagination paginate={dep_statuses} />
+                    <Pagination paginate={dep_statuses} onClick={resetCheckbox} />
                 </ContentPanel>
 
                 <Modal
@@ -171,7 +262,9 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <DepStatusForm
                         handleShow={() => {
                             handleShowCreate();
+                            setMessageType('success');
                             setMessage("Created Status");
+                            setTimeout(() => setMessage(""), 3000);
                         }}
                         action="create"
                     />
@@ -185,7 +278,9 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <DepStatusForm
                         handleShow={() => {
                             handleShowEdit();
+                            setMessageType('success');
                             setMessage("Updated Status");
+                            setTimeout(() => setMessage(""), 3000);
                         }}
                         action="edit"
                         updateFormValues={updateFormValues}

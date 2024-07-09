@@ -58,6 +58,26 @@ class EnrollmentStatusController extends Controller
         $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status'),  'status' => $request->input('status')]);
     }
 
+    public function bulkUpdate(Request $request){
+
+        $ids = $request->input('ids');
+        $status = $request->input('status');
+
+        $request->validate([
+            'ids' => 'required',
+            'ids.*' => 'exists:enrollment_statuses,id',
+            'status' => 'required', 
+        ]);
+
+        EnrollmentStatus::whereIn('id', $ids)->update(['status' => $status]);
+
+        $data = ['message'=>'Data updated!', 'status'=>'success'];
+
+        return response()->json($data);
+    }
+
+    
+
 
     public function export()
     {

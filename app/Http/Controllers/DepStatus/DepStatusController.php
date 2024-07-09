@@ -57,6 +57,24 @@ class DepStatusController extends Controller
         $dep_status->update(['dep_status'=> $request->input('dep_status'), 'status' => $request->input('status')]);
     }
 
+    public function bulkUpdate(Request $request){
+
+        $ids = $request->input('ids');
+        $status = $request->input('status');
+
+        $request->validate([
+            'ids' => 'required',
+            'ids.*' => 'exists:dep_statuses,id',
+            'status' => 'required', 
+        ]);
+
+        DepStatus::whereIn('id', $ids)->update(['status' => $status]);
+
+        $data = ['message'=>'Data updated!', 'status'=>'success'];
+
+        return response()->json($data);
+    }
+
 
     public function export()
     {

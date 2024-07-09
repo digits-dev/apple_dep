@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\MenusController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\PrivilegesController;
 use App\Helpers\CommonHelpers;
+use App\Http\Controllers\Users\ChangePasswordController;
 use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
@@ -37,11 +38,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
     Route::get('/table', [TestController::class, 'getTable']);
 
+    //CHANGE PASSWORD
+    Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');
+    Route::post('/postChangePassword', [ChangePasswordController::class, 'postChangePassword'])-> name('postChangePassword');
+
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
+
     //PRIVILEGES
     Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');
     Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');
@@ -79,12 +85,16 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/customers/{customer}', [CustomerController::class, 'update']);
 
     Route::post('/actions', [ActionController::class, 'store']);
+    Route::put('/actions/bulkupdate', [ActionController::class, 'bulkUpdate']);
     Route::put('/actions/{action}', [ActionController::class, 'update']);
 
+
     Route::post('/dep_statuses', [DepStatusController::class, 'store']);
+    Route::put('/dep_statuses/bulkupdate', [DepStatusController::class, 'bulkUpdate']);
     Route::put('/dep_statuses/{dep_status}', [DepStatusController::class, 'update']);
 
     Route::post('/enrollment_statuses', [EnrollmentStatusController::class, 'store']);
+    Route::put('/enrollment_statuses/bulkupdate', [EnrollmentStatusController::class, 'bulkUpdate']);
     Route::put('/enrollment_statuses/{enrollment_status}', [EnrollmentStatusController::class, 'update']);
 
 });
