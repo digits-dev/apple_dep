@@ -245,7 +245,14 @@ const Customer = ({ customers, queryParams }) => {
                 onClose={handleShowCreate}
                 title="Add Customer"
             >
-                <CustomerForm handleShow={()=>{handleShowCreate(); setMessage('Created Customer');}} action="create" />
+                <CustomerForm 
+                    handleShow={()=>{
+                        handleShowCreate(); 
+                        setMessageType('success');
+                        setMessage('Created Customer');
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="create" />
             </Modal>
 
             <Modal
@@ -253,7 +260,15 @@ const Customer = ({ customers, queryParams }) => {
                 onClose={handleShowEdit}
                 title="Edit Customer"
             >
-                <CustomerForm handleShow={()=>{handleShowEdit(); setMessage('Updated Customer');}} action="edit" updateFormValues={updateFormValues} />
+                <CustomerForm 
+                    handleShow={()=>{
+                        handleShowEdit(); 
+                        setMessageType('success');
+                        setMessage('Updated Customer');
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="edit" 
+                    updateFormValues={updateFormValues} />
             </Modal>
 
         

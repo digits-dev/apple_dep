@@ -83,9 +83,11 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::post('/dep_statuses', [DepStatusController::class, 'store']);
+    Route::put('/dep_statuses/bulkupdate', [DepStatusController::class, 'bulkUpdate']);
     Route::put('/dep_statuses/{dep_status}', [DepStatusController::class, 'update']);
 
     Route::post('/enrollment_statuses', [EnrollmentStatusController::class, 'store']);
+    Route::put('/enrollment_statuses/bulkupdate', [EnrollmentStatusController::class, 'bulkUpdate']);
     Route::put('/enrollment_statuses/{enrollment_status}', [EnrollmentStatusController::class, 'update']);
 
 });

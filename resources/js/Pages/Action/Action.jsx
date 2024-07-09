@@ -239,7 +239,14 @@ const Action = ({ actions, queryParams }) => {
                 onClose={handleShowCreate}
                 title="Add Action"
             >
-                <ActionForm handleShow={()=>{handleShowCreate(); setMessage('Created Action'); setTimeout(() => setMessage(""), 3000);}} action="create" />
+                <ActionForm 
+                    handleShow={()=>{
+                        handleShowCreate(); 
+                        setMessageType('success');
+                        setMessage('Created Action'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="create" />
             </Modal>
 
             <Modal
@@ -247,7 +254,15 @@ const Action = ({ actions, queryParams }) => {
                 onClose={handleShowEdit}
                 title="Edit Action"
             >
-                <ActionForm handleShow={()=>{handleShowEdit(); setMessage('Updated Action'); setTimeout(() => setMessage(""), 3000);}} action="edit" updateFormValues={updateFormValues} />
+                <ActionForm 
+                    handleShow={()=>{
+                        handleShowEdit(); 
+                        setMessageType('success');
+                        setMessage('Updated Action'); 
+                        setTimeout(() => setMessage(""), 3000);
+                    }} 
+                    action="edit" 
+                    updateFormValues={updateFormValues} />
             </Modal>
 
         </AppContent>
