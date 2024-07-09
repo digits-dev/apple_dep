@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
-import { Head, router } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
@@ -104,6 +104,12 @@ const ChangePassword = () => {
             <AppContent>
                 <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
+                    <Link
+                        href="dashboard"
+                        className="font-nunito-sans text-red-500 font-semibold"
+                    >
+                        Go to Dashboard
+                    </Link>
                     <form
                         onSubmit={handleSubmit}
                         className="flex justify-center my-16 font-nunito-sans gap-x-16 gap-y-5 items-center flex-wrap m-5"
@@ -141,7 +147,7 @@ const ChangePassword = () => {
                                 type="password"
                                 onChange={handleChange}
                                 value={data.new_password}
-                                marginTop={3}
+                                marginTop={4}
                             />
                             {errors.new_password && (
                                 <div className="font-nunito-sans font-bold text-red-600 text-sm mt-2">
@@ -156,15 +162,14 @@ const ChangePassword = () => {
                                 type="password"
                                 onChange={handleChange}
                                 value={data.confirmation_password}
-                                marginTop={3}
+                                marginTop={4}
                             />
                             {errors.confirmation_password && (
                                 <div className="font-nunito-sans font-bold text-red-600 text-sm mt-2">
                                     {errors.confirmation_password}
                                 </div>
                             )}
-                            <div className="flex justify-between mt-8">
-                                <TableButton>Cancel</TableButton>
+                            <div className="flex justify-end mt-8">
                                 <TableButton type="submit">
                                     {loading ? "Saving..." : "Save Changes"}
                                 </TableButton>
