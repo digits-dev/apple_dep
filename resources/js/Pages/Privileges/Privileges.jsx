@@ -12,6 +12,7 @@ import TableSearch from "../../Components/Table/TableSearch";
 import PerPage from "../../Components/Table/PerPage";
 import RowActions from "../../Components/Table/RowActions";
 import RowAction from "../../Components/Table/RowAction";
+import Pagination from "../../Components/Table/Pagination";
 
 const Privileges = ({ privileges, queryParams }) => {
     queryParams = queryParams || {};
@@ -59,6 +60,13 @@ const Privileges = ({ privileges, queryParams }) => {
                                 >
                                     Super Admin
                                 </TableHeader>
+                                <TableHeader
+                                    sortable={false}
+                                    width="auto"
+                                    justify="center"
+                                >
+                                    Action
+                                </TableHeader>
                             </Row>
                         </Thead>
                         <tbody>
@@ -76,10 +84,18 @@ const Privileges = ({ privileges, queryParams }) => {
                                                 ? "Superadmin"
                                                 : "Standard"}
                                         </RowData>
+                                        <RowData center>
+                                            <RowAction action="edit" 
+                                                    href={`edit-privileges/${item.id}`}                                                                              
+                                            >
+                                                
+                                            </RowAction>
+                                        </RowData>
                                     </Row>
                                 ))}
                         </tbody>
                     </TableContainer>
+                    <Pagination paginate={privileges} />
                 </ContentPanel>
             </AppContent>
         </>

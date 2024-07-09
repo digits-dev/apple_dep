@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');
     Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');
     Route::post('/privilege/postAddSave', [PrivilegesController::class, 'postAddSave'])->name('postAddSave');
+    Route::post('/privilege/postEditSave', [PrivilegesController::class, 'postEditSave'])->name('postEditSave');
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);
