@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Action;
 use App\Exports\ActionsExport;
+use app\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportActions;
 use App\ImportTemplates\ImportActionsTemplate;
@@ -26,6 +27,7 @@ class ActionController extends Controller
 
     public function getIndex()
     {
+        $data = [];
         $query = Action::query();
 
         $query->when(request('search'), function ($query, $search) {
@@ -35,9 +37,11 @@ class ActionController extends Controller
         $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
 
 
-        $actions = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $data['actions'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $data['queryParams'] = request()->query();
 
-        return Inertia::render('Action/Action', [ 'actions' => $actions, 'queryParams' => request()->query()]);
+
+        return Inertia::render('Action/Action', $data);
     }
 
     
