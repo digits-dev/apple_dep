@@ -115,11 +115,10 @@ const Action = ({ actions, queryParams }) => {
 	};
 
     const bulkActions = [
-        { label: <span><i className="fa fa-check-circle mr-2"></i> Set Active</span>, value: 1 },
-        { label: <span><i className="fa fa-times-circle mr-2"></i> Set Inactive</span>, value: 0 },
+        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
     ];
 
-    
     return (
         <>
         <Head title="Actions" />

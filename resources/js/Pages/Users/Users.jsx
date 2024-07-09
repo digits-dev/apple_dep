@@ -22,6 +22,7 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import BulkActions from "../../Components/Table/Buttons/BulkActions";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -31,7 +32,6 @@ const Users = ({ users, options, queryParams }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editUser, setEditUser] = useState(null);
-    const [dropdownVisible, setDropdownVisible] = useState(false);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isCheck, setIsCheck] = useState([]);
     const [formMessage, setFormMessage] = useState("");
@@ -52,9 +52,6 @@ const Users = ({ users, options, queryParams }) => {
         };
     }, []);
 
-    const handleDropdownToggle = () => {
-        setDropdownVisible(!dropdownVisible);
-    };
 
     const handleSelectAll = () => {
         setIsCheckAll(!isCheckAll);
@@ -416,6 +413,11 @@ const Users = ({ users, options, queryParams }) => {
         );
     };
 
+    const bulkActions = [
+        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
+        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+    ];
+
     return (
         <>
             <Head title="Users Management" />
@@ -424,33 +426,7 @@ const Users = ({ users, options, queryParams }) => {
                 <hr />
                 <ContentPanel>
                     <TopPanel>
-                        <div className="dropdown">
-                            <TableButton onClick={handleDropdownToggle}>
-                                <i className="fa fa-check-square mr-2"></i> Bulk
-                                Actions
-                            </TableButton>
-                            <div
-                                id="myDropdown"
-                                className={`dropdown-content ${
-                                    dropdownVisible ? "show" : ""
-                                }`}
-                            >
-                                <span
-                                    className="cursor-pointer"
-                                    onClick={() => handleActionClick(1)}
-                                >
-                                    <i className="fa fa-check-circle"></i> Set
-                                    Active
-                                </span>
-                                <span
-                                    className="cursor-pointer"
-                                    onClick={() => handleActionClick(0)}
-                                >
-                                    <i className="fa fa-times-circle"></i> Set
-                                    Inactive
-                                </span>
-                            </div>
-                        </div>
+                        <BulkActions actions={bulkActions} onActionSelected={handleActionClick} />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         <Import />
