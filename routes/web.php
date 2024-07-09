@@ -78,7 +78,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/customers/{customer}', [CustomerController::class, 'update']);
 
     Route::post('/actions', [ActionController::class, 'store']);
+    Route::put('/actions/bulkupdate', [ActionController::class, 'bulkUpdate']);
     Route::put('/actions/{action}', [ActionController::class, 'update']);
+
 
     Route::post('/dep_statuses', [DepStatusController::class, 'store']);
     Route::put('/dep_statuses/{dep_status}', [DepStatusController::class, 'update']);

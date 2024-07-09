@@ -52,9 +52,9 @@ const Customer = ({ customers, queryParams }) => {
 		} else {
 		  setSelectedItems([...selectedItems, itemId]);
 		}
-	  };
+	};
 
-      const handleSelectAll = () => {
+    const handleSelectAll = () => {
 		if (selectAll) {
 		  setSelectedItems([]);
 		} else {
@@ -62,14 +62,14 @@ const Customer = ({ customers, queryParams }) => {
 		  setSelectedItems(allItemIds);
 		}
 		setSelectAll(!selectAll);
-	  };
+	};
 
-      const resetCheckbox = () => {
+    const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
-      }
+    }
 
-      const handleActionSelected = (action) => {
+    const handleActionSelected = (action) => {
 		const actionType = action;
 
 		if(selectedItems.length === 0){
@@ -111,12 +111,12 @@ const Customer = ({ customers, queryParams }) => {
                 }
             });
 		}
-	  };
+	};
 
-      const actions = [
+    const bulkActions = [
         { label: <span><i className="fa fa-check-circle mr-2"></i> Set Active</span>, value: 1 },
         { label: <span><i className="fa fa-times-circle mr-2"></i> Set Inactive</span>, value: 0 },
-      ];
+    ];
     
     
     return (
@@ -127,7 +127,7 @@ const Customer = ({ customers, queryParams }) => {
 
                 <ContentPanel>
                     <TopPanel>
-                    <BulkActions actions={actions} onActionSelected={handleActionSelected} />
+                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         {/* <TableButton onClick={handleShowCreate}>
@@ -143,19 +143,19 @@ const Customer = ({ customers, queryParams }) => {
                     <TableContainer>
                         <Thead>
                             <Row>
-                            <TableHeader
-                                    width="sm"
-                                    sortable={false}
-                                    justify="center"
-                                >
-                                    <Checkbox
-                                        type="checkbox"
-                                        name="selectAll"
-                                        id="selectAll"
-                                        handleClick={handleSelectAll}
-                                        isChecked={selectAll}
-                                    />
-                            </TableHeader>
+                                <TableHeader
+                                        width="sm"
+                                        sortable={false}
+                                        justify="center"
+                                    >
+                                        <Checkbox
+                                            type="checkbox"
+                                            name="selectAll"
+                                            id="selectAll"
+                                            handleClick={handleSelectAll}
+                                            isChecked={selectAll}
+                                        />
+                                </TableHeader>
                                 <TableHeader
                                     name="id"
                                     queryParams={queryParams}
@@ -203,7 +203,6 @@ const Customer = ({ customers, queryParams }) => {
                                     <RowData center>
                                         <Checkbox
                                             type="checkbox"
-                                            name="users_id[]"
                                             id={item.id}
                                             handleClick={()=>handleCheckboxChange(item.id)}
                                             isChecked={selectedItems.includes(item.id)}

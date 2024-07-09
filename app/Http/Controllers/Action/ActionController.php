@@ -59,6 +59,25 @@ class ActionController extends Controller
         $action->update(['action_name'=> $request->input('action_name'), 'status' => $request->input('status')]);
     }
 
+    public function bulkUpdate(Request $request){
+
+        $ids = $request->input('ids');
+        $status = $request->input('status');
+
+        $request->validate([
+            'ids' => 'required',
+            'ids.*' => 'exists:actions,id',
+            'status' => 'required', 
+        ]);
+
+        Action::whereIn('id', $ids)->update(['status' => $status]);
+
+        $data = ['message'=>'Data updated!', 'status'=>'success'];
+
+        return response()->json($data);
+    }
+
+
     public function export()
     {
         date_default_timezone_set('Asia/Manila');
