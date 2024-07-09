@@ -70,4 +70,9 @@ class ListOfOrdersController extends Controller
 
         return $query;
     }
+
+    public function getListOfOrdersFromErp(){
+       
+
+    }
 }

@@ -28,7 +28,9 @@ use Illuminate\Support\Facades\DB;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+// Route::get('/bea',function(){
+//     return DB::connection('oracle')->table('RCV_SHIPMENT_HEADERS')->take(1)->get();
+// });
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
 Route::post('login-save', [LoginController::class, 'authenticate'])->name('login-save');
