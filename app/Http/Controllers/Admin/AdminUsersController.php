@@ -142,7 +142,7 @@ use Inertia\Response;
                 $user->save();
                 return json_encode(["message"=>"Password Updated, You Will Be Logged-Out.", "type"=>"success"]);
             } else {
-                return json_encode(["message"=>"Incorrect Current Password.", "type"=>"danger"]);
+                return json_encode(["message"=>"Incorrect Current Password.", "type"=>"error"]);
             }
         }
 
