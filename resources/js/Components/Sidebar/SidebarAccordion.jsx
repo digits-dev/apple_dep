@@ -21,6 +21,16 @@ const SidebarAccordion = ({ open }) => {
             url: "users",
             image: "/images/navigation/user-management-icon.png",
         },
+        {
+            title: "Menu Management",
+            url: "menu_management",
+            image: "/images/navigation/user-management-icon.png",
+        },
+        {
+            title: "Module Generator",
+            url: "module_generator",
+            image: "/images/navigation/user-management-icon.png",
+        },
     ];
 
     useEffect(() => {

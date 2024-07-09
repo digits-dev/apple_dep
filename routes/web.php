@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\MenusController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\Admin\ModulsController;
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Users\ChangePasswordController;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');
     Route::post('/privilege/postAddSave', [PrivilegesController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/privilege/postEditSave', [PrivilegesController::class, 'postEditSave'])->name('postEditSave');
+    //MODULES
+    Route::get('create-modules', [ModulsController::class, 'getAddModuls'])->name('create-modules');
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);
