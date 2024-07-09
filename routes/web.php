@@ -39,16 +39,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
     Route::get('/table', [TestController::class, 'getTable']);
 
-    //CHANGE PASSWORD
-    Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');
-    Route::post('/postChangePassword', [ChangePasswordController::class, 'postChangePassword'])-> name('postChangePassword');
+   
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
-
+    //CHANGE PASSWORD
+    Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');
+    Route::post('/postChangePassword', [AdminUsersController::class, 'postUpdatePassword'])-> name('postChangePassword');
+    
     //PRIVILEGES
     Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');
     Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');

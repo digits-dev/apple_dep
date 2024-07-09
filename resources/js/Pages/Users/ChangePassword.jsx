@@ -5,7 +5,7 @@ import { Head } from "@inertiajs/react";
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
-
+import axios from "axios";
 const ChangePassword = () => {
     const [data, setData] = useState({
         current_password: "",
@@ -41,6 +41,7 @@ const ChangePassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const newErrors = validate();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -56,10 +57,8 @@ const ChangePassword = () => {
                     setFormMessage(response.data.message);
                     setMessageType(response.data.type);
                     setTimeout(() => setFormMessage(""), 3000);
-                    setShowCreateModal(false);
-                    router.reload({ only: ["users"] });
                 } else {
-                    setErrorMessage(response.data.message);
+                     setErrors(response.data.message);
                 }
             } catch (error) {
                 if (error.response && error.response.status === 422) {
@@ -103,6 +102,8 @@ const ChangePassword = () => {
                                 type="password"
                                 marginBottom={3}
                                 onChange={handleChange}
+                                name="current_password"
+                                value={data.current_password}
                             />
                             {errors.current_password && (
                                 <div className="font-nunito-sans font-bold text-red-600">
@@ -111,21 +112,34 @@ const ChangePassword = () => {
                             )}
                             <InputWithLogo
                                 label="New Password"
+                                name="new_password"
                                 logo="images/login-page/password-icon.png"
                                 placeholder="Enter New Password"
                                 type="password"
                                 marginBottom={3}
                                 onChange={handleChange}
+                                value={data.new_password}
                             />
+                              {errors.new_password && (
+                                <div className="font-nunito-sans font-bold text-red-600">
+                                    {errors.new_password}
+                                </div>
+                            )}
                             <InputWithLogo
                                 label="Confirm Password"
+                                name="confirmation_password"
                                 logo="images/login-page/password-icon.png"
                                 placeholder="Confirm New Password"
                                 type="password"
                                 marginBottom={8}
                                 onChange={handleChange}
+                                value={data.confirmation_password}
                             />
-
+                            {errors.confirmation_password && (
+                                <div className="font-nunito-sans font-bold text-red-600">
+                                    {errors.confirmation_password}
+                                </div>
+                            )}
                             <div className="flex justify-between">
                                 <TableButton>Cancel</TableButton>
                                 <TableButton type="submit">

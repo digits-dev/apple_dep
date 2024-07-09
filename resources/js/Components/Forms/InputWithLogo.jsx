@@ -8,6 +8,7 @@ const InputWithLogo = ({
     value,
     logo,
     marginBottom,
+    name
 }) => {
     return (
         <>
@@ -20,6 +21,7 @@ const InputWithLogo = ({
                         <img src={logo} className="w-[22px] h-[22px]" />
                     </div>
                     <input
+                        name={name}
                         className="flex-1 mx-2 outline-none"
                         type={type}
                         value={value}
