@@ -472,7 +472,7 @@ const Users = ({ users, options, queryParams }) => {
                                     Privilege Name
                                 </TableHeader>
                                 <TableHeader
-                                    name="privilege_name"
+                                    name="status"
                                     queryParams={queryParams}
                                     width="sm"
                                 >
