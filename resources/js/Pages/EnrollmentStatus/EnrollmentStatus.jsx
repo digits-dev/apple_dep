@@ -22,6 +22,7 @@ import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
  
@@ -31,6 +32,14 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Submaster - Enrollment Status");
+        }, 5);
+    }, []);
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);

@@ -1,24 +1,27 @@
 import { Head,  router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
-import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";
 import PerPage from "../../Components/Table/PerPage";
 import TopPanel from "../../Components/Table/TopPanel";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import RowData from "../../Components/Table/RowData";
-import RowAction from "../../Components/Table/RowAction";
 import Row from "../../Components/Table/Row";
 import Export from "../../Components/Table/Buttons/Export";
-import Filters from "../../Components/Table/Buttons/Filters";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
-import InputComponent from "../../Components/Forms/Input";
-import Select from "../../Components/Forms/Select";
-import { useState } from "react";
-import RowStatus from "../../Components/Table/RowStatus";
+import {  useEffect, useState } from "react";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const ItemMaster = ({queryParams}) => {
+    
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Submaster - Item Master");
+        }, 5);
+    }, []);
 
 
 	return (
