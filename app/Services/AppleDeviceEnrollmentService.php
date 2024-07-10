@@ -83,62 +83,37 @@ class AppleDeviceEnrollmentService
         throw new \Exception('Failed to show order details');
     }
 
-    public function enrollDevices(array $payload){
+    public function enrollDevices(array $payload)
+    {
+        return $this->sendRequest($payload, 'bulk enroll');
+    }
+
+    public function unEnrollDevices(array $payload)
+    {
+        return $this->sendRequest($payload, 'bulk un-enroll');
+    }
+
+    private function sendRequest(array $payload, string $action)
+    {
         $url = $this->baseUrl . $this->bulkEnrollEndpoint;
         try {
             $response = Http::post($url, $payload);
-    
+
             if ($response->successful()) {
                 return $response->json();
             }
-    
-            Log::error('Apple Device Enrollment API bulk enroll request failed', [
+
+            Log::error("Apple Device Enrollment API $action request failed", [
                 'message' => $response->body()
             ]);
-    
-            throw new \Exception('Failed to enroll devices');
+
+            throw new \Exception("Failed to $action devices");
         } catch (\Exception $e) {
-            Log::error('Apple Device Enrollment API exception', ['exception' => $e->getMessage()]);
+            Log::error("Apple Device Enrollment API exception during $action", ['exception' => $e->getMessage()]);
             throw $e;
         }
     }
 
 
-    public function generateSampleBulkEnrollPayload()
-    {
-        return [
-            'requestContext' => [
-                'shipTo' => '0000742682',
-                'timeZone' => '420',
-                'langCode' => 'en',
-            ],
-            'transactionId' => 'TXN_001132',
-            'depResellerId' => '0000742682',
-            'orders' => [
-                [
-                    'orderNumber' => 'ORDER_900123',
-                    'orderDate' => '2014-08-28T10:10:10Z',
-                    'orderType' => 'OR',
-                    'customerId' => '19827',
-                    'poNumber' => 'PO_12345',
-                    'deliveries' => [
-                        [
-                            'deliveryNumber' => 'D1.2',
-                            'shipDate' => '2014-10-10T05:10:00Z',
-                            'devices' => [
-                                [
-                                    'deviceId' => '33645013YAM',
-                                    'assetTag' => 'A123456',
-                                ],
-                                [
-                                    'deviceId' => '33645005YAM',
-                                    'assetTag' => 'A123456',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-    }
+
 }
