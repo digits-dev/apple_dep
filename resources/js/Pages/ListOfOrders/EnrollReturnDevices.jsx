@@ -14,7 +14,7 @@ import RowAction from "../../Components/Table/RowAction";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
 
-const EnrollReturnDevices = ({ order }) => {
+const EnrollReturnDevices = ({ order, orderLines }) => {
     const { setTitle } = useContext(NavbarContext);
     const [showModal, setShowModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
@@ -92,7 +92,23 @@ const EnrollReturnDevices = ({ order }) => {
                             </Row>
                         </Thead>
                         <tbody>
-                            <Row>
+                            {orderLines.map((order) => (
+                                <Row key={order.id}>
+                                    <RowData>{order.digits_code}</RowData>
+                                    <RowData>{order.item_description}</RowData>
+                                    <RowData>{order.serial_number}</RowData>
+                                    <RowData>{order.enrollment_status}</RowData>
+                                    <RowData center>
+                                        <RowAction
+                                            action="add"
+                                            type="button"
+                                            onClick={handleOpenModal}
+                                        />
+                                    </RowData>
+                                </Row>
+                            ))}
+
+                            {/* <Row>
                                 <RowData>80000001</RowData>
                                 <RowData>
                                     APP UNIT IPHONE 15 SPACE GREY 256GB
@@ -106,7 +122,7 @@ const EnrollReturnDevices = ({ order }) => {
                                         onClick={handleOpenModal}
                                     />
                                 </RowData>
-                            </Row>
+                            </Row> */}
                         </tbody>
                     </TableContainer>
                 </ContentPanel>
