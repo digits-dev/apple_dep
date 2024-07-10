@@ -1,23 +1,24 @@
 <?php
-use App\Http\Controllers\Action\ActionController;
-use App\Http\Controllers\Customer\CustomerController;
-use App\Http\Controllers\DepDevices\DepDevicesController;
-use App\Http\Controllers\DepStatus\DepStatusController;
-use App\Http\Controllers\EnrollmentList\EnrollmentListController;
-use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
-use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
-use App\Http\Controllers\Test\TestController;
+use App\Helpers\CommonHelpers;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia; // We are going to use this class to render React components
+use App\Http\Controllers\Test\TestController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\MenusController;
+use App\Http\Controllers\Admin\ModulsController;
+use App\Http\Controllers\Action\ActionController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\Admin\PrivilegesController;
-use App\Http\Controllers\Admin\ModulsController;
-use App\Helpers\CommonHelpers;
+use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\DepStatus\DepStatusController;
 use App\Http\Controllers\Users\ChangePasswordController;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\DepDevices\DepDevicesController;
+use App\Http\Controllers\Api\AppleDeviceEnrollmentController;
+use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
+use App\Http\Controllers\EnrollmentList\EnrollmentListController;
+use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
+use Inertia\Inertia; // We are going to use this class to render React components
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,6 +33,22 @@ use Illuminate\Support\Facades\DB;
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
 Route::post('login-save', [LoginController::class, 'authenticate'])->name('login-save');
+
+Route::group(['prefix' => 'api'], function () {
+    
+    // Route for testing showOrderDetails
+    Route::get('/test-show-order-details', [AppleDeviceEnrollmentController::class, 'showOrderDetails'])
+        ->name('test.showOrderDetails');
+
+    // Route for testing testEnrollDevice
+    Route::get('/test-enroll-device', [AppleDeviceEnrollmentController::class, 'testEnrollDevice'])
+        ->name('test.enrollDevice');
+
+    // Route for testing checkTransactionStatus
+    Route::get('/test-check-transaction-status', [AppleDeviceEnrollmentController::class, 'checkTransactionStatus'])
+        ->name('test.checkTransactionStatus');
+    
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

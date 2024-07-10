@@ -31,4 +31,16 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+
+
+    'apple_api' => [
+        'base_url' => env('APPLE_API_BASE_URL'),
+        'bulk_enroll_endpoint' => env('APPLE_API_BULK_ENROLL_ENDPOINT'),
+        'show_order_details_endpoint' => env('APPLE_API_SHOW_ORDER_DETAILS_ENDPOINT'),
+        'check_transaction_status_endpoint' => env('APPLE_API_CHECK_TRANSACTION_STATUS_ENDPOINT'),
+        'certificate_path' => env('APPLE_API_CERTIFICATE_PATH', ''),
+        'certificate_key_path' => env('APPLE_API_CERTIFICATE_KEY_PATH', ''),
+    ],
+
+
 ];
