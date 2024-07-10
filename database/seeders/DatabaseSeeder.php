@@ -8,7 +8,6 @@ use App\Models\Customer;
 use App\Models\DepStatus;
 use App\Models\Device;
 use App\Models\EnrollmentList;
-use App\Models\EnrollmentStatus;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -40,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call([AdmMenus::class]);
         $this->call([AdmPrivileges::class]);
         $this->call([AdmMenuPrivileges::class]);
-
+        $this->call([EnrollmentStatusSeeder::class]);
+        $this->call([DepStatusSeeder::class]);
     }
 }

@@ -14,7 +14,7 @@ import RowAction from "../../Components/Table/RowAction";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
 
-const EnrollReturnDevices = ({ order }) => {
+const EnrollReturnDevices = ({ order, orderLines }) => {
     const { setTitle } = useContext(NavbarContext);
     const [showModal, setShowModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
@@ -39,7 +39,7 @@ const EnrollReturnDevices = ({ order }) => {
             <div className="flex flex-col gap-y-3 py-2 text-white font-nunito-sans font-bold">
                 <Link
                     className="bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                    href="#"
+                    href={`/list_of_orders/enroll/${orderId}`}
                 >
                     Enroll Device
                 </Link>
@@ -92,21 +92,24 @@ const EnrollReturnDevices = ({ order }) => {
                             </Row>
                         </Thead>
                         <tbody>
-                            <Row>
-                                <RowData>80000001</RowData>
-                                <RowData>
-                                    APP UNIT IPHONE 15 SPACE GREY 256GB
-                                </RowData>
-                                <RowData>C231323</RowData>
-                                <RowData>Complete</RowData>
-                                <RowData center>
-                                    <RowAction
-                                        action="add"
-                                        type="button"
-                                        onClick={handleOpenModal}
-                                    />
-                                </RowData>
-                            </Row>
+                            {orderLines.map((order) => (
+                                <Row key={order.id}>
+                                    <RowData>{order.digits_code}</RowData>
+                                    <RowData>{order.item_description}</RowData>
+                                    <RowData>{order.serial_number}</RowData>
+                                    <RowData>{order.enrollment_status}</RowData>
+                                    <RowData center>
+                                        <RowAction
+                                            action="add"
+                                            type="button"
+                                            onClick={() => {
+                                                handleOpenModal();
+                                                setOrderId(order.id);
+                                            }}
+                                        />
+                                    </RowData>
+                                </Row>
+                            ))}
                         </tbody>
                     </TableContainer>
                 </ContentPanel>
