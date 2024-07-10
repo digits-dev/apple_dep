@@ -20,22 +20,14 @@ class AppleDeviceEnrollmentService
         $this->showOrderDetailsEndpoint = config('services.apple_api.show_order_details_endpoint');
     }
 
-    public function enrollDevice(array $payload)
+    public function enrollDevices(array $payload)
     {
-        $url = $this->baseUrl . $this->bulkEnrollEndpoint;
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-        ])->post($url, $payload);
+        return $this->sendRequest($payload, 'bulk enroll');
+    }
 
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        Log::error('Apple Device Enrollment API request failed', [
-            'message' => $response->body()
-        ]);
-
-        throw new \Exception('Failed to enroll devices');
+    public function unEnrollDevices(array $payload)
+    {
+        return $this->sendRequest($payload, 'bulk un-enroll');
     }
 
     public function checkTransactionStatus(array $requestData)
@@ -43,7 +35,11 @@ class AppleDeviceEnrollmentService
         $url = $this->baseUrl . $this->checkTransactionStatusEndpoint;
 
         try {
-            $response = Http::post($url, $requestData);
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
+                ])
+                ->post($url, $requestData);
 
             if ($response->successful()) {
                 return $response->json();
@@ -60,7 +56,6 @@ class AppleDeviceEnrollmentService
         }
     }
 
-
     public function showOrderDetails($requestContext, $depResellerId, $orderNumbers)
     {
         $url = $this->baseUrl . $this->showOrderDetailsEndpoint;
@@ -70,7 +65,11 @@ class AppleDeviceEnrollmentService
             'orderNumbers' => $orderNumbers,
         ];
 
-        $response = Http::post($url, $payload);
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept-Encoding' => '',
+        ])
+        ->post($url, $payload);
 
         if ($response->successful()) {
             return $response->json();
@@ -83,21 +82,16 @@ class AppleDeviceEnrollmentService
         throw new \Exception('Failed to show order details');
     }
 
-    public function enrollDevices(array $payload)
-    {
-        return $this->sendRequest($payload, 'bulk enroll');
-    }
-
-    public function unEnrollDevices(array $payload)
-    {
-        return $this->sendRequest($payload, 'bulk un-enroll');
-    }
-
     private function sendRequest(array $payload, string $action)
     {
         $url = $this->baseUrl . $this->bulkEnrollEndpoint;
         try {
-            $response = Http::post($url, $payload);
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept-Encoding' => '',
+            ])
+            ->post($url, $payload);
 
             if ($response->successful()) {
                 return $response->json();
