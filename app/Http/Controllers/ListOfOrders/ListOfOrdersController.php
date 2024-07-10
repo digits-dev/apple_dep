@@ -130,25 +130,36 @@ class ListOfOrdersController extends Controller
                     ->orWhereRaw("SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) = 'CON'");
             })
             ->get();
-            return $results;
+        
             //HEADER
             $uniqueHeaderData = [];
             $header = [];
             $lines = [];
+
             foreach($results as $key => $item){
                 //LINES
-                for($i = 0; $i < (int)$item->shipped_quantity; $i++){
-                    $res = clone $item;
-                    $res->final_qty = 1;
-                    $serial = "serial" . ($i + 1);
-                    if (property_exists($item, $serial)) {
-                        $res->final_serial = $item->$serial;
-                    } else {
-                        $res->final_serial = null; // 
+                $serialNumbers = [];
+                for ($i = 1; $i <= 10; $i++) {
+                    $serialKey = "serial" . $i;
+                    if (!empty($item->$serialKey)) {
+                        $serialNumbers[] = $item->$serialKey;
                     }
+                }
 
-                    $lines[] = $res;
-                }  
+                if(count($serialNumbers) == $item->shipped_quantity){
+                    for($i = 0; $i < (int)$item->shipped_quantity; $i++){
+                        $res = clone $item;
+                        $res->final_qty = 1;
+                        $serial = "serial" . ($i + 1);
+                        if (property_exists($item, $serial)) {
+                            $res->final_serial = $item->$serial;
+                        } else {
+                            $res->final_serial = null; // 
+                        }
+    
+                        $lines[] = $res;
+                    }  
+                }
                 
                 $identifier = $item->order_number . '-' . $item->cust_po_number;
                 if (!in_array($identifier, $header)) {
@@ -156,46 +167,46 @@ class ListOfOrdersController extends Controller
                     $uniqueHeaderData[] = $item;
                 }
             }
-       
-            $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
-            $latestRequestId = $latestRequest->id ?? 0;
-            foreach($uniqueHeaderData as $insert_data){
-                $headerId = Order::updateOrInsert(
-                ['sales_order_no'=>$insert_data->order_number,
-                 'order_ref_no'=>$insert_data->cust_po_number
-                ],
-                [
-                    'sales_order_no'    => $insert_data->order_number,
-                    'customer_name'     => $insert_data->customer_name,
-                    'order_ref_no'      => $insert_data->cust_po_number,
-                    'dep_order'         => 1,
-                    'enrollment_status' => "1",
-                    'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
-                ]);
-            }
+            return $lines;
+            // $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
+            // $latestRequestId = $latestRequest->id ?? 0;
+            // foreach($uniqueHeaderData as $insert_data){
+            //     $headerId = Order::updateOrInsert(
+            //     ['sales_order_no'=>$insert_data->order_number,
+            //      'order_ref_no'=>$insert_data->cust_po_number
+            //     ],
+            //     [
+            //         'sales_order_no'    => $insert_data->order_number,
+            //         'customer_name'     => $insert_data->customer_name,
+            //         'order_ref_no'      => $insert_data->cust_po_number,
+            //         'dep_order'         => 1,
+            //         'enrollment_status' => "1",
+            //         'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
+            //     ]);
+            // }
  
-            $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
-            $insertData = [];
-            foreach($lines as $key => $line){
-                $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
-                if($search !== false){
-                    $line->header_id = $header_ids[$search]->id;
-                    $insertData[] = $line;
-                }
-            }
+            // $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
+            // $insertData = [];
+            // foreach($lines as $key => $line){
+            //     $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
+            //     if($search !== false){
+            //         $line->header_id = $header_ids[$search]->id;
+            //         $insertData[] = $line;
+            //     }
+            // }
          
-            foreach($insertData as $key => $insertLines){
-                OrderLines::create(
-                [
-                    'order_id'          => $insertLines->header_id,
-                    'digits_code'       => $insertLines->ordered_item,
-                    'item_description'  => $insertLines->description,
-                    'brand'             => $insertLines->brand,
-                    'wh_category'       => $insertLines->wh_category,
-                    'quantity'          => $insertLines->final_qty,
-                    'serial_number'     => $insertLines->final_serial
-                ]);
-            }
+            // foreach($insertData as $key => $insertLines){
+            //     OrderLines::create(
+            //     [
+            //         'order_id'          => $insertLines->header_id,
+            //         'digits_code'       => $insertLines->ordered_item,
+            //         'item_description'  => $insertLines->description,
+            //         'brand'             => $insertLines->brand,
+            //         'wh_category'       => $insertLines->wh_category,
+            //         'quantity'          => $insertLines->final_qty,
+            //         'serial_number'     => $insertLines->final_serial
+            //     ]);
+            // }
     }
 
     public function enrollDevices($id)
