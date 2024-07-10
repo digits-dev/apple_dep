@@ -43,11 +43,14 @@ class ListOfOrdersController extends Controller
     
     public function show(Order $order)
     {
-        return Inertia::render('ListOfOrders/OrderDetails', [ 'order' => $order]);
+        $orderLines = OrderLines::where('order_id', $order->id)->get();
+        return Inertia::render('ListOfOrders/OrderDetails', [ 'order' => $order , 'orderLines' => $orderLines]);
     }
 
     public function edit(Order $order){
-        return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order]);
+       
+        $orderLines = OrderLines::where('order_id', $order->id)->get();
+        return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order , 'orderLines' => $orderLines]);
     }
 
     public function export()
@@ -194,7 +197,7 @@ class ListOfOrdersController extends Controller
             }
     }
 
-    public function enrollDevices()
+    public function enrollDevices($id)
     {
         try {
             // $request = $request->all(); 
@@ -209,20 +212,18 @@ class ListOfOrdersController extends Controller
                 'depResellerId' => '0000742682',
                 'orders' => [],  
             ];
-            $requestData = OrderLines::whereIn('list_of_order_lines.id',[1,2,3,4])->leftJoin('orders','list_of_order_lines.order_id','orders.id')->get();
-            $header_data = OrderLines::whereIn('list_of_order_lines.id',[1,2,3,4])->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
-
+            
+            $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
             // Check if multiple orders are provided
             $deliveryPayload = [];
             $devicePayload = [];
             
-            foreach ($requestData ?? [] as $key => $orderData) {
-                $devicePayload[$key] = [
-                    'deviceId' => $orderData['sales_order_no'],
-                    'assetTag' => $orderData['serial_number'],
+           
+                $devicePayload[] = [
+                    'deviceId' => $header_data['sales_order_no'],
+                    'assetTag' => $header_data['serial_number'],
                 ];
                 
-            }
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
             $deliveryPayload = [
@@ -241,12 +242,12 @@ class ListOfOrdersController extends Controller
                     $deliveryPayload
                 ],
             ];
-
+            // dd($header_data);
             $payload['orders'][] = $orderPayload;
-
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
       
+
             dd($response);
             return response()->json($response);
         } catch (\Exception $e) {
