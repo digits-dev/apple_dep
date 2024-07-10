@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderLines;
 use App\Models\User;
+use App\Models\EnrollmentList;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -242,11 +243,21 @@ class ListOfOrdersController extends Controller
                     $deliveryPayload
                 ],
             ];
-            // dd($header_data);
             $payload['orders'][] = $orderPayload;
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-      
+            
+            $insertData = [ 
+                'sales_order_no' => $header_data['sales_order_no'],
+                'item_code' => $header_data['digits_code'],
+                'serial_number' => $header_data['serial_number'],
+                'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                'dep_status' => $response['enrollDevicesResponse']['statusCode'],
+                'enrollment_status' => 1,
+                'status_message' => $response['enrollDevicesResponse']['statusMessage']
+            ];
+
+            EnrollmentList::insert($insertData);
 
             dd($response);
             return response()->json($response);
