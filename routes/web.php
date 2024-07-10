@@ -42,8 +42,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
     Route::get('/table', [TestController::class, 'getTable']);
 
-   
-
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
