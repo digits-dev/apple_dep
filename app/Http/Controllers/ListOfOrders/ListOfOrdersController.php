@@ -246,13 +246,13 @@ class ListOfOrdersController extends Controller
             $payload['orders'][] = $orderPayload;
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-            
+          
             $insertData = [ 
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
                 'transaction_id' => $response['deviceEnrollmentTransactionId'],
-                'dep_status' => $response['enrollDevicesResponse']['statusCode'],
+                'dep_status' => 1,
                 'enrollment_status' => 1,
                 'status_message' => $response['enrollDevicesResponse']['statusMessage']
             ];
