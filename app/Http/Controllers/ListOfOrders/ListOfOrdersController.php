@@ -246,8 +246,7 @@ class ListOfOrdersController extends Controller
 
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-      
-            dd($response);
+
             return response()->json($response);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
