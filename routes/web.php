@@ -32,6 +32,7 @@ use Inertia\Inertia; // We are going to use this class to render React component
 
 //query from beach
 Route::get('/query', [ListOfOrdersController::class, 'getListOfOrdersFromErp']);
+Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
 
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');

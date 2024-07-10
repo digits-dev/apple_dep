@@ -10,18 +10,21 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
-
+use App\Services\AppleDeviceEnrollmentService;
 
 class ListOfOrdersController extends Controller
 {
+    protected $appleService;
     private $sortBy;
     private $sortDir;
     private $perPage;
 
-    public function __construct(){
+
+    public function __construct(AppleDeviceEnrollmentService $appleService){
         $this->sortBy = request()->get('sortBy', 'created_at');
         $this->sortDir = request()->get('sortDir', 'desc');
         $this->perPage = request()->get('perPage', 10);
+        $this->appleService = $appleService;
     }
 
     public function getIndex()
@@ -123,7 +126,7 @@ class ListOfOrdersController extends Controller
                     ->orWhereRaw("SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) = 'CON'");
             })
             ->get();
-
+            return $results;
             //HEADER
             $uniqueHeaderData = [];
             $header = [];
@@ -189,5 +192,86 @@ class ListOfOrdersController extends Controller
                     'serial_number'     => $insertLines->final_serial
                 ]);
             }
+    }
+
+    public function enrollDevices()
+    {
+        try {
+            // $request = $request->all(); 
+
+            $payload = [
+                'requestContext' => [
+                    'shipTo' => '0000742682',
+                    'timeZone' => '420',
+                    'langCode' => 'en',
+                ],
+                'transactionId' => 'TXN_' . uniqid(),  
+                'depResellerId' => '0000742682',
+                'orders' => [],  
+            ];
+            $requestData = OrderLines::whereIn('list_of_order_lines.id',[1,2,3,4])->leftJoin('orders','list_of_order_lines.order_id','orders.id')->get();
+            $header_data = OrderLines::whereIn('list_of_order_lines.id',[1,2,3,4])->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+
+            // Check if multiple orders are provided
+            $deliveryPayload = [];
+            $devicePayload = [];
+            
+            foreach ($requestData ?? [] as $key => $orderData) {
+                $devicePayload[$key] = [
+                    'deviceId' => $orderData['sales_order_no'],
+                    'assetTag' => $orderData['serial_number'],
+                ];
+                
+            }
+            $timestamp = strtotime($header_data['order_date']);
+            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+            $deliveryPayload = [
+                'deliveryNumber' => '30260972',
+                'shipDate' => $formattedDate,
+                'devices' => $devicePayload,
+            ];
+
+            $orderPayload = [
+                'orderNumber' => $header_data['sales_order_no'],
+                'orderDate' => $formattedDate,
+                'orderType' => 'OR',
+                'customerId' => $header_data['customer_name'],
+                'poNumber' => $header_data['order_ref_no'],
+                'deliveries' => [
+                    $deliveryPayload
+                ],
+            ];
+
+            $payload['orders'][] = $orderPayload;
+
+            // Call the service method to enroll devices
+            $response = $this->appleService->enrollDevices($payload);
+      
+            dd($response);
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function checkTransactionStatus(Response $response)
+    {
+        $requestData = [
+            'requestContext' => [
+                'shipTo' => '0000742682', //replace
+                'timeZone' => '420',
+                'langCode' => 'en',
+            ],
+            'depResellerId' => '0000742682', //replace
+            'deviceEnrollmentTransactionId' => $response->transaction_id
+        ];
+
+        try {
+            $response = $this->appleService->checkTransactionStatus($requestData);
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

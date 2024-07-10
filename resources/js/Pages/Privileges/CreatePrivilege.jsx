@@ -42,7 +42,9 @@ const AddPrivileges = ({ moduleses, row }) => {
     });
 
     useEffect(() => {
-        setTitle("Add Privileges");
+        setTimeout(()=>{
+            setTitle("Add Privileges");
+        },5);
         setModules(moduleses);
         setRows(row);
         setForms(row);
