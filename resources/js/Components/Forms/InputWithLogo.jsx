@@ -7,11 +7,13 @@ const InputWithLogo = ({
     onChange,
     value,
     logo,
-    marginBottom,
+    marginBottom = 0,
+    marginTop,
+    name,
 }) => {
     return (
         <>
-            <div className={`mb-${marginBottom}`}>
+            <div className={`mb-${marginBottom} mt-${marginTop}`}>
                 <label className="font-nunito-sans font-semibold">
                     {label}
                 </label>
@@ -20,6 +22,7 @@ const InputWithLogo = ({
                         <img src={logo} className="w-[22px] h-[22px]" />
                     </div>
                     <input
+                        name={name}
                         className="flex-1 mx-2 outline-none"
                         type={type}
                         value={value}

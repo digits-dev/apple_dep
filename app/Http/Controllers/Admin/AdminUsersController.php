@@ -129,6 +129,7 @@ use Inertia\Response;
         }
 
         public function postUpdatePassword(Request $request){
+         
             $user = User::find(CommonHelpers::myId());
             if (Hash::check($request->all()['current_password'], $user->password)){
           
@@ -139,11 +140,9 @@ use Inertia\Response;
           
                 $user->password = Hash::make($request->get('new_password'));
                 $user->save();
-  
-                return CommonHelpers::redirect(url('/change-password'), "Password Updated, You Will Be Logged-Out.", "success");
-                
+                return json_encode(["message"=>"Password Updated, You Will Be Logged-Out.", "type"=>"success"]);
             } else {
-                return CommonHelpers::redirect(url('/change-password'), "Incorrect Current Password.", "danger");
+                return json_encode(["message"=>"Incorrect Current Password.", "type"=>"error"]);
             }
         }
 

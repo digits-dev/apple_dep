@@ -52,7 +52,6 @@ const Users = ({ users, options, queryParams }) => {
         };
     }, []);
 
-
     const handleSelectAll = () => {
         setIsCheckAll(!isCheckAll);
         setIsCheck(users.data.map((item) => item.u_id));
@@ -414,8 +413,24 @@ const Users = ({ users, options, queryParams }) => {
     };
 
     const bulkActions = [
-        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
-        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-check-circle mr-2 text-green-600"></i>{" "}
+                    Set Active
+                </span>
+            ),
+            value: 1,
+        },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-times-circle mr-2 text-red-600"></i> Set
+                    Inactive
+                </span>
+            ),
+            value: 0,
+        },
     ];
 
     return (
@@ -426,7 +441,10 @@ const Users = ({ users, options, queryParams }) => {
                 <hr />
                 <ContentPanel>
                     <TopPanel>
-                        <BulkActions actions={bulkActions} onActionSelected={handleActionClick} />
+                        <BulkActions
+                            actions={bulkActions}
+                            onActionSelected={handleActionClick}
+                        />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         <Import />
@@ -462,7 +480,12 @@ const Users = ({ users, options, queryParams }) => {
                                     Name
                                 </TableHeader>
 
-                                <TableHeader name="email" queryParams={queryParams}>Email</TableHeader>
+                                <TableHeader
+                                    name="email"
+                                    queryParams={queryParams}
+                                >
+                                    Email
+                                </TableHeader>
 
                                 <TableHeader
                                     name="privilege_name"

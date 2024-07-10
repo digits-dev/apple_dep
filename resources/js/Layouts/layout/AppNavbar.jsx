@@ -77,6 +77,9 @@ const AppNavbar = () => {
                     <Link
                         href="change_password"
                         className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer"
+                        onClick={() => {
+                            setShowMenu(false);
+                        }}
                     >
                         <img
                             src="/images/navigation/lock-icon.png"

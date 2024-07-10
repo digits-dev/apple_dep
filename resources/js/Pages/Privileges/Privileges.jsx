@@ -72,6 +72,7 @@ const Privileges = ({ privileges, queryParams }) => {
                         <tbody>
                             {privileges &&
                                 privileges?.data.map((item, index) => (
+                               
                                     <Row key={item.id}>
                                         <RowData isLoading={loading}>
                                             {item.id}
@@ -85,7 +86,7 @@ const Privileges = ({ privileges, queryParams }) => {
                                                 : "Standard"}
                                         </RowData>
                                         <RowData center>
-                                            <RowAction action="edit" 
+                                            <RowAction as="button" action="edit" 
                                                     href={`edit-privileges/${item.id}`}                                                                              
                                             >
                                                 
