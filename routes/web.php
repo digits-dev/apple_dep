@@ -90,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
     //List of Orders
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
+    Route::get('/list_of_orders/enroll/{id}', [ListOfOrdersController::class, 'enrollDevices']);
 
     //IMPORTS
     Route::post('/customers-import', [CustomerController::class, 'import']);
@@ -182,4 +183,3 @@ Route::group([
         }
     }
 })->middleware('auth');
-

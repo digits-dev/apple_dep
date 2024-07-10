@@ -201,13 +201,15 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                         <RowStatus
                                             isLoading={loading}
                                             status={
-                                                item.enrollment_status == 'Completed'
+                                                item.enrollment_status ==
+                                                "Completed"
                                                     ? "success"
                                                     : "error"
                                             }
                                             center
                                         >
-                                            {item.enrollment_status == 'Completed'
+                                            {item.enrollment_status ==
+                                            "Completed"
                                                 ? "Success"
                                                 : "Error"}
                                         </RowStatus>
