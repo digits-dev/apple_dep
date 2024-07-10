@@ -47,7 +47,7 @@ class AppleDeviceEnrollmentController extends Controller
                 'langCode' => 'en',
             ],
             'depResellerId' => '0000742682', //replace
-            'deviceEnrollmentTransactionId' => '80a3209c-6d61-480d-a240-10dc30bd8127_1720585230422', //replace
+            'deviceEnrollmentTransactionId' => 'd6256757-a1a2-4534-8c5b-89819833ce1e_1720594456129', //replace
         ];
 
         try {

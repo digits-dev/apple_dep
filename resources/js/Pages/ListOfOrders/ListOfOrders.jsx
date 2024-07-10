@@ -178,8 +178,8 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
                         <tbody>
                             {orders &&
-                                orders.data.map((item) => (
-                                    <Row key={item.sales_order_no}>
+                                orders.data.map((item,index) => (
+                                    <Row key={item.sales_order_no + index}>
                                         <RowData
                                             isLoading={loading}
                                             center
@@ -201,13 +201,15 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                         <RowStatus
                                             isLoading={loading}
                                             status={
-                                                item.enrollment_status == 'Completed'
+                                                item.enrollment_status ==
+                                                "Completed"
                                                     ? "success"
                                                     : "error"
                                             }
                                             center
                                         >
-                                            {item.enrollment_status == 'Completed'
+                                            {item.enrollment_status ==
+                                            "Completed"
                                                 ? "Success"
                                                 : "Error"}
                                         </RowStatus>
