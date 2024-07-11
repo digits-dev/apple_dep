@@ -11,6 +11,7 @@ use App\Models\EnrollmentList;
 use App\Models\JsonRequest;
 use App\Models\JsonResponse;
 use App\Models\TransactionLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -184,10 +185,10 @@ class ListOfOrdersController extends Controller
         }
     }
 
-    public function enrollDevices($id)
+    public function enrollDevices(Request $request)
     {
         try {
-            // $request = $request->all(); 
+            $id = $request->input('id'); 
 
             $payload = [
                 'requestContext' => [
@@ -206,10 +207,10 @@ class ListOfOrdersController extends Controller
             $devicePayload = [];
             
            
-                $devicePayload[] = [
-                    'deviceId' => $header_data['sales_order_no'],
-                    'assetTag' => $header_data['serial_number'],
-                ];
+            $devicePayload[] = [
+                'deviceId' => $header_data['sales_order_no'],
+                'assetTag' => $header_data['serial_number'],
+            ];
                 
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
@@ -245,13 +246,14 @@ class ListOfOrdersController extends Controller
                 $status_message = $response['errorMessage'];
                 $enrollment_status = 0;
             }
+
             $insertData = [ 
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
                 'transaction_id' => $transaction_id,
-                'dep_status' => $dep_status,
-                'enrollment_status' => $enrollment_status,
+                'dep_status' => 1,
+                'enrollment_status' => 1,
                 'status_message' => $status_message,
                 'created_at' => date('Y-m-d H:i:s')
             ];
@@ -273,8 +275,114 @@ class ListOfOrdersController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             
+            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+
+            return response()->json($data);
             
-            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function bulkEnrollDevices(Request $request)
+    {
+        try {
+            $ids = $request->input('ids');
+
+            $payload = [
+                'requestContext' => [
+                    'shipTo' => '0000742682',
+                    'timeZone' => '420',
+                    'langCode' => 'en',
+                ],
+                'transactionId' => 'TXN_' . uniqid(),  
+                'depResellerId' => '0000742682',
+                'orders' => [],  
+            ];
+
+            $requestData = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->get();
+            $header_data = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+
+            $deliveryPayload = [];
+            $devicePayload = [];
+            
+            foreach ($requestData ?? [] as $key => $orderData) {
+                $devicePayload[$key] = [
+                    'deviceId' => $orderData['sales_order_no'],
+                    'assetTag' => $orderData['serial_number'],
+                ];
+
+            }
+                
+            $timestamp = strtotime($header_data['order_date']);
+            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+            $deliveryPayload = [
+                'deliveryNumber' => '30260972',
+                'shipDate' => $formattedDate,
+                'devices' => $devicePayload,
+            ];
+
+            $orderPayload = [
+                'orderNumber' => $header_data['sales_order_no'],
+                'orderDate' => $formattedDate,
+                'orderType' => 'OR',
+                'customerId' => $header_data['customer_name'],
+                'poNumber' => $header_data['order_ref_no'],
+                'deliveries' => [
+                    $deliveryPayload
+                ],
+            ];
+            $payload['orders'][] = $orderPayload;
+
+            $response = $this->appleService->enrollDevices($payload);
+
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                $enrollment_status = 1;
+            }else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = $response['errorCode'];
+                $status_message = $response['errorMessage'];
+                $enrollment_status = 0;
+            }
+
+            foreach ($requestData ?? [] as $deviceData) {
+                $insertData = [ 
+                    'sales_order_no' => $header_data['sales_order_no'],
+                    'item_code' => $header_data['digits_code'],
+                    'serial_number' => $deviceData['serial_number'],
+                    'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                    'dep_status' => 1,
+                    'enrollment_status' => 1,
+                    'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                ];
+    
+                EnrollmentList::insert($insertData);
+
+            }
+
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'OR',
+                'order_id' => $orderId,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+          
+            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+
+            return response()->json($data);
+       
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
