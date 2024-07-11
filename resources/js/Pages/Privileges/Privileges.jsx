@@ -15,92 +15,94 @@ import RowAction from "../../Components/Table/RowAction";
 import Pagination from "../../Components/Table/Pagination";
 
 const Privileges = ({ privileges, queryParams }) => {
-    queryParams = queryParams || {};
-    router.on("start", () => setLoading(true));
-    router.on("finish", () => setLoading(false));
-    const [loading, setLoading] = useState(false);
+    const Privileges = ({ privileges, queryParams }) => {
+        queryParams = queryParams || {};
+        router.on("start", () => setLoading(true));
+        router.on("finish", () => setLoading(false));
+        const [loading, setLoading] = useState(false);
 
-    return (
-        <>
-            <Head title="Privileges" />
-            <AppContent>
-                <ContentPanel>
-                    <TopPanel>
-                        <TableSearch queryParams={queryParams} />
-                        <PerPage queryParams={queryParams} />
-                        <Link
-                            href="create-privileges"
-                            as="button"
-                            className="bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2"
-                        >
-                            <i className="fa fa-plus-circle"></i> Add Privilege
-                        </Link>
-                    </TopPanel>
-                    <TableContainer>
-                        <Thead>
-                            <Row>
-                                <TableHeader
-                                    name="id"
-                                    queryParams={queryParams}
-                                    width="sm"
-                                >
-                                    ID
-                                </TableHeader>
-                                <TableHeader
-                                    name="name"
-                                    queryParams={queryParams}
-                                    width="sm"
-                                >
-                                    Name
-                                </TableHeader>
-                                <TableHeader
-                                    name="is_superadmin"
-                                    queryParams={queryParams}
-                                    width="sm"
-                                >
-                                    Super Admin
-                                </TableHeader>
-                                <TableHeader
-                                    sortable={false}
-                                    width="auto"
-                                    justify="center"
-                                >
-                                    Action
-                                </TableHeader>
-                            </Row>
-                        </Thead>
-                        <tbody>
-                            {privileges &&
-                                privileges?.data.map((item, index) => (
-                               
-                                    <Row key={item.id}>
-                                        <RowData isLoading={loading}>
-                                            {item.id}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.name}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.is_superadmin
-                                                ? "Superadmin"
-                                                : "Standard"}
-                                        </RowData>
-                                        <RowData center>
-                                            <RowAction as="button" action="edit" 
-                                                    href={`edit-privileges/${item.id}`}                                                                              
-                                            >
-                                                
-                                            </RowAction>
-                                        </RowData>
-                                    </Row>
-                                ))}
-                        </tbody>
-                    </TableContainer>
-                    <Pagination paginate={privileges} />
-                </ContentPanel>
-            </AppContent>
-        </>
-    );
+        return (
+            <>
+                <Head title="Privileges" />
+                <AppContent>
+                    <ContentPanel>
+                        <TopPanel>
+                            <TableSearch queryParams={queryParams} />
+                            <PerPage queryParams={queryParams} />
+                            <Link
+                                href="create-privileges"
+                                as="button"
+                                className="bg-primary text-white overflow-hidden rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2"
+                            >
+                                <i className="fa fa-plus-circle"></i> Add
+                                Privilege
+                            </Link>
+                        </TopPanel>
+                        <TableContainer>
+                            <Thead>
+                                <Row>
+                                    <TableHeader
+                                        name="id"
+                                        queryParams={queryParams}
+                                        width="sm"
+                                    >
+                                        ID
+                                    </TableHeader>
+                                    <TableHeader
+                                        name="name"
+                                        queryParams={queryParams}
+                                        width="sm"
+                                    >
+                                        Name
+                                    </TableHeader>
+                                    <TableHeader
+                                        name="is_superadmin"
+                                        queryParams={queryParams}
+                                        width="sm"
+                                    >
+                                        Super Admin
+                                    </TableHeader>
+                                    <TableHeader
+                                        sortable={false}
+                                        width="auto"
+                                        justify="center"
+                                    >
+                                        Action
+                                    </TableHeader>
+                                </Row>
+                            </Thead>
+                            <tbody>
+                                {privileges &&
+                                    privileges?.data.map((item, index) => (
+                                        <Row key={item.id}>
+                                            <RowData isLoading={loading}>
+                                                {item.id}
+                                            </RowData>
+                                            <RowData isLoading={loading}>
+                                                {item.name}
+                                            </RowData>
+                                            <RowData isLoading={loading}>
+                                                {item.is_superadmin
+                                                    ? "Superadmin"
+                                                    : "Standard"}
+                                            </RowData>
+                                            <RowData center>
+                                                <RowAction
+                                                    as="button"
+                                                    action="edit"
+                                                    href={`edit-privileges/${item.id}`}
+                                                ></RowAction>
+                                            </RowData>
+                                        </Row>
+                                    ))}
+                            </tbody>
+                        </TableContainer>
+                        <Pagination paginate={privileges} />
+                    </ContentPanel>
+                </AppContent>
+            </>
+        );
+    };
 };
 
 export default Privileges;

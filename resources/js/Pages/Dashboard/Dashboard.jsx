@@ -9,14 +9,12 @@ const Dashboard = ({ customer, orders, devices, orders_count_wdate }) => {
 
     useEffect(() => {
         if (auth.user) {
-            // Push a new state to the history
             window.history.pushState(
                 null,
                 document.title,
                 window.location.href
             );
 
-            // Add event listener to prevent back navigation
             window.addEventListener("popstate", (event) => {
                 window.history.pushState(
                     null,

@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
+
     //CHANGE PASSWORD
     Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');
     Route::post('/postChangePassword', [AdminUsersController::class, 'postUpdatePassword'])-> name('postChangePassword');
@@ -74,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-privileges/{id}', [PrivilegesController::class, 'getEdit'])->name('edit-privileges');
     Route::post('/privilege/postAddSave', [PrivilegesController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/privilege/postEditSave', [PrivilegesController::class, 'postEditSave'])->name('postEditSave');
+
     //MODULES
     Route::get('create-modules', [ModulsController::class, 'getAddModuls'])->name('create-modules');
     Route::post('/module_generator/postAddSave', [ModulsController::class, 'postAddSave'])->name('postAddSave');
@@ -91,7 +93,12 @@ Route::middleware(['auth'])->group(function () {
     //List of Orders
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
-    Route::get('/list_of_orders/enroll/{id}', [ListOfOrdersController::class, 'enrollDevices']);
+    Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
+    Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
+
+    //EnrollmentList
+    Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);
+    Route::get('/enrollment_list/{transactionId}/check_status', [EnrollmentListController::class, 'checkTransactionStatus']);
 
     //IMPORTS
     Route::post('/customers-import', [CustomerController::class, 'import']);

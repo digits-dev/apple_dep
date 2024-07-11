@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('json_responses', function (Blueprint $table) {
-            $table->id();
-            $table->integer('order_id')->nullable();
-            $table->json('data');
-            $table->timestamps();
+        Schema::table('list_of_order_lines', function (Blueprint $table) {
+            $table->integer('enrollment_status_id')->after('serial_number');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('json_responses');
+        Schema::table('list_of_order_lines', function (Blueprint $table) {
+            $table->dropColumn('enrollment_status_id');
+        });
     }
 };

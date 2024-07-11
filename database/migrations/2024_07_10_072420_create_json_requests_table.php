@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('json_requests', function (Blueprint $table) {
             $table->id();
+            $table->integer('order_id')->nullable();
             $table->json('data');
             $table->timestamps();
         });

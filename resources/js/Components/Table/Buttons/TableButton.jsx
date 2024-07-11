@@ -1,8 +1,9 @@
 import React from "react";
 
-const TableButton = ({ children, onClick, disabled, type, extendClass }) => {
+const TableButton = ({ children, onClick, disabled, type, extendClass, ...props }) => {
     return (
         <button
+            {...props}
             type={type}
             onClick={onClick}
             disabled={disabled}

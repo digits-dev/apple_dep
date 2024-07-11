@@ -8,10 +8,15 @@ use App\Models\Order;
 use App\Models\OrderLines;
 use App\Models\User;
 use App\Models\EnrollmentList;
+use App\Models\JsonRequest;
+use App\Models\JsonResponse;
+use App\Models\TransactionLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
+
 
 class ListOfOrdersController extends Controller
 {
@@ -45,12 +50,16 @@ class ListOfOrdersController extends Controller
     public function show(Order $order)
     {
         $orderLines = OrderLines::where('order_id', $order->id)->get();
-        return Inertia::render('ListOfOrders/OrderDetails', [ 'order' => $order , 'orderLines' => $orderLines]);
+        $jsonSubmitted = JsonRequest::where('order_id', $order->id)->get();
+        $jsonReceived= JsonResponse::where('order_id', $order->id)->get();
+        $transactionLogs = TransactionLog::where('order_id', $order->id)->get();
+        return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
     }
 
     public function edit(Order $order){
        
-        $orderLines = OrderLines::where('order_id', $order->id)->get();
+        $orderLines = OrderLines::where('order_id', $order->id)->with('status')->get();
+        // dd($orderLines);
         return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order , 'orderLines' => $orderLines]);
     }
 
@@ -58,7 +67,7 @@ class ListOfOrdersController extends Controller
     {
         date_default_timezone_set('Asia/Manila');
 
-        $filename            = "List Of Orders - " . date ('Y-m-d H:i:s');
+        $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
         $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
 
         return Excel::download(new OrdersExport($result), $filename . '.xlsx');
@@ -81,138 +90,108 @@ class ListOfOrdersController extends Controller
 
     public function getListOfOrdersFromErp(){ 
         
-        
-        $results =  DB::connection('oracle')->table('OE_ORDER_HEADERS_ALL as OEH')
-            ->select([
-                'OEH.ORDER_NUMBER',
-                'OEH.CUST_PO_NUMBER',
-                'OEL.LINE_NUMBER',
-                'OEL.ORDERED_ITEM',
-                'MSI.DESCRIPTION',
-                DB::raw('MSI.ATTRIBUTE7 AS BRAND'),
-                DB::raw('MSI.ATTRIBUTE8 AS WH_CATEGORY'),
-                'OEL.SHIPPED_QUANTITY',
-                'CustName.PARTY_NAME as Customer_name',
-                'wnd.Confirm_Date',
-                'wnd.NAME as DR',
-                'MTRL.ATTRIBUTE12 as SERIAL1',
-                'MTRL.ATTRIBUTE13 as SERIAL2',
-                'MTRL.ATTRIBUTE14 as SERIAL3',
-                'MTRL.ATTRIBUTE15 as SERIAL4',
-                'MTRL.ATTRIBUTE4 as SERIAL5',
-                'MTRL.ATTRIBUTE5 as SERIAL6',
-                'MTRL.ATTRIBUTE6 as SERIAL7',
-                'MTRL.ATTRIBUTE7 as SERIAL8',
-                'MTRL.ATTRIBUTE8 as SERIAL9',
-                'MTRL.ATTRIBUTE9 as SERIAL10'
-            ])
-            ->leftJoin('OE_ORDER_LINES_ALL as OEL', 'OEH.HEADER_ID', '=', 'OEL.HEADER_ID')
-            ->leftJoin('org_organization_definitions as OOD', 'OEH.SHIP_FROM_ORG_ID', '=', 'OOD.ORGANIZATION_ID')
-            ->leftJoin('wsh_delivery_details as wdd', 'OEL.LINE_ID', '=', 'wdd.source_line_id')
-            ->leftJoin('wsh_delivery_assignments as wda', 'wdd.delivery_detail_id', '=', 'wda.delivery_detail_id')
-            ->leftJoin('wsh_new_deliveries as wnd', 'wda.delivery_id', '=', 'wnd.delivery_id')
-            ->leftJoin('hz_cust_accounts as CustAccount', 'wdd.CUSTOMER_ID', '=', 'CustAccount.cust_account_id')
-            ->leftJoin('hz_parties as CustName', 'CustAccount.Party_id', '=', 'CustName.PARTY_ID')
-            ->leftJoin('MTL_TXN_REQUEST_LINES as MTRL', 'wdd.MOVE_ORDER_LINE_ID', '=', 'MTRL.LINE_ID')
-            ->leftJoin('MTL_system_items as MSI', function ($join) {
-                $join->on('OEL.INVENTORY_ITEM_ID', '=', 'MSI.INVENTORY_ITEM_ID')
-                    ->on('MSI.ORGANIZATION_ID', '=', 'OOD.ORGANIZATION_ID');
-            })
-            ->where('OEH.ORDER_CATEGORY_CODE', '!=', 'RETURN')
-            ->where('OOD.ORGANIZATION_ID', '=', 224)
-            ->where('wdd.INV_INTERFACED_FLAG', '=', 'Y')
-            ->where('wdd.OE_INTERFACED_FLAG', '=', 'Y')
-            ->whereIn('MSI.ATTRIBUTE8', ['APPLE IPHONE', 'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO'])
-            ->whereBetween('wnd.Confirm_Date', ['2024-01-01 00:00:00', '2024-07-31 23:59:59'])
-            ->where(function ($query) {
-                $query->orWhereRaw("SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) = 'CRP'")
-                    ->orWhereRaw("SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) = 'DLR'")
-                    ->orWhereRaw("SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) = 'CON'");
-            })
-            ->get();
-        
-            //HEADER
-            $uniqueHeaderData = [];
-            $header = [];
-            $lines = [];
+        $results =  Order::getOrdersFromErp();
 
-            foreach($results as $key => $item){
-                //LINES
-                $serialNumbers = [];
-                for ($i = 1; $i <= 10; $i++) {
-                    $serialKey = "serial" . $i;
-                    if (!empty($item->$serialKey)) {
-                        $serialNumbers[] = $item->$serialKey;
-                    }
-                }
+        //HEADER
+        $header = [];
+        $lines = [];
 
-                if(count($serialNumbers) == $item->shipped_quantity){
-                    for($i = 0; $i < (int)$item->shipped_quantity; $i++){
-                        $res = clone $item;
-                        $res->final_qty = 1;
-                        $serial = "serial" . ($i + 1);
-                        if (property_exists($item, $serial)) {
-                            $res->final_serial = $item->$serial;
-                        } else {
-                            $res->final_serial = null; // 
-                        }
-    
-                        $lines[] = $res;
-                    }  
-                }
-                
-                $identifier = $item->order_number . '-' . $item->cust_po_number;
-                if (!in_array($identifier, $header)) {
-                    $header[] = $identifier;
-                    $uniqueHeaderData[] = $item;
+        foreach($results as $key => $item){
+            //COUNT SERIALs
+            $serialNumbers = [];
+            for ($i = 1; $i <= 10; $i++) {
+                $serialKey = "serial" . $i;
+                if (!empty($item->$serialKey)) {
+                    $serialNumbers[] = $item->$serialKey;
                 }
             }
-            return $lines;
-            // $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
-            // $latestRequestId = $latestRequest->id ?? 0;
-            // foreach($uniqueHeaderData as $insert_data){
-            //     $headerId = Order::updateOrInsert(
-            //     ['sales_order_no'=>$insert_data->order_number,
-            //      'order_ref_no'=>$insert_data->cust_po_number
-            //     ],
-            //     [
-            //         'sales_order_no'    => $insert_data->order_number,
-            //         'customer_name'     => $insert_data->customer_name,
-            //         'order_ref_no'      => $insert_data->cust_po_number,
-            //         'dep_order'         => 1,
-            //         'enrollment_status' => "1",
-            //         'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
-            //     ]);
-            // }
- 
-            // $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
-            // $insertData = [];
-            // foreach($lines as $key => $line){
-            //     $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
-            //     if($search !== false){
-            //         $line->header_id = $header_ids[$search]->id;
-            //         $insertData[] = $line;
-            //     }
-            // }
-         
-            // foreach($insertData as $key => $insertLines){
-            //     OrderLines::create(
-            //     [
-            //         'order_id'          => $insertLines->header_id,
-            //         'digits_code'       => $insertLines->ordered_item,
-            //         'item_description'  => $insertLines->description,
-            //         'brand'             => $insertLines->brand,
-            //         'wh_category'       => $insertLines->wh_category,
-            //         'quantity'          => $insertLines->final_qty,
-            //         'serial_number'     => $insertLines->final_serial
-            //     ]);
-            // }
+
+            // Check for duplicate serial numbers
+            $serialCount = array_count_values($serialNumbers);
+            $duplicates = array_filter($serialCount, function($count) {
+                return $count > 1;
+            });
+
+            if(count($serialNumbers) === (int)$item->shipped_quantity && empty($duplicates)){
+                for($i = 0; $i < (int)$item->shipped_quantity; $i++){
+                    $res = clone $item;
+                    $res->final_qty = 1;
+                    $serial = "serial" . ($i + 1);
+                    if (property_exists($item, $serial)) {
+                        $res->final_serial = $item->$serial;
+                    } else {
+                        $res->final_serial = null; // 
+                    }
+
+                    $lines[] = $res;
+                }  
+            }
+            
+            $identifier = $item->order_number . '-' . $item->cust_po_number;
+            if (!in_array($identifier, $header)) {
+                $header[] = $identifier;
+                $uniqueHeaderData[] = $item;
+            }
+        }
+
+        //CHECK IF ORDER NUMBER AND SERIAL IS DUPLICATE
+        $linesIdentifier = [];
+        foreach($lines as $key => $line){
+            $duplicateIdentifer = $line->order_number . '-' . $line->cust_po_number . '-' . $line->final_serial;
+            if (!in_array($duplicateIdentifer, $linesIdentifier)) {
+                $linesIdentifier[] = $duplicateIdentifer;
+                $finalDataLines[] = $line;
+            }
+        }
+
+        $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
+        $latestRequestId = $latestRequest->id ?? 0;
+        foreach($uniqueHeaderData as $insert_data){
+            $headerId = Order::updateOrInsert(
+            ['sales_order_no'=>$insert_data->order_number,
+             'order_ref_no'=>$insert_data->cust_po_number
+            ],
+            [
+                'sales_order_no'    => $insert_data->order_number,
+                'customer_name'     => $insert_data->customer_name,
+                'order_ref_no'      => $insert_data->cust_po_number,
+                'dr_number'         => $insert_data->dr,
+                'dep_order'         => 1,
+                'enrollment_status' => "1",
+                'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
+            ]);
+        }
+
+        $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
+        $insertData = [];
+        foreach($finalDataLines as $key => $line){
+            $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
+            if($search !== false){
+                $line->header_id = $header_ids[$search]->id;
+                $insertData[] = $line;
+            }
+        }
+        
+        foreach($insertData as $key => $insertLines){
+            OrderLines::create(
+            [
+                'order_id'          => $insertLines->header_id,
+                'digits_code'       => $insertLines->ordered_item,
+                'item_description'  => $insertLines->description,
+                'brand'             => $insertLines->brand,
+                'wh_category'       => $insertLines->wh_category,
+                'quantity'          => $insertLines->final_qty,
+                'serial_number'     => $insertLines->final_serial,
+                'enrollment_status_id' => 1,
+
+            ]);
+        }
     }
 
-    public function enrollDevices($id)
+    public function enrollDevices(Request $request)
     {
         try {
-            // $request = $request->all(); 
+            $id = $request->input('id'); 
 
             $payload = [
                 'requestContext' => [
@@ -231,10 +210,10 @@ class ListOfOrdersController extends Controller
             $devicePayload = [];
             
            
-                $devicePayload[] = [
-                    'deviceId' => $header_data['sales_order_no'],
-                    'assetTag' => $header_data['serial_number'],
-                ];
+            $devicePayload[] = [
+                'deviceId' => $header_data['sales_order_no'],
+                'assetTag' => $header_data['serial_number'],
+            ];
                 
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
@@ -255,46 +234,164 @@ class ListOfOrdersController extends Controller
                 ],
             ];
             $payload['orders'][] = $orderPayload;
+
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-          
+            
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                $enrollment_status = 1;
+            }else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = $response['errorCode'];
+                $status_message = $response['errorMessage'];
+                $enrollment_status = 0;
+            }
+
             $insertData = [ 
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
-                'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                'transaction_id' => $transaction_id,
                 'dep_status' => 1,
                 'enrollment_status' => 1,
-                'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                'status_message' => $status_message,
+                'created_at' => date('Y-m-d H:i:s')
             ];
 
             EnrollmentList::insert($insertData);
+            
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'OR',
+                'order_id' => $orderId,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            
+            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
 
-            dd($response);
-            return response()->json($response);
+            return response()->json($data);
+            
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function checkTransactionStatus(Response $response)
+
+    public function bulkEnrollDevices(Request $request)
     {
-        $requestData = [
-            'requestContext' => [
-                'shipTo' => '0000742682', //replace
-                'timeZone' => '420',
-                'langCode' => 'en',
-            ],
-            'depResellerId' => '0000742682', //replace
-            'deviceEnrollmentTransactionId' => $response->transaction_id
-        ];
-
         try {
-            $response = $this->appleService->checkTransactionStatus($requestData);
+            $ids = $request->input('ids');
 
-            return response()->json($response);
+            $payload = [
+                'requestContext' => [
+                    'shipTo' => '0000742682',
+                    'timeZone' => '420',
+                    'langCode' => 'en',
+                ],
+                'transactionId' => 'TXN_' . uniqid(),  
+                'depResellerId' => '0000742682',
+                'orders' => [],  
+            ];
+
+            $query = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id');
+
+            $requestData = $query->get();
+            $header_data = $query->first();
+
+            $deliveryPayload = [];
+            $devicePayload = [];
+            
+            foreach ($requestData ?? [] as $key => $orderData) {
+                $devicePayload[$key] = [
+                    'deviceId' => $orderData['sales_order_no'],
+                    'assetTag' => $orderData['serial_number'],
+                ];
+            }
+                
+            $timestamp = strtotime($header_data['order_date']);
+            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+
+            $deliveryPayload = [
+                'deliveryNumber' => '30260972',
+                'shipDate' => $formattedDate,
+                'devices' => $devicePayload,
+            ];
+
+            $orderPayload = [
+                'orderNumber' => $header_data['sales_order_no'],
+                'orderDate' => $formattedDate,
+                'orderType' => 'OR',
+                'customerId' => $header_data['customer_name'],
+                'poNumber' => $header_data['order_ref_no'],
+                'deliveries' => [
+                    $deliveryPayload
+                ],
+            ];
+
+            $payload['orders'][] = $orderPayload;
+
+            $response = $this->appleService->enrollDevices($payload);
+
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                $enrollment_status = 1;
+            }else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = $response['errorCode'];
+                $status_message = $response['errorMessage'];
+                $enrollment_status = 0;
+            }
+
+            foreach ($requestData ?? [] as $deviceData) {
+                $insertData = [ 
+                    'sales_order_no' => $header_data['sales_order_no'],
+                    'item_code' => $header_data['digits_code'],
+                    'serial_number' => $deviceData['serial_number'],
+                    'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                    'dep_status' => 1,
+                    'enrollment_status' => 1,
+                    'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                ];
+    
+                EnrollmentList::insert($insertData);
+
+            }
+
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'OR',
+                'order_id' => $orderId,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+          
+            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+
+            return response()->json($data);
+       
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 }
