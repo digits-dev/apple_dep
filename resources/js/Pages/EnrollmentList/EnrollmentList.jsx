@@ -156,12 +156,8 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
 
                         <tbody>
                             {enrollmentLists &&
-                                enrollmentLists.data.map((item) => (
-                                    <Row
-                                        key={
-                                            item.sales_order_no + item.item_code
-                                        }
-                                    >
+                                enrollmentLists.data.map((item, index) => (
+                                    <Row key={item.sales_order_no + index}>
                                         <RowData
                                             isLoading={loading}
                                             center
