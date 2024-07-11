@@ -192,12 +192,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '0000742682',
-                    'timeZone' => '420',
-                    'langCode' => 'en',
+                    'shipTo' => config('services.apple_api.ship_to'),
+                    'timeZone' => config('services.apple_api.timezone'),
+                    'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '0000742682',
+                'depResellerId' => config('services.apple_api.ship_to'),
                 'orders' => [],  
             ];
             
@@ -215,7 +215,7 @@ class ListOfOrdersController extends Controller
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
             $deliveryPayload = [
-                'deliveryNumber' => '30260972',
+                'deliveryNumber' => $header_data['dr'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
@@ -292,12 +292,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '0000742682',
-                    'timeZone' => '420',
-                    'langCode' => 'en',
+                   'shipTo' => config('services.apple_api.ship_to'),
+                   'timeZone' => config('services.apple_api.timezone'),
+                   'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '0000742682',
+                'depResellerId' => config('services.apple_api.ship_to'),
                 'orders' => [],  
             ];
 
@@ -318,7 +318,7 @@ class ListOfOrdersController extends Controller
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
             $deliveryPayload = [
-                'deliveryNumber' => '30260972',
+                'deliveryNumber' => $header_data['dr'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
