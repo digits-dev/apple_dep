@@ -1,6 +1,9 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
+import InputComponent from "../../Components/Forms/Input";
+import RouteType from "./RouteTypes";
+import axios from "axios";
 
 const CreateUserForm = ({ onClose }) => {
     const [errors, setErrors] = useState({});
@@ -13,10 +16,11 @@ const CreateUserForm = ({ onClose }) => {
     const [forms, setforms] = useState({
         name: "",
         path: "",
+        icon: "",
         controller: "",
         type: "",
     });
-
+    console.log(RouteType);
     function handleChange(e) {
         const key = e.target.name;
         const value = e.target.value;
@@ -31,10 +35,10 @@ const CreateUserForm = ({ onClose }) => {
     const validate = () => {
         const newErrors = {};
         if (!forms.name) newErrors.name = "Name is required";
-        if (!forms.email) newErrors.email = "Email is required";
-        if (!forms.privilege_id)
-            newErrors.privilege_id = "Privilege is required";
-        if (!forms.password) newErrors.password = "Password is required";
+        if (!forms.path) newErrors.path = "Path is required";
+        if (!forms.icon) newErrors.icon = "Icon is required";
+        if (!forms.type) newErrors.type = "Type is required";
+        if (!forms.type) newErrors.type = "Type is required";
         return newErrors;
     };
 
@@ -46,7 +50,7 @@ const CreateUserForm = ({ onClose }) => {
         } else {
             setLoading(true);
             try {
-                const response = await axios.post("/postAddSave", forms, {
+                const response = await axios.post("/module_generator/postAddSave", forms, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -55,8 +59,8 @@ const CreateUserForm = ({ onClose }) => {
                     setFormMessage(response.data.message);
                     setMessageType(response.data.type);
                     setTimeout(() => setFormMessage(""), 3000);
-                    setShowCreateModal(false);
-                    router.reload({ only: ["users"] });
+                    onClose
+                    router.reload({ only: ["Modules"] });
                 } else {
                     setErrorMessage(response.data.message);
                 }
@@ -80,13 +84,9 @@ const CreateUserForm = ({ onClose }) => {
                 <div style={{ color: "red" }}>{errorMessage}</div>
             )}
             <div className="flex flex-col mb-3 w-full">
-                <label className="font-nunito-sans font-semibold">
-                    Name
-                </label>
-                <input
+                <InputComponent
                     type="text"
                     name="name"
-                    className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                     value={forms.name}
                     onChange={handleChange}
                 />
@@ -98,37 +98,57 @@ const CreateUserForm = ({ onClose }) => {
             </div>
 
             <div className="flex flex-col mb-3 w-full">
-                <label className="font-nunito-sans font-semibold">
-                    Email
-                </label>
-                <input
-                    type="email"
-                    name="email"
-                    className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                    value={forms.email}
+                <InputComponent
+                    type="text"
+                    name="path"
+                    value={forms.path}
                     onChange={handleChange}
                 />
-                {(errors.email || serverErrors.email) && (
+                {(errors.path || serverErrors.path) && (
                     <div className="font-nunito-sans font-bold text-red-600">
-                        {errors.email || serverErrors.email}
+                        {errors.path || serverErrors.path}
                     </div>
                 )}
             </div>
          
             <div className="flex flex-col mb-3 w-full">
-                <label className="font-nunito-sans font-semibold">
-                    Password
-                </label>
-                <input
-                    type="password"
-                    name="password"
-                    className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                    value={forms.password}
+                <InputComponent
+                    type="text"
+                    name="icon"
+                    value={forms.icon}
                     onChange={handleChange}
                 />
-                {(errors.password || serverErrors.password) && (
+                {(errors.icon || serverErrors.icon) && (
                     <div className="font-nunito-sans font-bold text-red-600">
-                        {errors.password || serverErrors.password}
+                        {errors.icon || serverErrors.icon}
+                    </div>
+                )}
+            </div>
+
+            <div className="flex flex-col mb-3 w-full">
+                <DropdownSelect
+                    defaultSelect="Select a Type"
+                    name="type"
+                    options={RouteType}
+                    value={forms.type}
+                    onChange={handleChange}
+                />
+                {(errors.type || serverErrors.type) && (
+                    <div className="font-nunito-sans font-bold text-red-600">
+                        {errors.type || serverErrors.type}
+                    </div>
+                )}
+            </div>
+            <div className="flex flex-col mb-3 w-full">
+                <InputComponent
+                    type="text"
+                    name="controller"
+                    value={forms.controller}
+                    onChange={handleChange}
+                />
+                {(errors.controller || serverErrors.controller) && (
+                    <div className="font-nunito-sans font-bold text-red-600">
+                        {errors.controller || serverErrors.controller}
                     </div>
                 )}
             </div>

@@ -1,9 +1,16 @@
 import React from "react";
 import DescIcon from "../Table/Icons/DescIcon";
+import FormatLabelName from "../../Utilities/FormatLabelName";
 
-const DropdownSelect = ({ options, onChange, value, name, defaultSelect }) => {
+const DropdownSelect = ({ options, onChange, value, name, defaultSelect, displayName }) => {
     return (
         <div className="relative ">
+            <label
+                htmlFor={name}
+                className="block text-sm font-bold text-gray-700 font-nunito-sans"
+            >
+                {displayName || FormatLabelName(name)}
+            </label>
             <select
                 name={name}
                 value={value}

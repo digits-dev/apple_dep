@@ -78,6 +78,7 @@ Route::middleware(['auth'])->group(function () {
 
     //MODULES
     Route::get('create-modules', [ModulsController::class, 'getAddModuls'])->name('create-modules');
+    Route::post('/module_generator/postAddSave', [ModulsController::class, 'postAddSave'])->name('postAddSave');
 
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);

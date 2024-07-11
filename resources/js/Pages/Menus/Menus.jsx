@@ -15,9 +15,8 @@ import RowAction from "../../Components/Table/RowAction";
 import Pagination from "../../Components/Table/Pagination";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
-import ModulForm from "./ModulForm";
 
-const Modules = ({ modules, queryParams }) => {
+const Menus = ({ modules, queryParams }) => {
     queryParams = queryParams || {};
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -125,4 +124,4 @@ const Modules = ({ modules, queryParams }) => {
     );
 };
 
-export default Modules;
+export default Menus;
