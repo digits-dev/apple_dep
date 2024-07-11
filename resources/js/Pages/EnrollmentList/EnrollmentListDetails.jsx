@@ -8,6 +8,7 @@ import axios from "axios";
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
     const [loading, setLoading] = useState(false);
+    const [data, setData] = useState();
 
     useEffect(() => {
         setTimeout(() => {
@@ -22,7 +23,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             const response = await axios.get(
                 `/enrollment_list/${enrollmentList.transaction_id}/check_status`
             );
-            console.log(response.data.message);
+            setData(response.data.message.original.orders[0].deliveries);
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.error("Validation error:", error.response.data);
@@ -33,6 +34,8 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             setLoading(false);
         }
     };
+
+    console.log(data);
 
     return (
         <>
@@ -68,6 +71,10 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         {loading ? "Checking..." : "Check Transaction Status"}
                     </Button>
                 </div>
+                {data ??
+                    data?.map((item) => {
+                        <p>{item.deliveryNumber}</p>;
+                    })}
             </ContentPanel>
         </>
     );
