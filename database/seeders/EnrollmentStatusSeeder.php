@@ -15,12 +15,17 @@ class EnrollmentStatusSeeder extends Seeder
     {
         $data = [
             [
-                'enrollment_status' => 'Enrollment Success',
+                'enrollment_status' => 'Pending',
                 'status' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'enrollment_status' => 'Enrollment Error',
+                'status' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Enrollment Success',
                 'status' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
