@@ -3,8 +3,6 @@ import ContentPanel from "../Table/ContentPanel";
 import Chart from "react-apexcharts";
 
 const Orders = ({ orders_count_wdate }) => {
-    console.log(orders_count_wdate);
-
     const [chartOptions, setChartOptions] = useState({
         chart: {
             type: "line",

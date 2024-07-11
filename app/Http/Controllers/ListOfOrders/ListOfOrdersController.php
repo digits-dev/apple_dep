@@ -242,12 +242,18 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 1;
-            }else {
+                $enrollment_status = 3;
+            }
+            // else if (isset($response['enrollDeviceErrorResponse'])){
+            //     $dep_status = $response['errorCode'];
+            //     $status_message = $response['errorMessage'];
+            //     $enrollment_status = 0;
+            // }
+            else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = $response['errorCode'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 0;
+                $enrollment_status = 2;
             }
 
             $insertData = [ 
@@ -256,19 +262,20 @@ class ListOfOrdersController extends Controller
                 'serial_number' => $header_data['serial_number'],
                 'transaction_id' => $transaction_id,
                 'dep_status' => 1,
-                'enrollment_status' => 1,
+                'enrollment_status' => $enrollment_status,
                 'status_message' => $status_message,
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
             EnrollmentList::insert($insertData);
+            OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
             
             $orderId = $header_data['order_id'];
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OR',
@@ -278,7 +285,7 @@ class ListOfOrdersController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             
-            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+            $data = ['message'=>   $enrollment_status == 3  ?'Enrollment Success! ' : 'Enrollment Error! ', 'status'=> $enrollment_status == 3 ? 'success' : 'error'];
 
             return response()->json($data);
             
@@ -347,12 +354,12 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 1;
+                $enrollment_status = 3;
             }else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = $response['errorCode'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 0;
+                $enrollment_status = 2;
             }
 
             foreach ($requestData ?? [] as $deviceData) {
@@ -362,7 +369,7 @@ class ListOfOrdersController extends Controller
                     'serial_number' => $deviceData['serial_number'],
                     'transaction_id' => $response['deviceEnrollmentTransactionId'],
                     'dep_status' => 1,
-                    'enrollment_status' => 1,
+                    'enrollment_status' =>  $enrollment_status,
                     'status_message' => $response['enrollDevicesResponse']['statusMessage']
                 ];
     
@@ -374,8 +381,8 @@ class ListOfOrdersController extends Controller
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OR',
