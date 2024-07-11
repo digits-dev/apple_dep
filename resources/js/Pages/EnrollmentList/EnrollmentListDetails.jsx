@@ -8,7 +8,7 @@ import axios from "axios";
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState();
+    const [data, setData] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -23,7 +23,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             const response = await axios.get(
                 `/enrollment_list/${enrollmentList.transaction_id}/check_status`
             );
-            setData(response.data.message.original.orders[0].deliveries);
+            setData(response.data.message.original);
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.error("Validation error:", error.response.data);
@@ -34,13 +34,12 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             setLoading(false);
         }
     };
-
     console.log(data);
-
     return (
         <>
             <Head title="Enrollment List - Details" />
             <ContentPanel>
+               
                 <div className="mb-10 flex gap-5">
                     <div className="font-nunito-sans font-extrabold">
                         <p>Sales Order #:</p>
@@ -62,6 +61,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         <p>{enrollmentList.enrollment_status}</p>
                         <p>{enrollmentList.created_at}</p>
                     </div>
+             
                 </div>
                 <div className="flex gap-2">
                     <Button type="link" href="/enrollment_list">
@@ -71,11 +71,27 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         {loading ? "Checking..." : "Check Transaction Status"}
                     </Button>
                 </div>
-                {data ??
-                    data?.map((item) => {
-                        <p>{item.deliveryNumber}</p>;
-                    })}
+                <div className="font-nunito-sans">
+                    {data && data.orders.map((order, orderIndex) => (
+                        <div key={orderIndex}>
+                        <h2>Order Number: {order.orderNumber}</h2>
+                        {order.deliveries.map((delivery, deliveryIndex) => (
+                            <div key={deliveryIndex}>
+                            <h3>Delivery Number: {delivery.deliveryNumber}</h3>
+                            <ul>
+                                {delivery.devices.map((device, deviceIndex) => (
+                                <li key={deviceIndex}>
+                                    Device ID: {device.deviceId}
+                                </li>
+                                ))}
+                            </ul>
+                            </div>
+                        ))}
+                        </div>
+                    ))}
+                </div>
             </ContentPanel>
+        
         </>
     );
 };
