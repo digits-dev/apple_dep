@@ -75,18 +75,23 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     {data && data.orders.map((order, orderIndex) => (
                         <div key={orderIndex}>
                         <h2>Order Number: {order.orderNumber}</h2>
-                        {order.deliveries.map((delivery, deliveryIndex) => (
-                            <div key={deliveryIndex}>
-                            <h3>Delivery Number: {delivery.deliveryNumber}</h3>
-                            <ul>
-                                {delivery.devices.map((device, deviceIndex) => (
-                                <li key={deviceIndex}>
-                                    Device ID: {device.deviceId}
-                                </li>
-                                ))}
-                            </ul>
-                            </div>
-                        ))}
+                        {order.deliveries &&  order.deliveries.length > 0 ? (  
+                            order.deliveries.map((delivery, deliveryIndex) => (
+                                <div key={deliveryIndex}>
+                                <h3>Delivery Number: {delivery.deliveryNumber}</h3>
+                                <ul>
+                                    { 
+                                        delivery.devices.map((device, deviceIndex) => (
+                                        <li key={deviceIndex}>
+                                            Device ID: {device.deviceId}
+                                        </li>
+                                        ))
+                                    }
+                                </ul>
+                                </div>
+                            ))
+                        ) : (<p>{order.orderPostStatus}/{order.orderPostStatusMessage}</p>)
+                        }
                         </div>
                     ))}
                 </div>
