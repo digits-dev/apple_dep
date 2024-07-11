@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('transaction_logs', function (Blueprint $table) {
             $table->id();
-            $table->json('data');
+            $table->integer('order_id')->nullable();
+            $table->string('order_type')->nullable();
+            $table->string('dep_transaction_id')->nullable();
+            $table->string('dep_status')->nullable();
             $table->timestamps();
         });
     }

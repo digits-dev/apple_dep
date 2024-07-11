@@ -13,7 +13,13 @@ import { useEffect } from "react";
 import Tabs from "../../Components/Table/Tabs";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 
-const OrderDetails = ({ order, orderLines }) => {
+const OrderDetails = ({
+    order,
+    orderLines,
+    jsonSubmitted,
+    jsonReceived,
+    transactionLogs,
+}) => {
     const { setTitle } = useContext(NavbarContext);
 
     useEffect(() => {
@@ -77,7 +83,12 @@ const OrderDetails = ({ order, orderLines }) => {
                     </TableContainer>
                 </ContentPanel>
 
-                <Tabs tabs={tabs} />
+                <Tabs
+                    tabs={tabs}
+                    jsonSubmitted={jsonSubmitted}
+                    jsonReceived={jsonReceived}
+                    transactionLogs={transactionLogs}
+                />
             </AppContent>
         </>
     );

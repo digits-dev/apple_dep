@@ -8,10 +8,14 @@ use App\Models\Order;
 use App\Models\OrderLines;
 use App\Models\User;
 use App\Models\EnrollmentList;
+use App\Models\JsonRequest;
+use App\Models\JsonResponse;
+use App\Models\TransactionLog;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
+
 
 class ListOfOrdersController extends Controller
 {
@@ -45,7 +49,10 @@ class ListOfOrdersController extends Controller
     public function show(Order $order)
     {
         $orderLines = OrderLines::where('order_id', $order->id)->get();
-        return Inertia::render('ListOfOrders/OrderDetails', [ 'order' => $order , 'orderLines' => $orderLines]);
+        $jsonSubmitted = JsonRequest::where('order_id', $order->id)->get();
+        $jsonReceived= JsonResponse::where('order_id', $order->id)->get();
+        $transactionLogs = TransactionLog::where('order_id', $order->id)->get();
+        return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
     }
 
     public function edit(Order $order){
@@ -58,7 +65,7 @@ class ListOfOrdersController extends Controller
     {
         date_default_timezone_set('Asia/Manila');
 
-        $filename            = "List Of Orders - " . date ('Y-m-d H:i:s');
+        $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
         $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
 
         return Excel::download(new OrdersExport($result), $filename . '.xlsx');
@@ -184,12 +191,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '0000742682',
+                    'shipTo' => '00007426821',
                     'timeZone' => '420',
                     'langCode' => 'en',
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '0000742682',
+                'depResellerId' => '00007426821',
                 'orders' => [],  
             ];
             
@@ -223,22 +230,50 @@ class ListOfOrdersController extends Controller
                 ],
             ];
             $payload['orders'][] = $orderPayload;
+
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-          
+            
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                $enrollment_status = 1;
+            }else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = $response['errorCode'];
+                $status_message = $response['errorMessage'];
+                $enrollment_status = 0;
+            }
             $insertData = [ 
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
-                'transaction_id' => $response['deviceEnrollmentTransactionId'],
-                'dep_status' => 1,
-                'enrollment_status' => 1,
-                'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+                'created_at' => date('Y-m-d H:i:s')
             ];
 
             EnrollmentList::insert($insertData);
-
-            dd($response);
+            
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'OR',
+                'order_id' => $orderId,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            
+            
             return response()->json($response);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
