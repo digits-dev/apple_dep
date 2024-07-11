@@ -24,7 +24,7 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             console.error('There was an error saving the menu!', error);
         });
     };
-    console.log(activeMenus);
+
     return (
         <>
             <Head title="Menu Management" />
@@ -40,23 +40,16 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                                 </span>
                             </div>
                             <div className="panel-body clearfix">
-                                <Sortable 
-                                    tag="ul" // Defaults to "div"
-                                    onChange={(order) => {
-                                        handleMenuSave(order);
-                                    }}
-                                 >
-
-                           
-                                {/* <Sortable
+                   
+                                <Sortable
                                     className="draggable-menu draggable-menu-active list-disc space-y-2"
                                     onChange={(order, sortable, evt) => {
                                         // setActiveMenus(order);
                                         handleMenuSave(order);
                                     }}
-                                > */}
-                                    {activeMenus.map(menu => (
-                                        <li key={menu.id} data-id={menu.id} data-name={menu.name}>
+                                >
+                                    {activeMenus.map((menu, index) => (
+                                        <li key={menu.id + index} data-id={menu.id} data-name={menu.name}>
                                             <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? "This is set as Dashboard" : ""}>
                                                 <i className={menu.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : menu.icon}></i> {menu.name}
                                                 <span className="pull-right">
@@ -90,7 +83,7 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                                         </li>
                                     ))}
                                 </Sortable>
-                                {/* </Sortable> */}
+    
                                 {activeMenus.length === 0 && <div align="center">Active menu is empty, please add new menu</div>}
                             </div>
                         </div>

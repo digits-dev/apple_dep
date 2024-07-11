@@ -218,7 +218,7 @@ class ListOfOrdersController extends Controller
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
             $deliveryPayload = [
-                'deliveryNumber' => $header_data['dr'],
+                'deliveryNumber' => $header_data['dr_number'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
@@ -237,7 +237,7 @@ class ListOfOrdersController extends Controller
 
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-            
+
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
@@ -330,7 +330,7 @@ class ListOfOrdersController extends Controller
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
 
             $deliveryPayload = [
-                'deliveryNumber' => $header_data['dr'],
+                'deliveryNumber' => $header_data['dr_number'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
