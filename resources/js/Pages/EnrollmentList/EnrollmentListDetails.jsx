@@ -34,7 +34,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             setLoading(false);
         }
     };
-    console.log(data);
+
     return (
         <>
             <Head title="Enrollment List - Details" />
