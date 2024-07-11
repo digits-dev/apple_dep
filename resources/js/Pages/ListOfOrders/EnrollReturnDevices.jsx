@@ -24,8 +24,9 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
     const [showModal, setShowModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
-    const [message, setMessage] = useState('');
-	const [messageType, setMessageType] = useState("");
+    const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -44,39 +45,39 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
     };
 
     const handleCheckboxChange = (itemId) => {
-		if (selectedItems.includes(itemId)) {
-		  setSelectedItems(selectedItems.filter(id => id !== itemId));
-		} else {
-		  setSelectedItems([...selectedItems, itemId]);
-		}
-	};
+        if (selectedItems.includes(itemId)) {
+            setSelectedItems(selectedItems.filter((id) => id !== itemId));
+        } else {
+            setSelectedItems([...selectedItems, itemId]);
+        }
+    };
 
     const handleSelectAll = () => {
-		if (selectAll) {
-		  setSelectedItems([]);
-		} else {
-		  const allItemIds = orderLines?.map(item => item.id);
-		  setSelectedItems(allItemIds);
-		}
-		setSelectAll(!selectAll);
-	};
+        if (selectAll) {
+            setSelectedItems([]);
+        } else {
+            const allItemIds = orderLines?.map((item) => item.id);
+            setSelectedItems(allItemIds);
+        }
+        setSelectAll(!selectAll);
+    };
 
     const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
-    }
+    };
 
     const handleActionSelected = (action) => {
-		const actionType = action;
+        const actionType = action;
 
-		if(selectedItems?.length === 0){
-			setMessage("Nothing selected!");
+        if (selectedItems?.length === 0) {
+            setMessage("Nothing selected!");
             setMessageType("Error");
             setTimeout(() => setMessage(""), 3000);
-		} else{
-			Swal.fire({
+        } else {
+            Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
-                    actionType == 'enroll' ? "Enroll Device" : "Return Device"
+                    actionType == "enroll" ? "Enroll Device" : "Return Device"
                 }?</p>`,
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
@@ -84,10 +85,9 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                 icon: "question",
                 iconColor: "#000000",
             }).then(async (result) => {
-                if (result.isConfirmed ) {
+                if (result.isConfirmed) {
                     try {
-                        if(actionType === 'enroll'){
-                            
+                        if (actionType === "enroll") {
                             const response = await axios.post(
                                 "/list_of_orders/bulk-enroll",
                                 {
@@ -102,37 +102,71 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                                 resetCheckbox();
 
                                 router.reload({ only: ["orderLines"] });
-
                             }
-                            } else{
-                                setMessage("Return Devices is not yet supported");
-                                setMessageType("Error");
-                                setTimeout(() => setMessage(""), 3000);
-                                resetCheckbox();
-
-                            }
+                        } else {
+                            setMessage("Return Devices is not yet supported");
+                            setMessageType("Error");
+                            setTimeout(() => setMessage(""), 3000);
+                            resetCheckbox();
+                        }
                     } catch (error) {}
                 }
             });
-		}
-	};
+        }
+    };
 
     const bulkActions = [
-        { label: <span className="flex items-center w-[140px] "><i className="fa-solid fa-circle-plus mr-2 text-green-600"></i> Enroll Device</span>, value: 'enroll' },
-        { label: <span className="flex items-center w-[140px]"><i className="fa-solid  fa-rotate-left mr-2 text-red-600"></i> Return Device</span>, value: 'return' },
+        {
+            label: (
+                <span className="flex items-center w-[140px] ">
+                    <i className="fa-solid fa-circle-plus mr-2 text-green-600"></i>{" "}
+                    Enroll Device
+                </span>
+            ),
+            value: "enroll",
+        },
+        {
+            label: (
+                <span className="flex items-center w-[140px]">
+                    <i className="fa-solid  fa-rotate-left mr-2 text-red-600"></i>{" "}
+                    Return Device
+                </span>
+            ),
+            value: "return",
+        },
     ];
 
-
-    const EnrollReturnDeviceActions = ({setMessage, setMessageType, setShowModal}) => {
-
+    const EnrollReturnDeviceActions = ({
+        setMessage,
+        setMessageType,
+        setShowModal,
+    }) => {
         const [processing, setProcessing] = useState(false);
 
-        const handleEnroll = async () => {
+        const handleSwal = (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to enroll this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    EnrollDevice();
+                }
+            });
+        };
+
+        const EnrollDevice = async () => {
             setProcessing(true);
 
             try {
-                const response = await axios.post(`/list_of_orders/enroll`, { id: orderId });
-               
+                const response = await axios.post(`/list_of_orders/enroll`, {
+                    id: orderId,
+                });
+
                 if (response.data.status == "success") {
                     setShowModal(false);
                     setProcessing(false);
@@ -142,7 +176,7 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                     setTimeout(() => setMessage(""), 3000);
 
                     router.reload({ only: ["orderLines"] });
-                } else{
+                } else {
                     setShowModal(false);
                     setProcessing(false);
 
@@ -150,31 +184,31 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                     setMessageType("Error");
                     setTimeout(() => setMessage(""), 3000);
                 }
-
             } catch (error) {
-                 console.log(error);
+                console.log(error);
             }
-        }
+        };
 
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
-                {processing ?  <LoadingIcon classes={"my-10"} /> : 
-                <>
-                    <button
-                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
-                        onClick={handleEnroll}
-                    >
-                        Enroll Device
-                    </button>
+                {processing ? (
+                    <LoadingIcon classes={"my-10"} />
+                ) : (
+                    <>
+                        {enrollmentStatus != 3 && (
+                            <button
+                                className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
+                                onClick={handleSwal}
+                            >
+                                Enroll Device
+                            </button>
+                        )}
 
-                    <button
-                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
-                    >
-                        Return Device
-                    </button>
-                </>
-                }
-              
+                        <button className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer">
+                            Return Device
+                        </button>
+                    </>
+                )}
             </div>
         );
     };
@@ -183,9 +217,8 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
         <>
             <Head title="Enroll/Return Devices" />
             <AppContent>
-            <DissapearingToast type={messageType} message={message} />
+                <DissapearingToast type={messageType} message={message} />
                 <ContentPanel>
-               
                     <div className="flex justify-between items-start text-gray-800 mb-8">
                         <div className="flex gap-10">
                             <div className="font-bold">
@@ -203,12 +236,17 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                         </div>
 
                         <Link href="/list_of_orders" as="button">
-                           <span className="bg-primary text-white rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 hover:opacity-80">Back</span> 
+                            <span className="bg-primary text-white rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 hover:opacity-80">
+                                Back
+                            </span>
                         </Link>
                     </div>
 
                     <TopPanel>
-                        <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
+                        <BulkActions
+                            actions={bulkActions}
+                            onActionSelected={handleActionSelected}
+                        />
                     </TopPanel>
 
                     <TableContainer>
@@ -243,14 +281,20 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                                         <Checkbox
                                             type="checkbox"
                                             id={order.id}
-                                            handleClick={()=>handleCheckboxChange(order.id)}
-                                            isChecked={selectedItems.includes(order.id)}
+                                            handleClick={() =>
+                                                handleCheckboxChange(order.id)
+                                            }
+                                            isChecked={selectedItems.includes(
+                                                order.id
+                                            )}
                                         />
                                     </RowData>
                                     <RowData>{order.digits_code}</RowData>
                                     <RowData>{order.item_description}</RowData>
                                     <RowData>{order.serial_number}</RowData>
-                                    <RowData>{order.status.enrollment_status}</RowData>
+                                    <RowData>
+                                        {order.status.enrollment_status}
+                                    </RowData>
                                     <RowData center>
                                         <RowAction
                                             action="add"
@@ -258,6 +302,9 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                                             onClick={() => {
                                                 handleOpenModal();
                                                 setOrderId(order.id);
+                                                setEnrollmentStatus(
+                                                    order.enrollment_status_id
+                                                );
                                             }}
                                         />
                                     </RowData>
@@ -271,7 +318,11 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                     onClose={handleCloseModal}
                     title="Actions"
                 >
-                    <EnrollReturnDeviceActions setMessage={setMessage} setMessageType={setMessageType}  setShowModal={setShowModal}/>
+                    <EnrollReturnDeviceActions
+                        setMessage={setMessage}
+                        setMessageType={setMessageType}
+                        setShowModal={setShowModal}
+                    />
                 </Modal>
             </AppContent>
         </>
