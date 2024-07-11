@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\RequestException;
 
 class AppleDeviceEnrollmentService
 {
@@ -36,9 +37,9 @@ class AppleDeviceEnrollmentService
 
         try {
             $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept-Encoding' => '',
-                ])
+                'Content-Type' => 'application/json',
+                'Accept-Encoding' => '',
+            ])
                 ->post($url, $requestData);
 
             if ($response->successful()) {
@@ -69,7 +70,7 @@ class AppleDeviceEnrollmentService
             'Content-Type' => 'application/json',
             'Accept-Encoding' => '',
         ])
-        ->post($url, $payload);
+            ->post($url, $payload);
 
         if ($response->successful()) {
             return $response->json();
@@ -84,30 +85,52 @@ class AppleDeviceEnrollmentService
 
     private function sendRequest(array $payload, string $action)
     {
-        $url = $this->baseUrl . $this->bulkEnrollEndpoint;
-        try {
+        return $this->sendPostRequest($this->bulkEnrollEndpoint, $payload, $action);
+    }
 
+    private function sendPostRequest(string $endpoint, array $payload, string $action)
+    {
+        $url = $this->baseUrl . $endpoint;
+
+        try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept-Encoding' => '',
-            ])
-            ->post($url, $payload);
+            ])->post($url, $payload);
 
             if ($response->successful()) {
                 return $response->json();
             }
 
-            Log::error("Apple Device Enrollment API $action request failed", [
-                'message' => $response->body()
-            ]);
-
-            throw new \Exception("Failed to $action devices");
+            $this->handleErrorResponse($action, $response);
+        } catch (RequestException $e) {
+            $this->handleRequestException($action, $e);
         } catch (\Exception $e) {
-            Log::error("Apple Device Enrollment API exception during $action", ['exception' => $e->getMessage()]);
-            throw $e;
+            $this->handleGeneralException($action, $e);
         }
     }
 
+    private function handleErrorResponse(string $action, $response)
+    {
+        $errorMessage = "Failed to $action devices";
+        Log::error("Apple Device Enrollment API $action request failed", [
+            'message' => $response->body()
+        ]);
+        throw new \Exception($errorMessage);
+    }
 
+    private function handleRequestException(string $action, RequestException $e)
+    {
+        $errorMessage = "Apple Device Enrollment API exception during $action: " . $e->getMessage();
+        Log::error($errorMessage);
+        throw new \Exception($errorMessage);
+    }
+
+    private function handleGeneralException(string $action, \Exception $e)
+    {
+        $errorMessage = "General exception during $action: " . $e->getMessage();
+        Log::error($errorMessage);
+        throw new \Exception($errorMessage);
+    }
 
 }

@@ -5,6 +5,14 @@ const BulkActions = ({ actions, onActionSelected }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    const toggleDropdown = () => {
+        setIsOpen((prevIsOpen) => !prevIsOpen); 
+    };
+
+    const handleButtonMouseDown = (event) => {
+        event.stopPropagation();
+    };
+    
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
             setIsOpen(false);
@@ -19,10 +27,6 @@ const BulkActions = ({ actions, onActionSelected }) => {
         };
     }, []);
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-
     const handleActionClick = (action) => {
         setIsOpen(false);
         if (onActionSelected) {
@@ -32,7 +36,7 @@ const BulkActions = ({ actions, onActionSelected }) => {
 
     return (
         <div className="relative cursor-pointer">
-        <TableButton onClick={toggleDropdown}>
+        <TableButton onClick={toggleDropdown} onMouseDown={handleButtonMouseDown}>
             <i className="fa fa-check-square mr-2"></i> Bulk Actions
         </TableButton>
         {isOpen && (

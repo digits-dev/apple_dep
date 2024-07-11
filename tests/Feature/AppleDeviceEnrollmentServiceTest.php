@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\Client\RequestException;
 use App\Services\AppleDeviceEnrollmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -25,16 +26,20 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->service = new AppleDeviceEnrollmentService();
     }
 
+    //ENROLL DEVICES
+
     public function testEnrollDevicesSuccessfully()
     {
+        $expectedResponse = [
+            "deviceEnrollmentTransactionId" => 'any_random_string_here',
+            "enrollDevicesResponse" => [
+                "statusCode" => "SUCCESS",
+                "statusMessage" => "Transaction posted successfully in DEP"
+            ]
+        ];
+
         Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response([
-                "deviceEnrollmentTransactionId" => 'any_random_string_here',
-                "enrollDevicesResponse" => [
-                    "statusCode" => "SUCCESS",
-                    "statusMessage" => "Transaction posted successfully in DEP"
-                ]
-            ], 200)
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response($expectedResponse, 200)
         ]);
 
         $payload = [
@@ -85,15 +90,17 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     public function testUnEnrollDevicesSuccessfully()
     {
 
+        $expectedResponse = [
+            "deviceEnrollmentTransactionId" => 'any_random_string_here',
+            "enrollDevicesResponse" => [
+                "statusCode" => "SUCCESS",
+                "statusMessage" => "Transaction posted successfully in DEP"
+            ]
+        ];
+
         Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response([
-                "deviceEnrollmentTransactionId" => 'any_random_string_here',
-                "enrollDevicesResponse" => [
-                    "statusCode" => "SUCCESS",
-                    "statusMessage" => "Transaction posted successfully in DEP"
-                ]
-            ], 200)
-        ]);        
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response($expectedResponse, 200)
+        ]);
 
         $payload = [
             "requestContext" => [
@@ -134,6 +141,230 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->assertArrayHasKey('enrollDevicesResponse', $response, 'Response does not have enrollDevicesResponse key');
         $this->assertEquals('SUCCESS', $response['enrollDevicesResponse']['statusCode'], 'Failed to un-enroll devices');
         $this->assertEquals('Transaction posted successfully in DEP', $response['enrollDevicesResponse']['statusMessage']);
+    }
+
+    
+
+    //ENROLL DEVICES UNAVAILABLE
+
+    public function testEnrollDevicesApiUnavailable()
+    {
+
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Failed to bulk enroll devices'], 500),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $payload = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "transactionId" => "TXN_001123",
+            "depResellerId" => "0000742682",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900123",
+                    "orderDate" => "2014-08-28T10:10:10Z",
+                    "orderType" => "OR",
+                    "customerId" => "19827",
+                    "poNumber" => "PO_12345",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "shipDate" => "2014-10-10T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "deviceId" => "33645004YAM",
+                                    "assetTag" => "A123456"
+                                ],
+                                [
+                                    "deviceId" => "33645006YAM",
+                                    "assetTag" => "A123456"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this->expectException(\Exception::class);
+        $service->enrollDevices($payload);
+    }
+
+    public function testUnEnrollDevicesApiUnavailable()
+    {
+
+        // Mocking the API response to simulate an API failure
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Failed to bulk enroll devices'], 500),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $payload = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "transactionId" => "TXN_001123",
+            "depResellerId" => "0000742682",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900123",
+                    "orderDate" => "2014-08-28T10:10:10Z",
+                    "orderType" => "RE",
+                    "customerId" => "19827",
+                    "poNumber" => "PO_12345",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "shipDate" => "2014-10-10T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "deviceId" => "33645004YAM",
+                                    "assetTag" => "A123456"
+                                ],
+                                [
+                                    "deviceId" => "33645006YAM",
+                                    "assetTag" => "A123456"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        // Expecting an exception to be thrown when the API is unavailable
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Failed to bulk enroll devices');
+
+        $service->enrollDevices($payload);
+    }
+
+    // CHECK TRANSACTION STATUS
+
+    public function testCheckTransactionStatusSuccess()
+    {
+        $expectedResponse = [
+            "deviceEnrollmentTransactionID" => "50cb89a8-1d49-4604-8194-c76a4520ad65_1720664722223",
+            "statusCode" => "COMPLETE",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900123",
+                    "orderPostStatus" => "COMPLETE",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "deliveryPostStatus" => "COMPLETE",
+                            "devices" => [
+                                [
+                                    "devicePostStatus" => "COMPLETE",
+                                    "deviceId" => "33645004YAM"
+                                ],
+                                [
+                                    "devicePostStatus" => "COMPLETE",
+                                    "deviceId" => "33645006YAM"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "completedOn" => "2024-07-11T05:13:42Z"
+        ];
+
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/check-transaction-status' => Http::response($expectedResponse, 200),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $requestData = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "depResellerId" => "0000742682",
+            "deviceEnrollmentTransactionId" => "50cb89a8-1d49-4604-8194-c76a4520ad65_1720664722223"
+        ];
+
+        // Calling the checkTransactionStatus method
+        $response = $service->checkTransactionStatus($requestData);
+
+        $this->assertEquals($expectedResponse, $response);
+    }
+
+    public function testCheckTransactionStatusApiUnavailable()
+    {
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/check-transaction-status' => Http::response(['message' => 'Failed to check transaction status'], 500),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $requestData = [
+            "transactionId" => "TXN_001123",
+            "depResellerId" => "0000742682",
+        ];
+
+        $this->expectException(\Exception::class);
+        $service->checkTransactionStatus($requestData);
+    }
+
+    // SHOW ORDER DETAILS
+
+    public function testShowOrderDetailsSuccess()
+    {
+        $expectedResponse = [
+            "statusCode" => "COMPLETE",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900130",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "shipDate" => "2014-10-10T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "assetTag" => "A123462",
+                                    "deviceId" => "33645011YAM"
+                                ]
+                            ]
+                        ]
+                    ],
+                    "orderDate" => "2014-08-28T10:10:10Z",
+                    "orderType" => "OR",
+                    "poNumber" => "PO_12352",
+                    "customerId" => "19834"
+                ]
+            ],
+            "respondedOn" => "2024-07-11T06:05:44Z"
+        ];
+
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/show-order-details' => Http::response($expectedResponse, 200),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $requestContext = [
+            "shipTo" => "0000742682",
+            "timeZone" => "420",
+            "langCode" => "en"
+        ];
+        $depResellerId = "0000742682";
+        $orderNumbers = ["ORDER_900130"]; // Example order number
+
+        // Calling the showOrderDetails method
+        $response = $service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
+        $this->assertEquals($expectedResponse, $response);
     }
 
 }
