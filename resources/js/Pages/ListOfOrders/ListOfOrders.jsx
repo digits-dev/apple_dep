@@ -178,7 +178,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
                         <tbody>
                             {orders &&
-                                orders.data.map((item,index) => (
+                                orders.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
                                         <RowData
                                             isLoading={loading}

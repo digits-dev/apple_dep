@@ -23,7 +23,7 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
     useEffect(() => {
         setTimeout(() => {
             setTitle("Enroll/Return Devices");
-        }, 50);
+        }, 5);
     }, []);
 
     const handleCloseModal = () => {

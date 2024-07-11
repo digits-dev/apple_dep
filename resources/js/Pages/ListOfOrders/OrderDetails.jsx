@@ -33,7 +33,7 @@ const OrderDetails = ({ order, orderLines }) => {
 
     return (
         <>
-            <Head title="Order Detailss" />
+            <Head title="Order Details" />
             <AppContent>
                 <ContentPanel>
                     <div className="flex justify-between items-start  text-gray-800 mb-8">

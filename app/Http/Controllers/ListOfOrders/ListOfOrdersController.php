@@ -266,24 +266,4 @@ class ListOfOrdersController extends Controller
         }
     }
 
-    public function checkTransactionStatus(Response $response)
-    {
-        $requestData = [
-            'requestContext' => [
-                'shipTo' => '0000742682', //replace
-                'timeZone' => '420',
-                'langCode' => 'en',
-            ],
-            'depResellerId' => '0000742682', //replace
-            'deviceEnrollmentTransactionId' => $response->transaction_id
-        ];
-
-        try {
-            $response = $this->appleService->checkTransactionStatus($requestData);
-
-            return response()->json($response);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
 }
