@@ -298,7 +298,7 @@ const SidebarAccordion = ({ open }) => {
                     <ul className="mt-5">
                         {SuperAdminMenus.map((menu, index) => (
                             <Link
-                                href={menu.url}
+                                href={`/${menu.url}`}
                                 onClick={() => {
                                     handleMenuClick(menu.title);
                                     setIsOpen(false);
