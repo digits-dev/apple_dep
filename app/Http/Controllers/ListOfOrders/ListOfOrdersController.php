@@ -191,12 +191,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '00007426821',
+                    'shipTo' => '0000742682',
                     'timeZone' => '420',
                     'langCode' => 'en',
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '00007426821',
+                'depResellerId' => '0000742682',
                 'orders' => [],  
             ];
             
