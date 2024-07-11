@@ -29,7 +29,6 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
-
     useEffect(() => {
         setTimeout(() => {
             setTitle("Enroll/Return Devices");
@@ -251,7 +250,7 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                                     <RowData>{order.digits_code}</RowData>
                                     <RowData>{order.item_description}</RowData>
                                     <RowData>{order.serial_number}</RowData>
-                                    <RowData>{order.enrollment_status}</RowData>
+                                    <RowData>{order.status.enrollment_status}</RowData>
                                     <RowData center>
                                         <RowAction
                                             action="add"

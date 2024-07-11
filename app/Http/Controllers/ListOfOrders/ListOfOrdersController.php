@@ -58,7 +58,8 @@ class ListOfOrdersController extends Controller
 
     public function edit(Order $order){
        
-        $orderLines = OrderLines::where('order_id', $order->id)->get();
+        $orderLines = OrderLines::where('order_id', $order->id)->with('status')->get();
+        // dd($orderLines);
         return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order , 'orderLines' => $orderLines]);
     }
 
@@ -180,7 +181,9 @@ class ListOfOrdersController extends Controller
                 'brand'             => $insertLines->brand,
                 'wh_category'       => $insertLines->wh_category,
                 'quantity'          => $insertLines->final_qty,
-                'serial_number'     => $insertLines->final_serial
+                'serial_number'     => $insertLines->final_serial,
+                'enrollment_status_id' => 1,
+
             ]);
         }
     }
@@ -301,8 +304,10 @@ class ListOfOrdersController extends Controller
                 'orders' => [],  
             ];
 
-            $requestData = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->get();
-            $header_data = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+            $query = OrderLines::whereIn('list_of_order_lines.id', $ids)->leftJoin('orders','list_of_order_lines.order_id','orders.id');
+
+            $requestData = $query->get();
+            $header_data = $query->first();
 
             $deliveryPayload = [];
             $devicePayload = [];
@@ -312,11 +317,11 @@ class ListOfOrdersController extends Controller
                     'deviceId' => $orderData['sales_order_no'],
                     'assetTag' => $orderData['serial_number'],
                 ];
-
             }
                 
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+
             $deliveryPayload = [
                 'deliveryNumber' => '30260972',
                 'shipDate' => $formattedDate,
@@ -333,6 +338,7 @@ class ListOfOrdersController extends Controller
                     $deliveryPayload
                 ],
             ];
+
             $payload['orders'][] = $orderPayload;
 
             $response = $this->appleService->enrollDevices($payload);
