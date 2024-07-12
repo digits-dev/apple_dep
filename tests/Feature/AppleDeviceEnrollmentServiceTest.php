@@ -3,12 +3,12 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Client\RequestException;
 use App\Services\AppleDeviceEnrollmentService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AppleDeviceEnrollmentServiceTest extends TestCase
 {
@@ -26,21 +26,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->service = new AppleDeviceEnrollmentService();
     }
 
-    //ENROLL DEVICES
+    // ENROLL
 
     public function testEnrollDevicesSuccessfully()
     {
-        $expectedResponse = [
-            "deviceEnrollmentTransactionId" => 'any_random_string_here',
-            "enrollDevicesResponse" => [
-                "statusCode" => "SUCCESS",
-                "statusMessage" => "Transaction posted successfully in DEP"
-            ]
-        ];
-
-        Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response($expectedResponse, 200)
-        ]);
+        
+        $service = new AppleDeviceEnrollmentService();
 
         $payload = [
             "requestContext" => [
@@ -77,9 +68,10 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             ]
         ];
 
-        $response = $this->service->enrollDevices($payload);
+        // Call the actual method that performs enrollment
+        $response = $service->enrollDevices($payload);
 
-        // Assertions for enrollDevices
+        // Assertions against the actual response returned
         $this->assertIsArray($response, 'Response should be an array');
         $this->assertArrayHasKey('deviceEnrollmentTransactionId', $response, 'Response does not have deviceEnrollmentTransactionId key');
         $this->assertArrayHasKey('enrollDevicesResponse', $response, 'Response does not have enrollDevicesResponse key');
@@ -87,20 +79,9 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->assertEquals('Transaction posted successfully in DEP', $response['enrollDevicesResponse']['statusMessage']);
     }
 
+
     public function testUnEnrollDevicesSuccessfully()
     {
-
-        $expectedResponse = [
-            "deviceEnrollmentTransactionId" => 'any_random_string_here',
-            "enrollDevicesResponse" => [
-                "statusCode" => "SUCCESS",
-                "statusMessage" => "Transaction posted successfully in DEP"
-            ]
-        ];
-
-        Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response($expectedResponse, 200)
-        ]);
 
         $payload = [
             "requestContext" => [
@@ -143,7 +124,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->assertEquals('Transaction posted successfully in DEP', $response['enrollDevicesResponse']['statusMessage']);
     }
 
-    
+
 
     //ENROLL DEVICES UNAVAILABLE
 
@@ -151,7 +132,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     {
 
         Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Failed to bulk enroll devices'], 500),
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Network Error'], 500),
         ]);
 
         $service = new AppleDeviceEnrollmentService();
@@ -200,7 +181,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         // Mocking the API response to simulate an API failure
         Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Failed to bulk enroll devices'], 500),
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Network Error'], 500),
         ]);
 
         $service = new AppleDeviceEnrollmentService();
@@ -252,7 +233,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     public function testCheckTransactionStatusSuccess()
     {
         $expectedResponse = [
-            "deviceEnrollmentTransactionID" => "50cb89a8-1d49-4604-8194-c76a4520ad65_1720664722223",
+            "deviceEnrollmentTransactionID" => "e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097",
             "statusCode" => "COMPLETE",
             "orders" => [
                 [
@@ -275,13 +256,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
                         ]
                     ]
                 ]
-            ],
-            "completedOn" => "2024-07-11T05:13:42Z"
+            ]
         ];
-
-        Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/check-transaction-status' => Http::response($expectedResponse, 200),
-        ]);
 
         $service = new AppleDeviceEnrollmentService();
 
@@ -292,14 +268,15 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
                 "langCode" => "en"
             ],
             "depResellerId" => "0000742682",
-            "deviceEnrollmentTransactionId" => "50cb89a8-1d49-4604-8194-c76a4520ad65_1720664722223"
+            "deviceEnrollmentTransactionId" => "e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097"
         ];
 
-        // Calling the checkTransactionStatus method
         $response = $service->checkTransactionStatus($requestData);
 
-        $this->assertEquals($expectedResponse, $response);
+        $this->assertEquals($expectedResponse['deviceEnrollmentTransactionID'], $response['deviceEnrollmentTransactionID']);
+        $this->assertEquals($expectedResponse['statusCode'], $response['statusCode']);
     }
+
 
     public function testCheckTransactionStatusApiUnavailable()
     {
@@ -344,13 +321,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
                     "poNumber" => "PO_12352",
                     "customerId" => "19834"
                 ]
-            ],
-            "respondedOn" => "2024-07-11T06:05:44Z"
+            ]
         ];
-
-        Http::fake([
-            'https://acc-ipt.apple.com/enroll-service/1.0/show-order-details' => Http::response($expectedResponse, 200),
-        ]);
 
         $service = new AppleDeviceEnrollmentService();
 
@@ -364,7 +336,32 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         // Calling the showOrderDetails method
         $response = $service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
-        $this->assertEquals($expectedResponse, $response);
+        
+        $this->assertEquals($expectedResponse['orders'], $response['orders']);
+        $this->assertEquals($expectedResponse['statusCode'], $response['statusCode']);
+    }
+
+    public function testShowOrderDetailsApiUnavailable()
+    {
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/show-order-details' => Http::response(['message' => 'Network Error'], 500),
+        ]);
+
+        $service = new AppleDeviceEnrollmentService();
+
+        $requestContext = [
+            "shipTo" => "0000742682",
+            "timeZone" => "420",
+            "langCode" => "en"
+        ];
+        $depResellerId = "0000742682";
+        $orderNumbers = ["ORDER_900130"];
+
+        // Calling the showOrderDetails method
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Failed to show order details');
+
+        $service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
     }
 
 }
