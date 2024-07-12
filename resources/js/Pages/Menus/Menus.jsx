@@ -80,14 +80,14 @@ const MenusIndex = ({
                         updatedMenus.splice(targetIndex, 0, draggedItem);
                     }
 
-                    if(targetParent.children){
+                    if(targetParent.children && targetParent.type === 'URL'){
                         targetParent.children.splice(targetIndex, 0, draggedItem);
                     }
                     
                 } else {
                     updatedMenus.splice(targetIndex, 0, draggedItem);
                 }
-                console.log(targetParent);
+           
                 // Update the state and save the menu
                 if (isActive) {
                     setMenuActive(updatedMenus);
@@ -159,7 +159,7 @@ const MenusIndex = ({
                             }`}
                         >
                             {menu.name}
-                        </p>
+                        </p> 
                     </div>
 
                     <div className="mr-3 flex items-center gap-1">
@@ -179,8 +179,15 @@ const MenusIndex = ({
                             onClick={() => handleDelete(menu.id)}
                             href="javascript:void(0)"
                         ></a>
+                       
                     </div>
+                   
                 </div>
+                <em className="text-muted">
+                    <small>
+                        <i className="fa fa-users" /> {menu.privileges && menu.privileges.join(', ')}
+                    </small>
+                </em>
                 {menu.children && menu.children.length > 0 && (
                     <div className="border-t-2 border-white">
                         <div className="space-y-1 px-5 py-5">
@@ -188,6 +195,7 @@ const MenusIndex = ({
                         </div>
                     </div>
                 )}
+               
             </div>
         ));
     };

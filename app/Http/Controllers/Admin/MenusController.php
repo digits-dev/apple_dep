@@ -43,7 +43,22 @@ class MenusController extends Controller{
         foreach ($menu_active as &$menu) {
             $child = DB::table('adm_menuses')->where('is_active', 1)->where('parent_id', $menu->id)->orderby('sorting', 'asc')->get();
             if (count($child)) {
+                foreach($child as &$c){
+                    $priv = DB::table('adm_menus_privileges')
+                    ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+                    ->where('id_adm_menus',$c->id)->pluck('adm_privileges.name')->toArray();
+                    if (count($priv)) {
+                        $c->privileges = $priv;
+                    }
+                }
                 $menu->children = $child;
+                $menu->children = $child;
+            }
+            $priv = DB::table('adm_menus_privileges')
+            ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+            ->where('id_adm_menus',$menu->id)->pluck('adm_privileges.name')->toArray();
+            if (count($priv)) {
+                $menu->privileges = $priv;
             }
         }
 
@@ -52,10 +67,24 @@ class MenusController extends Controller{
         foreach ($menu_inactive as &$menu) {
             $child = DB::table('adm_menuses')->where('is_active', 1)->where('parent_id', $menu->id)->orderby('sorting', 'asc')->get();
             if (count($child)) {
+                foreach($child as &$c){
+                    $priv = DB::table('adm_menus_privileges')
+                    ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+                    ->where('id_adm_menus',$c->id)->pluck('adm_privileges.name')->toArray();
+                    if (count($priv)) {
+                        $c->privileges = $priv;
+                    }
+                }
                 $menu->children = $child;
             }
+            $priv = DB::table('adm_menus_privileges')
+            ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+            ->where('id_adm_menus',$menu->id)->pluck('adm_privileges.name')->toArray();
+            if (count($priv)) {
+                $menu->privileges = $priv;
+            }
         }
-
+     
         return Inertia::render('Menus/Menus',[
             'privileges' => $privileges,
             'id_adm_privileges' => $id_adm_privileges,
