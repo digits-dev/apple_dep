@@ -43,9 +43,14 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
-    const [message, setMessage] = useState('');
-	const [messageType, setMessageType] = useState("");
+    const [updateFormValues, setUpdateFormValues] = useState({
+        currentValue: "",
+        currentId: "",
+        status: Boolean,
+        color: "",
+    });
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -58,37 +63,37 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
     };
 
     const handleCheckboxChange = (itemId) => {
-		if (selectedItems.includes(itemId)) {
-		  setSelectedItems(selectedItems.filter(id => id !== itemId));
-		} else {
-		  setSelectedItems([...selectedItems, itemId]);
-		}
-	};
+        if (selectedItems.includes(itemId)) {
+            setSelectedItems(selectedItems.filter((id) => id !== itemId));
+        } else {
+            setSelectedItems([...selectedItems, itemId]);
+        }
+    };
 
     const handleSelectAll = () => {
-		if (selectAll) {
-		  setSelectedItems([]);
-		} else {
-		  const allItemIds = dep_statuses?.data.map(item => item.id);
-		  setSelectedItems(allItemIds);
-		}
-		setSelectAll(!selectAll);
-	};
+        if (selectAll) {
+            setSelectedItems([]);
+        } else {
+            const allItemIds = dep_statuses?.data.map((item) => item.id);
+            setSelectedItems(allItemIds);
+        }
+        setSelectAll(!selectAll);
+    };
 
     const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
-    }
+    };
 
     const handleActionSelected = (action) => {
-		const actionType = action;
+        const actionType = action;
 
-		if(selectedItems?.length === 0){
-			setMessage("Nothing selected!");
+        if (selectedItems?.length === 0) {
+            setMessage("Nothing selected!");
             setMessageType("Error");
             setTimeout(() => setMessage(""), 3000);
-		} else{
-			Swal.fire({
+        } else {
+            Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
                     actionType ? "Active" : "Inactive"
                 }?</p>`,
@@ -100,12 +105,11 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-
                         const response = await axios.put(
                             "/dep_statuses/bulkupdate",
                             {
                                 ids: selectedItems,
-                                status: actionType
+                                status: actionType,
                             }
                         );
 
@@ -121,12 +125,28 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     } catch (error) {}
                 }
             });
-		}
-	};
+        }
+    };
 
     const bulkActions = [
-        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
-        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-check-circle mr-2 text-green-600"></i>{" "}
+                    Set Active
+                </span>
+            ),
+            value: 1,
+        },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-times-circle mr-2 text-red-600"></i> Set
+                    Inactive
+                </span>
+            ),
+            value: 0,
+        },
     ];
 
     return (
@@ -137,7 +157,10 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
 
                 <ContentPanel>
                     <TopPanel>
-                        <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
+                        <BulkActions
+                            actions={bulkActions}
+                            onActionSelected={handleActionSelected}
+                        />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         <TableButton onClick={handleShowCreate}>
@@ -214,14 +237,20 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                             <Checkbox
                                                 type="checkbox"
                                                 id={item.id}
-                                                handleClick={()=>handleCheckboxChange(item.id)}
-                                                isChecked={selectedItems.includes(item.id)}
+                                                handleClick={() =>
+                                                    handleCheckboxChange(
+                                                        item.id
+                                                    )
+                                                }
+                                                isChecked={selectedItems.includes(
+                                                    item.id
+                                                )}
                                             />
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item.id}
                                         </RowData>
-                               
+
                                         <RowStatus
                                             isLoading={loading}
                                             color={item.color}
@@ -233,7 +262,11 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            systemStatus={item.status ? "active" : "inactive"}
+                                            systemStatus={
+                                                item.status
+                                                    ? "active"
+                                                    : "inactive"
+                                            }
                                             center
                                         >
                                             {item.status
@@ -250,6 +283,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                                         currentValue:
                                                             item.dep_status,
                                                         status: item.status,
+                                                        color: item.color,
                                                     });
                                                 }}
                                                 action="edit"
@@ -261,7 +295,10 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                         </Tbody>
                     </TableContainer>
 
-                    <Pagination paginate={dep_statuses} onClick={resetCheckbox} />
+                    <Pagination
+                        paginate={dep_statuses}
+                        onClick={resetCheckbox}
+                    />
                 </ContentPanel>
 
                 <Modal
@@ -272,7 +309,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <DepStatusForm
                         handleShow={() => {
                             handleShowCreate();
-                            setMessageType('success');
+                            setMessageType("success");
                             setMessage("Created Status");
                             setTimeout(() => setMessage(""), 3000);
                         }}
@@ -288,7 +325,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     <DepStatusForm
                         handleShow={() => {
                             handleShowEdit();
-                            setMessageType('success');
+                            setMessageType("success");
                             setMessage("Updated Status");
                             setTimeout(() => setMessage(""), 3000);
                         }}
