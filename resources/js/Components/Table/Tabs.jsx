@@ -5,7 +5,8 @@ import Thead from "./Thead";
 import Row from "./Row";
 import TableHeader from "./TableHeader";
 import RowData from "./RowData";
-import { set } from "lodash";
+import Tbody from "../../Components/Table/Tbody";
+
 
 const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
     console.log(tabs);
@@ -25,6 +26,8 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
     const closeModal = () => {
         setIsOpen(false);
     };
+
+    console.log(jsonSubmitted, jsonReceived, transactionLogs);
 
     return (
         <div className="bg-white rounded-md mt-4 w-full font-nunito-sans">
@@ -56,7 +59,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                     >
                         {tab.id === 1 && (
                             <div>
-                                <h2>Content for Tab 1</h2>
+                                <h2 className="mb-4 italic">Json Response</h2>
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -80,7 +83,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             </TableHeader>
                                         </Row>
                                     </Thead>
-                                    <tbody>
+                                    <Tbody data={jsonReceived}>
                                         {jsonReceived.map((json) => {
                                             let parsedData;
 
@@ -123,13 +126,14 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 </Row>
                                             );
                                         })}
-                                    </tbody>
+                                    </Tbody>
+                                    
                                 </TableContainer>
                             </div>
                         )}
                         {tab.id === 2 && (
                             <div>
-                                <h2>Content for Tab 2</h2>
+                                <h2 className="mb-4 italic">Json Request</h2>
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -153,7 +157,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             </TableHeader>
                                         </Row>
                                     </Thead>
-                                    <tbody>
+                                    <Tbody data={jsonSubmitted}>
                                         {jsonSubmitted.map((json) => {
                                             return (
                                                 <Row key={json.id}>
@@ -191,13 +195,14 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 </Row>
                                             );
                                         })}
-                                    </tbody>
+                                    </Tbody>
+                                    
                                 </TableContainer>
                             </div>
                         )}
                         {tab.id === 3 && (
                             <div>
-                                <h2>Content for Tab 3</h2>
+                                <h2 className="mb-4 italic">Transaction Logs</h2>
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -221,7 +226,8 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             </TableHeader>
                                         </Row>
                                     </Thead>
-                                    <tbody>
+                                    
+                                    <Tbody data={transactionLogs}>
                                         {transactionLogs.map((json) => (
                                             <Row key={json.id}>
                                                 <RowData center>
@@ -235,7 +241,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 </RowData>
                                             </Row>
                                         ))}
-                                    </tbody>
+                                    </Tbody>
                                 </TableContainer>
                             </div>
                         )}

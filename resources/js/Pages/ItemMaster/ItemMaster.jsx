@@ -13,6 +13,7 @@ import TableContainer from "../../Components/Table/TableContainer";
 import { useEffect, useState } from "react";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import Pagination from "../../Components/Table/Pagination";
+import Tbody from "../../Components/Table/Tbody";
 
 const ItemMaster = ({ itemMaster, queryParams }) => {
     const { setTitle } = useNavbarContext();
@@ -122,8 +123,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                 </TableHeader>
                             </Row>
                         </Thead>
-
-                        <tbody>
+                        <Tbody data={itemMaster.data}>
                             {itemMaster &&
                                 itemMaster.data.map((item) => (
                                     <Row key={item.id}>
@@ -133,36 +133,45 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                         >
                                             {item.digits_code}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.upc_code_up_1}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.upc_code_up_2}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.upc_code_up_3}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.upc_code_up_4}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.upc_code_up_5}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.wh_category}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.supplier_item_code}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.item_description}
                                         </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.brand_description}
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
                     </TableContainer>
                     <Pagination paginate={itemMaster} />
                 </ContentPanel>

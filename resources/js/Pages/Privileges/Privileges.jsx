@@ -13,6 +13,7 @@ import PerPage from "../../Components/Table/PerPage";
 import RowActions from "../../Components/Table/RowActions";
 import RowAction from "../../Components/Table/RowAction";
 import Pagination from "../../Components/Table/Pagination";
+import Tbody from "../../Components/Table/Tbody";
 
 const Privileges = ({ privileges, queryParams }) => {
     queryParams = queryParams || {};
@@ -70,7 +71,7 @@ const Privileges = ({ privileges, queryParams }) => {
                                 </TableHeader>
                             </Row>
                         </Thead>
-                        <tbody>
+                        <Tbody data={privileges?.data}>
                             {privileges &&
                                 privileges?.data.map((item, index) => (
                                     <Row key={item.id}>
@@ -94,7 +95,8 @@ const Privileges = ({ privileges, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
+                         
                     </TableContainer>
                     <Pagination paginate={privileges} />
                 </ContentPanel>

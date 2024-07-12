@@ -17,7 +17,7 @@ const JsonModal = ({ show, onClose, children, title, modalData }) => {
 
     return (
         <div className="modal-backdrop z-[100] fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-custom  m-5 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-custom  m-5 ">
                 <div className="flex justify-between p-5 border-b-2 items-center">
                     <p className="font-nunito-sans font-extrabold text-lg">
                         {title}
@@ -27,7 +27,7 @@ const JsonModal = ({ show, onClose, children, title, modalData }) => {
                         onClick={onClose}
                     ></i>
                 </div>
-                <pre className="py-3 px-5 text-sm">
+                <pre className="py-3 px-5 text-sm overflow-auto max-h-[89vh]">
                     {JSON.stringify(parsedData, null, 2)}
                 </pre>
                 {/* <main className="py-3 px-5">{children}</main> */}

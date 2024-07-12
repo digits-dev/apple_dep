@@ -9,6 +9,7 @@ import Thead from "../../Components/Table/Thead";
 import TableHeader from "../../Components/Table/TableHeader";
 import Row from "../../Components/Table/Row";
 import RowData from "../../Components/Table/RowData";
+import Tbody from "../../Components/Table/Tbody";
 
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -213,7 +214,8 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                         </TableHeader>
                                                                     </Row>
                                                                 </Thead>
-                                                                <tbody>
+                                                                
+                                                                <Tbody data={delivery.devices}>
                                                                     {delivery.devices.map(
                                                                         (
                                                                             device,
@@ -243,7 +245,8 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                             </Row>
                                                                         )
                                                                     )}
-                                                                </tbody>
+					                                            </Tbody>
+                                                          
                                                             </TableContainer>
                                                         </div>
                                                     </div>

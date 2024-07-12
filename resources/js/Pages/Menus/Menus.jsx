@@ -84,6 +84,9 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             });
             setFormMessage(response.data.message);
             setMessageType(response.data.type);
+            setTimeout(() => {
+                setFormMessage("");
+            }, 3000);
             router.reload({ only: ["Menus"] });
         } catch (error) {
             console.error('Error saving menu:', error);
@@ -100,19 +103,42 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                 onDragStart={(e) => handleDragStart(e, menu, parentIndex, isActive, index)}
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
                 onDrop={handleDrop}
-                className="draggable-item"
+                className={`${
+                    parentIndex == null ? "p-4" : "p-2"
+                } rounded-lg bg-blue-100`}
             >
-                <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? 'This is set as Dashboard' : ''}>
-                    <i className={menu.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : menu.icon}></i> {menu.name}
-                    <span className='pull-right'>
-                        <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${menu.id}`}></a>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <i
+                            className={`${menu.icon}  ${
+                                parentIndex == null ? "text-xl" : "text-md"
+                            } `}
+                        ></i>
+                        <p
+                            className={`${
+                                parentIndex == null
+                                    ? "text-md font-bold"
+                                    : "text-sm"
+                            }`}
+                        >
+                            {menu.name}
+                        </p>
+                    </div>
+
+                    <div>
+                        <a
+                            className="fa fa-pencil"
+                            title="Edit"
+                            href={`/menu_management/edit/${menu.id}`}
+                        ></a>
                         &nbsp;&nbsp;
-                        <a title='Delete' className='fa fa-trash' onClick={() => handleDelete(menu.id)} href='javascript:void(0)'></a>
-                    </span>
-                    <br />
-                    <em className="text-muted">
-                        {/* <small><i className="fa fa-users"></i> &nbsp; {menu.privileges.join(', ')}</small> */}
-                    </em>
+                        <a
+                            title="Delete"
+                            className="fa fa-trash"
+                            onClick={() => handleDelete(menu.id)}
+                            href="javascript:void(0)"
+                        ></a>
+                    </div>
                 </div>
                 {menu.children && menu.children.length > 0 && (
                     <ul className="list-disc pl-5 mt-1 space-y-1">
@@ -130,34 +156,47 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             <AppContent>
             <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
-                <div className="row">
-                    <div className="col-sm-5">
-                        <div className="panel panel-default">
-                            <div className="panel-heading">
-                                <strong>Menu Order (Active)</strong>
-                                <span id='menu-saved-info' style={{ display: 'none' }} className='pull-right text-success'><i className='fa fa-check'></i> Menu Saved !</span>
-                            </div>
-                            <div className="panel-body clearfix">
-                                <ul className='draggable-menu draggable-menu-active list-disc space-y-2'>
-                                    {renderMenuItems(menuActive, true)}
-                                </ul>
-                                {menuActive.length === 0 && <div align="center">Active menu is empty, please add new menu</div>}
-                            </div>
+                    {/* MENU ORDER ACTIVE */}
+                    <div className="font-nunito-sans ">
+                        <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
+                            <p className="text-white font-extrabold text-center">
+                                Menu Order (Active)
+                            </p>
                         </div>
-
-                        <div className="panel panel-danger">
-                            <div className="panel-heading">
-                                <strong>Menu Order (Inactive)</strong>
+                        <div className="px-3 py-3">
+                            <div className="draggable-menu draggable-menu-active list-disc space-y-2">
+                                {renderMenuItems(menuActive, true)}
                             </div>
-                            <div className="panel-body clearfix">
-                                <ul className='draggable-menu draggable-menu-inactive'>
-                                    {renderMenuItems(menuInactive, false)}
-                                </ul>
-                                {menuInactive.length === 0 && <div align="center" id='inactive_text' className='text-muted'>Inactive menu is empty</div>}
-                            </div>
+                            {menuActive.length === 0 && (
+                                <div align="center">
+                                    Active menu is empty, please add new menu
+                                </div>
+                            )}
                         </div>
                     </div>
-                </div>
+
+                    {/* MENU ORDER INACTIVE */}
+                    <div className="mt-10">
+                        <div className="bg-mobile-gradient  p-3">
+                            <p className="text-white font-extrabold text-center">
+                                Menu Order (Inactive)
+                            </p>
+                        </div>
+                        <div className="p-5">
+                            <div className="draggable-menu draggable-menu-inactive">
+                                {renderMenuItems(menuInactive, false)}
+                            </div>
+                            {menuInactive.length === 0 && (
+                                <div
+                                    align="center"
+                                    id="inactive_text"
+                                    className="text-muted"
+                                >
+                                    Inactive menu is empty
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </ContentPanel>
             </AppContent>
         </div>

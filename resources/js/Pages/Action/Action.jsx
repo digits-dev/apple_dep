@@ -23,6 +23,7 @@ import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const Action = ({ actions, queryParams }) => {
     queryParams = queryParams || {};
@@ -201,9 +202,9 @@ const Action = ({ actions, queryParams }) => {
                             </TableHeader>
                         </Row>
                     </Thead>
-    
-                    <tbody>
-                        {actions &&
+
+                    <Tbody data={actions.data}>
+                    {actions &&
                             actions.data.map((item) => (
                                 <Row key={item.id} >
                                     <RowData center>
@@ -236,7 +237,7 @@ const Action = ({ actions, queryParams }) => {
                                     </RowData>
                             </Row>
                             ))}
-                    </tbody>
+					</Tbody>
                 </TableContainer>
     
                 <Pagination paginate={actions} onClick={resetCheckbox} />

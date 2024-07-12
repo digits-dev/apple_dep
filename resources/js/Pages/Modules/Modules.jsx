@@ -16,6 +16,7 @@ import Pagination from "../../Components/Table/Pagination";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
 import ModulForm from "./ModulForm";
+import Tbody from "../../Components/Table/Tbody";
 
 const Modules = ({ modules, queryParams }) => {
     queryParams = queryParams || {};
@@ -84,7 +85,8 @@ const Modules = ({ modules, queryParams }) => {
                                 </TableHeader>
                             </Row>
                         </Thead>
-                        <tbody>
+
+                        <Tbody data={modules?.data}>
                             {modules &&
                                 modules?.data.map((item, index) => (
                                     <Row key={item.id}>
@@ -109,7 +111,7 @@ const Modules = ({ modules, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
                     </TableContainer>
                     <Pagination paginate={modules} />
                 </ContentPanel>

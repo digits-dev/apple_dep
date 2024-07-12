@@ -21,6 +21,7 @@ import RowActions from "../../Components/Table/RowActions";
 import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
+import Tbody from "../../Components/Table/Tbody";
 
 const DepDevices = ({ devices, queryParams }) => {
     queryParams = queryParams || {};
@@ -92,23 +93,22 @@ const DepDevices = ({ devices, queryParams }) => {
 							</TableHeader>
 						</Row>
 					</Thead>
-
-					<tbody>
+					<Tbody data={devices.data}>
 						{devices &&
-							devices.data.map((item) => (
-								<Row key={item.sales_order_no + item.serial_number + item.id} >
-									<RowData
-										isLoading={loading}
-										center
-									>
-										{item.item_code}
-									</RowData>
-									<RowData isLoading={loading}>{item.item_description}</RowData>
-									<RowData isLoading={loading} center>{item.serial_number}</RowData>
-									<RowData isLoading={loading} center>{item.customer_name}</RowData>
-							</Row>
+								devices.data.map((item) => (
+									<Row key={item.sales_order_no + item.serial_number + item.id} >
+										<RowData
+											isLoading={loading}
+											center
+										>
+											{item.item_code}
+										</RowData>
+										<RowData isLoading={loading}>{item.item_description}</RowData>
+										<RowData isLoading={loading} center>{item.serial_number}</RowData>
+										<RowData isLoading={loading} center>{item.customer_name}</RowData>
+								</Row>
 							))}
-					</tbody>
+					</Tbody>
 				</TableContainer>
 
 				<Pagination paginate={devices} />

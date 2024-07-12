@@ -23,6 +23,7 @@ import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
  
@@ -203,7 +204,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                         </Row>
                     </Thead>
 
-                    <tbody>
+                    <Tbody data={enrollment_status.data}>
                         {enrollment_status &&
                             enrollment_status.data.map((item) => (
                                 <Row key={item.id} >
@@ -242,7 +243,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     </RowData>
                             </Row>
                             ))}
-                    </tbody>
+                    </Tbody>
                 </TableContainer>
 
                 <Pagination paginate={enrollment_status} onClick={resetCheckbox} />
