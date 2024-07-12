@@ -75,7 +75,12 @@ const MenusIndex = ({
                         targetParent.children = []
                         targetParent.children.push(draggedItem);
                     } else{
-                        targetParent.children = []
+                        // targetParent.children = []
+                        // targetParent.children.splice(targetIndex, 0, draggedItem);
+                        updatedMenus.splice(targetIndex, 0, draggedItem);
+                    }
+
+                    if(targetParent.children){
                         targetParent.children.splice(targetIndex, 0, draggedItem);
                     }
                     
