@@ -100,6 +100,9 @@ const MenusIndex = ({
             });
             setFormMessage(response.data.message);
             setMessageType(response.data.type);
+            setTimeout(() => {
+                setFormMessage("");
+            }, 3000);
             router.reload({ only: ["Menus"] });
         } catch (error) {
             console.error("Error saving menu:", error);
@@ -118,21 +121,29 @@ const MenusIndex = ({
                 }
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
                 onDrop={handleDrop}
-                className="draggable-item"
+                className={`${
+                    parentIndex == null ? "p-4" : "p-2"
+                } rounded-lg bg-blue-100`}
             >
-                <div
-                    className={menu.is_dashboard ? "is-dashboard" : ""}
-                    title={menu.is_dashboard ? "This is set as Dashboard" : ""}
-                >
-                    <i
-                        className={
-                            menu.is_dashboard
-                                ? "icon-is-dashboard fa fa-dashboard"
-                                : menu.icon
-                        }
-                    ></i>{" "}
-                    {menu.name}
-                    <span className="pull-right">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <i
+                            className={`${menu.icon}  ${
+                                parentIndex == null ? "text-xl" : "text-md"
+                            } `}
+                        ></i>
+                        <p
+                            className={`${
+                                parentIndex == null
+                                    ? "text-md font-bold"
+                                    : "text-sm"
+                            }`}
+                        >
+                            {menu.name}
+                        </p>
+                    </div>
+
+                    <div>
                         <a
                             className="fa fa-pencil"
                             title="Edit"
@@ -145,11 +156,7 @@ const MenusIndex = ({
                             onClick={() => handleDelete(menu.id)}
                             href="javascript:void(0)"
                         ></a>
-                    </span>
-                    <br />
-                    <em className="text-muted">
-                        {/* <small><i className="fa fa-users"></i> &nbsp; {menu.privileges.join(', ')}</small> */}
-                    </em>
+                    </div>
                 </div>
                 {menu.children && menu.children.length > 0 && (
                     <ul className="list-disc pl-5 mt-1 space-y-1">
@@ -167,21 +174,16 @@ const MenusIndex = ({
                 <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
                     {/* MENU ORDER ACTIVE */}
-                    <div className="panel panel-default border-2 border-green-500">
-                        <div className="panel-heading">
-                            <strong>Menu Order (Active)</strong>
-                            <span
-                                id="menu-saved-info"
-                                style={{ display: "none" }}
-                                className="pull-right text-success"
-                            >
-                                <i className="fa fa-check"></i> Menu Saved !
-                            </span>
+                    <div className="font-nunito-sans ">
+                        <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
+                            <p className="text-white font-extrabold text-center">
+                                Menu Order (Active)
+                            </p>
                         </div>
-                        <div className="panel-body clearfix">
-                            <ul className="draggable-menu draggable-menu-active list-disc space-y-2">
+                        <div className="px-3 py-3">
+                            <div className="draggable-menu draggable-menu-active list-disc space-y-2">
                                 {renderMenuItems(menuActive, true)}
-                            </ul>
+                            </div>
                             {menuActive.length === 0 && (
                                 <div align="center">
                                     Active menu is empty, please add new menu
@@ -191,14 +193,16 @@ const MenusIndex = ({
                     </div>
 
                     {/* MENU ORDER INACTIVE */}
-                    <div className="panel panel-danger border-2 border-red-500">
-                        <div className="panel-heading">
-                            <strong>Menu Order (Inactive)</strong>
+                    <div className="mt-10">
+                        <div className="bg-mobile-gradient  p-3">
+                            <p className="text-white font-extrabold text-center">
+                                Menu Order (Inactive)
+                            </p>
                         </div>
-                        <div className="panel-body clearfix">
-                            <ul className="draggable-menu draggable-menu-inactive">
+                        <div className="p-5">
+                            <div className="draggable-menu draggable-menu-inactive">
                                 {renderMenuItems(menuInactive, false)}
-                            </ul>
+                            </div>
                             {menuInactive.length === 0 && (
                                 <div
                                     align="center"

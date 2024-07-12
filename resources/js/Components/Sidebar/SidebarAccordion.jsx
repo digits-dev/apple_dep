@@ -24,12 +24,12 @@ const SidebarAccordion = ({ open }) => {
         {
             title: "Menu Management",
             url: "menu_management",
-            image: "/images/navigation/user-management-icon.png",
+            image: "/images/navigation/menu-icon-2.png",
         },
         {
             title: "Module Generator",
             url: "module_generator",
-            image: "/images/navigation/user-management-icon.png",
+            image: "/images/navigation/module-icon.png",
         },
     ];
 
