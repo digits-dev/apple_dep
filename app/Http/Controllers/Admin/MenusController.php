@@ -72,6 +72,7 @@ class MenusController extends Controller{
         $i = 1;
         foreach ($post as $ro) {
             $pid = $ro['id'];
+    
             if (isset($ro['children'])) {
                 $ci = 1;
                 foreach ($ro['children'] as $c) {

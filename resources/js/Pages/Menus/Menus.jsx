@@ -13,45 +13,67 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
     const [formMessage, setFormMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    // useEffect(() => {
-      
-    // }, []);
-
-    const handleDragStart = (e, menu) => {
-        setDraggingItem(menu);
+    const handleDragStart = (e, item, parentIndex, isActive, index) => {
+        e.stopPropagation();
+        setDraggingItem({ item, parentIndex, isActive, index });
     };
 
-    const handleDragOver = (e, menu) => {
+    const handleDragOver = (e, targetIndex, targetParentIndex) => {
         e.preventDefault();
-        setDraggingOverItem(menu);
+        e.stopPropagation();
+        setDraggingOverItem({ targetIndex, targetParentIndex });
     };
 
-    const handleDrop = async (e, isActive) => {
+    const handleDrop = async (e) => {
         e.preventDefault();
+        e.stopPropagation();
+
         if (draggingItem && draggingOverItem) {
-            const draggedIndex = menuActive.findIndex(menu => menu.id === draggingItem.id);
-            const targetIndex = menuActive.findIndex(menu => menu.id === draggingOverItem.id);
-            
-            let updatedMenus;
-            if (isActive) {
-                updatedMenus = [...menuActive];
-                updatedMenus.splice(draggedIndex, 1);
-                updatedMenus.splice(targetIndex, 0, draggingItem);
-                setMenuActive(updatedMenus);
-            } else {
-                updatedMenus = [...menuInactive];
-                updatedMenus.splice(draggedIndex, 1);
-                updatedMenus.splice(targetIndex, 0, draggingItem);
-                setMenuInactive(updatedMenus);
-            }
+            try {
+                let updatedMenus = draggingItem.isActive ? [...menuActive] : [...menuInactive];
+                const { item: draggedItem, parentIndex: sourceParentIndex, isActive, index: draggedIndex } = draggingItem;
+                const { targetIndex, targetParentIndex } = draggingOverItem;
 
-            handleSaveMenu(updatedMenus, isActive);
-            setDraggingItem(null);
-            setDraggingOverItem(null);
+                const sourceParent = updatedMenus[sourceParentIndex];
+                const targetParent = targetParentIndex !== undefined ? updatedMenus[targetParentIndex] : null;
+
+                // Remove the dragged item from its current position
+                if (sourceParent) {
+                    if (sourceParent.children) {
+                        sourceParent.children = sourceParent.children.filter((_, i) => i !== draggedIndex);
+                    } else {
+                        updatedMenus = updatedMenus.filter((_, i) => i !== draggedIndex);
+                    }
+                }
+
+                // Insert the dragged item into the new position
+                if (targetParent) {
+                    if (!targetParent.children) targetParent.children = [];
+                    targetParent.children.splice(targetIndex, 0, draggedItem);
+                } else {
+                    updatedMenus.splice(targetIndex, 0, draggedItem);
+                }
+
+                // Update the state and save the menu
+                if (isActive) {
+                    setMenuActive(updatedMenus);
+                    handleSaveMenu(updatedMenus, true);
+                } else {
+                    setMenuInactive(updatedMenus);
+                    handleSaveMenu(updatedMenus, false);
+                }
+
+                // Clear dragging states
+                setDraggingItem(null);
+                setDraggingOverItem(null);
+            } catch (error) {
+                console.error('Error updating menu order:', error);
+            }
         }
     };
 
     const handleSaveMenu = async (menus, isActive) => {
+        console.log(menus);
         try {
             const response = await axios.post('/menu_management/add', {
                 menus: JSON.stringify(menus),
@@ -59,9 +81,38 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             });
             setFormMessage(response.data.message);
             setMessageType(response.data.type);
+            router.reload({ only: ["Menus"] });
         } catch (error) {
             console.error('Error saving menu:', error);
         }
+    };
+
+    const renderMenuItems = (menus, isActive, parentIndex = null) => {
+        return menus.map((menu, index) => (
+            <li key={menu.id} data-id={menu.id} data-name={menu.name}
+                draggable
+                onDragStart={(e) => handleDragStart(e, { ...menu, index }, parentIndex, isActive)}
+                onDragOver={(e) => handleDragOver(e, index, parentIndex)}
+                onDrop={(e) => handleDrop(e)}>
+                <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? 'This is setted as Dashboard' : ''}>
+                    <i className={menu.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : menu.icon}></i> {menu.name}
+                    <span className='pull-right'>
+                        <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${menu.id}`}></a>
+                        &nbsp;&nbsp;
+                        <a title='Delete' className='fa fa-trash' onClick={() => handleDelete(menu.id)} href='javascript:void(0)'></a>
+                    </span>
+                    <br />
+                    <em className="text-muted">
+                        {/* <small><i className="fa fa-users"></i> &nbsp; {menu.privileges.join(', ')}</small> */}
+                    </em>
+                </div>
+                {menu.children && menu.children.length > 0 && (
+                    <ul className="list-disc pl-5 mt-1 space-y-1">
+                        {renderMenuItems(menu.children, isActive, index)}
+                    </ul>
+                )}
+            </li>
+        ));
     };
 
 
@@ -71,104 +122,34 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             <AppContent>
             <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
-                    <div className="row">
-                        <div className="col-sm-5">
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <strong>Menu Order (Active)</strong> <span id='menu-saved-info' style={{ display: 'none' }} className='pull-right text-success'><i
-                                        className='fa fa-check'></i> Menu Saved !</span>
-                                </div>
-                                <div className="panel-body clearfix">
-                                    <ul className='draggable-menu draggable-menu-active list-disc space-y-2'>
-                                        {menuActive.map((menu, index) => (
-                                            <li key={menu.id} data-id={menu.id} data-name={menu.name}
-                                                draggable
-                                                onDragStart={(e) => handleDragStart(e, menu)}
-                                                onDragOver={(e) => handleDragOver(e, menu)}
-                                                onDrop={(e) => handleDrop(e, true)}>
-                                                <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? 'This is setted as Dashboard' : ''}>
-                                                    <i className={menu.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : menu.icon}></i> {menu.name} <span
-                                                        className='pull-right'>
-                                                        <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${menu.id}`}></a>
-                                                        &nbsp;&nbsp;
-                                                        <a title='Delete' className='fa fa-trash' onClick={() => handleDelete(menu.id)} href='javascript:void(0)'></a>
-                                                    </span>
-                                                    <br /><em className="text-muted">
-                                                        {/* <small><i className="fa fa-users"></i> &nbsp; {menu.privileges.join(', ')}</small> */}
-                                                    </em>
-                                                </div>
-                                                <ul className="list-disc pl-5 mt-1 space-y-1">
-                                                    {menu.children && menu.children.map(child => (
-                                                        <li key={child.id} data-id={child.id} data-name={child.name}
-                                                            draggable
-                                                            onDragStart={(e) => handleDragStart(e, child)}
-                                                            onDragOver={(e) => handleDragOver(e, child)}
-                                                            onDrop={(e) => handleDrop(e, true)}>
-                                                            <div className={child.is_dashboard ? "is-dashboard" : ""} title={child.is_dashboard ? 'This is setted as Dashboard' : ''}>
-                                                                <i className={child.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : child.icon}></i> {child.name}
-                                                                <span className='pull-right'>
-                                                                    <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${child.id}`}></a>
-                                                                    &nbsp;&nbsp;
-                                                                    <a title="Delete" className='fa fa-trash' onClick={() => handleDelete(child.id)} href='javascript:void(0)'></a>
-                                                                </span>
-                                                                <br /><em className="text-muted">
-                                                                    {/* <small><i className="fa fa-users"></i> &nbsp; {child.privileges.join(', ')}</small> */}
-                                                                </em>
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    {menuActive.length === 0 && <div align="center">Active menu is empty, please add new menu</div>}
-                                </div>
+                <div className="row">
+                    <div className="col-sm-5">
+                        <div className="panel panel-default">
+                            <div className="panel-heading">
+                                <strong>Menu Order (Active)</strong>
+                                <span id='menu-saved-info' style={{ display: 'none' }} className='pull-right text-success'><i className='fa fa-check'></i> Menu Saved !</span>
                             </div>
+                            <div className="panel-body clearfix">
+                                <ul className='draggable-menu draggable-menu-active list-disc space-y-2'>
+                                    {renderMenuItems(menuActive, true)}
+                                </ul>
+                                {menuActive.length === 0 && <div align="center">Active menu is empty, please add new menu</div>}
+                            </div>
+                        </div>
 
-                            <div className="panel panel-danger">
-                                <div className="panel-heading">
-                                    <strong>Menu Order (Inactive)</strong>
-                                </div>
-                                <div className="panel-body clearfix">
-                                    <ul className='draggable-menu draggable-menu-inactive'>
-                                        {menuInactive.map((menu, index) => (
-                                            <li key={menu.id} data-id={menu.id} data-name={menu.name}
-                                                draggable
-                                                onDragStart={(e) => handleDragStart(e, menu)}
-                                                onDragOver={(e) => handleDragOver(e, menu)}
-                                                onDrop={(e) => handleDrop(e, false)}>
-                                                <div>
-                                                    <i className={menu.icon}></i> {menu.name} <span className='pull-right'>
-                                                        <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${menu.id}`}></a>
-                                                        &nbsp;&nbsp;
-                                                        <a title='Delete' className='fa fa-trash' onClick={() => handleDelete(menu.id)} href='javascript:void(0)'></a>
-                                                    </span>
-                                                </div>
-                                                <ul>
-                                                    {menu.children && menu.children.map(child => (
-                                                        <li key={child.id} data-id={child.id} data-name={child.name}
-                                                            draggable
-                                                            onDragStart={(e) => handleDragStart(e, child)}
-                                                            onDragOver={(e) => handleDragOver(e, child)}
-                                                            onDrop={(e) => handleDrop(e, false)}>
-                                                            <div>
-                                                                <i className={child.icon}></i> {child.name} <span className='pull-right'>
-                                                                    <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${child.id}`}></a>
-                                                                    &nbsp;&nbsp;
-                                                                    <a title="Delete" className='fa fa-trash' onClick={() => handleDelete(child.id)} href='javascript:void(0)'></a>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    {menuInactive.length === 0 && <div align="center" id='inactive_text' className='text-muted'>Inactive menu is empty</div>}
-                                </div>
+                        <div className="panel panel-danger">
+                            <div className="panel-heading">
+                                <strong>Menu Order (Inactive)</strong>
+                            </div>
+                            <div className="panel-body clearfix">
+                                <ul className='draggable-menu draggable-menu-inactive'>
+                                    {renderMenuItems(menuInactive, false)}
+                                </ul>
+                                {menuInactive.length === 0 && <div align="center" id='inactive_text' className='text-muted'>Inactive menu is empty</div>}
                             </div>
                         </div>
                     </div>
+                </div>
                 </ContentPanel>
             </AppContent>
         </div>
