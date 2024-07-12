@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
@@ -31,8 +32,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     public function testEnrollDevicesSuccessfully()
     {
         
-        $service = new AppleDeviceEnrollmentService();
-
         $payload = [
             "requestContext" => [
                 "shipTo" => "0000742682",
@@ -69,7 +68,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         ];
 
         // Call the actual method that performs enrollment
-        $response = $service->enrollDevices($payload);
+        $response = $this->service->enrollDevices($payload);
 
         // Assertions against the actual response returned
         $this->assertIsArray($response, 'Response should be an array');
@@ -135,7 +134,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Network Error'], 500),
         ]);
 
-        $service = new AppleDeviceEnrollmentService();
 
         $payload = [
             "requestContext" => [
@@ -173,7 +171,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         ];
 
         $this->expectException(\Exception::class);
-        $service->enrollDevices($payload);
+        $this->service->enrollDevices($payload);
     }
 
     public function testUnEnrollDevicesApiUnavailable()
@@ -184,7 +182,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => Http::response(['message' => 'Network Error'], 500),
         ]);
 
-        $service = new AppleDeviceEnrollmentService();
 
         $payload = [
             "requestContext" => [
@@ -225,7 +222,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Failed to bulk enroll devices');
 
-        $service->enrollDevices($payload);
+        $this->service->enrollDevices($payload);
     }
 
     // CHECK TRANSACTION STATUS
@@ -259,7 +256,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             ]
         ];
 
-        $service = new AppleDeviceEnrollmentService();
 
         $requestData = [
             "requestContext" => [
@@ -271,7 +267,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             "deviceEnrollmentTransactionId" => "e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097"
         ];
 
-        $response = $service->checkTransactionStatus($requestData);
+        $response = $this->service->checkTransactionStatus($requestData);
 
         $this->assertEquals($expectedResponse['deviceEnrollmentTransactionID'], $response['deviceEnrollmentTransactionID']);
         $this->assertEquals($expectedResponse['statusCode'], $response['statusCode']);
@@ -284,7 +280,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             'https://acc-ipt.apple.com/enroll-service/1.0/check-transaction-status' => Http::response(['message' => 'Failed to check transaction status'], 500),
         ]);
 
-        $service = new AppleDeviceEnrollmentService();
 
         $requestData = [
             "transactionId" => "TXN_001123",
@@ -292,7 +287,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         ];
 
         $this->expectException(\Exception::class);
-        $service->checkTransactionStatus($requestData);
+        $this->service->checkTransactionStatus($requestData);
     }
 
     // SHOW ORDER DETAILS
@@ -324,7 +319,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             ]
         ];
 
-        $service = new AppleDeviceEnrollmentService();
 
         $requestContext = [
             "shipTo" => "0000742682",
@@ -332,10 +326,10 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             "langCode" => "en"
         ];
         $depResellerId = "0000742682";
-        $orderNumbers = ["ORDER_900130"]; // Example order number
+        $orderNumbers = ["ORDER_900130"]; 
 
         // Calling the showOrderDetails method
-        $response = $service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
+        $response = $this->service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
         
         $this->assertEquals($expectedResponse['orders'], $response['orders']);
         $this->assertEquals($expectedResponse['statusCode'], $response['statusCode']);
@@ -347,7 +341,6 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             'https://acc-ipt.apple.com/enroll-service/1.0/show-order-details' => Http::response(['message' => 'Network Error'], 500),
         ]);
 
-        $service = new AppleDeviceEnrollmentService();
 
         $requestContext = [
             "shipTo" => "0000742682",
@@ -361,7 +354,108 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Failed to show order details');
 
-        $service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
+        $this->service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
+    }
+
+    // EMPTY PAYLOAD
+
+    public function testEnrollmentDevicesEmptyPayload(){
+
+        //empty payload
+        $payload = [];
+
+        $response = $this->service->enrollDevices($payload);
+
+        $this->assertIsArray($response, 'Response should be an array');
+        $this->assertArrayHasKey('errorCode', $response, 'Response should contain an errorCode key');
+        $this->assertEquals('GRX-16001', $response['errorCode'], 'Error code should match');
+        $this->assertArrayHasKey('errorMessage', $response, 'Response should contain an errorMessage key');
+        $this->assertEquals('We are experiencing problem in processing your request. Please check back later or contact AppleCare Connect support', $response['errorMessage'], 'Error message should match');
+        $this->assertArrayHasKey('transactionId', $response, 'Response should contain a transactionId key');
+        $this->assertNotNull($response['transactionId'], 'Transaction ID should not be null');
+
+    }
+
+    public function testCheckTransactionStatusEmptyPayload(){
+
+        //empty payload
+        $payload = [];
+
+        $response = $this->service->checkTransactionStatus($payload);
+
+        $this->assertIsArray($response, 'Response should be an array');
+        $this->assertArrayHasKey('errorCode', $response, 'Response should contain an errorCode key');
+        $this->assertEquals('GRX-16001', $response['errorCode'], 'Error code should match');
+        $this->assertArrayHasKey('errorMessage', $response, 'Response should contain an errorMessage key');
+        $this->assertEquals('We are experiencing problem in processing your request. Please check back later or contact AppleCare Connect support', $response['errorMessage'], 'Error message should match');
+        $this->assertArrayHasKey('transactionId', $response, 'Response should contain a transactionId key');
+        $this->assertNotNull($response['transactionId'], 'Transaction ID should not be null');
+
+    }
+
+    public function testShowOrderDetailsEmptyPayload(){
+
+        //empty payload
+        $requestContext = "";
+        $depResellerId = "";
+        $orderNumbers = "";
+
+        $response = $this->service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
+
+        $this->assertIsArray($response, 'Response should be an array');
+        $this->assertArrayHasKey('errorCode', $response, 'Response should contain an errorCode key');
+        $this->assertEquals('GRX-16001', $response['errorCode'], 'Error code should match');
+        $this->assertArrayHasKey('errorMessage', $response, 'Response should contain an errorMessage key');
+        $this->assertEquals('We are experiencing problem in processing your request. Please check back later or contact AppleCare Connect support', $response['errorMessage'], 'Error message should match');
+        $this->assertArrayHasKey('transactionId', $response, 'Response should contain a transactionId key');
+        $this->assertNotNull($response['transactionId'], 'Transaction ID should not be null');
+
+    }
+
+    // INVALID INPUTS
+
+    public function testMissingTransactionId(){
+
+        $payload = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "transactionId" => "", //EMPTY TRANSACTION ID
+            "depResellerId" => "0000742682",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900123",
+                    "orderDate" => "2014-08-28T10:10:10Z",
+                    "orderType" => "OR",
+                    "customerId" => "19827",
+                    "poNumber" => "PO_12345",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "shipDate" => "2014-10-10T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "deviceId" => "33645004YAM",
+                                    "assetTag" => "A123456"
+                                ],
+                                [
+                                    "deviceId" => "33645006YAM",
+                                    "assetTag" => "A123456"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $this->service->enrollDevices($payload);
+
+        $this->assertArrayHasKey('enrollDeviceErrorResponse', $response);
+        $this->assertEquals('Transaction ID missing. Enter a valid transaction ID and resubmit your request.', $response['enrollDeviceErrorResponse']['errorMessage']);
+        $this->assertEquals('DEP-ERR-3001', $response['enrollDeviceErrorResponse']['errorCode']);
     }
 
 }
