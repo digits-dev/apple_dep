@@ -56,9 +56,8 @@ Route::group(['prefix' => 'api'], function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout']);
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
-    Route::get('/table', [TestController::class, 'getTable']);
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
@@ -85,7 +84,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/menu_management/edit-menu-save/{id}', [MenusController::class, 'postEditSave'])->middleware('auth')->name('edit-menus-save');
 
     //EXPORTS
-    Route::get('/test-export', [TestController::class, 'export']);
     Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);
     Route::get('/dep-devices-export', [DepDevicesController::class, 'export']);
     Route::get('/enrollment-list-export', [EnrollmentListController::class, 'export']);
