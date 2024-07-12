@@ -114,7 +114,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                 <TableHeader
                                     name="dep_status"
                                     queryParams={queryParams}
-                                    justify="center"
                                 >
                                     DEP Status
                                 </TableHeader>
@@ -176,7 +175,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            center
                                         >
                                             {item?.d_status?.dep_status}
                                         </RowStatus>

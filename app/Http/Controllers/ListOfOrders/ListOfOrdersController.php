@@ -61,8 +61,9 @@ class ListOfOrdersController extends Controller
         $data = [];
         $data ['order'] = $order;
 
-        $query = OrderLines::query()->where('order_id', $order->id)->with('status');
-        $data['orderLines'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $data['orderLines'] = OrderLines::query()
+        ->where('order_id', $order->id)
+        ->with('status')->orderBy($this->sortBy, $this->sortDir)->get();
 
         $data['queryParams'] = request()->query();
         
@@ -373,10 +374,11 @@ class ListOfOrdersController extends Controller
                     'sales_order_no' => $header_data['sales_order_no'],
                     'item_code' => $header_data['digits_code'],
                     'serial_number' => $deviceData['serial_number'],
-                    'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                    'transaction_id' => $transaction_id,
                     'dep_status' => 1,
-                    'enrollment_status' =>  $enrollment_status,
-                    'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                    'enrollment_status' => $enrollment_status,
+                    'status_message' => $status_message,
+                    'created_at' => date('Y-m-d H:i:s')
                 ];
     
                 EnrollmentList::insert($insertData);

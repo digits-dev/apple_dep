@@ -58,7 +58,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
 		if (selectAll) {
 		  setSelectedItems([]);
 		} else {
-		  const allItemIds = orderLines?.data.map(item => 
+		  const allItemIds = orderLines?.map(item => 
             item.id);
 		  setSelectedItems(allItemIds);
 		}
@@ -72,10 +72,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     };
 
     const handleToast = (message, messageType) => {
+        document.getElementById('app-content').scrollIntoView(true);
         setMessage(message);
         setMessageType(messageType);
         setTimeout(() => setMessage(""), 3000);
         resetCheckbox();
+
     };
 
     const bulkActions = [
@@ -121,7 +123,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             setLoading(true);
 
                             //it only get the selected pending status within selected checkbox
-                            const filteredIds = orderLines?.data.filter(item => 
+                            const filteredIds = orderLines?.filter(item => 
                                 selectedItems.includes(item.id)).filter(item => item.enrollment_status_id == 1).map(item => item.id);
 
                             if(filteredIds.length != 0){
@@ -133,26 +135,30 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 );
 
                                 if (response.data.status == "success") {
+
                                     setLoading(false);
                                     handleToast(response.data.message, response.data.status);
-                                    router.reload({ only: ["orderLines"] });
+                                    router.reload({ only: ["orderLines"]});
                                 } else {
                                     setLoading(false);
                                     handleToast('Something went wrong!', 'Error');
+                                    
                                 } 
                             } else {
                                 setLoading(false);
                                 handleToast("The selected items are already enrolled!", "Error");
+
                             }
 
                         } else{
                             handleToast("Return Device is not yet supported.", "Error");
+
                         }
 
                     } catch (error) {
-                        console.log(error);
                         setLoading(false);
                         handleToast('Something went wrong, please try again later.', 'Error');
+
                     }
                 }
             });
@@ -283,7 +289,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         isChecked={selectAll}
                                     />
                                 </TableHeader>
-                                <TableHeader name="item_code" queryParams={queryParams}>
+                                <TableHeader name="digits_code" queryParams={queryParams}>
                                     Item Code
                                 </TableHeader>
                                 <TableHeader name="item_description" queryParams={queryParams}>
@@ -301,8 +307,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             </Row>
                         </Thead>
                         <tbody>
-                            {orderLines?.data.map((order, index) => (
-                                <Row key={order.id + index}>
+                            {orderLines?.map((order, index) => (
+                                <Row key={order.serial_number}>
                                     <RowData center>
                                        <Checkbox
                                             type="checkbox"
