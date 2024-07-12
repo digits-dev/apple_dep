@@ -12,6 +12,17 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 class MenusController extends Controller{
+    private $sortBy;
+    private $sortDir;
+    private $perPage;
+    public function __construct() {
+        $this->table_name  = 'adm_modules';
+        $this->primary_key = 'id';
+        $this->sortBy = request()->get('sortBy', 'adm_modules.created_at');
+        $this->sortDir = request()->get('sortDir', 'desc');
+        $this->perPage = request()->get('perPage', 10);
+    }
+
     public static function sidebarMenu(){
         return CommonHelpers::sidebarMenu();
     }
@@ -44,11 +55,13 @@ class MenusController extends Controller{
                 $menu->children = $child;
             }
         }
-        
-        return Inirtia::render('Menus/Menus',[
+
+        return Inertia::render('Menus/Menus',[
             'privileges' => $privileges,
             'id_adm_privileges' => $id_adm_privileges,
-            'menu_inactive' => $menu_inactive
+            'menu_active' => $menu_active,
+            'menu_inactive' => $menu_inactive,
+            'queryParams' => request()->query()
         ]);
     }
 }

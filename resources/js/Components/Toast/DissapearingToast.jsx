@@ -23,7 +23,7 @@ const DissapearingToast = ({ type, message }) => {
                     ></div>
                     <div className="items-center flex ml-3">
                         <img
-                            src={`images/toast/${
+                            src={`/images/toast/${
                                 type == "success"
                                     ? "success-icon-toast"
                                     : "error-icon-toast"

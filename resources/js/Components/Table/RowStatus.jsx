@@ -21,7 +21,7 @@ const RowStatus = ({
 			{isLoading ? (
 				<span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-200">&nbsp;&nbsp;</span>
 			) : (
-				<span className={`mx-auto rounded-full text-white px-3 py-1 ${statusColor} `}>{children}</span>
+				<span className={`rounded-full text-secondary  ${statusColor} `}>{children}</span>
 			)}
 		</td>
   )

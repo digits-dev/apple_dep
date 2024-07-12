@@ -35,7 +35,7 @@ class ListOfOrdersController extends Controller
 
     public function getIndex()
     {
-        $query = Order::query();
+        $query = Order::query()->with('status');
 
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");
@@ -58,9 +58,15 @@ class ListOfOrdersController extends Controller
 
     public function edit(Order $order){
        
-        $orderLines = OrderLines::where('order_id', $order->id)->with('status')->get();
-        // dd($orderLines);
-        return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order , 'orderLines' => $orderLines]);
+        $data = [];
+        $data ['order'] = $order;
+
+        $query = OrderLines::query()->where('order_id', $order->id)->with('status');
+        $data['orderLines'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+
+        $data['queryParams'] = request()->query();
+        
+        return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }
 
     public function export()
@@ -195,12 +201,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '0000742682',
-                    'timeZone' => '420',
-                    'langCode' => 'en',
+                    'shipTo' => config('services.apple_api.ship_to'),
+                    'timeZone' => config('services.apple_api.timezone'),
+                    'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '0000742682',
+                'depResellerId' => config('services.apple_api.ship_to'),
                 'orders' => [],  
             ];
             
@@ -218,7 +224,7 @@ class ListOfOrdersController extends Controller
             $timestamp = strtotime($header_data['order_date']);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
             $deliveryPayload = [
-                'deliveryNumber' => '30260972',
+                'deliveryNumber' => $header_data['dr_number'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
@@ -237,17 +243,23 @@ class ListOfOrdersController extends Controller
 
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
-            
+
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 1;
-            }else {
+                $enrollment_status = 3;
+            }
+            // else if (isset($response['enrollDeviceErrorResponse'])){
+            //     $dep_status = $response['errorCode'];
+            //     $status_message = $response['errorMessage'];
+            //     $enrollment_status = 0;
+            // }
+            else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = $response['errorCode'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 0;
+                $enrollment_status = 2;
             }
 
             $insertData = [ 
@@ -256,19 +268,20 @@ class ListOfOrdersController extends Controller
                 'serial_number' => $header_data['serial_number'],
                 'transaction_id' => $transaction_id,
                 'dep_status' => 1,
-                'enrollment_status' => 1,
+                'enrollment_status' => $enrollment_status,
                 'status_message' => $status_message,
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
             EnrollmentList::insert($insertData);
+            OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
             
             $orderId = $header_data['order_id'];
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OR',
@@ -278,7 +291,7 @@ class ListOfOrdersController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             
-            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+            $data = ['message'=>   $enrollment_status == 3  ?'Enrollment Success! ' : 'Enrollment Error! ', 'status'=> $enrollment_status == 3 ? 'success' : 'error'];
 
             return response()->json($data);
             
@@ -295,12 +308,12 @@ class ListOfOrdersController extends Controller
 
             $payload = [
                 'requestContext' => [
-                    'shipTo' => '0000742682',
-                    'timeZone' => '420',
-                    'langCode' => 'en',
+                   'shipTo' => config('services.apple_api.ship_to'),
+                   'timeZone' => config('services.apple_api.timezone'),
+                   'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => '0000742682',
+                'depResellerId' => config('services.apple_api.ship_to'),
                 'orders' => [],  
             ];
 
@@ -323,7 +336,7 @@ class ListOfOrdersController extends Controller
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
 
             $deliveryPayload = [
-                'deliveryNumber' => '30260972',
+                'deliveryNumber' => $header_data['dr_number'],
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
@@ -347,12 +360,12 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 1;
+                $enrollment_status = 3; //success
             }else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = $response['errorCode'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 0;
+                $enrollment_status = 2;  //error
             }
 
             foreach ($requestData ?? [] as $deviceData) {
@@ -362,7 +375,7 @@ class ListOfOrdersController extends Controller
                     'serial_number' => $deviceData['serial_number'],
                     'transaction_id' => $response['deviceEnrollmentTransactionId'],
                     'dep_status' => 1,
-                    'enrollment_status' => 1,
+                    'enrollment_status' =>  $enrollment_status,
                     'status_message' => $response['enrollDevicesResponse']['statusMessage']
                 ];
     
@@ -370,12 +383,16 @@ class ListOfOrdersController extends Controller
 
             }
 
+            //update enrollment status to success
+            OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => 3]);
+
+            //logs
             $orderId = $header_data['order_id'];
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insertGetId(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insertGetId(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OR',

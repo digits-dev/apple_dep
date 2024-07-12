@@ -80,6 +80,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('create-modules', [ModulsController::class, 'getAddModuls'])->name('create-modules');
     Route::post('/module_generator/postAddSave', [ModulsController::class, 'postAddSave'])->name('postAddSave');
 
+    //MENUS
+    Route::post('/menu_management/add', [MenusController::class, 'postAddSave'])->name('MenusControllerPostSaveMenu');
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);
     Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);

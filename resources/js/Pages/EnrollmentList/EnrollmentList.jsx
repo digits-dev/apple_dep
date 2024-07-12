@@ -131,7 +131,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                 <TableHeader
                                     name="enrollment_status"
                                     queryParams={queryParams}
-                                    justify="center"
+                                    width="lg"
                                 >
                                     Enrollment Status
                                 </TableHeader>
@@ -156,12 +156,8 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
 
                         <tbody>
                             {enrollmentLists &&
-                                enrollmentLists.data.map((item) => (
-                                    <Row
-                                        key={
-                                            item.sales_order_no + item.item_code
-                                        }
-                                    >
+                                enrollmentLists.data.map((item, index) => (
+                                    <Row key={item.sales_order_no + index}>
                                         <RowData
                                             isLoading={loading}
                                             center
@@ -180,29 +176,17 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                item.dep_status == "Success"
-                                                    ? "success"
-                                                    : "error"
-                                            }
                                             center
                                         >
-                                            {item.dep_status}
+                                            {item?.d_status?.dep_status}
                                         </RowStatus>
                                         <RowData isLoading={loading} center>
                                             {item.status_message}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                item.enrollment_status ==
-                                                "Completed"
-                                                    ? "completed"
-                                                    : "failed"
-                                            }
-                                            center
                                         >
-                                            {item.enrollment_status}
+                                            {item?.e_status?.enrollment_status}
                                         </RowStatus>
                                         <RowData isLoading={loading} center>
                                             {item.created_date}
