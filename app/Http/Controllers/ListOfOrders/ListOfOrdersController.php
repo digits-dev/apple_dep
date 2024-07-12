@@ -299,7 +299,6 @@ class ListOfOrdersController extends Controller
                     'status_message' => $status_message
                 ]);
             }
-        
             
             // Update the enrollment status of the order line
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
@@ -319,7 +318,20 @@ class ListOfOrdersController extends Controller
                 'dep_status' => $dep_status,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
-            
+
+            // Count total number of order lines
+            $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+            // Count order lines with enrollment status 3 or completed
+            $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                ->where('enrollment_status_id', 3)
+                ->count();
+
+            // Check if all order lines have status 3 and update the enrollment status of the order
+            if ($enrollmentStatusSuccess === $totalOrderLines && $totalOrderLines > 0) {
+                Order::where('id', $orderId)->update(['enrollment_status' => 3]);
+            }
+
             $data = [
                 'message' => $enrollment_status == 3 ? 'Enrollment Success!' : 'Enrollment Error!',
                 'status' => $enrollment_status == 3 ? 'success' : 'error'
