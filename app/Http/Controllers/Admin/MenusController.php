@@ -38,7 +38,7 @@ class MenusController extends Controller{
         $id_adm_privileges = $request->id_adm_privileges;
         $id_adm_privileges = ($id_adm_privileges) ?: CommonHelpers::myPrivilegeId();
 
-        $menu_active = DB::table('adm_menuses')->where('parent_id', 0)->where('is_active', 1)->orderby('sorting', 'asc')->get();
+        $menu_active = DB::table('adm_menuses')->where('parent_id', 0)->where('is_dashboard',0)->where('is_active', 1)->orderby('sorting', 'asc')->get();
 
         foreach ($menu_active as &$menu) {
             $child = DB::table('adm_menuses')->where('is_active', 1)->where('parent_id', $menu->id)->orderby('sorting', 'asc')->get();
@@ -63,6 +63,28 @@ class MenusController extends Controller{
             'menu_inactive' => $menu_inactive,
             'queryParams' => request()->query()
         ]);
+    }
+
+    public function postAddSave(Request $request){
+        $post = $request->menus;
+        $isActive = $request->isActive;
+        $post = json_decode($post, true);
+        $i = 1;
+        foreach ($post as $ro) {
+            $pid = $ro['id'];
+            if (isset($ro['children'])) {
+                $ci = 1;
+                foreach ($ro['children'] as $c) {
+                    $id = $c['id'];
+                    DB::table('adm_menuses')->where('id', $id)->update(['sorting' => $ci, 'parent_id' => $pid, 'is_active' => $isActive]);
+                    $ci++;
+                }
+            }
+            DB::table('adm_menuses')->where('id', $pid)->update(['sorting' => $i, 'parent_id' => 0, 'is_active' => $isActive]);
+            $i++;
+        }
+
+        return json_encode(["message"=>"Menu Saved!", "type"=>"success"]);
     }
 }
 

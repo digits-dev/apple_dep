@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
 
     //MENUS
     Route::post('/menu_management/add', [MenusController::class, 'postAddSave'])->name('MenusControllerPostSaveMenu');
+    
     //EXPORTS
     Route::get('/test-export', [TestController::class, 'export']);
     Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);
