@@ -42,19 +42,10 @@ const Users = ({ users, options, queryParams }) => {
 
     //BULK ACTIONS
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest(".dropbtn")) {
-                setDropdownVisible(false);
-            }
-        };
         setTimeout(() => {
             setTitle("User Management");
         }, 5);
 
-        window.addEventListener("click", handleClickOutside);
-        return () => {
-            window.removeEventListener("click", handleClickOutside);
-        };
     }, []);
 
     const handleSelectAll = () => {
@@ -546,11 +537,7 @@ const Users = ({ users, options, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                user.status == 1
-                                                    ? "success"
-                                                    : "error"
-                                            }
+                                            systemStatus={user.status ? "active" : "inactive"}
                                         >
                                             {user.status == 1
                                                 ? "Active"

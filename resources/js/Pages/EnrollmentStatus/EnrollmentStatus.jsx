@@ -218,11 +218,16 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
-                                    <RowData isLoading={loading}>{item.enrollment_status}</RowData>
+                                    <RowStatus
+                                            isLoading={loading}
+                                            color={item.color}
+                                    >
+                                           {item.enrollment_status}
+                                    </RowStatus>
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
                                     <RowStatus
                                             isLoading={loading}
-                                            status={item.status ? "success" : "error"}
+                                            systemStatus={item.status ? "active" : "inactive"}
                                             center
                                     >
                                             {item.status ? "Active" : "Inactive"}

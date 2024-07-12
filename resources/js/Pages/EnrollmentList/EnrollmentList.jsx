@@ -175,17 +175,25 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.d_status?.color}
+                                            center
                                         >
                                             {item?.d_status?.dep_status}
                                         </RowStatus>
+
+                                  
+
                                         <RowData isLoading={loading} center>
                                             {item.status_message}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.e_status?.color}
+                                            center
                                         >
                                             {item?.e_status?.enrollment_status}
                                         </RowStatus>
+
                                         <RowData isLoading={loading} center>
                                             {item.created_date}
                                         </RowData>

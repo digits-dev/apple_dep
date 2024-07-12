@@ -2,18 +2,17 @@ import React from 'react'
 
 const RowStatus = ({
   children,
-  status,
+  systemStatus,
   isLoading,
-  center
+  center,
+  color
 }) => {
 
 
-  const statusColor = {
-      success: "bg-status-success",
-      error: "bg-status-error",
-      completed: "bg-status-success",
-      failed:"bg-status-error",
-  }[status];
+  const systemStatusColor = {
+      active: "bg-status-success",
+      inactive: "bg-status-error",
+  }[systemStatus];
 
 
   return (
@@ -21,7 +20,14 @@ const RowStatus = ({
 			{isLoading ? (
 				<span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-200">&nbsp;&nbsp;</span>
 			) : (
-				<span className={`rounded-full text-secondary  ${statusColor} `}>{children}</span>
+        <>
+        {systemStatusColor ? 
+        <span className={`mx-auto rounded-full text-white px-3 py-1 ${systemStatusColor} `}>{children}</span> 
+        :
+				<span style={{background: color}} className={`mx-auto rounded-full ${color && 'text-white'} px-3 py-1 `}>{children}</span>
+        }
+				
+        </>
 			)}
 		</td>
   )

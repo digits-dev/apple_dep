@@ -200,6 +200,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.status?.color}
                                             center
                                         >
                                             {item?.status?.enrollment_status}
