@@ -20,6 +20,9 @@ import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import Modal from "../../Components/Modal/Modal";
+import Tbody from "../../Components/Table/Tbody";
+import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import useToast from "../../Hooks/useToast";
 
 const ListOfOrders = ({ orders, queryParams }) => {
     queryParams = queryParams || {};
@@ -30,6 +33,8 @@ const ListOfOrders = ({ orders, queryParams }) => {
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
 
+    const {message, messageType, handleToast} = useToast();
+    
     const handleCloseEditModal = () => {
         setShowEditModal(false);
     };
@@ -66,10 +71,12 @@ const ListOfOrders = ({ orders, queryParams }) => {
         );
     };
 
+
     return (
         <>
             <Head title="List of Orders" />
             <AppContent>
+                <DissapearingToast type={messageType} message={message} />
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -111,7 +118,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                 ]}
                             />
                         </Filters>
-                        <Export path="/list-of-orders-export" />
+                        <Export path="/list-of-orders-export"  handleToast={handleToast}/>
                     </TopPanel>
 
                     <TableContainer>
@@ -155,6 +162,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                     name="enrollment_status"
                                     queryParams={queryParams}
                                     justify="center"
+                                    width="lg"
                                 >
                                     Enrollment Status
                                 </TableHeader>
@@ -176,7 +184,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={ orders.data}>
                             {orders &&
                                 orders.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
@@ -200,6 +208,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
 
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.status?.color}
                                             center
                                         >
                                             {item?.status?.enrollment_status}
@@ -244,7 +253,10 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
+                       
+                         
+                      
                     </TableContainer>
 
                     <Pagination paginate={orders} />

@@ -17,6 +17,7 @@ import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
+import Tbody from "../../Components/Table/Tbody";
 
 const EnrollmentList = ({ enrollmentLists, queryParams }) => {
     queryParams = queryParams || {};
@@ -132,6 +133,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                     name="enrollment_status"
                                     queryParams={queryParams}
                                     width="lg"
+                                    justify="center"
                                 >
                                     Enrollment Status
                                 </TableHeader>
@@ -154,7 +156,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={enrollmentLists.data}>
                             {enrollmentLists &&
                                 enrollmentLists.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
@@ -176,18 +178,25 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.d_status?.color}
                                             center
                                         >
                                             {item?.d_status?.dep_status}
                                         </RowStatus>
+
+                                  
+
                                         <RowData isLoading={loading} center>
                                             {item.status_message}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
+                                            color={item?.e_status?.color}
+                                            center
                                         >
                                             {item?.e_status?.enrollment_status}
                                         </RowStatus>
+
                                         <RowData isLoading={loading} center>
                                             {item.created_date}
                                         </RowData>
@@ -207,7 +216,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
                     </TableContainer>
 
                     <Pagination paginate={enrollmentLists} />

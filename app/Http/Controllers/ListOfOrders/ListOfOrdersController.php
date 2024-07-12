@@ -61,8 +61,9 @@ class ListOfOrdersController extends Controller
         $data = [];
         $data ['order'] = $order;
 
-        $query = OrderLines::query()->where('order_id', $order->id)->with('status');
-        $data['orderLines'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $data['orderLines'] = OrderLines::query()
+        ->where('order_id', $order->id)
+        ->with('status')->orderBy($this->sortBy, $this->sortDir)->get();
 
         $data['queryParams'] = request()->query();
         
@@ -92,106 +93,6 @@ class ListOfOrdersController extends Controller
         ]);
 
         return $query;
-    }
-
-    public function getListOfOrdersFromErp(){ 
-        
-        $results =  Order::getOrdersFromErp();
-
-        //HEADER
-        $header = [];
-        $lines = [];
-
-        foreach($results as $key => $item){
-            //COUNT SERIALs
-            $serialNumbers = [];
-            for ($i = 1; $i <= 10; $i++) {
-                $serialKey = "serial" . $i;
-                if (!empty($item->$serialKey)) {
-                    $serialNumbers[] = $item->$serialKey;
-                }
-            }
-
-            // Check for duplicate serial numbers
-            $serialCount = array_count_values($serialNumbers);
-            $duplicates = array_filter($serialCount, function($count) {
-                return $count > 1;
-            });
-
-            if(count($serialNumbers) === (int)$item->shipped_quantity && empty($duplicates)){
-                for($i = 0; $i < (int)$item->shipped_quantity; $i++){
-                    $res = clone $item;
-                    $res->final_qty = 1;
-                    $serial = "serial" . ($i + 1);
-                    if (property_exists($item, $serial)) {
-                        $res->final_serial = $item->$serial;
-                    } else {
-                        $res->final_serial = null; // 
-                    }
-
-                    $lines[] = $res;
-                }  
-            }
-            
-            $identifier = $item->order_number . '-' . $item->cust_po_number;
-            if (!in_array($identifier, $header)) {
-                $header[] = $identifier;
-                $uniqueHeaderData[] = $item;
-            }
-        }
-
-        //CHECK IF ORDER NUMBER AND SERIAL IS DUPLICATE
-        $linesIdentifier = [];
-        foreach($lines as $key => $line){
-            $duplicateIdentifer = $line->order_number . '-' . $line->cust_po_number . '-' . $line->final_serial;
-            if (!in_array($duplicateIdentifer, $linesIdentifier)) {
-                $linesIdentifier[] = $duplicateIdentifer;
-                $finalDataLines[] = $line;
-            }
-        }
-
-        $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
-        $latestRequestId = $latestRequest->id ?? 0;
-        foreach($uniqueHeaderData as $insert_data){
-            $headerId = Order::updateOrInsert(
-            ['sales_order_no'=>$insert_data->order_number,
-             'order_ref_no'=>$insert_data->cust_po_number
-            ],
-            [
-                'sales_order_no'    => $insert_data->order_number,
-                'customer_name'     => $insert_data->customer_name,
-                'order_ref_no'      => $insert_data->cust_po_number,
-                'dr_number'         => $insert_data->dr,
-                'dep_order'         => 1,
-                'enrollment_status' => "1",
-                'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
-            ]);
-        }
-
-        $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
-        $insertData = [];
-        foreach($finalDataLines as $key => $line){
-            $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
-            if($search !== false){
-                $line->header_id = $header_ids[$search]->id;
-                $insertData[] = $line;
-            }
-        }
-        
-        foreach($insertData as $key => $insertLines){
-            OrderLines::create(
-            [
-                'order_id'          => $insertLines->header_id,
-                'digits_code'       => $insertLines->ordered_item,
-                'item_description'  => $insertLines->description,
-                'brand'             => $insertLines->brand,
-                'wh_category'       => $insertLines->wh_category,
-                'quantity'          => $insertLines->final_qty,
-                'serial_number'     => $insertLines->final_serial,
-                'enrollment_status_id' => 1,
-
-            ]);
-        }
     }
 
     public function enrollDevices(Request $request)
@@ -244,9 +145,11 @@ class ListOfOrdersController extends Controller
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
 
+            // For successful response
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
-                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                // $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $dep_status = 1;
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
                 $enrollment_status = 3;
             }
@@ -255,27 +158,52 @@ class ListOfOrdersController extends Controller
             //     $status_message = $response['errorMessage'];
             //     $enrollment_status = 0;
             // }
+            
+            // For error response
             else {
                 $transaction_id = $response['transactionId'];
-                $dep_status = $response['errorCode'];
+                // $dep_status = $response['errorCode'];
+                $dep_status = 2;
                 $status_message = $response['errorMessage'];
                 $enrollment_status = 2;
             }
 
+            // Data to be inserted in the enrollment list
             $insertData = [ 
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
                 'transaction_id' => $transaction_id,
-                'dep_status' => 1,
+                'dep_status' => $dep_status,
                 'enrollment_status' => $enrollment_status,
                 'status_message' => $status_message,
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
-            EnrollmentList::insert($insertData);
+         
+            $enrollmentQuery = EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
+            ->where('serial_number', $header_data['serial_number']);
+        
+            // Check if the device already exists in the enrollment list
+            $enrollment_exist = $enrollmentQuery->exists();
+            
+            if (!$enrollment_exist) {
+                // If the device does not exist, insert the data
+                EnrollmentList::insert($insertData);
+            } else {
+                // If the device exists, update the data
+                $enrollmentQuery->update([
+                    'transaction_id' => $transaction_id,
+                    'dep_status' => $dep_status,
+                    'enrollment_status' => $enrollment_status,
+                    'status_message' => $status_message
+                ]);
+            }
+            
+            // Update the enrollment status of the order line
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
             
+            // insert the request and response data to the database
             $orderId = $header_data['order_id'];
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
@@ -290,8 +218,24 @@ class ListOfOrdersController extends Controller
                 'dep_status' => $dep_status,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
-            
-            $data = ['message'=>   $enrollment_status == 3  ?'Enrollment Success! ' : 'Enrollment Error! ', 'status'=> $enrollment_status == 3 ? 'success' : 'error'];
+
+            // Count total number of order lines
+            $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+            // Count order lines with enrollment status 3 or completed
+            $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                ->where('enrollment_status_id', 3)
+                ->count();
+
+            // Check if all order lines have status 3 and update the enrollment status of the order
+            if ($enrollmentStatusSuccess === $totalOrderLines && $totalOrderLines > 0) {
+                Order::where('id', $orderId)->update(['enrollment_status' => 3]);
+            }
+
+            $data = [
+                'message' => $enrollment_status == 3 ? 'Enrollment Success!' : 'Enrollment Error!',
+                'status' => $enrollment_status == 3 ? 'success' : 'error'
+            ];
 
             return response()->json($data);
             
@@ -358,28 +302,51 @@ class ListOfOrdersController extends Controller
 
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
-                $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                // $dep_status = $response['enrollDevicesResponse']['statusCode'];
+                $dep_status = 1;
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
                 $enrollment_status = 3; //success
             }else {
                 $transaction_id = $response['transactionId'];
-                $dep_status = $response['errorCode'];
+                // $dep_status = $response['errorCode'];
+                $dep_status = 2;
                 $status_message = $response['errorMessage'];
                 $enrollment_status = 2;  //error
             }
 
             foreach ($requestData ?? [] as $deviceData) {
+
                 $insertData = [ 
                     'sales_order_no' => $header_data['sales_order_no'],
                     'item_code' => $header_data['digits_code'],
                     'serial_number' => $deviceData['serial_number'],
-                    'transaction_id' => $response['deviceEnrollmentTransactionId'],
+                    'transaction_id' => $transaction_id,
                     'dep_status' => 1,
-                    'enrollment_status' =>  $enrollment_status,
-                    'status_message' => $response['enrollDevicesResponse']['statusMessage']
+                    'enrollment_status' => $enrollment_status,
+                    'status_message' => $status_message,
+                    'created_at' => date('Y-m-d H:i:s')
                 ];
+
+                $enrollmentQuery = EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
+                ->where('serial_number', $header_data['serial_number']);
+            
+                // Check if the device already exists in the enrollment list
+                $enrollment_exist = $enrollmentQuery->exists();
+                
+                if (!$enrollment_exist) {
+                    // If the device does not exist, insert the data
+                    EnrollmentList::insert($insertData);
+                } else {
+                    // If the device exists, update the data
+                    $enrollmentQuery->update([
+                        'transaction_id' => $transaction_id,
+                        'dep_status' => $dep_status,
+                        'enrollment_status' => $enrollment_status,
+                        'status_message' => $status_message
+                    ]);
+                }
     
-                EnrollmentList::insert($insertData);
+                // EnrollmentList::insert($insertData);
 
             }
 
@@ -401,8 +368,24 @@ class ListOfOrdersController extends Controller
                 'dep_status' => $dep_status,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
-          
-            $data = ['message'=>'Enrollment Success!', 'status'=>'success'];
+
+             // Count total number of order lines
+             $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+             // Count order lines with enrollment status 3 or completed
+             $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                 ->where('enrollment_status_id', 3)
+                 ->count();
+ 
+             // Check if all order lines have status 3 and update the enrollment status of the order
+             if ($enrollmentStatusSuccess === $totalOrderLines) {
+                 Order::where('id', $orderId)->update(['enrollment_status' => 3]);
+             }
+ 
+            $data = [
+                'message' => $enrollment_status == 3 ? 'Enrollment Success!' : 'Enrollment Error!',
+                'status' => $enrollment_status == 3 ? 'success' : 'error'
+            ];
 
             return response()->json($data);
        

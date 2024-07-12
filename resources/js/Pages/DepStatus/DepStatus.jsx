@@ -23,6 +23,7 @@ import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
     queryParams = queryParams || {};
@@ -205,7 +206,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={dep_statuses.data}>
                             {dep_statuses &&
                                 dep_statuses.data.map((item) => (
                                     <Row key={item.id}>
@@ -220,19 +221,19 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                         <RowData isLoading={loading}>
                                             {item.id}
                                         </RowData>
-                                        <RowData isLoading={loading}>
+                               
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item.color}
+                                        >
                                             {item.dep_status}
-                                        </RowData>
+                                        </RowStatus>
                                         <RowData isLoading={loading}>
                                             {item.created_date}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                item.status
-                                                    ? "success"
-                                                    : "error"
-                                            }
+                                            systemStatus={item.status ? "active" : "inactive"}
                                             center
                                         >
                                             {item.status
@@ -257,7 +258,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
                     </TableContainer>
 
                     <Pagination paginate={dep_statuses} onClick={resetCheckbox} />

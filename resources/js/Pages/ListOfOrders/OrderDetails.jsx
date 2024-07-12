@@ -12,6 +12,8 @@ import RowData from "../../Components/Table/RowData";
 import { useEffect } from "react";
 import Tabs from "../../Components/Table/Tabs";
 import TableButton from "../../Components/Table/Buttons/TableButton";
+import Tbody from "../../Components/Table/Tbody";
+
 
 const OrderDetails = ({
     order,
@@ -71,7 +73,7 @@ const OrderDetails = ({
                                 <TableHeader>Serial Number</TableHeader>
                             </Row>
                         </Thead>
-                        <tbody>
+                        <Tbody data={orderLines}>
                             {orderLines.map((order) => (
                                 <Row key={order.id}>
                                     <RowData>{order.digits_code}</RowData>
@@ -79,7 +81,8 @@ const OrderDetails = ({
                                     <RowData>{order.serial_number}</RowData>
                                 </Row>
                             ))}
-                        </tbody>
+                        </Tbody>
+                  
                     </TableContainer>
                 </ContentPanel>
 

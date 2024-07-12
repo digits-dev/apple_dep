@@ -1,4 +1,4 @@
-import { Link, usePage, useForm, router, Head } from "@inertiajs/react";
+import { router, Head } from "@inertiajs/react";
 import React, { useEffect, useState, useContext } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
@@ -23,6 +23,8 @@ import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import { NavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -37,19 +39,14 @@ const Users = ({ users, options, queryParams }) => {
     const [formMessage, setFormMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const { setTitle } = useContext(NavbarContext);
 
     //BULK ACTIONS
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest(".dropbtn")) {
-                setDropdownVisible(false);
-            }
-        };
+        setTimeout(() => {
+            setTitle("User Management");
+        }, 5);
 
-        window.addEventListener("click", handleClickOutside);
-        return () => {
-            window.removeEventListener("click", handleClickOutside);
-        };
     }, []);
 
     const handleSelectAll = () => {
@@ -513,7 +510,7 @@ const Users = ({ users, options, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={ users?.data}>
                             {users &&
                                 users?.data.map((user, index) => (
                                     <Row
@@ -541,11 +538,7 @@ const Users = ({ users, options, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                user.status == 1
-                                                    ? "success"
-                                                    : "error"
-                                            }
+                                            systemStatus={user.status ? "active" : "inactive"}
                                         >
                                             {user.status == 1
                                                 ? "Active"
@@ -570,7 +563,9 @@ const Users = ({ users, options, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
+
+                         
                     </TableContainer>
                     <div
                         onClick={() => {

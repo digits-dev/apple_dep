@@ -21,6 +21,7 @@ import Checkbox from "../../Components/Checkbox/Checkbox";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
@@ -201,9 +202,8 @@ const Customer = ({ customers, queryParams }) => {
 							</TableHeader>
                         </Row>
                     </Thead>
-    
-                    <tbody>
-                        {customers &&
+                    <Tbody data={customers.data}>
+                     {customers &&
                             customers.data.map((item) => (
                                 <Row key={item.id} >
                                     <RowData center>
@@ -221,11 +221,7 @@ const Customer = ({ customers, queryParams }) => {
                                     <RowData isLoading={loading} >{item.created_date}</RowData>
                                     <RowStatus
                                             isLoading={loading}
-                                            status={
-                                                item.status
-                                                    ? "success"
-                                                    : "error"
-                                            }
+                                            systemStatus={item.status ? "active" : "inactive"}
                                             center
                                     >
                                             {item.status ? "Active" : "Inactive"}
@@ -240,7 +236,7 @@ const Customer = ({ customers, queryParams }) => {
                                     </RowData>
                                 </Row>
                             ))}
-                    </tbody>
+                    </Tbody>
                 </TableContainer>
     
                 <Pagination paginate={customers} onClick={resetCheckbox} />

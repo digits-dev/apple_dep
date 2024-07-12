@@ -15,21 +15,25 @@ const SidebarAccordion = ({ open }) => {
             title: "Privileges",
             url: "privileges",
             image: "/images/navigation/privileges-icon.png",
+            icon: "fa fa-cog"
         },
         {
             title: "User Management",
             url: "users",
             image: "/images/navigation/user-management-icon.png",
+            icon: "fa fa-users"
         },
         {
             title: "Menu Management",
             url: "menu_management",
-            image: "/images/navigation/user-management-icon.png",
+            image: "/images/navigation/menu-icon-2.png",
+            icon: "fa fa-bars"
         },
         {
             title: "Module Generator",
             url: "module_generator",
-            image: "/images/navigation/user-management-icon.png",
+            image: "/images/navigation/module-icon.png",
+            icon: "fa fa-database"
         },
     ];
 
@@ -68,7 +72,7 @@ const SidebarAccordion = ({ open }) => {
                 );
             });
     }, []);
-
+    // console.log(links);
     const handleMenuClick = (newTitle) => {
         setTitle(newTitle);
     };

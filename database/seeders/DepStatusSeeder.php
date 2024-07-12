@@ -17,6 +17,13 @@ class DepStatusSeeder extends Seeder
             [
                 'dep_status' => 'Success',
                 'status' => 1,
+                'color' => 'green',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'dep_status' => 'GRX-50025',
+                'status' => 1,
+                'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             
