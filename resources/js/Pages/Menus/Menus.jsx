@@ -183,7 +183,7 @@ const MenusIndex = ({
                     </div>
                    
                 </div>
-                <em className="text-muted">
+                <em className="ml-3 text-md">
                     <small>
                         <i className="fa fa-users" /> {menu.privileges && menu.privileges.join(', ')}
                     </small>
