@@ -4,8 +4,12 @@ import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import axios from "axios";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
-const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) => {
-   
+const MenusIndex = ({
+    menu_active,
+    menu_inactive,
+    privileges,
+    queryParams,
+}) => {
     const [menuActive, setMenuActive] = useState(menu_active);
     const [menuInactive, setMenuInactive] = useState(menu_inactive);
     const [draggingItem, setDraggingItem] = useState(null);
@@ -30,23 +34,39 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
 
         if (draggingItem && draggingOverItem) {
             try {
-                let updatedMenus = draggingItem.isActive ? [...menuActive] : [...menuInactive];
-                const { item: draggedItem, parentIndex: sourceParentIndex, isActive, index: draggedIndex } = draggingItem;
+                let updatedMenus = draggingItem.isActive
+                    ? [...menuActive]
+                    : [...menuInactive];
+                const {
+                    item: draggedItem,
+                    parentIndex: sourceParentIndex,
+                    isActive,
+                    index: draggedIndex,
+                } = draggingItem;
                 const { targetIndex, targetParentIndex } = draggingOverItem;
 
                 const sourceParent = updatedMenus[sourceParentIndex];
-                const targetParent = targetParentIndex !== undefined ? updatedMenus[targetParentIndex] : null;
+                const targetParent =
+                    targetParentIndex !== undefined
+                        ? updatedMenus[targetParentIndex]
+                        : null;
                 // const sourceParent = sourceParentIndex !== null ? updatedMenus[sourceParentIndex] : null;
                 // const targetParent = targetParentIndex !== null ? updatedMenus[targetParentIndex] : null;
                 // Remove the dragged item from its current position
                 if (sourceParent) {
                     if (sourceParent.children) {
-                        sourceParent.children = sourceParent.children.filter((_, i) => i !== draggedIndex);
+                        sourceParent.children = sourceParent.children.filter(
+                            (_, i) => i !== draggedIndex
+                        );
                     } else {
-                        updatedMenus = updatedMenus.filter((_, i) => i !== sourceParentIndex);
+                        updatedMenus = updatedMenus.filter(
+                            (_, i) => i !== sourceParentIndex
+                        );
                     }
-                }else {
-                    updatedMenus = updatedMenus.filter((_, i) => i !== draggedIndex);
+                } else {
+                    updatedMenus = updatedMenus.filter(
+                        (_, i) => i !== draggedIndex
+                    );
                 }
 
                 // Insert the dragged item into the new position
@@ -70,17 +90,17 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                 setDraggingItem(null);
                 setDraggingOverItem(null);
             } catch (error) {
-                console.error('Error updating menu order:', error);
+                console.error("Error updating menu order:", error);
             }
         }
     };
-   
+
     const handleSaveMenu = async (menus, isActive) => {
         console.log(menus);
         try {
-            const response = await axios.post('/menu_management/add', {
+            const response = await axios.post("/menu_management/add", {
                 menus: JSON.stringify(menus),
-                isActive
+                isActive,
             });
             setFormMessage(response.data.message);
             setMessageType(response.data.type);
@@ -89,30 +109,36 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
             }, 3000);
             router.reload({ only: ["Menus"] });
         } catch (error) {
-            console.error('Error saving menu:', error);
+            console.error("Error saving menu:", error);
         }
     };
 
     const renderMenuItems = (menus, isActive, parentIndex = null) => {
         return menus.map((menu, index) => (
-            <li
+            <div
                 key={menu.id}
                 data-id={menu.id}
                 data-name={menu.name}
                 draggable
-                onDragStart={(e) => handleDragStart(e, menu, parentIndex, isActive, index)}
+                onDragStart={(e) =>
+                    handleDragStart(e, menu, parentIndex, isActive, index)
+                }
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
                 onDrop={handleDrop}
-                className={`${
-                    parentIndex == null ? "p-4" : "p-2"
-                } rounded-lg bg-blue-100`}
+                className={`rounded-lg  ${
+                    parentIndex == null ? "bg-gray-400" : "bg-gray-500"
+                } text-white cursor-grab`}
             >
-                <div className="flex items-center justify-between">
+                <div
+                    className={`flex items-center justify-between ${
+                        parentIndex == null ? "p-4" : "p-3"
+                    }`}
+                >
                     <div className="flex items-center gap-3">
                         <i
                             className={`${menu.icon}  ${
                                 parentIndex == null ? "text-xl" : "text-md"
-                            } `}
+                            }`}
                         ></i>
                         <p
                             className={`${
@@ -125,36 +151,41 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                         </p>
                     </div>
 
-                    <div>
+                    <div className="mr-3 flex items-center gap-1">
                         <a
-                            className="fa fa-pencil"
+                            className={`fa fa-pencil text-white ${
+                                parentIndex == null ? "text-lg" : "text-sm"
+                            }`}
                             title="Edit"
                             href={`/menu_management/edit/${menu.id}`}
                         ></a>
                         &nbsp;&nbsp;
                         <a
                             title="Delete"
-                            className="fa fa-trash"
+                            className={`fa fa-trash text-white ${
+                                parentIndex == null ? "text-lg" : "text-sm"
+                            }`}
                             onClick={() => handleDelete(menu.id)}
                             href="javascript:void(0)"
                         ></a>
                     </div>
                 </div>
                 {menu.children && menu.children.length > 0 && (
-                    <ul className="list-disc pl-5 mt-1 space-y-1">
-                        {renderMenuItems(menu.children, isActive, index)}
-                    </ul>
+                    <div className="border-t-2 border-white">
+                        <div className="space-y-1 px-5 py-5">
+                            {renderMenuItems(menu.children, isActive, index)}
+                        </div>
+                    </div>
                 )}
-            </li>
+            </div>
         ));
     };
-
 
     return (
         <div>
             <Head title="Menu Management" />
             <AppContent>
-            <DissapearingToast type={messageType} message={formMessage} />
+                <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
                     {/* MENU ORDER ACTIVE */}
                     <div className="font-nunito-sans ">
@@ -190,7 +221,7 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
                                 <div
                                     align="center"
                                     id="inactive_text"
-                                    className="text-muted"
+                                    className="border-dashed border-black"
                                 >
                                     Inactive menu is empty
                                 </div>
