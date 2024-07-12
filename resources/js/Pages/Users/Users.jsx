@@ -1,4 +1,4 @@
-import { Link, usePage, useForm, router, Head } from "@inertiajs/react";
+import { router, Head } from "@inertiajs/react";
 import React, { useEffect, useState, useContext } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
@@ -23,6 +23,7 @@ import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
+import { NavbarContext } from "../../Context/NavbarContext";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -37,6 +38,7 @@ const Users = ({ users, options, queryParams }) => {
     const [formMessage, setFormMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const { setTitle } = useContext(NavbarContext);
 
     //BULK ACTIONS
     useEffect(() => {
@@ -45,6 +47,9 @@ const Users = ({ users, options, queryParams }) => {
                 setDropdownVisible(false);
             }
         };
+        setTimeout(() => {
+            setTitle("User Management");
+        }, 5);
 
         window.addEventListener("click", handleClickOutside);
         return () => {
