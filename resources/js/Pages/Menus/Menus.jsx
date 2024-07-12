@@ -48,10 +48,9 @@ const MenusIndex = ({
                 const sourceParent = updatedMenus[sourceParentIndex];
                 const targetParent =
                     targetParentIndex !== undefined
-                        ? updatedMenus[targetParentIndex]
+                        ? updatedMenus[targetParentIndex??targetIndex]
                         : null;
-                // const sourceParent = sourceParentIndex !== null ? updatedMenus[sourceParentIndex] : null;
-                // const targetParent = targetParentIndex !== null ? updatedMenus[targetParentIndex] : null;
+
                 // Remove the dragged item from its current position
                 if (sourceParent) {
                     if (sourceParent.children) {
@@ -68,15 +67,21 @@ const MenusIndex = ({
                         (_, i) => i !== draggedIndex
                     );
                 }
-
+          
                 // Insert the dragged item into the new position
                 if (targetParent) {
-                    if (!targetParent.children) targetParent.children = [];
-                    targetParent.children.splice(targetIndex, 0, draggedItem);
+                    if (!targetParent.children && targetParent.type !== 'Route'){
+                        targetParent.children = []
+                        targetParent.children.push(draggedItem);
+                    } else{
+                        targetParent.children = []
+                        targetParent.children.splice(targetIndex, 0, draggedItem);
+                    }
+                    
                 } else {
                     updatedMenus.splice(targetIndex, 0, draggedItem);
                 }
-
+                console.log(targetParent);
                 // Update the state and save the menu
                 if (isActive) {
                     setMenuActive(updatedMenus);
@@ -96,7 +101,7 @@ const MenusIndex = ({
     };
 
     const handleSaveMenu = async (menus, isActive) => {
-        console.log(menus);
+        // console.log(menus);
         try {
             const response = await axios.post("/menu_management/add", {
                 menus: JSON.stringify(menus),
