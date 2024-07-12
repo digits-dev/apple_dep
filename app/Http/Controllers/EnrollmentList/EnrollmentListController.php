@@ -26,7 +26,7 @@ class EnrollmentListController extends Controller
 
     public function getIndex()
     {
-        $query = EnrollmentList::query();
+        $query = EnrollmentList::query()->with(['dStatus', 'eStatus']); //dep status and enrollment status
 
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");

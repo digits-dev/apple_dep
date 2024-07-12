@@ -35,7 +35,7 @@ class ListOfOrdersController extends Controller
 
     public function getIndex()
     {
-        $query = Order::query();
+        $query = Order::query()->with('status');
 
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");
@@ -58,9 +58,15 @@ class ListOfOrdersController extends Controller
 
     public function edit(Order $order){
        
-        $orderLines = OrderLines::where('order_id', $order->id)->with('status')->get();
-        // dd($orderLines);
-        return Inertia::render('ListOfOrders/EnrollReturnDevices', [ 'order' => $order , 'orderLines' => $orderLines]);
+        $data = [];
+        $data ['order'] = $order;
+
+        $query = OrderLines::query()->where('order_id', $order->id)->with('status');
+        $data['orderLines'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+
+        $data['queryParams'] = request()->query();
+        
+        return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }
 
     public function export()
@@ -354,12 +360,12 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 3;
+                $enrollment_status = 3; //success
             }else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = $response['errorCode'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 2;
+                $enrollment_status = 2;  //error
             }
 
             foreach ($requestData ?? [] as $deviceData) {
@@ -377,6 +383,10 @@ class ListOfOrdersController extends Controller
 
             }
 
+            //update enrollment status to success
+            OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => 3]);
+
+            //logs
             $orderId = $header_data['order_id'];
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);

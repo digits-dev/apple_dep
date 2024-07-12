@@ -12,6 +12,10 @@ class Order extends Model
 
     protected $guarded = [];
 
+    public function status(){
+        return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
+    }
+
     public function scopeGetOrdersFromErp(){
         $query = "
         select 
