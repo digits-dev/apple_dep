@@ -43,7 +43,10 @@ const Pagination = ({ paginate, onClick }) => {
             :
             <>
                 <span className="text-gray-500 font-medium text-sm">
-                    Showing {paginate.from} to {paginate.to} of {paginate.total} results.
+                   {paginate.data.length != 0 ? 
+                   `Showing ${paginate.from} to ${paginate.to} of ${paginate.total} results.` 
+                   : 
+                   `Showing 0 results.`} 
                 </span>
 
                 <nav className="inline-flex p-2">

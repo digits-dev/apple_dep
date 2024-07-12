@@ -156,6 +156,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                     name="enrollment_status"
                                     queryParams={queryParams}
                                     justify="center"
+                                    width="lg"
                                 >
                                     Enrollment Status
                                 </TableHeader>

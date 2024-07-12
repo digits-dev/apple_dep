@@ -23,7 +23,7 @@ class EnrollmentStatusSeeder extends Seeder
             [
                 'enrollment_status' => 'Enrollment Error',
                 'status' => 1,
-                'color' => 'red',
+                'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [

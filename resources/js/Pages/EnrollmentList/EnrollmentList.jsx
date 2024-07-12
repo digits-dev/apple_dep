@@ -115,6 +115,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                 <TableHeader
                                     name="dep_status"
                                     queryParams={queryParams}
+                                    justify="center"
                                 >
                                     DEP Status
                                 </TableHeader>
@@ -132,6 +133,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                     name="enrollment_status"
                                     queryParams={queryParams}
                                     width="lg"
+                                    justify="center"
                                 >
                                     Enrollment Status
                                 </TableHeader>

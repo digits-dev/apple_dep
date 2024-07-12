@@ -302,7 +302,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 <TableHeader name="serial_number" queryParams={queryParams}>
                                     Serial Number
                                 </TableHeader>
-                                <TableHeader name="enrollment_status_id" queryParams={queryParams}>
+                                <TableHeader name="enrollment_status_id" queryParams={queryParams} justify="center" width="lg">
                                     Enrollment Status
                                 </TableHeader>
                                 <TableHeader sortable={false} justify="center">
