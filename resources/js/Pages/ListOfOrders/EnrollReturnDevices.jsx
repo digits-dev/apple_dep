@@ -19,16 +19,18 @@ import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import axios from "axios";
 import LoadingIcon from "../../Components/Table/Icons/LoadingIcon";
 
-const EnrollReturnDevices = ({ order, orderLines }) => {
+const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
     const [showModal, setShowModal] = useState(false);
-    const [orderPath, setOrderPath] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [orderId, setOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const [processing, setProcessing] = useState(false);
+
 
     useEffect(() => {
         setTimeout(() => {
@@ -53,66 +55,27 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
     };
 
     const handleSelectAll = () => {
-        if (selectAll) {
-            setSelectedItems([]);
-        } else {
-            const allItemIds = orderLines?.map((item) => item.id);
-            setSelectedItems(allItemIds);
-        }
-        setSelectAll(!selectAll);
-    };
+		if (selectAll) {
+		  setSelectedItems([]);
+		} else {
+		  const allItemIds = orderLines?.data.map(item => 
+            item.id);
+		  setSelectedItems(allItemIds);
+		}
+		setSelectAll(!selectAll);
+	};
+
 
     const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
     };
 
-    const handleActionSelected = (action) => {
-        const actionType = action;
-
-        if (selectedItems?.length === 0) {
-            setMessage("Nothing selected!");
-            setMessageType("Error");
-            setTimeout(() => setMessage(""), 3000);
-        } else {
-            Swal.fire({
-                title: `<p class="font-nunito-sans" >Set to ${
-                    actionType == "enroll" ? "Enroll Device" : "Return Device"
-                }?</p>`,
-                showCancelButton: true,
-                confirmButtonText: "Confirm",
-                confirmButtonColor: "#000000",
-                icon: "question",
-                iconColor: "#000000",
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        if (actionType === "enroll") {
-                            const response = await axios.post(
-                                "/list_of_orders/bulk-enroll",
-                                {
-                                    ids: selectedItems,
-                                }
-                            );
-
-                            if (response.data.status == "success") {
-                                setMessage(response.data.message);
-                                setMessageType(response.data.status);
-                                setTimeout(() => setMessage(""), 3000);
-                                resetCheckbox();
-
-                                router.reload({ only: ["orderLines"] });
-                            }
-                        } else {
-                            setMessage("Return Devices is not yet supported");
-                            setMessageType("Error");
-                            setTimeout(() => setMessage(""), 3000);
-                            resetCheckbox();
-                        }
-                    } catch (error) {}
-                }
-            });
-        }
+    const handleToast = (message, messageType) => {
+        setMessage(message);
+        setMessageType(messageType);
+        setTimeout(() => setMessage(""), 3000);
+        resetCheckbox();
     };
 
     const bulkActions = [
@@ -136,12 +99,69 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
         },
     ];
 
-    const EnrollReturnDeviceActions = ({
-        setMessage,
-        setMessageType,
-        setShowModal,
-    }) => {
-        const [processing, setProcessing] = useState(false);
+    const handleActionSelected = (action) => {
+        const actionType = action;
+
+		if(selectedItems?.length === 0){
+            handleToast('Nothing selected!','Error');
+		} else{
+			Swal.fire({
+                title: `<p class="font-nunito-sans" >Set to ${
+                    actionType == "enroll" ? "Enroll Device" : "Return Device"
+                }?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        if(actionType == 'enroll'){
+                            setLoading(true);
+
+                            //it only get the selected pending status within selected checkbox
+                            const filteredIds = orderLines?.data.filter(item => 
+                                selectedItems.includes(item.id)).filter(item => item.enrollment_status_id == 1).map(item => item.id);
+
+                            if(filteredIds.length != 0){
+                                const response = await axios.post(
+                                    "/list_of_orders/bulk-enroll",
+                                    {
+                                        ids: filteredIds,
+                                    }
+                                );
+
+                                if (response.data.status == "success") {
+                                    setLoading(false);
+                                    handleToast(response.data.message, response.data.status);
+                                    router.reload({ only: ["orderLines"] });
+                                } else {
+                                    setLoading(false);
+                                    handleToast('Something went wrong!', 'Error');
+                                } 
+                            } else {
+                                setLoading(false);
+                                handleToast("The selected items are already enrolled!", "Error");
+                            }
+
+                        } else{
+                            handleToast("Return Device is not yet supported.", "Error");
+                        }
+
+                    } catch (error) {
+                        console.log(error);
+                        setLoading(false);
+                        handleToast('Something went wrong, please try again later.', 'Error');
+                    }
+                }
+            });
+        }
+    };
+
+  
+
+    const EnrollReturnDeviceActions = () => {
 
         const handleSwal = (e) => {
             e.preventDefault();
@@ -158,6 +178,7 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                 }
             });
         };
+        
 
         const EnrollDevice = async () => {
             setProcessing(true);
@@ -171,18 +192,14 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                     setShowModal(false);
                     setProcessing(false);
 
-                    setMessage(response.data.message);
-                    setMessageType(response.data.status);
-                    setTimeout(() => setMessage(""), 3000);
+                    handleToast(response.data.message, response.data.status);
 
                     router.reload({ only: ["orderLines"] });
                 } else {
                     setShowModal(false);
                     setProcessing(false);
 
-                    setMessage("Something went wrong!");
-                    setMessageType("Error");
-                    setTimeout(() => setMessage(""), 3000);
+                    handleToast("Something went wrong!", "Error");
                 }
             } catch (error) {
                 console.log(error);
@@ -217,7 +234,8 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
         <>
             <Head title="Enroll/Return Devices" />
             <AppContent>
-                <DissapearingToast type={messageType} message={message} />
+            <Modal show={loading} modalLoading/>
+            <DissapearingToast type={messageType} message={message} />
                 <ContentPanel>
                     <div className="flex justify-between items-start text-gray-800 mb-8">
                         <div className="flex gap-10">
@@ -265,20 +283,28 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                                         isChecked={selectAll}
                                     />
                                 </TableHeader>
-                                <TableHeader>Item Code</TableHeader>
-                                <TableHeader>Item Description</TableHeader>
-                                <TableHeader>Serial Number</TableHeader>
-                                <TableHeader>Enrollment Status</TableHeader>
+                                <TableHeader name="item_code" queryParams={queryParams}>
+                                    Item Code
+                                </TableHeader>
+                                <TableHeader name="item_description" queryParams={queryParams}>
+                                    Item Description
+                                </TableHeader>
+                                <TableHeader name="serial_number" queryParams={queryParams}>
+                                    Serial Number
+                                </TableHeader>
+                                <TableHeader name="enrollment_status_id" queryParams={queryParams}>
+                                    Enrollment Status
+                                </TableHeader>
                                 <TableHeader sortable={false} justify="center">
                                     Action
                                 </TableHeader>
                             </Row>
                         </Thead>
                         <tbody>
-                            {orderLines?.map((order, index) => (
+                            {orderLines?.data.map((order, index) => (
                                 <Row key={order.id + index}>
                                     <RowData center>
-                                        <Checkbox
+                                       <Checkbox
                                             type="checkbox"
                                             id={order.id}
                                             handleClick={() =>
@@ -318,11 +344,7 @@ const EnrollReturnDevices = ({ order, orderLines }) => {
                     onClose={handleCloseModal}
                     title="Actions"
                 >
-                    <EnrollReturnDeviceActions
-                        setMessage={setMessage}
-                        setMessageType={setMessageType}
-                        setShowModal={setShowModal}
-                    />
+                    <EnrollReturnDeviceActions />
                 </Modal>
             </AppContent>
         </>
