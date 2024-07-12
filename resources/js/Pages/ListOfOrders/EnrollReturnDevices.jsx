@@ -208,7 +208,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                     handleToast("Something went wrong!", "Error");
                 }
             } catch (error) {
-                console.log(error);
+                setProcessing(false);
+                setShowModal(false);
+                handleToast('Something went wrong, please try again later.', 'Error');
             }
         };
 
