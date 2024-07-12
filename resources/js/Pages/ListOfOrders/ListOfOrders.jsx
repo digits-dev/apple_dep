@@ -20,6 +20,7 @@ import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import Modal from "../../Components/Modal/Modal";
+import Tbody from "../../Components/Table/Tbody";
 
 const ListOfOrders = ({ orders, queryParams }) => {
     queryParams = queryParams || {};
@@ -176,7 +177,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={ orders.data}>
                             {orders &&
                                 orders.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
@@ -245,7 +246,10 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
+                       
+                         
+                      
                     </TableContainer>
 
                     <Pagination paginate={orders} />

@@ -24,6 +24,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import { NavbarContext } from "../../Context/NavbarContext";
+import Tbody from "../../Components/Table/Tbody";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -509,7 +510,7 @@ const Users = ({ users, options, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={ users?.data}>
                             {users &&
                                 users?.data.map((user, index) => (
                                     <Row
@@ -562,7 +563,9 @@ const Users = ({ users, options, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
+
+                         
                     </TableContainer>
                     <div
                         onClick={() => {

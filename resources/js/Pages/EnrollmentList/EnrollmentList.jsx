@@ -17,6 +17,7 @@ import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
+import Tbody from "../../Components/Table/Tbody";
 
 const EnrollmentList = ({ enrollmentLists, queryParams }) => {
     queryParams = queryParams || {};
@@ -153,7 +154,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <tbody>
+                        <Tbody data={enrollmentLists.data}>
                             {enrollmentLists &&
                                 enrollmentLists.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
@@ -213,7 +214,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                                         </RowData>
                                     </Row>
                                 ))}
-                        </tbody>
+                        </Tbody>
                     </TableContainer>
 
                     <Pagination paginate={enrollmentLists} />

@@ -19,6 +19,7 @@ import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import axios from "axios";
 import LoadingIcon from "../../Components/Table/Icons/LoadingIcon";
 import RowStatus from "../../Components/Table/RowStatus";
+import Tbody from "../../Components/Table/Tbody";
 
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -309,7 +310,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 </TableHeader>
                             </Row>
                         </Thead>
-                        <tbody>
+
+                        <Tbody data={orderLines}>
                             {orderLines?.map((order, index) => (
                                 <Row key={order.serial_number}>
                                     <RowData center>
@@ -350,7 +352,10 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     </RowData>
                                 </Row>
                             ))}
-                        </tbody>
+                        </Tbody>
+                    
+                         
+                       
                     </TableContainer>
                 </ContentPanel>
                 <Modal
