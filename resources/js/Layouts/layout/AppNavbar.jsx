@@ -32,7 +32,7 @@ const AppNavbar = () => {
             iconColor: "#000000",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                router.post("logout");
+                router.post("/logout");
             }
         });
     };
@@ -75,7 +75,7 @@ const AppNavbar = () => {
                         </span>
                     </div>
                     <Link
-                        href="change_password"
+                        href="/change_password"
                         className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer"
                         onClick={() => {
                             setShowMenu(false);
