@@ -68,6 +68,7 @@ const MenusIndex = ({
                     );
                 }
           
+          
                 // Insert the dragged item into the new position
                 if (targetParent) {
                     if (!targetParent.children && targetParent.type !== 'Route'){
