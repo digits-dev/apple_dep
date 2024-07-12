@@ -14,7 +14,8 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
     const [messageType, setMessageType] = useState("");
 
     const handleDragStart = (e, item, parentIndex, isActive, index) => {
-        e.stopPropagation();
+        e.stopPropagation(parentIndex);
+        console.log();
         setDraggingItem({ item, parentIndex, isActive, index });
     };
 
@@ -36,14 +37,14 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
 
                 const sourceParent = updatedMenus[sourceParentIndex];
                 const targetParent = targetParentIndex !== undefined ? updatedMenus[targetParentIndex] : null;
-
+         
                 // Remove the dragged item from its current position
                 if (sourceParent) {
                     if (sourceParent.children) {
                         sourceParent.children = sourceParent.children.filter((_, i) => i !== draggedIndex);
-                    } else {
-                        updatedMenus = updatedMenus.filter((_, i) => i !== draggedIndex);
-                    }
+                    } 
+                }else {
+                    updatedMenus = updatedMenus.filter((_, i) => i !== draggedIndex);
                 }
 
                 // Insert the dragged item into the new position
@@ -89,12 +90,17 @@ const MenusIndex = ({ menu_active, menu_inactive, privileges,  queryParams }) =>
 
     const renderMenuItems = (menus, isActive, parentIndex = null) => {
         return menus.map((menu, index) => (
-            <li key={menu.id} data-id={menu.id} data-name={menu.name}
+            <li
+                key={menu.id}
+                data-id={menu.id}
+                data-name={menu.name}
                 draggable
-                onDragStart={(e) => handleDragStart(e, { ...menu, index }, parentIndex, isActive)}
+                onDragStart={(e) => handleDragStart(e, menu, parentIndex, isActive, index)}
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
-                onDrop={(e) => handleDrop(e)}>
-                <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? 'This is setted as Dashboard' : ''}>
+                onDrop={handleDrop}
+                className="draggable-item"
+            >
+                <div className={menu.is_dashboard ? "is-dashboard" : ""} title={menu.is_dashboard ? 'This is set as Dashboard' : ''}>
                     <i className={menu.is_dashboard ? "icon-is-dashboard fa fa-dashboard" : menu.icon}></i> {menu.name}
                     <span className='pull-right'>
                         <a className='fa fa-pencil' title='Edit' href={`/menu_management/edit/${menu.id}`}></a>

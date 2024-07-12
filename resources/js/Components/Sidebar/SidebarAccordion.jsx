@@ -68,7 +68,7 @@ const SidebarAccordion = ({ open }) => {
                 );
             });
     }, []);
-
+    console.log(links);
     const handleMenuClick = (newTitle) => {
         setTitle(newTitle);
     };
