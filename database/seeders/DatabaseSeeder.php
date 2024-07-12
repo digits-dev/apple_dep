@@ -41,5 +41,6 @@ class DatabaseSeeder extends Seeder
         $this->call([AdmMenuPrivileges::class]);
         $this->call([EnrollmentStatusSeeder::class]);
         $this->call([DepStatusSeeder::class]);
+        $this->call([AdmUsersSeeders::class]);
     }
 }
