@@ -18,6 +18,7 @@ import TopPanel from "../../Components/Table/TopPanel";
 import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import axios from "axios";
 import LoadingIcon from "../../Components/Table/Icons/LoadingIcon";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -326,9 +327,14 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     <RowData>{order.digits_code}</RowData>
                                     <RowData>{order.item_description}</RowData>
                                     <RowData>{order.serial_number}</RowData>
-                                    <RowData>
-                                        {order.status.enrollment_status}
-                                    </RowData>
+                              
+                                    <RowStatus
+                                            isLoading={loading}
+                                            color={order?.status?.color}
+                                            center
+                                    >
+                                        {order?.status?.enrollment_status}
+                                    </RowStatus>
                                     <RowData center>
                                         <RowAction
                                             action="add"
