@@ -187,6 +187,11 @@ const MenusIndex = ({
             <AppContent>
                 <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
+                    <div className="font-nunito-sans mb-5 text-red-400">
+                        *Welcome to the Menu Management page! To rearrange the
+                        items, click and hold an item, then drag it to the
+                        desired position and release.
+                    </div>
                     {/* MENU ORDER ACTIVE */}
                     <div className="font-nunito-sans ">
                         <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
@@ -199,13 +204,20 @@ const MenusIndex = ({
                                 {renderMenuItems(menuActive, true)}
                             </div>
                             {menuActive.length === 0 && (
-                                <div align="center">
-                                    Active menu is empty, please add new menu
+                                <div
+                                    align="center"
+                                    id="inactive_text"
+                                    className="text-gray-400 border-dashed border-gray-400 border p-10 font-nunito-sans flex justify-center items-center gap-3"
+                                >
+                                    <i className="fa solid fa-inbox text-xl"></i>
+                                    <span className="font-bold ">
+                                        Active Menu is Empty, Please Add New
+                                        Menu
+                                    </span>
                                 </div>
                             )}
                         </div>
                     </div>
-
                     {/* MENU ORDER INACTIVE */}
                     <div className="mt-10">
                         <div className="bg-mobile-gradient  p-3">
@@ -221,9 +233,12 @@ const MenusIndex = ({
                                 <div
                                     align="center"
                                     id="inactive_text"
-                                    className="border-dashed border-black"
+                                    className="text-gray-400 border-dashed border-gray-400 border p-10 font-nunito-sans flex justify-center items-center gap-3"
                                 >
-                                    Inactive menu is empty
+                                    <i className="fa solid fa-inbox text-xl"></i>
+                                    <span className="font-bold ">
+                                        Inactive Menu is Empty
+                                    </span>
                                 </div>
                             )}
                         </div>
