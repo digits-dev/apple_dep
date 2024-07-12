@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Seeders;
-
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,20 +14,13 @@ class AdmUsersSeeders extends Seeder
      */
     public function run()
     {
-        $data = [
-            [
-
-                'name' => 'Admin',
-                'email' => 'admin@superadmin.ph',
-                'password' => bycryt('qwerty'),
-                'id_adm_privileges' => '1',
-                'status' => '1'
-            ]
-        ];
-
-        foreach ($data as $user) {
-            DB::table('users')->updateOrInsert(['email ' => $user['email ']], $user);
-        }
+        User::updateOrInsert(['email' => 'admin@superadmin.ph'],
+        [
+            'name' => 'Super Admin',
+            'email' => 'admin@superadmin.ph',
+            'password' => bcrypt('qwerty'),
+            'id_adm_privileges' => 1
+        ]);
 
     }
 }
