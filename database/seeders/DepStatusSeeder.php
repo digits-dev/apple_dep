@@ -17,6 +17,7 @@ class DepStatusSeeder extends Seeder
             [
                 'dep_status' => 'Success',
                 'status' => 1,
+                'color' => '#00f200',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             

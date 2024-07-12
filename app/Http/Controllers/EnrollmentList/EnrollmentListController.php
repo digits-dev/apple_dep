@@ -28,6 +28,7 @@ class EnrollmentListController extends Controller
     {
         $query = EnrollmentList::query()->with(['dStatus', 'eStatus']); //dep status and enrollment status
 
+
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");
         });
@@ -35,6 +36,7 @@ class EnrollmentListController extends Controller
         $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
 
         $enrollmentLists = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+
 
         return Inertia::render('EnrollmentList/EnrollmentList', [ 'enrollmentLists' => $enrollmentLists, 'queryParams' => request()->query()]);
     }
@@ -67,8 +69,9 @@ class EnrollmentListController extends Controller
 
     public function EnrollmentListDetails(EnrollmentList $enrollmentList)
     {
+        $enrollmentListWithRelations = $enrollmentList->load(['dStatus', 'eStatus']);
 
-        return Inertia::render('EnrollmentList/EnrollmentListDetails', [ 'enrollmentList' => $enrollmentList ]);
+        return Inertia::render('EnrollmentList/EnrollmentListDetails', [ 'enrollmentList' => $enrollmentListWithRelations ]);
     }
 
     public function checkTransactionStatus($transactionId)

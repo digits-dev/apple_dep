@@ -21,6 +21,10 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
         }, 5);
     }, []);
 
+    useEffect(() => {
+        console.log(enrollmentList);
+    }, [enrollmentList]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -39,6 +43,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             setLoading(false);
         }
     };
+    console.log(data);
 
     return (
         <>
@@ -60,9 +65,9 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         <p>{enrollmentList.item_code}</p>
                         <p>{enrollmentList.serial_number}</p>
                         <p>{enrollmentList.transaction_id}</p>
-                        <p>{enrollmentList.dep_status}</p>
+                        <p>{enrollmentList.d_status.dep_status}</p>
                         <p>{enrollmentList.status_message}</p>
-                        <p>{enrollmentList.enrollment_status}</p>
+                        <p>{enrollmentList.e_status.enrollment_status}</p>
                         <p>{enrollmentList.created_at}</p>
                     </div>
                 </div>
@@ -107,7 +112,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     </div>
                     <div className="font-nunito-sans">
                         {data &&
-                            data.orders.map((order, orderIndex) => (
+                            data?.orders?.map((order, orderIndex) => (
                                 <div key={orderIndex}>
                                     <div className="font-nunito-sans font-extrabold text-lg mb-1">
                                         Order Details
