@@ -83,7 +83,7 @@ class CommonHelpers {
     }
 
     public static function sidebarDashboard(){
-        $menu = DB::table('ad_menuses')->where('is_dashboard', 1)->where('is_active', 1)->first();
+        $menu = DB::table('adm_menuses')->where('is_dashboard', 1)->where('is_active', 1)->first();
         if($menu){
             switch ($menu->type) {
                 case 'Route':
@@ -382,7 +382,7 @@ class CommonHelpers {
         }
     }
 
-    public static function isDelete($url){
+    public static function isDelete($url = null){
         if (self::isSuperadmin()) {
             return true;
         }
@@ -431,7 +431,7 @@ class CommonHelpers {
             return Cache::get('moduls_'.$modulepath);
         } else {
 
-            $module = DB::table('ad_modules')->where('path', self::getModulePath())->first();
+            $module = DB::table('adm_modules')->where('path', self::getModulePath())->first();
 
             //supply modulpath instead of $module incase where user decides to create form and custom url that does not exist in cms_moduls table.
             return ($module)?:$modulepath;
@@ -450,7 +450,7 @@ class CommonHelpers {
     public static function mainpath($path = null)
     {
 
-        $controllername = str_replace(["\app\Http\Controllers\Admin\\", "App\Http\Controllers\Admin\\"], "", strtok(Route::currentRouteAction(), '@'));
+        $controllername = str_replace(["\app\Http\Controllers\\", "App\Http\Controllers\\"], "", strtok(Route::currentRouteAction(), '@'));
         $route_url = route($controllername.'GetIndex');
 
         if ($path) {
@@ -531,8 +531,8 @@ class CommonHelpers {
         $a['url']          = Request::url();
         $a['description']  = $description;
         $a['details']      = $details;
-        $a['id_ad_users']  = self::myId();
-        DB::table('ad_logs')->insert($a);    
+        $a['id_adm_users']  = self::myId();
+        DB::table('adm_logs')->insert($a);    
     }
 
 }

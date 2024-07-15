@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\ListOfOrders;
-
+use App\Helpers\CommonHelpers;
 use App\Exports\OrdersExport;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -35,14 +35,15 @@ class ListOfOrdersController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
         $query = Order::query()->with('status');
-
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");
         });
 
         $orders = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-
         return Inertia::render('ListOfOrders/ListOfOrders', [ 'orders' => $orders, 'queryParams' => request()->query()]);
     }
 

@@ -40,12 +40,6 @@ class PullErpController extends Controller
                 }
             }
 
-            // // Check for duplicate serial numbers
-            // $serialCount = array_count_values($serialNumbers);
-            // $duplicates = array_filter($serialCount, function($count) {
-            //     return $count > 1;
-            // });
-
             if(count($serialNumbers) === (int)$item->shipped_quantity){
                 for($i = 0; $i < (int)$item->shipped_quantity; $i++){
                     $res = clone $item;
@@ -67,16 +61,6 @@ class PullErpController extends Controller
                 $uniqueHeaderData[] = $item;
             }
         }
-
-        // //CHECK IF ORDER NUMBER AND SERIAL IS DUPLICATE
-        // $linesIdentifier = [];
-        // foreach($lines as $key => $line){
-        //     $duplicateIdentifer = $line->order_number . '-' . $line->cust_po_number . '-' . $line->final_serial;
-        //     if (!in_array($duplicateIdentifer, $linesIdentifier)) {
-        //         $linesIdentifier[] = $duplicateIdentifer;
-        //         $finalDataLines[] = $line;
-        //     }
-        // }
 
         $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
         $latestRequestId = $latestRequest->id ?? 0;

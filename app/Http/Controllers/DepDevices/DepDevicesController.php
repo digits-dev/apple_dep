@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\DepDevices;
+use App\Helpers\CommonHelpers;
 use App\Exports\DevicesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Device;
@@ -21,8 +22,10 @@ class DepDevicesController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
         $query = Device::query();
-
         $query->when(request('search'), function ($query, $search) {
             $query->where('item_code', 'LIKE', "%$search%");
         });

@@ -4,6 +4,7 @@ import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import axios from "axios";
 import { useToast } from "../../Context/ToastContext";
+import RowAction from "../../Components/Table/RowAction";
 const MenusIndex = ({
     menu_active,
     menu_inactive,
@@ -162,13 +163,13 @@ const MenusIndex = ({
                     </div>
 
                     <div className="mr-3 flex items-center gap-1">
-                        <a
+                        <Link
                             className={`fa fa-pencil text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
-                            title="Edit"
+                            action="edit"
                             href={`/menu_management/edit/${menu.id}`}
-                        ></a>
+                        ></Link>
                         &nbsp;&nbsp;
                         <a
                             title="Delete"
