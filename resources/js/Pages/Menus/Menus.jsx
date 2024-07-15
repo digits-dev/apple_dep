@@ -208,7 +208,7 @@ const MenusIndex = ({
                         &nbsp;&nbsp;
                         {menu.is_active == 1 ?   <a
                             title="Delete"
-                            className={`fa fa-trash text-white ${
+                            className={`fa fa-times-circle text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
                             onClick={() => handleMenusEvent(menu.id,0)}
@@ -216,7 +216,7 @@ const MenusIndex = ({
                         :
                         <a
                             title="Delete"
-                            className={`fa fa-check text-white ${
+                            className={`fa fa-check-circle text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
                             onClick={() => handleMenusEvent(menu.id,1)}
