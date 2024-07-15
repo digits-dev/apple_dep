@@ -44,18 +44,20 @@ class EnrollmentStatusController extends Controller
 
         $request->validate([
             'enrollment_status' => 'required|unique:enrollment_statuses,enrollment_status',
+            'color' => 'required',
         ]);
         
-        EnrollmentStatus::create(['enrollment_status'=> $request->input('enrollment_status')]);
+        EnrollmentStatus::create(['enrollment_status'=> $request->input('enrollment_status'), 'color' => $request->input('color')]);
     }
     
     public function update(Request $request, EnrollmentStatus $enrollment_status){
         $request->validate([
             'enrollment_status' => "required|unique:enrollment_statuses,enrollment_status,$enrollment_status->id,id",
             'status' => 'required',
+            'color' => 'required',
         ]);
 
-        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status'),  'status' => $request->input('status')]);
+        $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status'),  'status' => $request->input('status'), 'color' => $request->input('color')]);
     }
 
     public function bulkUpdate(Request $request){

@@ -116,6 +116,64 @@ class MenusController extends Controller{
 
         return json_encode(["message"=>"Menu Saved!", "type"=>"success"]);
     }
+
+    public function getEdit($id){
+
+        if (!CommonHelpers::isView()) {
+            CommonHelpers::redirect(CommonHelpers::adminPath(), 'Denied Access');
+        }
+
+        $menus = DB::table('adm_menuses')->where('id',$id)->first();
+        $privileges = DB::table('adm_privileges')->get();
+        $menu_priv = DB::table('adm_menus_privileges')
+                    ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+                    ->where('id_adm_menus',$id)->pluck('adm_privileges.name')->toArray();
+        $menuData = DB::table('adm_menus_privileges')
+                    ->join('adm_privileges','adm_privileges.id','=','adm_menus_privileges.id_adm_privileges')
+                    ->where('id_adm_menus',$id)->get();
+ 
+        return Inertia::render('Menus/EditMenus',[
+            'privileges' => $privileges,
+            'menus' => $menus,
+            'menuPriv' => $menu_priv,
+            'menuData' => $menuData
+        ]);
+    }
+
+    public function postEditSave(Request $request, $id){
+        $privileges = $request->privileges_id;
+        $menuId     = $id;
+        DB::table('adm_menus_privileges')->where('id_adm_menus',$menuId)->delete();
+        foreach($privileges as $privs){
+            DB::table('adm_menus_privileges')->updateOrInsert(
+                [
+                    'id_adm_menus'       => $menuId,
+                    'id_adm_privileges'  => $privs
+                ],
+                [
+                    'id_adm_menus'       => $menuId,
+                    'id_adm_privileges'  => $privs
+                ]
+            );
+        }
+
+        DB::table('adm_menuses')->where('id',$menuId)->update([
+            'name' => $request->menu_name,
+            'slug' => $request->slug,
+            'icon' => $request->icon
+        ]);
+
+        return json_encode(["message"=>"Edit Successfully!", "type"=>"success"]);
+    }
+
+    public function postStatusSave(Request $request){
+        $id = $request->id;
+        $message = $request->bulk_action_type == 0 ? "Inactive" : "Active";
+        DB::table('adm_menuses')->where('id',$id)->update([
+            'is_active' => $request->bulk_action_type
+        ]);
+        return json_encode(["message"=>"Menus Set to ".$message, "status"=>"success"]);
+    }
 }
 
 ?>

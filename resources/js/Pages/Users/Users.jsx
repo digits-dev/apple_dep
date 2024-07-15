@@ -21,13 +21,14 @@ import RowAction from "../../Components/Table/RowAction";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import RowStatus from "../../Components/Table/RowStatus";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import { NavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
+    const { handleToast } = useToast();
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
@@ -36,8 +37,6 @@ const Users = ({ users, options, queryParams }) => {
     const [editUser, setEditUser] = useState(null);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isCheck, setIsCheck] = useState([]);
-    const [formMessage, setFormMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const { setTitle } = useContext(NavbarContext);
 
@@ -71,9 +70,7 @@ const Users = ({ users, options, queryParams }) => {
             document.querySelectorAll("input[name='users_id[]']:checked")
         ).map((input) => parseInt(input.id));
         if (Ids.length === 0) {
-            setFormMessage("Nothing selected!");
-            setMessageType("Error");
-            setTimeout(() => setFormMessage(""), 3000);
+            handleToast("Nothing selected!", "Error");
         } else {
             Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
@@ -97,9 +94,7 @@ const Users = ({ users, options, queryParams }) => {
                             }
                         );
                         if (response.data.status == "success") {
-                            setFormMessage(response.data.message);
-                            setMessageType(response.data.status);
-                            setTimeout(() => setFormMessage(""), 3000);
+                            handleToast(response.data.message, response.data.status);
                             router.reload({ only: ["users"] });
                             setIsCheck([]);
                             setIsCheckAll(false);
@@ -165,9 +160,7 @@ const Users = ({ users, options, queryParams }) => {
                         },
                     });
                     if (response.data.type == "success") {
-                        setFormMessage(response.data.message);
-                        setMessageType(response.data.type);
-                        setTimeout(() => setFormMessage(""), 3000);
+                        handleToast(response.data.message, response.data.type);
                         setShowCreateModal(false);
                         router.reload({ only: ["users"] });
                     } else {
@@ -311,9 +304,7 @@ const Users = ({ users, options, queryParams }) => {
                     },
                 });
                 if (response.data.type === "success") {
-                    setFormMessage(response.data.message);
-                    setMessageType(response.data.type);
-                    setTimeout(() => setFormMessage(""), 3000);
+                    handleToast(response.data.message, response.data.type);
                     setShowEditModal(false);
                     router.reload({ only: ["users"] });
                 } else {
@@ -434,8 +425,6 @@ const Users = ({ users, options, queryParams }) => {
         <>
             <Head title="Users Management" />
             <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
-                <hr />
                 <ContentPanel>
                     <TopPanel>
                         <BulkActions

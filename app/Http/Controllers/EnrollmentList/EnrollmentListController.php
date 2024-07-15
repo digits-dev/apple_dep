@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\EnrollmentList;
+use App\Helpers\CommonHelpers;
 use App\Exports\EnrollmentListExport;
 use App\Http\Controllers\Controller;
 use App\Models\EnrollmentList;
@@ -26,9 +27,10 @@ class EnrollmentListController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
         $query = EnrollmentList::query()->with(['dStatus', 'eStatus']); //dep status and enrollment status
-
-
         $query->when(request('search'), function ($query, $search) {
             $query->where('sales_order_no', 'LIKE', "%$search%");
         });

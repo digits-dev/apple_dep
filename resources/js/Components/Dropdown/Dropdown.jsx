@@ -2,7 +2,7 @@ import React from "react";
 import DescIcon from "../Table/Icons/DescIcon";
 import FormatLabelName from "../../Utilities/FormatLabelName";
 
-const DropdownSelect = ({ options, onChange, value, name, defaultSelect, displayName }) => {
+const DropdownSelect = ({ options, onChange, value, name, defaultSelect, displayName, isMulti }) => {
     return (
         <div className="relative ">
             <label
@@ -12,6 +12,7 @@ const DropdownSelect = ({ options, onChange, value, name, defaultSelect, display
                 {displayName || FormatLabelName(name)}
             </label>
             <select
+                multiple={isMulti}
                 name={name}
                 value={value}
                 onChange={onChange}

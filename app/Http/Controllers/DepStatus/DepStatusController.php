@@ -36,6 +36,7 @@ class DepStatusController extends Controller
 
         $dep_statuses = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
 
+
         return Inertia::render('DepStatus/DepStatus', [ 'dep_statuses' => $dep_statuses, 'queryParams' => request()->query()]);
     }
 
@@ -43,18 +44,20 @@ class DepStatusController extends Controller
 
         $request->validate([
             'dep_status' => 'required|unique:dep_statuses,dep_status',
+            'color' => 'required',
         ]);
         
-        DepStatus::create(['dep_status'=> $request->input('dep_status')]);
+        DepStatus::create(['dep_status'=> $request->input('dep_status'), 'color' => $request->input('color')]);
     }
     
     public function update(Request $request, DepStatus $dep_status){
         $request->validate([
             'dep_status' => "required|unique:dep_statuses,dep_status,$dep_status->id,id",
             'status' => 'required',
+            'color' => 'required',
         ]);
 
-        $dep_status->update(['dep_status'=> $request->input('dep_status'), 'status' => $request->input('status')]);
+        $dep_status->update(['dep_status'=> $request->input('dep_status'), 'status' => $request->input('status'), 'color' => $request->input('color') ]);
     }
 
     public function bulkUpdate(Request $request){

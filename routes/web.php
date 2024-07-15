@@ -19,6 +19,7 @@ use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\EnrollmentList\EnrollmentListController;
 use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
 use Inertia\Inertia; // We are going to use this class to render React components
+use App\Http\Controllers\PullErpController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,7 +32,7 @@ use Inertia\Inertia; // We are going to use this class to render React component
 */
 
 //query from beach
-Route::get('/query', [ListOfOrdersController::class, 'getListOfOrdersFromErp']);
+Route::get('/query', [PullErpController::class, 'getListOfOrdersFromErpv2']);
 Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
 
 Route::get('/', [LoginController::class, 'index']);
@@ -81,7 +82,9 @@ Route::middleware(['auth'])->group(function () {
 
     //MENUS
     Route::post('/menu_management/add', [MenusController::class, 'postAddSave'])->name('MenusControllerPostSaveMenu');
-    Route::post('/menu_management/edit-menu-save/{id}', [MenusController::class, 'postEditSave'])->middleware('auth')->name('edit-menus-save');
+    Route::get(config('ad_url.ADMIN_PATH').'/menu_management/edit/{id}', [MenusController::class, 'getEdit'])->name('MenusControllerGetEdit');
+    Route::post('/menu_management/edit-menu-save/{id}', [MenusController::class, 'postEditSave'])->name('edit-menus-save');
+    Route::post('/set-status-menus', [MenusController::class, 'postStatusSave'])->name('delete-menus-save');
 
     //EXPORTS
     Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);

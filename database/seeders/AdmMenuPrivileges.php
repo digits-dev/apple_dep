@@ -62,7 +62,9 @@ class AdmMenuPrivileges extends Seeder
                 'id_adm_privileges' => 1
             ],
         ];
-        DB::table('adm_menus_privileges')->insert($data);
 
+        if (DB::table('adm_menus_privileges')->count() == 0) {
+            DB::table('adm_menus_privileges')->insert($data);
+        }
     }
 }

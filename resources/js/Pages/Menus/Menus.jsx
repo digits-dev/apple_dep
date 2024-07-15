@@ -1,25 +1,35 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import { Head, Link, router, usePage  } from "@inertiajs/react";
+import React, { useEffect, useState, useRef } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import axios from "axios";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import { useToast } from "../../Context/ToastContext";
+import RowAction from "../../Components/Table/RowAction";
+
 const MenusIndex = ({
     menu_active,
     menu_inactive,
     privileges,
     queryParams,
 }) => {
+    const { handleToast } = useToast();
     const [menuActive, setMenuActive] = useState(menu_active);
     const [menuInactive, setMenuInactive] = useState(menu_inactive);
     const [draggingItem, setDraggingItem] = useState(null);
     const [draggingOverItem, setDraggingOverItem] = useState(null);
-    const [formMessage, setFormMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
+    const scrollContainerRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
 
+    const handleWheel = (e) => {
+        handleAutoScroll(e);
+    };
+   
     const handleDragStart = (e, item, parentIndex, isActive, index) => {
+        setIsDragging(true);
+        handleWheel(e);
         e.stopPropagation(parentIndex);
         setDraggingItem({ item, parentIndex, isActive, index });
+    
     };
 
     const handleDragOver = (e, targetIndex, targetParentIndex) => {
@@ -31,7 +41,7 @@ const MenusIndex = ({
     const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-
+        setIsDragging(false);
         if (draggingItem && draggingOverItem) {
             try {
                 let updatedMenus = draggingItem.isActive
@@ -74,16 +84,11 @@ const MenusIndex = ({
                     if (!targetParent.children && targetParent.type !== 'Route'){
                         targetParent.children = []
                         targetParent.children.push(draggedItem);
-                    } else{
-                        // targetParent.children = []
-                        // targetParent.children.splice(targetIndex, 0, draggedItem);
+                    } else if(targetParent.children){
+                        targetParent.children.splice(targetIndex, 0, draggedItem);
+                    }else{
                         updatedMenus.splice(targetIndex, 0, draggedItem);
                     }
-
-                    if(targetParent.children && targetParent.type === 'URL'){
-                        targetParent.children.splice(targetIndex, 0, draggedItem);
-                    }
-                    
                 } else {
                     updatedMenus.splice(targetIndex, 0, draggedItem);
                 }
@@ -113,16 +118,46 @@ const MenusIndex = ({
                 menus: JSON.stringify(menus),
                 isActive,
             });
-            setFormMessage(response.data.message);
-            setMessageType(response.data.type);
-            setTimeout(() => {
-                setFormMessage("");
-            }, 3000);
+
+            handleToast(response.data.message, response.data.type);
+   
             router.reload({ only: ["Menus"] });
         } catch (error) {
             console.error("Error saving menu:", error);
         }
     };
+
+    const handleMenusEvent = async (id, value) => {
+        const bulk_action_type = value;
+        Swal.fire({
+            title: `<p class="font-nunito-sans" >Set to ${
+                !bulk_action_type == 0 ? "Active" : "Inactive"
+            }?</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#000000",
+            icon: "question",
+            iconColor: "#000000",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.post(
+                        "/set-status-menus",
+                        { id , bulk_action_type},
+                        {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        }
+                    );
+                    if (response.data.status == "success") {
+                        handleToast(response.data.message, response.data.status);
+                        router.reload();
+                    }
+                } catch (error) {}
+            }
+        });
+    }
 
     const renderMenuItems = (menus, isActive, parentIndex = null) => {
         return menus.map((menu, index) => (
@@ -163,22 +198,30 @@ const MenusIndex = ({
                     </div>
 
                     <div className="mr-3 flex items-center gap-1">
-                        <a
+                        <Link
                             className={`fa fa-pencil text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
-                            title="Edit"
+                            action="edit"
                             href={`/menu_management/edit/${menu.id}`}
-                        ></a>
+                        ></Link>
                         &nbsp;&nbsp;
-                        <a
+                        {menu.is_active == 1 ?   <a
                             title="Delete"
                             className={`fa fa-trash text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
-                            onClick={() => handleDelete(menu.id)}
-                            href="javascript:void(0)"
-                        ></a>
+                            onClick={() => handleMenusEvent(menu.id,0)}
+                        ></a> 
+                        :
+                        <a
+                            title="Delete"
+                            className={`fa fa-check text-white ${
+                                parentIndex == null ? "text-lg" : "text-sm"
+                            }`}
+                            onClick={() => handleMenusEvent(menu.id,1)}
+                        ></a> }
+                      
                        
                     </div>
                    
@@ -200,11 +243,24 @@ const MenusIndex = ({
         ));
     };
 
+    const handleAutoScroll = (e) => {
+        const container = scrollContainerRef.current;
+        const rect = container.getBoundingClientRect();
+        const scrollThreshold = 50; // Adjust this value to control the sensitivity of the scroll
+        const scrollSpeed = 20; // Adjust this value to control the speed of the scroll
+        if (e.clientY < rect.top + scrollThreshold) {
+            // Scroll up
+            container.scrollBy({ top: -scrollSpeed, behavior: 'smooth' });
+        } else if (e.clientY > rect.bottom - scrollThreshold) {
+            // Scroll down
+            container.scrollBy({ top: scrollSpeed, behavior: 'smooth' });
+        }
+    };
+
     return (
-        <div>
+        <div ref={scrollContainerRef} onWheel={handleWheel}>
             <Head title="Menu Management" />
             <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
                     <div className="font-nunito-sans mb-5 text-red-400">
                         *Welcome to the Menu Management page! To rearrange the
