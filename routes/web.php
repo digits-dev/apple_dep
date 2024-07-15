@@ -84,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/menu_management/add', [MenusController::class, 'postAddSave'])->name('MenusControllerPostSaveMenu');
     Route::get(config('ad_url.ADMIN_PATH').'/menu_management/edit/{id}', [MenusController::class, 'getEdit'])->name('MenusControllerGetEdit');
     Route::post('/menu_management/edit-menu-save/{id}', [MenusController::class, 'postEditSave'])->name('edit-menus-save');
+    Route::post('/set-status-menus', [MenusController::class, 'postStatusSave'])->name('delete-menus-save');
 
     //EXPORTS
     Route::get('/list-of-orders-export', [ListOfOrdersController::class, 'export']);

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
-
+use App\Helpers\CommonHelpers;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,7 +38,14 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
-                'sessions' => $request->session()->all()
+                'sessions' => $request->session()->all(),
+                'access' => [
+                    'isView' => CommonHelpers::isView(),
+                    'isCreate' => CommonHelpers::isCreate(),
+                    'isRead' => CommonHelpers::isRead(),
+                    'isUpdate' => CommonHelpers::isUpdate(),
+                    'isDelete' => CommonHelpers::isDelete()
+                ]
             ],
             'errors' => function () use ($request) {
                 return $request->session()->get('errors')
@@ -47,7 +54,7 @@ class HandleInertiaRequests extends Middleware
             },
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
-            // 'base_url' => base_url(),
+          
         ]);
     }
 }

@@ -165,6 +165,15 @@ class MenusController extends Controller{
 
         return json_encode(["message"=>"Edit Successfully!", "type"=>"success"]);
     }
+
+    public function postStatusSave(Request $request){
+        $id = $request->id;
+        $message = $request->bulk_action_type == 0 ? "Inactive" : "Active";
+        DB::table('adm_menuses')->where('id',$id)->update([
+            'is_active' => $request->bulk_action_type
+        ]);
+        return json_encode(["message"=>"Menus Set to ".$message, "status"=>"success"]);
+    }
 }
 
 ?>
