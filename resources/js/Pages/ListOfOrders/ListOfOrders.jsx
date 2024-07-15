@@ -32,7 +32,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
     const [orderId, setOrderId] = useState(null);
 
     const { handleToast } = useToast();
-    
+
     const handleCloseEditModal = () => {
         setShowEditModal(false);
     };
@@ -68,7 +68,6 @@ const ListOfOrders = ({ orders, queryParams }) => {
             </div>
         );
     };
-
 
     return (
         <>
@@ -115,7 +114,10 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                 ]}
                             />
                         </Filters>
-                        <Export path="/list-of-orders-export"  handleToast={handleToast}/>
+                        <Export
+                            path="/list-of-orders-export"
+                            handleToast={handleToast}
+                        />
                     </TopPanel>
 
                     <TableContainer>
@@ -181,7 +183,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <Tbody data={ orders.data}>
+                        <Tbody data={orders.data}>
                             {orders &&
                                 orders.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
@@ -251,9 +253,6 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                     </Row>
                                 ))}
                         </Tbody>
-                       
-                         
-                      
                     </TableContainer>
 
                     <Pagination paginate={orders} />

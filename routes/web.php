@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
     Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
+    Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
 
     //EnrollmentList
