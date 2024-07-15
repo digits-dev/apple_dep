@@ -138,8 +138,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     router.reload({ only: ["orderLines"] });
                                 } else {
                                     handleToast(
-                                        "Something went wrong!",
-                                        "Error"
+                                        response.data.message,
+                                        response.data.status
                                     );
                                     resetCheckbox();
                                 }
