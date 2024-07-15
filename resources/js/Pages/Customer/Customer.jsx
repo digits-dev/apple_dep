@@ -15,16 +15,19 @@ import TableContainer from "../../Components/Table/TableContainer";
 import { useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import CustomerForm from "./CustomerForm";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import RowStatus from "../../Components/Table/RowStatus";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
+import TableButton from "../../Components/Table/Buttons/TableButton";
 
 const Customer = ({ customers, queryParams }) => {
     queryParams = queryParams || {};
+
+    const { handleToast } = useToast();
 
     const [loading, setLoading] = useState(false);
     router.on("start", () => setLoading(true));
@@ -41,8 +44,6 @@ const Customer = ({ customers, queryParams }) => {
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
-    const [message, setMessage] = useState('');
-	const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -81,9 +82,7 @@ const Customer = ({ customers, queryParams }) => {
 		const actionType = action;
 
 		if(selectedItems.length === 0){
-			setMessage("Nothing selected!");
-            setMessageType("Error");
-            setTimeout(() => setMessage(""), 3000);
+            handleToast('Nothing selected!', "Error");
 		} else{
 			Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
@@ -107,9 +106,7 @@ const Customer = ({ customers, queryParams }) => {
                         );
 
                         if (response.data.status == "success") {
-                            setMessage(response.data.message);
-                            setMessageType(response.data.status);
-                            setTimeout(() => setMessage(""), 3000);
+                            handleToast(response.data.message, response.data.status);
 
                             router.reload({ only: ["customers"] });
 
@@ -130,8 +127,6 @@ const Customer = ({ customers, queryParams }) => {
         <>
             <Head title="Customer" />
             <AppContent>
-                <DissapearingToast type={messageType} message={message} />
-
                 <ContentPanel>
                     <TopPanel>
                     <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
@@ -250,9 +245,7 @@ const Customer = ({ customers, queryParams }) => {
                 <CustomerForm 
                     handleShow={()=>{
                         handleShowCreate(); 
-                        setMessageType('success');
-                        setMessage('Created Customer');
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast('Created Customer', 'success');
                     }} 
                     action="create" />
             </Modal>
@@ -265,9 +258,7 @@ const Customer = ({ customers, queryParams }) => {
                 <CustomerForm 
                     handleShow={()=>{
                         handleShowEdit(); 
-                        setMessageType('success');
-                        setMessage('Updated Customer');
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast('Updated Customer', 'success');
                     }} 
                     action="edit" 
                     updateFormValues={updateFormValues} />

@@ -1,6 +1,5 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
-import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";
@@ -21,8 +20,7 @@ import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import Tbody from "../../Components/Table/Tbody";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
-import useToast from "../../Hooks/useToast";
+import { useToast } from "../../Context/ToastContext";
 
 const ListOfOrders = ({ orders, queryParams }) => {
     queryParams = queryParams || {};
@@ -33,7 +31,7 @@ const ListOfOrders = ({ orders, queryParams }) => {
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
 
-    const {message, messageType, handleToast} = useToast();
+    const { handleToast } = useToast();
     
     const handleCloseEditModal = () => {
         setShowEditModal(false);
@@ -76,7 +74,6 @@ const ListOfOrders = ({ orders, queryParams }) => {
         <>
             <Head title="List of Orders" />
             <AppContent>
-                <DissapearingToast type={messageType} message={message} />
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />

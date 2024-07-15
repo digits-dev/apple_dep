@@ -15,7 +15,6 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import { useEffect, useState } from "react";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import ActionForm from "./ActionForm";
 import Modal from "../../Components/Modal/Modal";
 import RowStatus from "../../Components/Table/RowStatus";
@@ -24,10 +23,12 @@ import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
 const Action = ({ actions, queryParams }) => {
     queryParams = queryParams || {};
 
+    const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
     
     router.on("start", () => setLoading(true));
@@ -44,8 +45,6 @@ const Action = ({ actions, queryParams }) => {
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
-    const [message, setMessage] = useState('');
-	const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -84,9 +83,7 @@ const Action = ({ actions, queryParams }) => {
 		const actionType = action;
 
 		if(selectedItems?.length === 0){
-			setMessage("Nothing selected!");
-            setMessageType("Error");
-            setTimeout(() => setMessage(""), 3000);
+            handleToast('Nothing selected!', 'Error');
 		} else{
 			Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
@@ -110,9 +107,7 @@ const Action = ({ actions, queryParams }) => {
                         );
 
                         if (response.data.status == "success") {
-                            setMessage(response.data.message);
-                            setMessageType(response.data.status);
-                            setTimeout(() => setMessage(""), 3000);
+                            handleToast(response.data.message, response.data.status);
 
                             router.reload({ only: ["actions"] });
 
@@ -133,8 +128,6 @@ const Action = ({ actions, queryParams }) => {
         <>
         <Head title="Actions" />
         <AppContent>
-            <DissapearingToast type={messageType} message={message} />
-        
             <ContentPanel>
                 <TopPanel>
                     <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
@@ -251,9 +244,7 @@ const Action = ({ actions, queryParams }) => {
                 <ActionForm 
                     handleShow={()=>{
                         handleShowCreate(); 
-                        setMessageType('success');
-                        setMessage('Created Action'); 
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast('Created Action', 'success');
                     }} 
                     action="create" />
             </Modal>
@@ -266,9 +257,7 @@ const Action = ({ actions, queryParams }) => {
                 <ActionForm 
                     handleShow={()=>{
                         handleShowEdit(); 
-                        setMessageType('success');
-                        setMessage('Updated Action'); 
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast('Updated Action', 'success');
                     }} 
                     action="edit" 
                     updateFormValues={updateFormValues} />

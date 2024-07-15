@@ -248,6 +248,7 @@ class ListOfOrdersController extends Controller
     public function bulkEnrollDevices(Request $request)
     {
         try {
+
             $ids = $request->input('ids');
 
             $payload = [
@@ -386,6 +387,7 @@ class ListOfOrdersController extends Controller
                 'message' => $enrollment_status == 3 ? 'Enrollment Success!' : 'Enrollment Error!',
                 'status' => $enrollment_status == 3 ? 'success' : 'error'
             ];
+
 
             return response()->json($data);
        

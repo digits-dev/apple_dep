@@ -9,20 +9,19 @@ import themeColor from "./ThemeColor";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import axios from "axios";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import RadioButton from "../../Components/Checkbox/RadioButton";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
+import { useToast } from "../../Context/ToastContext";
 
 const AddPrivileges = ({ moduleses, row }) => {
     const { setTitle } = useContext(NavbarContext);
+    const { handleToast } = useToast();
     const [roles, setRoles] = useState({ is_superadmin: '0',});
     const [modules, setModules] = useState([]);
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [clearErrors, setClearErrors] = useState({});
-    const [formMessage, setFormMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [showPriv, setShowPriv] = useState(true);
     const [selectAll, setSelectAll] = useState({
@@ -197,9 +196,7 @@ const AddPrivileges = ({ moduleses, row }) => {
                     }
                 );
                 if (response.data.type == "success") {
-                    setFormMessage(response.data.message);
-                    setMessageType(response.data.type);
-                    setTimeout(() => setFormMessage(""), 3000);
+                    handleToast(response.data.message, response.data.type);
                     window.history.back();
                 } else {
                     setErrorMessage(response.data.message);
@@ -243,10 +240,7 @@ const AddPrivileges = ({ moduleses, row }) => {
                     },
                 });
                 if (response.data.type === "success") {
-                    setFormMessage(response.data.message);
-                    setMessageType(response.data.type);
-                    setTimeout(() => setFormMessage(""), 3000);
-
+                    handleToast(response.data.message, response.data.type);
                     window.history.back();
                 } else {
                     setErrorMessage(response.data.message);
@@ -267,7 +261,6 @@ const AddPrivileges = ({ moduleses, row }) => {
     return (
         <>
             <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
                 <form onSubmit={row.length === 0 ? handleCreate : handleEdit}>
                     <ContentPanel marginBottom={2}>
                         <input

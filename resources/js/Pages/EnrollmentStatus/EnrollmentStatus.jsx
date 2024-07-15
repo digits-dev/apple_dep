@@ -18,16 +18,18 @@ import TableContainer from "../../Components/Table/TableContainer";
 import { useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import EnrollmentStatusForm from "./EnrollmentStatusForm";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
  
     queryParams = queryParams || {};
+
+    const { handleToast } = useToast();
 
     const [loading, setLoading] = useState(false);
 
@@ -45,8 +47,6 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
-    const [message, setMessage] = useState('');
-	const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -85,9 +85,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
 		const actionType = action;
 
 		if(selectedItems?.length === 0){
-			setMessage("Nothing selected!");
-            setMessageType("Error");
-            setTimeout(() => setMessage(""), 3000);
+            handleToast("Nothing selected!", "Error");
 		} else{
 			Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
@@ -111,9 +109,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                         );
 
                         if (response.data.status == "success") {
-                            setMessage(response.data.message);
-                            setMessageType(response.data.status);
-                            setTimeout(() => setMessage(""), 3000);
+                            handleToast(response.data.message, response.data.status);
 
                             router.reload({ only: ["enrollment_status"] });
 
@@ -134,8 +130,6 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
         <>
         <Head title="Enrollment Status" />
         <AppContent>
-            <DissapearingToast type={messageType} message={message} />
-
             <ContentPanel>
                 <TopPanel>
                     <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
@@ -257,9 +251,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 <EnrollmentStatusForm 
                     handleShow={()=>{
                         handleShowCreate(); 
-                        setMessageType('success');
-                        setMessage('Created Status'); 
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast("Created Status", "success");
                     }} 
                     action="create" />
             </Modal>
@@ -272,9 +264,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 <EnrollmentStatusForm 
                     handleShow={()=>{
                         handleShowEdit(); 
-                        setMessageType('success');
-                        setMessage('Updated Status'); 
-                        setTimeout(() => setMessage(""), 3000);
+                        handleToast("Updated Status", "success");
                     }} 
                     action="edit" 
                     updateFormValues={updateFormValues} 

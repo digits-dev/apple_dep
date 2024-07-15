@@ -4,19 +4,18 @@ import ContentPanel from "../../Components/Table/ContentPanel";
 import { Head, Link, router } from "@inertiajs/react";
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
 import TableButton from "../../Components/Table/Buttons/TableButton";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import axios from "axios";
+import { useToast } from "../../Context/ToastContext";
 const ChangePassword = () => {
     const [data, setData] = useState({
         current_password: "",
         new_password: "",
         confirmation_password: "",
     });
+    const { handleToast } = useToast();
     const [errors, setErrors] = useState({});
 
     const [loading, setLoading] = useState(false);
-    const [formMessage, setFormMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
 
     function handleChange(e) {
         const key = e.target.name;
@@ -71,16 +70,11 @@ const ChangePassword = () => {
                             }
                         );
                         if (response.data.type == "success") {
-                            setFormMessage(response.data.message);
-                            setMessageType(response.data.type);
-                            setTimeout(() => {
-                                setFormMessage("");
-                                router.post("logout");
-                            }, 3000);
+                            handleToast(response.data.message, response.data.type);
+                
+                            setTimeout(() => router.post("logout"), 3000);
                         } else {
-                            setFormMessage(response.data.message);
-                            setMessageType(response.data.type);
-                            setTimeout(() => setFormMessage(""), 3000);
+                            handleToast(response.data.message, response.data.type);
                         }
                     } catch (error) {
                         if (error.response && error.response.status === 422) {
@@ -102,7 +96,6 @@ const ChangePassword = () => {
         <>
             <Head title="Change Password" />
             <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
                     <Link
                         href="dashboard"

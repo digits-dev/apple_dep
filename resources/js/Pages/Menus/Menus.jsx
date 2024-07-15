@@ -3,19 +3,20 @@ import React, { useState } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import axios from "axios";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
+import { useToast } from "../../Context/ToastContext";
 const MenusIndex = ({
     menu_active,
     menu_inactive,
     privileges,
     queryParams,
 }) => {
+
+    const { handleToast } = useToast();
+
     const [menuActive, setMenuActive] = useState(menu_active);
     const [menuInactive, setMenuInactive] = useState(menu_inactive);
     const [draggingItem, setDraggingItem] = useState(null);
     const [draggingOverItem, setDraggingOverItem] = useState(null);
-    const [formMessage, setFormMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
 
     const handleDragStart = (e, item, parentIndex, isActive, index) => {
         e.stopPropagation(parentIndex);
@@ -113,11 +114,9 @@ const MenusIndex = ({
                 menus: JSON.stringify(menus),
                 isActive,
             });
-            setFormMessage(response.data.message);
-            setMessageType(response.data.type);
-            setTimeout(() => {
-                setFormMessage("");
-            }, 3000);
+
+            handleToast(response.data.message, response.data.type);
+   
             router.reload({ only: ["Menus"] });
         } catch (error) {
             console.error("Error saving menu:", error);
@@ -204,7 +203,6 @@ const MenusIndex = ({
         <div>
             <Head title="Menu Management" />
             <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
                 <ContentPanel>
                     <div className="font-nunito-sans mb-5 text-red-400">
                         *Welcome to the Menu Management page! To rearrange the

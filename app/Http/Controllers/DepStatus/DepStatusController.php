@@ -47,7 +47,7 @@ class DepStatusController extends Controller
             'color' => 'required',
         ]);
         
-        DepStatus::create(['dep_status'=> $request->input('dep_status')]);
+        DepStatus::create(['dep_status'=> $request->input('dep_status'), 'color' => $request->input('color')]);
     }
     
     public function update(Request $request, DepStatus $dep_status){

@@ -15,20 +15,19 @@ import Modal from "../../Components/Modal/Modal";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import TopPanel from "../../Components/Table/TopPanel";
-import DissapearingToast from "../../Components/Toast/DissapearingToast";
 import axios from "axios";
 import LoadingIcon from "../../Components/Table/Icons/LoadingIcon";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
+    const { handleToast } = useToast();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [orderId, setOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -68,14 +67,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
-    };
-
-    const handleToast = (message, messageType) => {
-        document.getElementById("app-content").scrollIntoView(true);
-        setMessage(message);
-        setMessageType(messageType);
-        setTimeout(() => setMessage(""), 3000);
-        resetCheckbox();
     };
 
     const bulkActions = [
@@ -139,21 +130,20 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 );
 
                                 if (response.data.status == "success") {
-                                    setLoading(false);
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
+                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
                                 } else {
-                                    setLoading(false);
                                     handleToast(
                                         "Something went wrong!",
                                         "Error"
                                     );
+                                    resetCheckbox();
                                 }
                             } else {
-                                setLoading(false);
                                 handleToast(
                                     "The selected items are already enrolled!",
                                     "Error"
@@ -166,11 +156,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             );
                         }
                     } catch (error) {
-                        setLoading(false);
                         handleToast(
                             "Something went wrong, please try again later.",
                             "Error"
                         );
+                    } finally {
+                        setLoading(false);
                     }
                 }
             });
@@ -257,7 +248,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
             <Head title="Enroll/Return Devices" />
             <AppContent>
                 <Modal show={loading} modalLoading />
-                <DissapearingToast type={messageType} message={message} />
                 <ContentPanel>
                     <div className="flex justify-between items-start text-gray-800 mb-8">
                         <div className="flex gap-10">
