@@ -82,7 +82,7 @@ const EditMenu = ({ menus, privileges, menuData }) => {
                                 <Select
                                     isMulti
                                     name="privileges_id"
-                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="block w-full py-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     value={privileges.filter(priv => privilegesId.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
                                     onChange={handlePrivilegesChange}
                                     options={privileges.map(priv => ({ value: priv.id, label: priv.name }))}
@@ -114,7 +114,7 @@ const EditMenu = ({ menus, privileges, menuData }) => {
                             </div>
 
                             <div className="mt-5 flex justify-between">
-                                <Link href="/privileges" as="button">
+                                <Link href="/menu_management" as="button">
                                     <TableButton>Back</TableButton>
                                 </Link>
                                 <TableButton type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</TableButton>
