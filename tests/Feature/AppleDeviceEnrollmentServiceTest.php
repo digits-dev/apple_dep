@@ -3,13 +3,11 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Client\RequestException;
 use App\Services\AppleDeviceEnrollmentService;
+use Illuminate\Http\Client\ConnectionException;
 
 class AppleDeviceEnrollmentServiceTest extends TestCase
 {
@@ -31,7 +29,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
     public function testEnrollDevicesSuccessfully()
     {
-        
+
         $payload = [
             "requestContext" => [
                 "shipTo" => "0000742682",
@@ -326,11 +324,11 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
             "langCode" => "en"
         ];
         $depResellerId = "0000742682";
-        $orderNumbers = ["ORDER_900130"]; 
+        $orderNumbers = ["ORDER_900130"];
 
         // Calling the showOrderDetails method
         $response = $this->service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
-        
+
         $this->assertEquals($expectedResponse['orders'], $response['orders']);
         $this->assertEquals($expectedResponse['statusCode'], $response['statusCode']);
     }
@@ -359,7 +357,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
     // EMPTY PAYLOAD
 
-    public function testEnrollmentDevicesEmptyPayload(){
+    public function testEnrollmentDevicesEmptyPayload()
+    {
 
         //empty payload
         $payload = [];
@@ -376,7 +375,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
     }
 
-    public function testCheckTransactionStatusEmptyPayload(){
+    public function testCheckTransactionStatusEmptyPayload()
+    {
 
         //empty payload
         $payload = [];
@@ -393,7 +393,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
     }
 
-    public function testShowOrderDetailsEmptyPayload(){
+    public function testShowOrderDetailsEmptyPayload()
+    {
 
         //empty payload
         $requestContext = "";
@@ -414,7 +415,8 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
     // INVALID INPUTS
 
-    public function testMissingTransactionId(){
+    public function testMissingTransactionId()
+    {
 
         $payload = [
             "requestContext" => [
@@ -456,6 +458,64 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         $this->assertArrayHasKey('enrollDeviceErrorResponse', $response);
         $this->assertEquals('Transaction ID missing. Enter a valid transaction ID and resubmit your request.', $response['enrollDeviceErrorResponse']['errorMessage']);
         $this->assertEquals('DEP-ERR-3001', $response['enrollDeviceErrorResponse']['errorCode']);
+    }
+
+    public function testEnrollHandleNetworkTimeout()
+    {
+        // Simulate a timeout
+        Http::fake([
+            'https://acc-ipt.apple.com/enroll-service/1.0/bulk-enroll-devices' => function () {
+                throw new ConnectionException();
+            },
+        ]);
+
+        // Set up the payload
+        $payload = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "transactionId" => "TXN_001123",
+            "depResellerId" => "0000742682",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900123",
+                    "orderDate" => "2014-08-28T10:10:10Z",
+                    "orderType" => "OR",
+                    "customerId" => "19827",
+                    "poNumber" => "PO_12345",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.2",
+                            "shipDate" => "2014-10-10T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "deviceId" => "33645004YAM",
+                                    "assetTag" => "A123456"
+                                ],
+                                [
+                                    "deviceId" => "33645006YAM",
+                                    "assetTag" => "A123456"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        // Expect an exception
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Apple Device Enrollment API timeout during bulk enroll');
+
+        // Call the method and catch the timeout exception
+        try {
+            $this->service->enrollDevices($payload);
+        } catch (\Exception $e) {
+            $this->assertStringContainsString('timeout during bulk enroll', $e->getMessage());
+            throw $e; 
+        }
     }
 
 }
