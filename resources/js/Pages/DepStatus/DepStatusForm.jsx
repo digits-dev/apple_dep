@@ -7,7 +7,7 @@ const DepStatusForm = ({ action, handleShow, updateFormValues }) => {
     const { data, setData, processing, reset, post, put, errors } = useForm({
         dep_status: updateFormValues?.currentValue || "",
         status: updateFormValues?.status,
-        color: updateFormValues?.color || "",
+        color: updateFormValues?.color || "#000000",
     });
 
     const handleSubmit = (e) => {

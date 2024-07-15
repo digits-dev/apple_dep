@@ -46,7 +46,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
+    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean,  color: '',});
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -230,7 +230,14 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.enrollment_status, status:item.status});}}
+                                            onClick={()=>{
+                                                handleShowEdit(); 
+                                                setUpdateFormValues({
+                                                    currentId: item.id, 
+                                                    currentValue: item.enrollment_status, 
+                                                    status: item.status, 
+                                                    color: item.color
+                                                });}}
                                             action="edit"
                                             size="md"
                                         />

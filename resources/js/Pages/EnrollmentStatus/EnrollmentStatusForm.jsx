@@ -7,6 +7,7 @@ const EnrollmentStatusForm = ({action, handleShow, updateFormValues}) => {
     const { data, setData, processing, reset, post, put, errors } = useForm({
         enrollment_status: updateFormValues?.currentValue || '',
         status: updateFormValues?.status,
+        color: updateFormValues?.color || "#000000",
     });
 
     const handleSubmit = (e) => {
@@ -34,6 +35,23 @@ const EnrollmentStatusForm = ({action, handleShow, updateFormValues}) => {
                 />
             }
             {errors.status && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.status}</em></span>}
+
+            <InputComponent
+                    name="color"
+                    value={data.color}
+                    onChange={(e) => setData("color", e.target.value)}
+                />
+                {errors.color && (
+                    <span className="mt-1 inline-block text-red-400 font-base">
+                        <em>{errors.color}</em>
+                    </span>
+                )}
+                <input
+                    type="color"
+                    value={data.color}
+                    className="w-full"
+                    onChange={(e) => setData("color", e.target.value)}
+                />
            
             <button
                 type="submit"
