@@ -24,6 +24,17 @@ class ListOfOrdersController extends Controller
     private $sortBy;
     private $sortDir;
     private $perPage;
+    
+    private const enrollment_status = [
+        'Pending' => 1,
+        'Enrollment Error' => 2,
+        'Completed' => 3,
+    ];
+
+    private const dep_status = [
+        'Success' => 1,
+        'GRX-50025' => 2,
+    ];
 
 
     public function __construct(AppleDeviceEnrollmentService $appleService){
@@ -65,6 +76,24 @@ class ListOfOrdersController extends Controller
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
         ->with('status')->orderBy($this->sortBy, $this->sortDir)->get();
+
+        $orderLines = OrderLines::query()
+        ->where('order_id', $order->id)
+        ->with('status')
+        ->orderBy($this->sortBy, $this->sortDir)
+        ->get();
+
+        $orderLines = $orderLines->map(function($orderLine) {
+            $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
+                ->whereIn('enrollment_status', [2, 3])
+                ->exists();
+
+            $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
+            
+            return $orderLine;
+        });
+
+        $data['orderLines'] = $orderLines;
 
         $data['queryParams'] = request()->query();
         
@@ -150,9 +179,9 @@ class ListOfOrdersController extends Controller
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 // $dep_status = $response['enrollDevicesResponse']['statusCode'];
-                $dep_status = 1;
+                $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = 3;
+                $enrollment_status = self::enrollment_status['Completed'];
             }
             // else if (isset($response['enrollDeviceErrorResponse'])){
             //     $dep_status = $response['errorCode'];
@@ -164,9 +193,9 @@ class ListOfOrdersController extends Controller
             else {
                 $transaction_id = $response['transactionId'];
                 // $dep_status = $response['errorCode'];
-                $dep_status = 2;
+                $dep_status = self::dep_status['GRX-50025'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = 2;
+                $enrollment_status = self::enrollment_status['Enrollment Error'];
             }
 
             // Data to be inserted in the enrollment list
@@ -180,6 +209,16 @@ class ListOfOrdersController extends Controller
                 'status_message' => $status_message,
                 'created_at' => date('Y-m-d H:i:s')
             ];
+
+            
+            // $enrollmentQuery = EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
+            // ->where('serial_number', $header_data['serial_number']);
+        
+            // $enrolled = $enrollmentQuery->where('enrollment_status', 3)->exists();
+
+            // if ($enrolled) {
+            //     return response()->json(['message' => 'Device already enrolled!', 'status' => 'error' ]);
+            // }
 
          
             $enrollmentQuery = EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
@@ -245,7 +284,106 @@ class ListOfOrdersController extends Controller
         }
     }
 
-    public function bulkEnrollDevices(Request $request){
+    public function unEnrollDevices(Request $request)
+    {
+        try {
+            $id = $request->input('id'); 
+
+            $payload = [
+                'requestContext' => [
+                    'shipTo' => config('services.apple_api.ship_to'),
+                    'timeZone' => config('services.apple_api.timezone'),
+                    'langCode' => config('services.apple_api.langCode'),
+                ],
+                'transactionId' => 'TXN_' . uniqid(),  
+                'depResellerId' => config('services.apple_api.ship_to'),
+                'orders' => [],  
+            ];
+            
+            $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+            // Check if multiple orders are provided
+            $deliveryPayload = [];
+            $devicePayload = [];
+            
+           
+            $devicePayload[] = [
+                'deviceId' => $header_data['sales_order_no'],
+                'assetTag' => $header_data['serial_number'],
+            ];
+                
+            $timestamp = strtotime($header_data['order_date']);
+            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+            $deliveryPayload = [
+                'deliveryNumber' => $header_data['dr_number'],
+                'shipDate' => $formattedDate,
+                'devices' => $devicePayload,
+            ];
+
+            $orderPayload = [
+                'orderNumber' => $header_data['sales_order_no'],
+                'orderDate' => $formattedDate,
+                'orderType' => 'RE',
+                'customerId' => $header_data['customer_name'],
+                'poNumber' => $header_data['order_ref_no'],
+                'deliveries' => [
+                    $deliveryPayload
+                ],
+            ];
+            $payload['orders'][] = $orderPayload;
+
+            // Call the service method to enroll devices
+            $response = $this->appleService->unenrollDevices($payload);
+
+
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $enrollment_status = 1; 
+            } else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = 2;
+            }
+
+
+            EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
+            ->where('serial_number', $header_data['serial_number'])
+            ->delete();
+            
+            OrderLines::where('id', $id)->update(['enrollment_status_id' => self::enrollment_status['Pending' ]]);
+
+            
+            // insert the request and response data to the database
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'RE',
+                'order_id' => $orderId,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            
+            Order::where('id', $orderId)->update(['enrollment_status' => 1]);
+            
+            // For successful response
+            $data = [
+                'message' => $enrollment_status == 1 ? 'Unenrollment Success!' : 'Unenrollment Error!',
+                'status' => $enrollment_status == 1 ? 'success' : 'error'
+            ];
+
+            return response()->json($data);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function bulkEnrollDevices(Request $request)
+    {
         try {
             $ids = $request->input('ids');
         
