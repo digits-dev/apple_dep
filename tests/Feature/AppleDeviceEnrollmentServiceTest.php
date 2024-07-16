@@ -519,7 +519,7 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     }
 
     // VOID ORDER
-
+    
     public function testVoidOrderSuccessfully(){
         $payload = [
             "requestContext" => [
@@ -533,22 +533,10 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
                 [
                     "orderNumber" => "ORDER_900124",
                     "orderDate" => "2014-08-29T10:10:10Z",
-                    "orderType" => "RE",
+                    "orderType" => "VD",
                     "customerId" => "19828",
                     "poNumber" => "PO_12346",
-                    "deliveries" => [
-                        [
-                            "deliveryNumber" => "D1.3",
-                            "shipDate" => "2014-10-11T05:10:00Z",
-                            "devices" => [
-                                [
-                                    "deviceId" => "33645005YAM",
-                                    "assetTag" => "A123457"
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                ]   
             ]
         ];
 
