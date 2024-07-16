@@ -291,8 +291,8 @@ const Users = ({ users, options, queryParams }) => {
                 setTitle("Edit Menus");
             },5);
     
-            setEditPrivilege(options.privileges.map(priv => priv.id));
-        }, [options.privileges]);
+            setEditPrivilege([user.id_adm_privileges]);
+        }, [user.id_adm_privileges]);
    
         function handleChange(e) {
             const key = e.name ? e.name : e.target.name;
@@ -364,12 +364,11 @@ const Users = ({ users, options, queryParams }) => {
 
                 <div className="flex flex-col mb-3 w-full">
                     <DropdownSelect
-                    isMulti
                         selectType="select2"
                         displayName="Select a Privilege"
                         name="privilege_id"
                         options={options.privileges}
-                        value={options.privileges.filter(priv => editPrivilege.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
+                        value={options.privileges.filter(priv => editPrivilege.includes(parseInt(priv.id))).map(priv => ({ value: priv.id, label: priv.name }))}
                         onChange={handleChange}
                     />
                 </div>

@@ -173,7 +173,7 @@ class ModulsController extends Controller{
                     use DB;
                 class '.$controllerName.' extends Controller{
                     public function getIndex(){
-                        return Inirtia("'.$finalViewFolderName.'/'.$finalViewContentName.'");
+                        return Inertia("'.$finalViewFolderName.'/'.$finalViewContentName.'");
                     }
                 }
                 ?>';
