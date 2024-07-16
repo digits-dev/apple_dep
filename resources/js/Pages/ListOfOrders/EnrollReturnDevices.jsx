@@ -226,7 +226,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                     <>
                         {(enrollmentExist == 0 ||
                             (enrollmentExist == 1 &&
-                                enrollmentStatus == 2)) && (
+                                enrollmentStatus == 5)) && (
                             <button
                                 className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
                                 onClick={(e) => handleSwal(e, "enroll")}
@@ -237,7 +237,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
 
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
-                            disabled={enrollmentStatus == 1}
+                            disabled={[1, 5].includes(enrollmentStatus)}
                             onClick={(e) => handleSwal(e, "return")}
                         >
                             Return Device

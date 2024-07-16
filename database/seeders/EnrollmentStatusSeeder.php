@@ -38,6 +38,18 @@ class EnrollmentStatusSeeder extends Seeder
                 'color' => 'green',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
+            [
+                'enrollment_status' => 'Returned',
+                'status' => 1,
+                'color' => 'orange',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Return Error',
+                'status' => 1,
+                'color' => 'orange',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         foreach ($data as $item) {

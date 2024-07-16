@@ -29,7 +29,10 @@ class ListOfOrdersController extends Controller
     private const enrollment_status = [
         'Pending' => 1,
         'Enrollment Error' => 2,
-        'Completed' => 3,
+        'Enrollment Success' => 3,
+        'Completed' => 4,
+        'Returned' => 5,
+        'Return Error' => 6,
     ];
 
     private const dep_status = [
@@ -111,16 +114,17 @@ class ListOfOrdersController extends Controller
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
 
+        
         $orderLines = $orderLines->map(function($orderLine) {
             $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
-                ->whereIn('enrollment_status', [2, 3])
-                ->exists();
-
+            ->whereIn('enrollment_status', [2, 3, 5, 6])
+            ->exists();
+            
             $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
             
             return $orderLine;
         });
-
+        
         $data['orderLines'] = $orderLines;
 
         $data['queryParams'] = request()->query();
@@ -185,7 +189,7 @@ class ListOfOrdersController extends Controller
                 // $dep_status = $response['enrollDevicesResponse']['statusCode'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = self::enrollment_status['Completed'];
+                $enrollment_status = self::enrollment_status['Enrollment Success'];
             }
             // else if (isset($response['enrollDeviceErrorResponse'])){
             //     $dep_status = $response['errorCode'];
@@ -204,6 +208,7 @@ class ListOfOrdersController extends Controller
 
             // Data to be inserted in the enrollment list
             $insertData = [ 
+                'order_lines_id' => $id,
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
@@ -273,7 +278,7 @@ class ListOfOrdersController extends Controller
 
             // Check if all order lines have status 3 and update the enrollment status of the order
             if ($enrollmentStatusSuccess === $totalOrderLines && $totalOrderLines > 0) {
-                Order::where('id', $orderId)->update(['enrollment_status' => 3]);
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Completed']]);
             }
 
             $data = [
@@ -341,18 +346,26 @@ class ListOfOrdersController extends Controller
 
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
-                $enrollment_status = 1; 
+                $enrollment_status = self::enrollment_status['Returned'];
+                $dep_status = self::dep_status['Success'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
+            
             } else {
                 $transaction_id = $response['transactionId'];
-                $dep_status = 2;
+                $enrollment_status = self::enrollment_status['Return Error'];
+                $dep_status = self::dep_status['GRX-50025'];
+                $status_message = $response['errorMessage'];
             }
 
+            EnrollmentList::where('order_lines_id', $id)
+            ->update([
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message
+            ]);
 
-            EnrollmentList::where('sales_order_no', $header_data['sales_order_no'])
-            ->where('serial_number', $header_data['serial_number'])
-            ->delete();
-            
-            OrderLines::where('id', $id)->update(['enrollment_status_id' => self::enrollment_status['Pending' ]]);
+            OrderLines::where('id', $id)->update(['enrollment_status_id' => self::enrollment_status['Returned' ]]);
 
             
             // insert the request and response data to the database
@@ -371,12 +384,12 @@ class ListOfOrdersController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             
-            Order::where('id', $orderId)->update(['enrollment_status' => 1]);
+            Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending' ]]);
             
             // For successful response
             $data = [
-                'message' => $enrollment_status == 1 ? 'Unenrollment Success!' : 'Unenrollment Error!',
-                'status' => $enrollment_status == 1 ? 'success' : 'error'
+                'message' => $enrollment_status == 5 ? 'Unenrollment Success!' : 'Unenrollment Error!',
+                'status' => $enrollment_status == 5 ? 'success' : 'error'
             ];
 
             return response()->json($data);
