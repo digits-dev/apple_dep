@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Customer;
+use App\Helpers\CommonHelpers;
 use App\Exports\CustomerExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportCustomer;
@@ -26,6 +27,9 @@ class CustomerController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
         $query = Customer::query();
 
         $query->when(request('search'), function ($query, $search) {

@@ -138,6 +138,7 @@ const MenusIndex = ({
             confirmButtonColor: "#000000",
             icon: "question",
             iconColor: "#000000",
+            reverseButtons:true
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
@@ -300,7 +301,7 @@ const MenusIndex = ({
                             </p>
                         </div>
                         <div className="p-5">
-                            <div className="draggable-menu draggable-menu-inactive">
+                            <div className="draggable-menu draggable-menu-inactive space-y-1">
                                 {renderMenuItems(menuInactive, false)}
                             </div>
                             {menuInactive.length === 0 && (

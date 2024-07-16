@@ -6,8 +6,8 @@ import TableButton from '../../Components/Table/Buttons/TableButton';
 import { Link } from '@inertiajs/react';
 import InputComponent from '../../Components/Forms/Input';
 import AppContent from '../../Layouts/layout/AppContent';
-import DissapearingToast from '../../Components/Toast/DissapearingToast';
 import ContentPanel from '../../Components/Table/ContentPanel';
+import { useToast } from "../../Context/ToastContext";
 
 const EditMenu = ({ menus, privileges, menuData }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -20,6 +20,7 @@ const EditMenu = ({ menus, privileges, menuData }) => {
     const [formMessage, setFormMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const { handleToast } = useToast();
 
     useEffect(() => {
         setTimeout(()=>{
@@ -40,9 +41,7 @@ const EditMenu = ({ menus, privileges, menuData }) => {
                 privileges_id: privilegesId,
             });
             if (response.data.type == "success") {
-                setFormMessage(response.data.message);
-                setMessageType(response.data.type);
-                setTimeout(() => setFormMessage(""), 3000);
+                handleToast(response.data.message, response.data.type);
             } else {
                 setErrorMessage(response.data.message);
             }
@@ -68,17 +67,12 @@ const EditMenu = ({ menus, privileges, menuData }) => {
         <div>
             <AppContent>
                 <ContentPanel>
-                    <DissapearingToast type={messageType} message={formMessage} />
-                    <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
-                        <p className="text-white font-extrabold text-center">
-                            Edit Menus
-                        </p>
-                    </div>
+                  
                    
                     <form className="form-horizontal" onSubmit={handleSubmit}>
                         <input type="hidden" name="menu_id" value={menus.id} />
                             <div className="w-full">
-                                <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Privilege</label>
+                                <label for="select-multiple" className="block text-sm font-bold text-gray-700 font-nunito-sans"> Privilege</label>
                                 <Select
                                     isMulti
                                     name="privileges_id"

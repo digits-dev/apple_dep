@@ -170,8 +170,20 @@ class MenusController extends Controller{
         $id = $request->id;
         $message = $request->bulk_action_type == 0 ? "Inactive" : "Active";
         DB::table('adm_menuses')->where('id',$id)->update([
+            'parent_id' => 0,
             'is_active' => $request->bulk_action_type
         ]);
+
+        $child = DB::table('adm_menuses')->where('parent_id',$id)->get();
+        if($child){
+            foreach($child as $val){
+                DB::table('adm_menuses')->where('parent_id',$id)->update([
+                    'parent_id' => 0,
+                    'is_active' => $request->bulk_action_type
+                ]);
+            }
+        }
+        
         return json_encode(["message"=>"Menus Set to ".$message, "status"=>"success"]);
     }
 }

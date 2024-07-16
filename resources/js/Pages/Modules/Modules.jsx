@@ -76,13 +76,13 @@ const Modules = ({ modules, queryParams }) => {
                                 >
                                     Controller
                                 </TableHeader>
-                                <TableHeader
+                                {/* <TableHeader
                                     sortable={false}
                                     width="auto"
                                     justify="center"
                                 >
                                     Action
-                                </TableHeader>
+                                </TableHeader> */}
                             </Row>
                         </Thead>
 
@@ -102,13 +102,13 @@ const Modules = ({ modules, queryParams }) => {
                                         <RowData isLoading={loading}>
                                             {item.controller}
                                         </RowData>
-                                        <RowData center>
+                                        {/* <RowData center>
                                             <RowAction action="edit" 
                                                     href={`edit-module/${item.id}`}                                                                              
                                             >
                                                 
                                             </RowAction>
-                                        </RowData>
+                                        </RowData> */}
                                     </Row>
                                 ))}
                         </Tbody>

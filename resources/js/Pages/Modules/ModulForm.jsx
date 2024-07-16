@@ -1,9 +1,10 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import InputComponent from "../../Components/Forms/Input";
 import RouteType from "./RouteTypes";
 import axios from "axios";
+import { useToast } from "../../Context/ToastContext";
 
 const CreateUserForm = ({ onClose }) => {
     const [errors, setErrors] = useState({});
@@ -13,21 +14,27 @@ const CreateUserForm = ({ onClose }) => {
     const [formMessage, setFormMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [forms, setforms] = useState({
+    const [isRoute, setIsRoute] = useState(false);
+    const { handleToast } = useToast();
+    const [forms, setForms] = useState({
         name: "",
         path: "",
         icon: "",
-        controller: "",
         type: "",
+        controller: ""
     });
-    console.log(RouteType);
+    
     function handleChange(e) {
-        const key = e.target.name;
-        const value = e.target.value;
-        setforms((forms) => ({
+        const key = e.name ? e.name : e.target.name;
+        const value = e.value ? e.value : e.target.value;
+        setForms((forms) => ({
             ...forms,
             [key]: value,
         }));
+        if(e.name){
+            value === 'route' ?  setIsRoute(true) : setIsRoute(false);
+        }
+        
         setClearErrors(key);
         setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
     }
@@ -38,7 +45,10 @@ const CreateUserForm = ({ onClose }) => {
         if (!forms.path) newErrors.path = "Path is required";
         if (!forms.icon) newErrors.icon = "Icon is required";
         if (!forms.type) newErrors.type = "Type is required";
-        if (!forms.type) newErrors.type = "Type is required";
+        if(isRoute){
+            if (!forms.controller) newErrors.controller = "Controller is required";
+        }
+      
         return newErrors;
     };
 
@@ -56,11 +66,9 @@ const CreateUserForm = ({ onClose }) => {
                     },
                 });
                 if (response.data.type == "success") {
-                    setFormMessage(response.data.message);
-                    setMessageType(response.data.type);
-                    setTimeout(() => setFormMessage(""), 3000);
-                    onClose
+                    handleToast(response.data.message, response.data.type);
                     router.reload({ only: ["Modules"] });
+                    
                 } else {
                     setErrorMessage(response.data.message);
                 }
@@ -127,6 +135,7 @@ const CreateUserForm = ({ onClose }) => {
 
             <div className="flex flex-col mb-3 w-full">
                 <DropdownSelect
+                    selectType="select2"
                     defaultSelect="Select a Type"
                     name="type"
                     options={RouteType}
@@ -139,19 +148,23 @@ const CreateUserForm = ({ onClose }) => {
                     </div>
                 )}
             </div>
-            <div className="flex flex-col mb-3 w-full">
-                <InputComponent
-                    type="text"
-                    name="controller"
-                    value={forms.controller}
-                    onChange={handleChange}
-                />
-                {(errors.controller || serverErrors.controller) && (
-                    <div className="font-nunito-sans font-bold text-red-600">
-                        {errors.controller || serverErrors.controller}
-                    </div>
-                )}
-            </div>
+            {isRoute 
+            ? 
+                <div className="flex flex-col mb-3 w-full">
+                    <InputComponent
+                        type="text"
+                        name="controller"
+                        value={forms.controller}
+                        onChange={handleChange}
+                    />
+                    {(errors.controller || serverErrors.controller) && (
+                        <div className="font-nunito-sans font-bold text-red-600">
+                            {errors.controller || serverErrors.controller}
+                        </div>
+                    )}
+                </div>
+            : ''}
+           
             <button
                 type="submit"
                 className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"

@@ -54,7 +54,7 @@ class ModulsController extends Controller{
         if (!CommonHelpers::isCreate()) {
             CommonHelpers::redirect(CommonHelpers::adminPath(), 'Access denied!');
         }
-       
+
         if($request->type === 'route'){
              //CREATE FILE
             $folderName = $request->controller;
@@ -62,9 +62,12 @@ class ModulsController extends Controller{
             $viewFolderName = preg_split('/(?=[A-Z])/',$request->controller);
             $viewContentName = preg_split('/(?=[A-Z])/',$request->controller);
 
+            if(!isset($viewFolderName[1]) && !isset($viewFolderName[2])){
+                return json_encode(["message"=>"Invalid Controller name! please refer tot this example(SampleModule)", "type"=>"danger"]);
+            }
             $finalViewFolderName = strtolower($viewFolderName[1])."-".strtolower($viewFolderName[2]);
-            $finalViewContentName = strtolower($viewContentName[1])."-".strtolower($viewContentName[2]).'-'.'content';
-
+            $finalViewContentName = strtolower($viewContentName[1])."-".strtolower($viewContentName[2]).'-'.'Controller';
+            
             if(file_exists(base_path('app/Http/Controllers/'.$folderName.'/'.$contentName.'.php'))){
                 return json_encode(["message"=>"Controller already exist!", "type"=>"danger"]);
             }else{
@@ -77,14 +80,14 @@ class ModulsController extends Controller{
                 $php = trim($php);
                 file_put_contents($path.$contentName.'.php', $php);
                 //MAKE FOLDER VIEW CONTENT
-                $makeFolderViewContent = base_path('resources/js/Pages/Test');
+                $makeFolderViewContent = base_path('resources/js/Pages/'.$viewFolderName[1]);
                 File::makeDirectory($makeFolderViewContent, $mode = 0777, true, true);
 
                 //MAKE FILE CONTROLLER
-                $pathViewController = base_path("resources/js/Pages/Test/");
+                $pathViewController = base_path("resources/js/Pages/".$viewFolderName[1]."/");
                 $viewContent = self::viewContent();
                 $viewContent = trim($viewContent);
-                file_put_contents($pathViewController.'Test'.'.jsx', $viewContent);
+                file_put_contents($pathViewController.$viewFolderName[1].'.jsx', $viewContent);
 
                 //CREATE MODULE
                 DB::table('adm_modules')->updateOrInsert([
