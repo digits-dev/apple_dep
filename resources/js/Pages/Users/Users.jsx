@@ -45,7 +45,6 @@ const Users = ({ users, options, queryParams }) => {
         setTimeout(() => {
             setTitle("User Management");
         }, 5);
-
     }, []);
 
     const handleSelectAll = () => {
@@ -94,7 +93,10 @@ const Users = ({ users, options, queryParams }) => {
                             }
                         );
                         if (response.data.status == "success") {
-                            handleToast(response.data.message, response.data.status);
+                            handleToast(
+                                response.data.message,
+                                response.data.status
+                            );
                             router.reload({ only: ["users"] });
                             setIsCheck([]);
                             setIsCheckAll(false);
@@ -499,7 +501,7 @@ const Users = ({ users, options, queryParams }) => {
                             </Row>
                         </Thead>
 
-                        <Tbody data={ users?.data}>
+                        <Tbody data={users?.data}>
                             {users &&
                                 users?.data.map((user, index) => (
                                     <Row
@@ -527,7 +529,11 @@ const Users = ({ users, options, queryParams }) => {
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}
-                                            systemStatus={user.status ? "active" : "inactive"}
+                                            systemStatus={
+                                                user.status
+                                                    ? "active"
+                                                    : "inactive"
+                                            }
                                         >
                                             {user.status == 1
                                                 ? "Active"
@@ -553,8 +559,6 @@ const Users = ({ users, options, queryParams }) => {
                                     </Row>
                                 ))}
                         </Tbody>
-
-                         
                     </TableContainer>
                     <div
                         onClick={() => {
@@ -569,6 +573,7 @@ const Users = ({ users, options, queryParams }) => {
                     show={showCreateModal}
                     onClose={handleCloseCreateModal}
                     title="Create User"
+                    width="lg"
                 >
                     <CreateUserForm onClose={handleCloseCreateModal} />
                 </Modal>
@@ -577,6 +582,7 @@ const Users = ({ users, options, queryParams }) => {
                     show={showEditModal}
                     onClose={handleCloseEditModal}
                     title="Edit User"
+                    width="lg"
                 >
                     <EditUserForm
                         user={editUser}
