@@ -67,12 +67,16 @@ const EditMenu = ({ menus, privileges, menuData }) => {
         <div>
             <AppContent>
                 <ContentPanel>
-                  
+                    {/* <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
+                        <p className="text-white font-extrabold text-center">
+                            Edit Menus
+                        </p>
+                    </div> */}
                    
                     <form className="form-horizontal" onSubmit={handleSubmit}>
                         <input type="hidden" name="menu_id" value={menus.id} />
                             <div className="w-full">
-                                <label for="select-multiple" className="block text-sm font-bold text-gray-700 font-nunito-sans"> Privilege</label>
+                                <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Privilege</label>
                                 <Select
                                     isMulti
                                     name="privileges_id"

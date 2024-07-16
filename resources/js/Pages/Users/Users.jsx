@@ -128,8 +128,8 @@ const Users = ({ users, options, queryParams }) => {
         });
 
         function handleChange(e) {
-            const key = e.target.name;
-            const value = e.target.value;
+            const key = e.name ? e.name : e.target.name;
+            const value = e.value ? e.value : e.target.value;
             setforms((forms) => ({
                 ...forms,
                 [key]: value,
@@ -223,11 +223,9 @@ const Users = ({ users, options, queryParams }) => {
                     )}
                 </div>
                 <div className="flex flex-col mb-3 w-full">
-                    <label className="font-nunito-sans font-semibold mb-1">
-                        Privileges
-                    </label>
                     <DropdownSelect
-                        defaultSelect="Select a Privilege"
+                        selectType="select2"
+                        displayName="Select a Privilege"
                         name="privilege_id"
                         options={options.privileges}
                         value={forms.privilege_id}
@@ -278,24 +276,33 @@ const Users = ({ users, options, queryParams }) => {
     };
 
     const EditUserForm = ({ user }) => {
+        const [editPrivilege, setEditPrivilege] = useState([]);
         const [editForms, setEditForms] = useState({
             u_id: user?.u_id,
-            name: user?.user_name || "",
-            email: user?.email || "",
-            privilege_id: user?.id_adm_privileges || "",
+            name: user?.user_name,
+            email: user?.email,
+            privilege_id: user.id_adm_privileges,
             password: "",
             status: user?.status,
         });
 
+        useEffect(() => {
+            setTimeout(()=>{
+                setTitle("Edit Menus");
+            },5);
+    
+            setEditPrivilege(options.privileges.map(priv => priv.id));
+        }, [options.privileges]);
+   
         function handleChange(e) {
-            const key = e.target.name;
-            const value = e.target.value;
+            const key = e.name ? e.name : e.target.name;
+            const value = e.value ? e.value : e.target.value;
             setEditForms((editForms) => ({
                 ...editForms,
                 [key]: value,
             }));
         }
-
+     
         const handleSubmit = async (e) => {
             e.preventDefault();
             setLoading(true);
@@ -356,14 +363,13 @@ const Users = ({ users, options, queryParams }) => {
                 </div>
 
                 <div className="flex flex-col mb-3 w-full">
-                    <label className="font-nunito-sans font-semibold">
-                        Privileges
-                    </label>
                     <DropdownSelect
-                        defaultSelect="Select a Privilege"
+                    isMulti
+                        selectType="select2"
+                        displayName="Select a Privilege"
                         name="privilege_id"
                         options={options.privileges}
-                        value={editForms.privilege_id}
+                        value={options.privileges.filter(priv => editPrivilege.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
                         onChange={handleChange}
                     />
                 </div>
@@ -380,11 +386,9 @@ const Users = ({ users, options, queryParams }) => {
                     />
                 </div>
                 <div className="flex flex-col  w-full">
-                    <label className="font-nunito-sans font-semibold">
-                        Status
-                    </label>
                     <DropdownSelect
-                        defaultSelect="Select a status"
+                        selectType="select2"
+                        displayName="Select a Status"
                         name="status"
                         options={options.status}
                         value={editForms.status}
