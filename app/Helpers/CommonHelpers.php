@@ -292,110 +292,77 @@ class CommonHelpers {
         }
     }
 
-    public static function isCreate($url=null){
+    public static function isCreate(){
         if (self::isSuperadmin()) {
             return true;
         }
 
-        if($url){
-            $session = Session::get('admin_privileges_roles');
-            foreach ($session as $v) {
-                if ($v->path == $url) {
-                    return (bool) $v->is_create;
-                }
-            }
-        }else{
-            $session = Session::get('admin_privileges_roles');
+        $session = Session::get('admin_privileges_roles');
+        if(is_array($session)){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_create;
                 }
             }
         }
-
-      
+        
     }
 
-    public static function isView($url = null){
+    public static function isView(){
         if (self::isSuperadmin()) {
             return true;
         }
 
-        if($url){
-            $session = Session::get('admin_privileges_roles');
-            foreach ($session as $v) {
-                if ($v->path == $url) {
-                    return (bool) $v->is_visible;
-                }
-            }
-        }else{
-            $session = Session::get('admin_privileges_roles');
+        $session = Session::get('admin_privileges_roles');
+        if(is_array($session)){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_visible;
                 }
             }
         }
+        
     }
 
-    public static function isUpdate($url = null){
+    public static function isUpdate(){
         if (self::isSuperadmin()) {
             return true;
         }
     
-        if($url){
-            $session = Session::get('admin_privileges_roles');
-            foreach ($session as $v) {
-                if ($v->path == $url) {
-                    return (bool) $v->is_edit;
-                }
-            }
-        }else{
-            $session = Session::get('admin_privileges_roles');
+        $session = Session::get('admin_privileges_roles');
+        if(is_array($session)){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_edit;
                 }
             }
         }
+        
     }
 
-    public static function isRead($url = null){
+    public static function isRead(){
         if (self::isSuperadmin()) {
             return true;
         }
 
-        if($url){
-            $session = Session::get('admin_privileges_roles');
-            foreach ($session as $v) {
-                if ($v->path == $url) {
-                    return (bool) $v->is_read;
-                }
-            }
-        }else{
-            $session = Session::get('admin_privileges_roles');
+        $session = Session::get('admin_privileges_roles');
+        if(is_array($session)){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_read;
                 }
             }
         }
+        
     }
 
-    public static function isDelete($url = null){
+    public static function isDelete(){
         if (self::isSuperadmin()) {
             return true;
         }
 
-        if($url){
-            $session = Session::get('admin_privileges_roles');
-            foreach ($session as $v) {
-                if ($v->path == $url) {
-                    return (bool) $v->is_delete;
-                }
-            }
-        }else{
-            $session = Session::get('admin_privileges_roles');
+        $session = Session::get('admin_privileges_roles');
+        if(is_array($session)){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_delete;

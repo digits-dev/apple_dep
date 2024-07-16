@@ -28,6 +28,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const [loading, setLoading] = useState(false);
     const [orderId, setOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+    const [enrollmentExist, setEnrollmentExist] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -169,10 +170,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     };
 
     const EnrollReturnDeviceActions = () => {
-        const handleSwal = (e) => {
+        const handleSwal = (e, action) => {
             e.preventDefault();
             Swal.fire({
-                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to enroll this Device?</p>`,
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${
+                    action == "enroll" ? "Enroll" : "Return"
+                } this Device?</p>`,
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
                 confirmButtonColor: "#000000",
@@ -180,18 +183,25 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 iconColor: "#000000",
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    EnrollDevice();
+                    EnrollReturnDevice(action);
                 }
             });
         };
 
-        const EnrollDevice = async () => {
+        const EnrollReturnDevice = async (action) => {
             setProcessing(true);
 
             try {
-                const response = await axios.post(`/list_of_orders/enroll`, {
-                    id: orderId,
-                });
+                let response;
+                if (action == "enroll") {
+                    response = await axios.post(`/list_of_orders/enroll`, {
+                        id: orderId,
+                    });
+                } else {
+                    response = await axios.post(`/list_of_orders/return`, {
+                        id: orderId,
+                    });
+                }
 
                 if (response.data.status == "success") {
                     setShowModal(false);
@@ -204,7 +214,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                     setShowModal(false);
                     setProcessing(false);
 
-                    handleToast("Something went wrong!", "Error");
+                    router.reload({ only: ["orderLines"] });
+                    handleToast(response.data.message, "Error");
                 }
             } catch (error) {
                 setProcessing(false);
@@ -222,10 +233,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                     <LoadingIcon classes={"my-10"} />
                 ) : (
                     <>
-                        {enrollmentStatus != 3 && (
+                        {(enrollmentExist == 0 ||
+                            (enrollmentExist == 1 &&
+                                enrollmentStatus == 2)) && (
                             <button
                                 className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
-                                onClick={handleSwal}
+                                onClick={(e) => handleSwal(e, "enroll")}
                             >
                                 Enroll Device
                             </button>
@@ -234,6 +247,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             disabled={enrollmentStatus == 1}
+                            onClick={(e) => handleSwal(e, "return")}
                         >
                             Return Device
                         </button>
@@ -362,6 +376,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                                 setOrderId(order.id);
                                                 setEnrollmentStatus(
                                                     order.enrollment_status_id
+                                                );
+                                                setEnrollmentExist(
+                                                    order.enrollment_exist
                                                 );
                                             }}
                                         />

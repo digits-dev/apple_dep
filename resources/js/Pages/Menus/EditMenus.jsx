@@ -7,6 +7,7 @@ import { Link } from '@inertiajs/react';
 import InputComponent from '../../Components/Forms/Input';
 import AppContent from '../../Layouts/layout/AppContent';
 import DissapearingToast from '../../Components/Toast/DissapearingToast';
+import ContentPanel from '../../Components/Table/ContentPanel';
 
 const EditMenu = ({ menus, privileges, menuData }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -64,64 +65,64 @@ const EditMenu = ({ menus, privileges, menuData }) => {
     };
     
     return (
-        <AppContent>
-                <DissapearingToast type={messageType} message={formMessage} />
-            <div className='panel panel-default'>
-                <div className='panel-heading'>
-                    Edit Menus
-                </div>
-                <div className='panel-body'>
+        <div>
+            <AppContent>
+                <ContentPanel>
+                    <DissapearingToast type={messageType} message={formMessage} />
+                    <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
+                        <p className="text-white font-extrabold text-center">
+                            Edit Menus
+                        </p>
+                    </div>
+                   
                     <form className="form-horizontal" onSubmit={handleSubmit}>
                         <input type="hidden" name="menu_id" value={menus.id} />
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="w-full max-w-xs">
-                                    <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Privilege</label>
-                                    <Select
-                                        isMulti
-                                        name="privileges_id"
-                                        className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        value={privileges.filter(priv => privilegesId.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
-                                        onChange={handlePrivilegesChange}
-                                        options={privileges.map(priv => ({ value: priv.id, label: priv.name }))}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <InputComponent
-                                        type="text"
-                                        name="menu_name"
-                                        value={menuName}
-                                        onChange={(e) => setMenuName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <InputComponent
-                                        type="text"
-                                        name="slug"
-                                        value={slug}
-                                        onChange={(e) => setSlug(e.target.value)}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <InputComponent
-                                        type="text"
-                                        name="icon"
-                                        value={icon}
-                                        onChange={(e) => setIcon(e.target.value)}
-                                    />
-                                </div>
-                            </div><br />
+                            <div className="w-full">
+                                <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Privilege</label>
+                                <Select
+                                    isMulti
+                                    name="privileges_id"
+                                    className="block w-full py-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    value={privileges.filter(priv => privilegesId.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
+                                    onChange={handlePrivilegesChange}
+                                    options={privileges.map(priv => ({ value: priv.id, label: priv.name }))}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <InputComponent
+                                    type="text"
+                                    name="menu_name"
+                                    value={menuName}
+                                    onChange={(e) => setMenuName(e.target.value)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <InputComponent
+                                    type="text"
+                                    name="slug"
+                                    value={slug}
+                                    onChange={(e) => setSlug(e.target.value)}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <InputComponent
+                                    type="text"
+                                    name="icon"
+                                    value={icon}
+                                    onChange={(e) => setIcon(e.target.value)}
+                                />
+                            </div>
+
                             <div className="mt-5 flex justify-between">
-                            <Link href="/privileges" as="button">
-                                <TableButton>Back</TableButton>
-                            </Link>
-                            <TableButton type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</TableButton>
-                        </div>
-                        </div>
+                                <Link href="/menu_management" as="button">
+                                    <TableButton>Back</TableButton>
+                                </Link>
+                                <TableButton type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</TableButton>
+                            </div>
                     </form>
-                </div>
-            </div>
-        </AppContent>
+                </ContentPanel>
+            </AppContent>
+        </div>
     );
 };
 

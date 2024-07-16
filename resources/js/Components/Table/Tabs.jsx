@@ -7,7 +7,6 @@ import TableHeader from "./TableHeader";
 import RowData from "./RowData";
 import Tbody from "../../Components/Table/Tbody";
 
-
 const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
     console.log(tabs);
     const [activeTab, setActiveTab] = useState(tabs[0].id);
@@ -127,7 +126,6 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             );
                                         })}
                                     </Tbody>
-                                    
                                 </TableContainer>
                             </div>
                         )}
@@ -196,13 +194,14 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             );
                                         })}
                                     </Tbody>
-                                    
                                 </TableContainer>
                             </div>
                         )}
                         {tab.id === 3 && (
                             <div>
-                                <h2 className="mb-4 italic">Transaction Logs</h2>
+                                <h2 className="mb-4 italic">
+                                    Transaction Logs
+                                </h2>
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -211,6 +210,12 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 justify="center"
                                             >
                                                 Transaction ID
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Type
                                             </TableHeader>
                                             <TableHeader
                                                 sortable={false}
@@ -226,12 +231,15 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             </TableHeader>
                                         </Row>
                                     </Thead>
-                                    
+
                                     <Tbody data={transactionLogs}>
                                         {transactionLogs.map((json) => (
                                             <Row key={json.id}>
                                                 <RowData center>
                                                     {json.dep_transaction_id}
+                                                </RowData>
+                                                <RowData center>
+                                                    {json.order_type}
                                                 </RowData>
                                                 <RowData center>
                                                     {json.dep_status}

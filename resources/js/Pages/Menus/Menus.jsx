@@ -19,11 +19,11 @@ const MenusIndex = ({
     const [draggingOverItem, setDraggingOverItem] = useState(null);
     const scrollContainerRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
-
+ 
     const handleWheel = (e) => {
         handleAutoScroll(e);
     };
-   
+
     const handleDragStart = (e, item, parentIndex, isActive, index) => {
         setIsDragging(true);
         handleWheel(e);
@@ -161,6 +161,8 @@ const MenusIndex = ({
 
     const renderMenuItems = (menus, isActive, parentIndex = null) => {
         return menus.map((menu, index) => (
+            <>
+            
             <div
                 key={menu.id}
                 data-id={menu.id}
@@ -171,13 +173,13 @@ const MenusIndex = ({
                 }
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
                 onDrop={handleDrop}
-                className={`rounded-lg  ${
+                className={` ${
                     parentIndex == null ? "bg-gray-400" : "bg-gray-500"
                 } text-white cursor-grab`}
             >
                 <div
                     className={`flex items-center justify-between ${
-                        parentIndex == null ? "p-4" : "p-3"
+                        parentIndex == null ? "pl-3 pt-3" : "pl-3 pt-3"
                     }`}
                 >
                     <div className="flex items-center gap-3">
@@ -208,7 +210,7 @@ const MenusIndex = ({
                         &nbsp;&nbsp;
                         {menu.is_active == 1 ?   <a
                             title="Delete"
-                            className={`fa fa-trash text-white ${
+                            className={`fa fa-times-circle text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
                             onClick={() => handleMenusEvent(menu.id,0)}
@@ -216,30 +218,27 @@ const MenusIndex = ({
                         :
                         <a
                             title="Delete"
-                            className={`fa fa-check text-white ${
+                            className={`fa fa-check-circle text-white ${
                                 parentIndex == null ? "text-lg" : "text-sm"
                             }`}
                             onClick={() => handleMenusEvent(menu.id,1)}
                         ></a> }
-                      
-                       
                     </div>
-                   
                 </div>
-                <em className="ml-3 text-md">
+                <em className="text-md">
                     <small>
-                        <i className="fa fa-users" /> {menu.privileges && menu.privileges.join(', ')}
+                        <i className="fa fa-users ml-3 pb-3" /> &nbsp;&nbsp; {menu.privileges && menu.privileges.join(', ')}
                     </small>
                 </em>
-                {menu.children && menu.children.length > 0 && (
-                    <div className="border-t-2 border-white">
-                        <div className="space-y-1 px-5 py-5">
+            </div>
+            {menu.children && menu.children.length > 0 && (
+                    <div className="border-t-1 border-white">
+                        <div className="space-y-1 pl-9">
                             {renderMenuItems(menu.children, isActive, index)}
                         </div>
                     </div>
                 )}
-               
-            </div>
+            </>
         ));
     };
 
@@ -275,7 +274,7 @@ const MenusIndex = ({
                             </p>
                         </div>
                         <div className="px-3 py-3">
-                            <div className="draggable-menu draggable-menu-active list-disc space-y-2">
+                            <div className="draggable-menu draggable-menu-active list-disc space-y-1">
                                 {renderMenuItems(menuActive, true)}
                             </div>
                             {menuActive.length === 0 && (

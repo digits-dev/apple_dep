@@ -82,7 +82,7 @@ Route::middleware(['auth'])->group(function () {
 
     //MENUS
     Route::post('/menu_management/add', [MenusController::class, 'postAddSave'])->name('MenusControllerPostSaveMenu');
-    Route::get(config('ad_url.ADMIN_PATH').'/menu_management/edit/{id}', [MenusController::class, 'getEdit'])->name('MenusControllerGetEdit');
+    Route::get('/menu_management/edit/{id}', [MenusController::class, 'getEdit'])->name('MenusControllerGetEdit');
     Route::post('/menu_management/edit-menu-save/{id}', [MenusController::class, 'postEditSave'])->name('edit-menus-save');
     Route::post('/set-status-menus', [MenusController::class, 'postStatusSave'])->name('delete-menus-save');
 
@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
     Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
+    Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
 
     //EnrollmentList
