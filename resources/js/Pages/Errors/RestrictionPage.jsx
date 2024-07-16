@@ -1,14 +1,26 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import { Link, Head } from "@inertiajs/react";
+import ContentPanel from "../../Components/Table/ContentPanel";
 
 const RestrictionPage = () => {
-  return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>403 - Access Denied</h1>
-      <p>You do not have permission to view this page.</p>
-      <Link href="dashboard">Go to Home</Link>
-    </div>
-  );
+    return (
+        <>
+            <Head title="Error 403" />
+            <ContentPanel>
+                <div className="flex flex-col items-center justify-center select-none">
+                    <img
+                        src="/images/others/403-logo.png"
+                        className="w-[800px]"
+                    />
+                    <Link
+                        href="dashboard"
+                        className="my-[20px] bg-primary py-3 px-5 rounded-[50px] text-white font-nunito-sans hover:opacity-70"
+                    >
+                        Go to Dashboard
+                    </Link>
+                </div>
+            </ContentPanel>
+        </>
+    );
 };
 
 export default RestrictionPage;
