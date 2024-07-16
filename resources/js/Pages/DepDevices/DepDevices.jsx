@@ -22,17 +22,40 @@ import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
 const DepDevices = ({ devices, queryParams }) => {
     queryParams = queryParams || {};
 
+    const { handleToast } = useToast();
+
+
 	const [loading, setLoading] = useState(false);
-
-	const [field1, setField1] = useState('');
-
 
 	router.on("start", () => setLoading(true));
 	router.on("finish", () => setLoading(false));
+
+	const [filters, setFilters] = useState({
+		item_code: '', 
+		item_description: '', 
+		serial_number: '', 
+		customer_name: '', 
+    });
+
+    const handleFilter = (e) => {
+        const { name, value } = e.target;
+        setFilters(filters => ({
+        ...filters,
+        [name]: value,
+        }));
+    }
+
+    const handleFilterSubmit = (e) => {
+        e.preventDefault();
+
+        const queryString = new URLSearchParams(filters).toString();
+        router.get(`/dep_devices?${queryString}`);
+    };
 
 	return (
 		<>
@@ -43,15 +66,32 @@ const DepDevices = ({ devices, queryParams }) => {
 				<TopPanel>
 					<TableSearch queryParams={queryParams} />
 					<PerPage queryParams={queryParams} />
-					<Filters>
-							<InputComponent name={'field1'} placeholder="placeholder of field1" value={field1} onChange={setField1}/>
-							<InputComponent name={'field2'} placeholder="placeholder of field2"/>
-							<InputComponent name={'field3'} placeholder="placeholder of field3"/>
-							<Select name="first_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-							<Select name="middle_name" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-							<Select name="last" options={[{name:'opt1', id:1}, {name:'opt2', id:2}]} />
-					</Filters>
-					<Export  path="/dep-devices-export"/>
+						<Filters onSubmit={handleFilterSubmit}>
+                            <InputComponent
+                                name="item_code"
+                                value={filters.item_code}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="item_description"
+                                value={filters.item_description}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="serial_number"
+                                value={filters.serial_number}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="customer_name"
+                                value={filters.customer_name}
+                                onChange={handleFilter}
+                            />
+                        </Filters>
+						<Export
+                            path={`/dep-devices-export${window.location.search}`}
+                            handleToast={handleToast}
+                        />
 				</TopPanel>
 
 				<TableContainer>
@@ -95,8 +135,8 @@ const DepDevices = ({ devices, queryParams }) => {
 					</Thead>
 					<Tbody data={devices.data}>
 						{devices &&
-								devices.data.map((item) => (
-									<Row key={item.sales_order_no + item.serial_number + item.id} >
+								devices.data.map((item, index) => (
+									<Row key={item.serial_number + index} >
 										<RowData
 											isLoading={loading}
 											center

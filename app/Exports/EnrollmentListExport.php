@@ -43,9 +43,9 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
                     $item->item_code,
                     $item->serial_number,
                     $item->transaction_id,
-                    $item->dep_status ? "Success" : "Error",
+                    $item->dStatus->dep_status,
                     $item->status_message,
-                    $item->enrollment_status,
+                    $item->eStatus->enrollment_status,
                     $item->created_date,
                 ];
        
@@ -61,12 +61,5 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
         $sheet->getStyle('1:1')->getFont()->setBold(true);
         $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
-
    
-    // public function columnWidths(): array
-    // {
-    //     return [
-    //         'B' => 45, 
-    //     ];
-    // }
 }

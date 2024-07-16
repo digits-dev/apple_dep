@@ -2,21 +2,14 @@ import React from 'react'
 import TableButton from './TableButton'
 import { useState } from 'react';
 
-const Filters = ({path, children}) => {
+const Filters = ({path, children, onSubmit}) => {
   
   const childCount = React.Children.count(children);
   const [show, setShow] = useState(false);
-  const [data, setData] = useState(null);
-
-  const submit = (e) => {
-    e.preventDefault()
-    router.post('/test', {file: data});
-  }
 
   const handleShow = () => {
     setShow(!show);
   }
-
 
   return (
     <>
@@ -31,7 +24,7 @@ const Filters = ({path, children}) => {
             <h1 className='text-lg font-bold'>Filters</h1>
           </header>
   
-          <form className='flex flex-col h-full justify-between gap-5'  onSubmit={submit}>
+          <form className='flex flex-col h-full justify-between gap-5'  onSubmit={onSubmit}>
            <div className={`grid gap-4 ${childCount == 1 ? 'md:grid-cols-1' : 'md:grid-cols-2'}`}>
             {children ? children : 'Please add fields'}
            </div>

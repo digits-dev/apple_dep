@@ -12,9 +12,33 @@ class Order extends Model
 
     protected $guarded = [];
 
+    protected $filterable = ['sales_order_no', 'customer_name', 'order_ref_no', 'dep_order', 'enrollment_status', 'order_date'];
+
+    public function scopeSearchAndFilter($query, $request){
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($query) use ($search) {
+                foreach ($this->filterable as $field) {
+                    $query->orWhere($field, 'LIKE', "%$search%");
+                }
+            });
+        }
+
+        foreach ($this->filterable as $field) {
+            if ($request->filled($field)) {
+                $value = $request->input($field);
+                $query->where($field, 'LIKE', "%$value%");
+            }
+        }
+    
+        return $query;
+    }
+
     public function status(){
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
     }
+
 
     public function scopeGetOrdersFromErp(){
         $query = "

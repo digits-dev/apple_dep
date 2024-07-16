@@ -18,6 +18,47 @@ class EnrollmentList extends Model
         'enrollment_status', 
         'status_message'
     ];
+    
+    protected $filterable = [
+        'sales_order_no',
+        'item_code',
+        'serial_number',
+        'transaction_id',
+        'dep_status',
+        'status_message',
+        'enrollment_status',
+        'created_date',
+    ];
+
+    public function scopeSearchAndFilter($query, $request){
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($query) use ($search) {
+                foreach ($this->filterable as $field) {
+                    if ($field === 'created_date') {
+                        $query->orWhereDate('created_at', $search);
+                    } else {
+                        $query->orWhere($field, 'LIKE', "%$search%");
+                    }
+                }
+            });
+        }
+
+        foreach ($this->filterable as $field) {
+            if ($field === 'created_date' && $request->filled('created_date')) {
+                $date = $request->input($field);
+                $query->whereDate('created_at', $date);
+            } elseif ($request->filled($field)) {
+                $value = $request->input($field);
+                $query->where($field, 'LIKE', "%$value%");
+            }
+        }
+    
+        return $query;
+    }
+
+
 
     //ENROLLMENT STATUS
     public function eStatus(){

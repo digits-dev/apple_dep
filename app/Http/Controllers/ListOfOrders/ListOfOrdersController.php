@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ListOfOrders;
 use App\Helpers\CommonHelpers;
 use App\Exports\OrdersExport;
 use App\Http\Controllers\Controller;
+use App\Models\EnrollmentStatus;
 use App\Models\Order;
 use App\Models\OrderLines;
 use App\Models\User;
@@ -44,21 +45,48 @@ class ListOfOrdersController extends Controller
         $this->appleService = $appleService;
     }
 
-    public function getIndex()
+    
+    public function getAllData()
     {
+        $query = Order::query()->with('status');
+
+        $filter = $query->searchAndFilter(request());
+
+        $result = $filter->orderBy($this->sortBy, $this->sortDir);
+
+        return $result;
+    }
+    
+    public function export(Request $request)
+    {
+        date_default_timezone_set('Asia/Manila');
+
+        $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
+
+        $data = self::getAllData();
+
+        return Excel::download(new OrdersExport($data), $filename . '.xlsx');
+    }
+
+    public function getIndex(Request $request)
+    {
+
+        $data = [];
+
+        $data['orders'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+
+        $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
+
+        $data['queryParams'] = request()->query();
+
         if(!CommonHelpers::isView()) {
             return Inertia::render('Errors/RestrictionPage');
         }
-        $query = Order::query()->with('status');
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('sales_order_no', 'LIKE', "%$search%");
-        });
 
-        $orders = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-        return Inertia::render('ListOfOrders/ListOfOrders', [ 'orders' => $orders, 'queryParams' => request()->query()]);
+        return Inertia::render('ListOfOrders/ListOfOrders', $data);
+
     }
 
-    
     public function show(Order $order)
     {
         $orderLines = OrderLines::where('order_id', $order->id)->get();
@@ -100,30 +128,6 @@ class ListOfOrdersController extends Controller
         return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }
 
-    public function export()
-    {
-        date_default_timezone_set('Asia/Manila');
-
-        $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
-
-        return Excel::download(new OrdersExport($result), $filename . '.xlsx');
-    }
-
-    public function getAllData()
-    {
-        $query = Order::select([
-            'id', 
-            'sales_order_no', 
-            'customer_name', 
-            'order_ref_no', 
-            'dep_order', 
-            'enrollment_status', 
-            'order_date'
-        ]);
-
-        return $query;
-    }
 
     public function enrollDevices(Request $request)
     {

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\DepDevices;
 use App\Helpers\CommonHelpers;
 use App\Exports\DevicesExport;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
-use App\Models\EnrollmentList;
+use App\Models\DepDevice;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -21,43 +21,40 @@ class DepDevicesController extends Controller
         $this->perPage = request()->get('perPage', 10);
     }
 
-    public function getIndex()
+    public function getAllData()
     {
-        if(!CommonHelpers::isView()) {
-            return Inertia::render('Errors/RestrictionPage');
-        }
-        $query = EnrollmentList::join('orders', 'orders.sales_order_no', '=', 'enrollment_lists.sales_order_no')
-        ->join('list_of_order_lines', 'list_of_order_lines.serial_number', '=', 'enrollment_lists.serial_number')
-        ->select('enrollment_lists.*', 'list_of_order_lines.item_description', 'orders.customer_name')
-        ->where('enrollment_lists.enrollment_status', 3);
+        $query = DepDevice::getData();
 
-        $query->when(request('search'), function ($query, $search) {
-        $query->where('item_code', 'LIKE', "%$search%");
-        });
+        $filter = $query->searchAndFilter(request());
 
-        $devices = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $result = $filter->orderBy($this->sortBy, $this->sortDir);
 
-
-        return Inertia::render('DepDevices/DepDevices', [ 'devices' => $devices, 'queryParams' => request()->query()]);
+        return $result;
     }
-
-    public function export()
+    
+    public function export(Request $request)
     {
         date_default_timezone_set('Asia/Manila');
 
-        $filename            = "DEP Devices - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $filename = "DEP Devices - " . date ('Y-m-d H:i:s');
 
-        return Excel::download(new DevicesExport($result), $filename . '.xlsx');
+        $data = self::getAllData();
+
+        return Excel::download(new DevicesExport($data), $filename . '.xlsx');
     }
 
-    public function getAllData()
+    public function getIndex()
     {
-        $query = EnrollmentList::join('orders', 'orders.sales_order_no', '=', 'enrollment_lists.sales_order_no')
-        ->join('list_of_order_lines', 'list_of_order_lines.serial_number', '=', 'enrollment_lists.serial_number')
-        ->select('enrollment_lists.*', 'list_of_order_lines.item_description', 'orders.customer_name')
-        ->where('enrollment_lists.enrollment_status', 3);
+        $data = [];
 
-        return $query;
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
+        $data['devices'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $data['queryParams'] = request()->query();
+
+        return Inertia::render('DepDevices/DepDevices', $data);
     }
+
 }

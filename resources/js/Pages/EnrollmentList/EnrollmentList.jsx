@@ -18,16 +18,44 @@ import Select from "../../Components/Forms/Select";
 import { useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
+import { useToast } from "../../Context/ToastContext";
 
-const EnrollmentList = ({ enrollmentLists, queryParams }) => {
+const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses }) => {
     queryParams = queryParams || {};
+
+    const { handleToast } = useToast();
 
     const [loading, setLoading] = useState(false);
 
-    const [field1, setField1] = useState("");
-
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const [filters, setFilters] = useState({
+        sales_order_no: '',
+        item_code: '',
+        serial_number: '',
+        transaction_id: '',
+        dep_status: '',
+        status_message: '',
+        enrollment_status: '',
+        created_date: '',
+    });
+
+    const handleFilter = (e) => {
+        const { name, value } = e.target;
+        setFilters(filters => ({
+        ...filters,
+        [name]: value,
+        }));
+    }
+
+    const handleFilterSubmit = (e) => {
+        e.preventDefault();
+
+        const queryString = new URLSearchParams(filters).toString();
+        router.get(`/enrollment_list?${queryString}`);
+    };
+
 
     return (
         <>
@@ -37,44 +65,53 @@ const EnrollmentList = ({ enrollmentLists, queryParams }) => {
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
-                        <Filters>
+                        <Filters onSubmit={handleFilterSubmit}>
                             <InputComponent
-                                name={"field1"}
-                                placeholder="placeholder of field1"
-                                value={field1}
-                                onChange={setField1}
+                                name="sales_order_no"
+                                value={filters.sales_order_no}
+                                onChange={handleFilter}
                             />
-                            <InputComponent
-                                name={"field2"}
-                                placeholder="placeholder of field2"
+                             <InputComponent
+                                name="item_code"
+                                value={filters.item_code}
+                                onChange={handleFilter}
                             />
-                            <InputComponent
-                                name={"field3"}
-                                placeholder="placeholder of field3"
+                             <InputComponent
+                                name="serial_number"
+                                value={filters.serial_number}
+                                onChange={handleFilter}
+                            />
+                             <InputComponent
+                                name="transaction_id"
+                                value={filters.transaction_id}
+                                onChange={handleFilter}
                             />
                             <Select
-                                name="first_name"
-                                options={[
-                                    { name: "opt1", id: 1 },
-                                    { name: "opt2", id: 2 },
-                                ]}
+                                name="dep_status"
+                                options={depStatuses}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="status_message"
+                                value={filters.status_message}
+                                onChange={handleFilter}
                             />
                             <Select
-                                name="middle_name"
-                                options={[
-                                    { name: "opt1", id: 1 },
-                                    { name: "opt2", id: 2 },
-                                ]}
+                                name="enrollment_status"
+                                options={enrollmentStatuses}
+                                onChange={handleFilter}
                             />
-                            <Select
-                                name="last"
-                                options={[
-                                    { name: "opt1", id: 1 },
-                                    { name: "opt2", id: 2 },
-                                ]}
+                            <InputComponent
+                                type="date"
+                                name="created_date"
+                                value={filters.created_date}
+                                onChange={handleFilter}
                             />
                         </Filters>
-                        <Export path="/enrollment-list-export" />
+                        <Export
+                            path={`/enrollment-list-export${window.location.search}`}
+                            handleToast={handleToast}
+                        />
                     </TopPanel>
 
                     <TableContainer>

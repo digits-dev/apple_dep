@@ -4,7 +4,10 @@ namespace App\Http\Controllers\EnrollmentList;
 use App\Helpers\CommonHelpers;
 use App\Exports\EnrollmentListExport;
 use App\Http\Controllers\Controller;
+use App\Models\DepStatus;
 use App\Models\EnrollmentList;
+use App\Models\EnrollmentStatus;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -25,48 +28,48 @@ class EnrollmentListController extends Controller
         $this->appleService = $appleService;
     }
 
-    public function getIndex()
+    
+    public function getAllData()
     {
-        if(!CommonHelpers::isView()) {
-            return Inertia::render('Errors/RestrictionPage');
-        }
-        $query = EnrollmentList::query()->with(['dStatus', 'eStatus']); //dep status and enrollment status
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('sales_order_no', 'LIKE', "%$search%");
-        });
+        $query = EnrollmentList::query()->with(['dStatus', 'eStatus']);
 
         $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
 
-        $enrollmentLists = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $filter = $query->searchAndFilter(request());
 
+        $result = $filter->orderBy($this->sortBy, $this->sortDir);
 
-        return Inertia::render('EnrollmentList/EnrollmentList', [ 'enrollmentLists' => $enrollmentLists, 'queryParams' => request()->query()]);
+        return $result;
     }
-
-    public function export()
+    
+    public function export(Request $request)
     {
         date_default_timezone_set('Asia/Manila');
 
-        $filename            = "Enrollment List - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $filename = "Enrollment List - " . date ('Y-m-d H:i:s');
 
-        return Excel::download(new EnrollmentListExport($result), $filename . '.xlsx');
+        $data = self::getAllData();
+
+        return Excel::download(new EnrollmentListExport($data), $filename . '.xlsx');
     }
 
-    public function getAllData()
+    public function getIndex(Request $request)
     {
-        $query = EnrollmentList::select([
-            'sales_order_no',
-            'item_code', 
-            'serial_number', 
-            'transaction_id', 
-            'dep_status', 
-            'status_message', 
-            'enrollment_status', 
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date")
-        ]);
+        $data = [];
 
-        return $query;
+        $data['enrollmentLists'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+
+        $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
+        $data['depStatuses'] = DepStatus::select('id', 'dep_status as name')->get();
+
+        $data['queryParams'] = request()->query();
+
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
+        return Inertia::render('EnrollmentList/EnrollmentList', $data);
+
     }
 
     public function EnrollmentListDetails(EnrollmentList $enrollmentList)

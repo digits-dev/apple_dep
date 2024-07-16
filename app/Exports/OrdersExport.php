@@ -40,7 +40,7 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
                     $item->customer_name,
                     $item->order_ref_no,
                     $item->dep_order ? "Yes" : "No",
-                    $item->enrollment_status  ? "Enrollment Success" : "Enrollment Error",
+                    $item->status->enrollment_status,
                     $item->order_date,
                 ];
        
