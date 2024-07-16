@@ -518,4 +518,50 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         }
     }
 
+    // VOID ORDER
+
+    public function testVoidOrderSuccessfully(){
+        $payload = [
+            "requestContext" => [
+                "shipTo" => "0000742682",
+                "timeZone" => "420",
+                "langCode" => "en"
+            ],
+            "transactionId" => "TXN_001124",
+            "depResellerId" => "0000742682",
+            "orders" => [
+                [
+                    "orderNumber" => "ORDER_900124",
+                    "orderDate" => "2014-08-29T10:10:10Z",
+                    "orderType" => "RE",
+                    "customerId" => "19828",
+                    "poNumber" => "PO_12346",
+                    "deliveries" => [
+                        [
+                            "deliveryNumber" => "D1.3",
+                            "shipDate" => "2014-10-11T05:10:00Z",
+                            "devices" => [
+                                [
+                                    "deviceId" => "33645005YAM",
+                                    "assetTag" => "A123457"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $this->service->voidOrder($payload);
+
+        // Assertions for void order
+        $this->assertIsArray($response, 'Response should be an array');
+        $this->assertArrayHasKey('deviceEnrollmentTransactionId', $response, 'Response does not have deviceEnrollmentTransactionId key');
+        $this->assertArrayHasKey('enrollDevicesResponse', $response, 'Response does not have enrollDevicesResponse key');
+        $this->assertEquals('SUCCESS', $response['enrollDevicesResponse']['statusCode'], 'Failed to void orders');
+        $this->assertEquals('Transaction posted successfully in DEP', $response['enrollDevicesResponse']['statusMessage']);
+
+    }
+
+
 }
