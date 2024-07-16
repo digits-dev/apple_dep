@@ -1,4 +1,4 @@
-import { Head,  router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -30,7 +30,7 @@ const Action = ({ actions, queryParams }) => {
 
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
-    
+
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
 
@@ -44,48 +44,52 @@ const Action = ({ actions, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentValue: '', currentId:'', status: Boolean});
+    const [updateFormValues, setUpdateFormValues] = useState({
+        currentValue: "",
+        currentId: "",
+        status: Boolean,
+    });
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
     const handleShowCreate = () => {
         setShowCreate(!showCreate);
-    }
+    };
 
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
-    }
+    };
 
     const handleCheckboxChange = (itemId) => {
-		if (selectedItems.includes(itemId)) {
-		  setSelectedItems(selectedItems.filter(id => id !== itemId));
-		} else {
-		  setSelectedItems([...selectedItems, itemId]);
-		}
-	};
+        if (selectedItems.includes(itemId)) {
+            setSelectedItems(selectedItems.filter((id) => id !== itemId));
+        } else {
+            setSelectedItems([...selectedItems, itemId]);
+        }
+    };
 
     const handleSelectAll = () => {
-		if (selectAll) {
-		  setSelectedItems([]);
-		} else {
-		  const allItemIds = actions?.data.map(item => item.id);
-		  setSelectedItems(allItemIds);
-		}
-		setSelectAll(!selectAll);
-	};
+        if (selectAll) {
+            setSelectedItems([]);
+        } else {
+            const allItemIds = actions?.data.map((item) => item.id);
+            setSelectedItems(allItemIds);
+        }
+        setSelectAll(!selectAll);
+    };
 
     const resetCheckbox = () => {
         setSelectedItems([]);
         setSelectAll(false);
-    }
+    };
 
     const handleActionSelected = (action) => {
-		const actionType = action;
+        const actionType = action;
 
-		if(selectedItems?.length === 0){
-            handleToast('Nothing selected!', 'Error');
-		} else{
-			Swal.fire({
+        if (selectedItems?.length === 0) {
+            handleToast("Nothing selected!", "Error");
+        } else {
+            Swal.fire({
                 title: `<p class="font-nunito-sans" >Set to ${
                     actionType ? "Active" : "Inactive"
                 }?</p>`,
@@ -97,17 +101,19 @@ const Action = ({ actions, queryParams }) => {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-
                         const response = await axios.put(
                             "/actions/bulkupdate",
                             {
                                 ids: selectedItems,
-                                status: actionType
+                                status: actionType,
                             }
                         );
 
                         if (response.data.status == "success") {
-                            handleToast(response.data.message, response.data.status);
+                            handleToast(
+                                response.data.message,
+                                response.data.status
+                            );
 
                             router.reload({ only: ["actions"] });
 
@@ -116,158 +122,202 @@ const Action = ({ actions, queryParams }) => {
                     } catch (error) {}
                 }
             });
-		}
-	};
+        }
+    };
 
     const bulkActions = [
-        { label: <span><i className="fa fa-check-circle mr-2 text-green-600"></i> Set Active</span>, value: 1 },
-        { label: <span><i className="fa fa-times-circle mr-2 text-red-600"></i> Set Inactive</span>, value: 0 },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-check-circle mr-2 text-green-600"></i>{" "}
+                    Set Active
+                </span>
+            ),
+            value: 1,
+        },
+        {
+            label: (
+                <span>
+                    <i className="fa fa-times-circle mr-2 text-red-600"></i> Set
+                    Inactive
+                </span>
+            ),
+            value: 0,
+        },
     ];
 
     return (
         <>
-        <Head title="Actions" />
-        <AppContent>
-            <ContentPanel>
-                <TopPanel>
-                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
-                    <TableSearch queryParams={queryParams} />
-                    <PerPage queryParams={queryParams} />
-                    <TableButton onClick={handleShowCreate}>
-                        Add Action
-                    </TableButton>
-                    <Import importPath="/actions-import" templatePath="/actions-import-template"/>
-                    <Export  path="/actions-export"/>
-                </TopPanel>
-    
-                <TableContainer>
-                    <Thead>
-                        <Row>
-                            <TableHeader
-                                width="sm"
-                                sortable={false}
-                                justify="center"
-                            >
-                                <Checkbox
-                                    type="checkbox"
-                                    name="selectAll"
-                                    id="selectAll"
-                                    handleClick={handleSelectAll}
-                                    isChecked={selectAll}
-                                />
-                            </TableHeader>
-                            <TableHeader
-                                name="id"
-                                queryParams={queryParams}
-                            >
-                              Action ID
-                            </TableHeader>
-    
-                            <TableHeader
-                                name="action_name"
-                                queryParams={queryParams}
-                            >
-                                Action Name
-                            </TableHeader>
-    
-                            <TableHeader
-                                name="created_date"
-                                queryParams={queryParams}
-                            >
-                                Record Creation Date
-                            </TableHeader>
+            <Head title="Actions" />
+            <AppContent>
+                <ContentPanel>
+                    <TopPanel>
+                        <BulkActions
+                            actions={bulkActions}
+                            onActionSelected={handleActionSelected}
+                        />
+                        <TableSearch queryParams={queryParams} />
+                        <PerPage queryParams={queryParams} />
+                        <TableButton onClick={handleShowCreate}>
+                            Add Action
+                        </TableButton>
+                        <Import
+                            importPath="/actions-import"
+                            templatePath="/actions-import-template"
+                        />
+                        <Export path="/actions-export" />
+                    </TopPanel>
 
-                            <TableHeader
+                    <TableContainer>
+                        <Thead>
+                            <Row>
+                                <TableHeader
+                                    width="sm"
+                                    sortable={false}
+                                    justify="center"
+                                >
+                                    <Checkbox
+                                        type="checkbox"
+                                        name="selectAll"
+                                        id="selectAll"
+                                        handleClick={handleSelectAll}
+                                        isChecked={selectAll}
+                                    />
+                                </TableHeader>
+                                <TableHeader
+                                    name="id"
+                                    queryParams={queryParams}
+                                >
+                                    Action ID
+                                </TableHeader>
+
+                                <TableHeader
+                                    name="action_name"
+                                    queryParams={queryParams}
+                                >
+                                    Action Name
+                                </TableHeader>
+
+                                <TableHeader
+                                    name="created_date"
+                                    queryParams={queryParams}
+                                >
+                                    Record Creation Date
+                                </TableHeader>
+
+                                <TableHeader
                                     name="status"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
                                     Status
-                            </TableHeader>
-    
-                  
-                            <TableHeader
-                                sortable={false}
-                                width="auto"
-                                justify="center"
-                            >
-                                Action
-                            </TableHeader>
-                        </Row>
-                    </Thead>
+                                </TableHeader>
 
-                    <Tbody data={actions.data}>
-                    {actions &&
-                            actions.data.map((item) => (
-                                <Row key={item.id} >
-                                    <RowData center>
-                                        <Checkbox
-                                            type="checkbox"
-                                            id={item.id}
-                                            handleClick={()=>handleCheckboxChange(item.id)}
-                                            isChecked={selectedItems.includes(item.id)}
-                                        />
-                                    </RowData>
-                                    <RowData isLoading={loading} >
-                                        {item.id}
-                                    </RowData>
-                                    <RowData isLoading={loading}>{item.action_name}</RowData>
-                                    <RowData isLoading={loading} >{item.created_date}</RowData>
-                                    <RowStatus
-                                            isLoading={loading}
-                                            systemStatus={item.status ? "active" : "inactive"}
-                                            center
-                                    >
-                                            {item.status ? "Active" : "Inactive"}
-                                    </RowStatus>
-                                    <RowData isLoading={loading} center>
-                                         <RowAction
-                                            type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.action_name, status:item.status});}}
-                                            action="edit"
-                                            size="md"
-                                        />
-                                    </RowData>
+                                <TableHeader
+                                    sortable={false}
+                                    width="auto"
+                                    justify="center"
+                                >
+                                    Action
+                                </TableHeader>
                             </Row>
-                            ))}
-					</Tbody>
-                </TableContainer>
-    
-                <Pagination paginate={actions} onClick={resetCheckbox} />
-            </ContentPanel>
+                        </Thead>
 
-            <Modal
-                show={showCreate}
-                onClose={handleShowCreate}
-                title="Add Action"
-            >
-                <ActionForm 
-                    handleShow={()=>{
-                        handleShowCreate(); 
-                        handleToast('Created Action', 'success');
-                    }} 
-                    action="create" />
-            </Modal>
+                        <Tbody data={actions.data}>
+                            {actions &&
+                                actions.data.map((item) => (
+                                    <Row key={item.id}>
+                                        <RowData center>
+                                            <Checkbox
+                                                type="checkbox"
+                                                id={item.id}
+                                                handleClick={() =>
+                                                    handleCheckboxChange(
+                                                        item.id
+                                                    )
+                                                }
+                                                isChecked={selectedItems.includes(
+                                                    item.id
+                                                )}
+                                            />
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.id}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.action_name}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.created_date}
+                                        </RowData>
+                                        <RowStatus
+                                            isLoading={loading}
+                                            systemStatus={
+                                                item.status
+                                                    ? "active"
+                                                    : "inactive"
+                                            }
+                                            center
+                                        >
+                                            {item.status
+                                                ? "Active"
+                                                : "Inactive"}
+                                        </RowStatus>
+                                        <RowData isLoading={loading} center>
+                                            <RowAction
+                                                type="button"
+                                                onClick={() => {
+                                                    handleShowEdit();
+                                                    setUpdateFormValues({
+                                                        currentId: item.id,
+                                                        currentValue:
+                                                            item.action_name,
+                                                        status: item.status,
+                                                    });
+                                                }}
+                                                action="edit"
+                                                size="md"
+                                            />
+                                        </RowData>
+                                    </Row>
+                                ))}
+                        </Tbody>
+                    </TableContainer>
 
-            <Modal
-                show={showEdit}
-                onClose={handleShowEdit}
-                title="Edit Action"
-            >
-                <ActionForm 
-                    handleShow={()=>{
-                        handleShowEdit(); 
-                        handleToast('Updated Action', 'success');
-                    }} 
-                    action="edit" 
-                    updateFormValues={updateFormValues} />
-            </Modal>
+                    <Pagination paginate={actions} onClick={resetCheckbox} />
+                </ContentPanel>
 
-        </AppContent>
+                <Modal
+                    show={showCreate}
+                    onClose={handleShowCreate}
+                    title="Add Action"
+                >
+                    <ActionForm
+                        handleShow={() => {
+                            handleShowCreate();
+                            handleToast("Created Action", "success");
+                        }}
+                        action="create"
+                    />
+                </Modal>
+
+                <Modal
+                    show={showEdit}
+                    onClose={handleShowEdit}
+                    title="Edit Action"
+                >
+                    <ActionForm
+                        handleShow={() => {
+                            handleShowEdit();
+                            handleToast("Updated Action", "success");
+                        }}
+                        action="edit"
+                        updateFormValues={updateFormValues}
+                    />
+                </Modal>
+            </AppContent>
         </>
     );
 };
 
 export default Action;
-
-

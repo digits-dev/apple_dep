@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\AppleDeviceEnrollmentController;
 use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\EnrollmentList\EnrollmentListController;
 use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
+use App\Http\Controllers\ItemMaster\ItemMasterController;
 use Inertia\Inertia; // We are going to use this class to render React components
 use App\Http\Controllers\PullErpController;
 /*
@@ -117,6 +118,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/actions-import-template', [ActionController::class, 'downloadTemplate']);
     Route::get('/dep-status-import-template', [DepStatusController::class, 'downloadTemplate']);
     Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
+
+    //SUBMASTERS
+
+    Route::post('/item_master_create', [ItemMasterController::class, 'addItemMaster']);
+    Route::put('/item_master_update/{itemMaster}', [ItemMasterController::class, 'updateItemMaster']);
 
     Route::post('/customers', [CustomerController::class, 'store']);
     Route::put('/customers/bulkupdate', [CustomerController::class, 'bulkUpdate']);

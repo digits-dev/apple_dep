@@ -14,13 +14,41 @@ import { useEffect, useState } from "react";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import Pagination from "../../Components/Table/Pagination";
 import Tbody from "../../Components/Table/Tbody";
+import TableButton from "../../Components/Table/Buttons/TableButton";
+import Modal from "../../Components/Modal/Modal";
+import ItemMasterForm from "./ItemMasterForm";
+import { useToast } from "../../Context/ToastContext";
+import RowAction from "../../Components/Table/RowAction";
 
 const ItemMaster = ({ itemMaster, queryParams }) => {
     const { setTitle } = useNavbarContext();
     const [loading, setLoading] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const { handleToast } = useToast();
+    const [updateFormValues, setUpdateFormValues] = useState({
+        digits_code: "",
+        upc_code_up_1: "",
+        upc_code_up_2: "",
+        upc_code_up_3: "",
+        upc_code_up_4: "",
+        upc_code_up_5: "",
+        wh_category: "",
+        supplier_item_code: "",
+        item_description: "",
+        brand_description: "",
+    });
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
+    const handleCreateModal = () => {
+        setShowCreateModal(!showCreateModal);
+    };
+
+    const handleUpdateModal = () => {
+        setShowUpdateModal(!showUpdateModal);
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -37,6 +65,9 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         <Export path="" />
+                        <TableButton onClick={handleCreateModal}>
+                            Add Item
+                        </TableButton>
                     </TopPanel>
 
                     <TableContainer>
@@ -121,6 +152,14 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                 >
                                     Brand Description
                                 </TableHeader>
+                                <TableHeader
+                                    sticky="right"
+                                    sortable={false}
+                                    width="auto"
+                                    justify="center"
+                                >
+                                    Action
+                                </TableHeader>
                             </Row>
                         </Thead>
                         <Tbody data={itemMaster.data}>
@@ -169,10 +208,76 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                         <RowData isLoading={loading}>
                                             {item.brand_description}
                                         </RowData>
+
+                                        <RowData
+                                            isLoading={loading}
+                                            center
+                                            sticky="right"
+                                        >
+                                            <RowAction
+                                                type="button"
+                                                onClick={() => {
+                                                    handleUpdateModal();
+                                                    setUpdateFormValues({
+                                                        currentId: item.id,
+                                                        digits_code:
+                                                            item.digits_code,
+                                                        upc_code_up_1:
+                                                            item.upc_code_up_1,
+                                                        upc_code_up_2:
+                                                            item.upc_code_up_2,
+                                                        upc_code_up_3:
+                                                            item.upc_code_up_3,
+                                                        upc_code_up_4:
+                                                            item.upc_code_up_4,
+                                                        upc_code_up_5:
+                                                            item.upc_code_up_5,
+                                                        wh_category:
+                                                            item.wh_category,
+                                                        supplier_item_code:
+                                                            item.supplier_item_code,
+                                                        item_description:
+                                                            item.item_description,
+                                                        brand_description:
+                                                            item.brand_description,
+                                                    });
+                                                }}
+                                                action="edit"
+                                                size="md"
+                                            />
+                                        </RowData>
                                     </Row>
                                 ))}
                         </Tbody>
                     </TableContainer>
+                    <Modal
+                        show={showCreateModal}
+                        onClose={handleCreateModal}
+                        title="Add Item"
+                        width="xl"
+                    >
+                        <ItemMasterForm
+                            handleShow={() => {
+                                handleCreateModal();
+                                handleToast("Item Add Success", "success");
+                            }}
+                        />
+                    </Modal>
+                    <Modal
+                        show={showUpdateModal}
+                        onClose={handleUpdateModal}
+                        title="Update Item"
+                        width="xl"
+                    >
+                        <ItemMasterForm
+                            handleShow={() => {
+                                handleUpdateModal();
+                                handleToast("Item Update Success", "success");
+                            }}
+                            setUpdateFormValues={updateFormValues}
+                            action="edit"
+                        />
+                    </Modal>
                     <Pagination paginate={itemMaster} />
                 </ContentPanel>
             </AppContent>
