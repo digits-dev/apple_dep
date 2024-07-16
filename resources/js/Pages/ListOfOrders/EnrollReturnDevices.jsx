@@ -31,7 +31,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const [enrollmentExist, setEnrollmentExist] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
-    const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
@@ -189,7 +188,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
         };
 
         const EnrollReturnDevice = async (action) => {
-            setProcessing(true);
+                setShowModal(false);
+                setLoading(true);
 
             try {
                 let response;
@@ -204,34 +204,25 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 }
 
                 if (response.data.status == "success") {
-                    setShowModal(false);
-                    setProcessing(false);
-
                     handleToast(response.data.message, response.data.status);
 
                     router.reload({ only: ["orderLines"] });
                 } else {
-                    setShowModal(false);
-                    setProcessing(false);
-
                     router.reload({ only: ["orderLines"] });
                     handleToast(response.data.message, "Error");
                 }
             } catch (error) {
-                setProcessing(false);
-                setShowModal(false);
                 handleToast(
                     "Something went wrong, please try again later.",
                     "Error"
                 );
+            } finally{
+                setLoading(false);
             }
         };
 
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
-                {processing ? (
-                    <LoadingIcon classes={"my-10"} />
-                ) : (
                     <>
                         {(enrollmentExist == 0 ||
                             (enrollmentExist == 1 &&
@@ -252,7 +243,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             Return Device
                         </button>
                     </>
-                )}
             </div>
         );
     };
