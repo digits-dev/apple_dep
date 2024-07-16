@@ -39,6 +39,10 @@ class AppleDeviceEnrollmentService
         return $this->sendRequest($payload, 'override order');
     }
 
+    public function voidOrder(array $payload){
+        return $this->sendRequest($payload, 'void order');
+    }
+
     public function checkTransactionStatus(array $requestData)
     {
         $url = $this->baseUrl . $this->checkTransactionStatusEndpoint;
