@@ -72,6 +72,39 @@ class AppleDeviceEnrollmentController extends Controller
         }
     }
 
+    public function testVoidOrder(){
+        try{
+            $requestData = [];
+
+            $payload = [
+                'requestContext' => [
+                    "shipTo" => $requestData['shipTo'],
+                    "timeZone" => "420",
+                    "langCode" => "en",
+                ],
+                "transactionId" => 'TXN_' . uniqid(),
+                "depResellerId" => $requestData['depResellerId'],
+                "orders" => [],
+            ];
+
+            // check if multiple orders are provided
+            if (isset($requestData['orders']) && is_array($requestData['orders'])){
+                foreach($requestData['orders'] as $orderData){
+                    $orderPayload = [
+                        'orderNumber' => $orderData['orderNumber'],
+                        'orderDate' => $orderData['orderDate'],
+                        'orderType' => 'VD',
+                        'customerId' => $orderData['customerId'],
+                        'poNumber' => $orderData['poNumber'],
+                    ];
+                }
+            }
+
+        }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function enrollDevice(Request $request)
     {
         try {
