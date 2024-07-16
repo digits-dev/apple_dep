@@ -21,24 +21,36 @@ import { useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import OverrideOrderForm from "./OverrideOrderForm";
 
 const ListOfOrders = ({ orders, queryParams }) => {
     queryParams = queryParams || {};
-    const {auth} = usePage().props;
+    const { auth } = usePage().props;
     const [loading, setLoading] = useState(false);
     const [field1, setField1] = useState("");
-    const [showEditModal, setShowEditModal] = useState(false);
+    const [showEditActionModal, setShowEditActionModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
-
     const { handleToast } = useToast();
+    const [showOverrideModal, setShowOverrideModal] = useState(false);
+
+    const [updateFormValues, setUpdateFormValues] = useState({
+        sales_order_no: "",
+        customer_name: "",
+        order_ref_no: "",
+        order_date: "",
+    });
+
+    const handleOverrideModal = () => {
+        setShowOverrideModal(!showOverrideModal);
+    };
 
     const handleCloseEditModal = () => {
-        setShowEditModal(false);
+        setShowEditActionModal(false);
     };
 
     const handleOpenEditModal = () => {
-        setShowEditModal(true);
+        setShowEditActionModal(true);
     };
 
     router.on("start", () => setLoading(true));
@@ -47,34 +59,39 @@ const ListOfOrders = ({ orders, queryParams }) => {
     const ListofOrdersEditActions = () => {
         return (
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
-                {auth.access.isCreate 
-                    ? 
-                <Link
-                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                    href={orderPath + `/${orderId}/edit`}
-                >
-                    Enroll/Return Devices
-                </Link>
-                    : '' }
-                {auth.access.isVoid 
-                    ? 
+                {auth.access.isCreate ? (
                     <Link
                         className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                        href="#"
+                        href={orderPath + `/${orderId}/edit`}
+                    >
+                        Enroll/Return Devices
+                    </Link>
+                ) : (
+                    ""
+                )}
+                {auth.access.isVoid ? (
+                    <button
+                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                        onClick={() => {
+                            handleOverrideModal();
+                            handleCloseEditModal();
+                        }}
                     >
                         Override Order
-                    </Link>
-                    : ''}
-                {auth.access.isOverride 
-                    ? 
+                    </button>
+                ) : (
+                    ""
+                )}
+                {auth.access.isOverride ? (
                     <Link
                         className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                         href="#"
                     >
                         Void Order
                     </Link>
-                    : ''}
-              
+                ) : (
+                    ""
+                )}
             </div>
         );
     };
@@ -250,10 +267,17 @@ const ListOfOrders = ({ orders, queryParams }) => {
                                                             orders.path
                                                         );
                                                         setOrderId(item.id);
-                                                        console.log(
-                                                            orderPath,
-                                                            orderId
-                                                        );
+                                                        setUpdateFormValues({
+                                                            order_id: item.id,
+                                                            sales_order_no:
+                                                                item.sales_order_no,
+                                                            customer_name:
+                                                                item.customer_name,
+                                                            order_ref_no:
+                                                                item.order_ref_no,
+                                                            order_date:
+                                                                item.order_date,
+                                                        });
                                                     }}
                                                     action="edit"
                                                     size="md"
@@ -268,11 +292,25 @@ const ListOfOrders = ({ orders, queryParams }) => {
                     <Pagination paginate={orders} />
                 </ContentPanel>
                 <Modal
-                    show={showEditModal}
+                    show={showEditActionModal}
                     onClose={handleCloseEditModal}
                     title="Edit Actions"
                 >
                     <ListofOrdersEditActions />
+                </Modal>
+                <Modal
+                    show={showOverrideModal}
+                    onClose={handleOverrideModal}
+                    title="Override Order"
+                >
+                    <OverrideOrderForm
+                        handleShow={() => {
+                            handleOverrideModal();
+                            handleToast("Order Override Successful", "success");
+                        }}
+                        updateFormValues={updateFormValues}
+                        action="edit"
+                    />
                 </Modal>
             </AppContent>
         </>

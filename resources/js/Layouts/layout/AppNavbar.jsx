@@ -30,6 +30,7 @@ const AppNavbar = () => {
             confirmButtonColor: "#000000",
             icon: "question",
             iconColor: "#000000",
+            reverseButtons: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
                 router.post("/logout");
