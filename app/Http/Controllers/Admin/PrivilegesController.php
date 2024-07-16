@@ -50,7 +50,9 @@ class PrivilegesController extends Controller{
                 DB::raw("(select is_create from adm_privileges_roles where id_adm_modules  = adm_modules.id and id_adm_privileges = '$id') as is_create"), 
                 DB::raw("(select is_read from adm_privileges_roles where id_adm_modules    = adm_modules.id and id_adm_privileges = '$id') as is_read"), 
                 DB::raw("(select is_edit from adm_privileges_roles where id_adm_modules    = adm_modules.id and id_adm_privileges = '$id') as is_edit"), 
-                DB::raw("(select is_delete from adm_privileges_roles where id_adm_modules  = adm_modules.id and id_adm_privileges = '$id') as is_delete")
+                DB::raw("(select is_delete from adm_privileges_roles where id_adm_modules  = adm_modules.id and id_adm_privileges = '$id') as is_delete"),
+                DB::raw("(select is_void from adm_privileges_roles where id_adm_modules    = adm_modules.id and id_adm_privileges = '$id') as is_void"),
+                DB::raw("(select is_override from adm_privileges_roles where id_adm_modules  = adm_modules.id and id_adm_privileges = '$id') as is_override")
                 )
          ->orderby("name", "asc")->get();
          $roles = DB::table('adm_privileges_roles')
@@ -112,6 +114,8 @@ class PrivilegesController extends Controller{
                 $arrs['is_read'] = @$data['is_read'] ?: 0;
                 $arrs['is_edit'] = @$data['is_edit'] ?: 0;
                 $arrs['is_delete'] = @$data['is_delete'] ?: 0;
+                $arrs['is_void'] = @$data['is_void'] ?: 0;
+                $arrs['is_override'] = @$data['is_override'] ?: 0;
                 $arrs['id_adm_privileges'] = $id;
                 $arrs['id_adm_modules'] = $id_modul;
                 DB::table("adm_privileges_roles")->insert($arrs);
@@ -121,7 +125,7 @@ class PrivilegesController extends Controller{
         }
 
         //Refresh Session Roles
-        $roles = DB::table('adm_privileges_roles')->where('id_adm_privileges', CommonHelpers::myPrivilegeId())->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
+        $roles = DB::table('adm_privileges_roles')->where('id_adm_privileges', CommonHelpers::myPrivilegeId())->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete', 'is_void', 'is_override')->get();
         Session::put('admin_privileges_roles', $roles);
 
         return json_encode(["message"=>"Created successfully!", "type"=>"success"]);
@@ -144,20 +148,18 @@ class PrivilegesController extends Controller{
         $priv = $request->privileges;
         // This solves issue #1074
         // DB::table("adm_privileges_roles")->where("id_adm_privileges", $id)->delete();
-
+    
         if ($priv) {
             foreach ($priv as $id_modul => $data) {
                 //Check Menu
                 $module = DB::table('adm_modules')->where('id', $id_modul)->first();
                 $currentPermission = DB::table('adm_privileges_roles')->where('id_adm_modules', $id_modul)->where('id_adm_privileges', $id)->first();
-
+         
                 if ($currentPermission) {
                     $arrs = [];
-                    $arrs['is_visible'] = @$data['is_visible'] ?: 0;
-                    $arrs['is_create'] = @$data['is_create'] ?: 0;
-                    $arrs['is_read'] = @$data['is_read'] ?: 0;
-                    $arrs['is_edit'] = @$data['is_edit'] ?: 0;
-                    $arrs['is_delete'] = @$data['is_delete'] ?: 0;
+                    foreach($data as $key => $val){
+                        $arrs[$key] = @$val ? : 0;
+                    }
                     DB::table('adm_privileges_roles')->where('id', $currentPermission->id)->update($arrs);
                 } else {
                     $arrs = [];
@@ -166,6 +168,8 @@ class PrivilegesController extends Controller{
                     $arrs['is_read'] = @$data['is_read'] ?: 0;
                     $arrs['is_edit'] = @$data['is_edit'] ?: 0;
                     $arrs['is_delete'] = @$data['is_delete'] ?: 0;
+                    $arrs['is_void'] = @$data['is_void'] ?: 0;
+                    $arrs['is_override'] = @$data['is_override'] ?: 0;
                     $arrs['id_adm_privileges'] = $id;
                     $arrs['id_adm_modules'] = $id_modul;
                     DB::table("adm_privileges_roles")->insert($arrs);
@@ -175,7 +179,7 @@ class PrivilegesController extends Controller{
 
         //Refresh Session Roles
         if ($id == CommonHelpers::myPrivilegeId()) {
-            $roles = DB::table('adm_privileges_roles')->where('id_adm_privileges', CommonHelpers::myPrivilegeId())->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
+            $roles = DB::table('adm_privileges_roles')->where('id_adm_privileges', CommonHelpers::myPrivilegeId())->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete', 'is_void', 'is_override')->get();
             Session::put('admin_privileges_roles', $roles);
 
             Session::put('theme_color', $request->theme_color);

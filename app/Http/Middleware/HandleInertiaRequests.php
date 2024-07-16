@@ -44,7 +44,9 @@ class HandleInertiaRequests extends Middleware
                     'isCreate' => CommonHelpers::isCreate(),
                     'isRead' => CommonHelpers::isRead(),
                     'isUpdate' => CommonHelpers::isUpdate(),
-                    'isDelete' => CommonHelpers::isDelete()
+                    'isDelete' => CommonHelpers::isDelete(),
+                    'isVoid' => CommonHelpers::isVoid(),
+                    'isOverride' => CommonHelpers::isOverride()
                 ]
             ],
             'errors' => function () use ($request) {

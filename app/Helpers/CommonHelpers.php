@@ -298,7 +298,7 @@ class CommonHelpers {
         }
 
         $session = Session::get('admin_privileges_roles');
-        if(is_array($session)){
+        if($session){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_create;
@@ -314,7 +314,7 @@ class CommonHelpers {
         }
 
         $session = Session::get('admin_privileges_roles');
-        if(is_array($session)){
+        if($session){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_visible;
@@ -330,7 +330,7 @@ class CommonHelpers {
         }
     
         $session = Session::get('admin_privileges_roles');
-        if(is_array($session)){
+        if($session){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_edit;
@@ -346,7 +346,7 @@ class CommonHelpers {
         }
 
         $session = Session::get('admin_privileges_roles');
-        if(is_array($session)){
+        if($session){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_read;
@@ -362,10 +362,40 @@ class CommonHelpers {
         }
 
         $session = Session::get('admin_privileges_roles');
-        if(is_array($session)){
+        if($session){
             foreach ($session as $v) {
                 if ($v->path == self::getModulePath()) {
                     return (bool) $v->is_delete;
+                }
+            }
+        }
+    }
+
+    public static function isVoid(){
+        if (self::isSuperadmin()) {
+            return true;
+        }
+
+        $session = Session::get('admin_privileges_roles');
+        if($session){
+            foreach ($session as $v) {
+                if ($v->path == self::getModulePath()) {
+                    return (bool) $v->is_void;
+                }
+            }
+        }
+    }
+
+    public static function isOverride(){
+        if (self::isSuperadmin()) {
+            return true;
+        }
+
+        $session = Session::get('admin_privileges_roles');
+        if($session){
+            foreach ($session as $v) {
+                if ($v->path == self::getModulePath()) {
+                    return (bool) $v->is_override;
                 }
             }
         }

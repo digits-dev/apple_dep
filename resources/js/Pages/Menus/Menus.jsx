@@ -174,7 +174,7 @@ const MenusIndex = ({
                 onDragOver={(e) => handleDragOver(e, index, parentIndex)}
                 onDrop={handleDrop}
                 className={` ${
-                    parentIndex == null ? "bg-gray-400" : "bg-gray-500"
+                    parentIndex == null ? "bg-gray-600" : "bg-gray-500"
                 } text-white cursor-grab`}
             >
                 <div
@@ -261,13 +261,13 @@ const MenusIndex = ({
             <Head title="Menu Management" />
             <AppContent>
                 <ContentPanel>
-                    <div className="font-nunito-sans mb-5 text-red-400">
+                    <div className="mb-5 text-red-400">
                         *Welcome to the Menu Management page! To rearrange the
-                        items, click and hold an item, then drag it to the
+                        items, set menus for specific privilege. Click and hold an item, then drag it to the
                         desired position and release.
                     </div>
                     {/* MENU ORDER ACTIVE */}
-                    <div className="font-nunito-sans ">
+                    <div className="">
                         <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
                             <p className="text-white font-extrabold text-center">
                                 Menu Order (Active)
@@ -281,7 +281,7 @@ const MenusIndex = ({
                                 <div
                                     align="center"
                                     id="inactive_text"
-                                    className="text-gray-400 border-dashed border-gray-400 border p-10 font-nunito-sans flex justify-center items-center gap-3"
+                                    className="text-gray-400 border-dashed border-gray-400 border p-10 flex justify-center items-center gap-3"
                                 >
                                     <i className="fa solid fa-inbox text-xl"></i>
                                     <span className="font-bold ">
@@ -307,7 +307,7 @@ const MenusIndex = ({
                                 <div
                                     align="center"
                                     id="inactive_text"
-                                    className="text-gray-400 border-dashed border-gray-400 border p-10 font-nunito-sans flex justify-center items-center gap-3"
+                                    className="text-gray-400 border-dashed border-gray-400 border p-10  flex justify-center items-center gap-3"
                                 >
                                     <i className="fa solid fa-inbox text-xl"></i>
                                     <span className="font-bold ">

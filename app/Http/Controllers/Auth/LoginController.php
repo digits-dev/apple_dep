@@ -47,7 +47,7 @@ class LoginController extends Controller
             Session::flush();
             return redirect('login')->withErrors(['acc_deact'=>$accDeact]);
         }
-        
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             Session::put('admin_id', $users->id);
@@ -66,7 +66,7 @@ class LoginController extends Controller
     public function getOtherSessionDetails($id){
         $data = [];
         $data['priv'] = DB::table("adm_privileges")->where("id", $id)->first();
-        $data['roles'] = DB::table('adm_privileges_roles')->where('id_adm_privileges', $id)->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete')->get();
+        $data['roles'] = DB::table('adm_privileges_roles')->where('id_adm_privileges', $id)->join('adm_modules', 'adm_modules.id', '=', 'id_adm_modules')->select('adm_modules.name', 'adm_modules.path', 'is_visible', 'is_create', 'is_read', 'is_edit', 'is_delete', 'is_void', 'is_override')->get();
 		return $data;
     }
 

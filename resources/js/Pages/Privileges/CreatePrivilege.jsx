@@ -30,6 +30,8 @@ const AddPrivileges = ({ moduleses, row }) => {
         is_read: false,
         is_edit: false,
         is_delete: false,
+        is_void: false,
+        is_override: false
     });
 
     const [forms, setForms] = useState({
@@ -118,7 +120,6 @@ const AddPrivileges = ({ moduleses, row }) => {
     const handleSelectHorizontal = (e, moduleId) => {
         const { type, checked } = e.target;
         const actualValue = type === "checkbox" ? (checked ? "1" : "0") : value;
-        console.log(moduleId)
 
         setModules(modules.map(modul => {
             if (modul.id === moduleId) {
@@ -131,6 +132,8 @@ const AddPrivileges = ({ moduleses, row }) => {
                         is_read: checked,
                         is_edit: checked,
                         is_delete: checked,
+                        is_void: checked,
+                        is_override: checked
                     }
                 };
             }
@@ -148,6 +151,8 @@ const AddPrivileges = ({ moduleses, row }) => {
                     is_read: actualValue,
                     is_edit: actualValue,
                     is_delete: actualValue,
+                    is_void: actualValue,
+                    is_override: actualValue
                 },
             },
         });
@@ -347,6 +352,8 @@ const AddPrivileges = ({ moduleses, row }) => {
                                                 <th className="bg-gray-500">Read</th>
                                                 <th className="bg-gray-500">Update</th>
                                                 <th className="bg-gray-500">Delete</th>
+                                                <th className="bg-gray-500">Void</th>
+                                                <th className="bg-gray-500">Override</th>
                                             </tr>
                                             <tr>
                                                 <th className="bg-blue-100">&nbsp;</th>
@@ -430,6 +437,34 @@ const AddPrivileges = ({ moduleses, row }) => {
                                                         }
                                                     />
                                                 </td>
+                                                <td className="bg-blue-100">
+                                                    <Checkbox
+                                                        name="Check all vertical"
+                                                        type="checkbox"
+                                                        id="is_void"
+                                                        isChecked={selectAll.is_void}
+                                                        handleClick={(e) =>
+                                                            handleSelectAll(
+                                                                e,
+                                                                "is_void"
+                                                            )
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="bg-blue-100 flex justify-center">
+                                                    <Checkbox
+                                                        name="Check all vertical"
+                                                        type="checkbox"
+                                                        id="is_override"
+                                                        isChecked={selectAll.is_override}
+                                                        handleClick={(e) =>
+                                                            handleSelectAll(
+                                                                e,
+                                                                "is_override"
+                                                            )
+                                                        }
+                                                    />
+                                                </td>
                                                 <td></td>
                                             </tr>
                                         </thead>
@@ -459,7 +494,11 @@ const AddPrivileges = ({ moduleses, row }) => {
                                                                             modul.roles
                                                                                 ?.is_edit &&
                                                                             modul.roles
-                                                                                ?.is_delete
+                                                                                ?.is_delete &&
+                                                                            modul.roles
+                                                                                ?.is_void &&
+                                                                            modul.roles
+                                                                                ?.is_override
                                                                         }
                                                                         handleClick={(e) =>
                                                                             handleSelectHorizontal(
@@ -572,6 +611,46 @@ const AddPrivileges = ({ moduleses, row }) => {
                                                                             e,
                                                                             modul.id,
                                                                             "is_delete"
+                                                                        )
+                                                                    }
+                                                                    value="1"
+                                                                />
+                                                            </td>
+                                                            <td className="danger bg-red-200">
+                                                                <Checkbox
+                                                                    type="checkbox"
+                                                                    className="is_void"
+                                                                    name={`privileges[${modul.id}][is_void]`}
+                                                                    isChecked={
+                                                                        modul.roles
+                                                                            ?.is_void ||
+                                                                        false
+                                                                    }
+                                                                    handleClick={(e) =>
+                                                                        handleCheckboxChange(
+                                                                            e,
+                                                                            modul.id,
+                                                                            "is_void"
+                                                                        )
+                                                                    }
+                                                                    value="1"
+                                                                />
+                                                            </td>
+                                                            <td className="success bg-green-200 flex justify-center">
+                                                                <Checkbox
+                                                                    type="checkbox"
+                                                                    className="is_override"
+                                                                    name={`privileges[${modul.id}][is_override]`}
+                                                                    isChecked={
+                                                                        modul.roles
+                                                                            ?.is_override ||
+                                                                        false
+                                                                    }
+                                                                    handleClick={(e) =>
+                                                                        handleCheckboxChange(
+                                                                            e,
+                                                                            modul.id,
+                                                                            "is_override"
                                                                         )
                                                                     }
                                                                     value="1"

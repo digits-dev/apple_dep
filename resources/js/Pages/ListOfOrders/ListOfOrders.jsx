@@ -24,7 +24,7 @@ import { useToast } from "../../Context/ToastContext";
 
 const ListOfOrders = ({ orders, queryParams }) => {
     queryParams = queryParams || {};
-
+    const {auth} = usePage().props;
     const [loading, setLoading] = useState(false);
     const [field1, setField1] = useState("");
     const [showEditModal, setShowEditModal] = useState(false);
@@ -47,24 +47,34 @@ const ListOfOrders = ({ orders, queryParams }) => {
     const ListofOrdersEditActions = () => {
         return (
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
+                {auth.access.isCreate 
+                    ? 
                 <Link
                     className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                     href={orderPath + `/${orderId}/edit`}
                 >
                     Enroll/Return Devices
                 </Link>
-                <Link
-                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                    href="#"
-                >
-                    Override Order
-                </Link>
-                <Link
-                    className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                    href="#"
-                >
-                    Void Order
-                </Link>
+                    : '' }
+                {auth.access.isVoid 
+                    ? 
+                    <Link
+                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                        href="#"
+                    >
+                        Override Order
+                    </Link>
+                    : ''}
+                {auth.access.isOverride 
+                    ? 
+                    <Link
+                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                        href="#"
+                    >
+                        Void Order
+                    </Link>
+                    : ''}
+              
             </div>
         );
     };
