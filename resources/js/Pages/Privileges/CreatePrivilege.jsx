@@ -54,8 +54,9 @@ const AddPrivileges = ({ moduleses, row }) => {
         }else{
             setShowPriv(true);
         }
-    }, []);
 
+    }, []);
+    
     const handleSelectAll = (e, permission) => {
         const { type, checked } = e.target;
         const actualValue = type === "checkbox" ? (checked ? "1" : "") : value;
@@ -160,8 +161,9 @@ const AddPrivileges = ({ moduleses, row }) => {
 
     //INPUTS
     function handleInputChange(e) {
-        const key = e.target.name;
-        const value = e.target.value;
+        const key =  e.name ? e.name : e.target.name;
+        const value = e.value ? e.value : e.target.value;
+        console.log(key,value)
         setForms((forms) => ({
             ...forms,
             [key]: value,
@@ -174,7 +176,7 @@ const AddPrivileges = ({ moduleses, row }) => {
         setClearErrors(key);
         setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
     }
-
+ 
     const validate = () => {
         const newErrors = {};
         if (!forms.name) newErrors.name = "Name is required";
@@ -182,6 +184,14 @@ const AddPrivileges = ({ moduleses, row }) => {
         return newErrors;
     };
 
+    //Convert
+    const convertText = (input) => {
+        return input
+        .split('-') // Split the string by '-'
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+        .join(' '); // Join the words with a space
+    }
+ 
     const handleCreate = async (e) => {
         e.preventDefault();
     
@@ -262,7 +272,7 @@ const AddPrivileges = ({ moduleses, row }) => {
                 setLoading(false);
             }
     };
-
+ 
     return (
         <>
             <AppContent>
@@ -320,11 +330,12 @@ const AddPrivileges = ({ moduleses, row }) => {
                             )}
                         </div>
                         <DropdownSelect
+                            selectType="react-select"
                             defaultSelect="Select them color"
                             onChange={handleInputChange}
                             name="theme_color"
                             options={themeColor}
-                            value={ rows.theme_color ?? forms.theme_color}
+                            value={ row.theme_color ? {label: convertText(row.theme_color) , value: row.theme_color ?? forms.theme_color} : row.theme_color ?? forms.theme_color}
                         />
                     </ContentPanel>
                     <ContentPanel>
