@@ -100,6 +100,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/actions-export', [ActionController::class, 'export']);
     Route::get('/dep-status-export', [DepStatusController::class, 'export']);
     Route::get('/enrollment-status-export', [EnrollmentStatusController::class, 'export']);
+    Route::get('/export-json/{log_type}/{order_id}', [ListOfOrdersController::class, 'exportText'])->name('export-json');
+    Route::get('/export-transaction/{order_id}', [ListOfOrdersController::class, 'exportTransaction'])->name('export-transaction');
 
     //List of Orders
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
