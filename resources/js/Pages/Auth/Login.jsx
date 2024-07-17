@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { usePage, router } from "@inertiajs/react";
+import { usePage, router, Link } from "@inertiajs/react";
 import Slider from "../../Components/LoginPage/Slider";
 
 const LoginPage = () => {
@@ -170,7 +170,7 @@ const LoginPage = () => {
                                         {errors.no_datas}
                                     </div>
                                 )}
-                                 {errors.acc_deact && (
+                                {errors.acc_deact && (
                                     <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
                                         {errors.acc_deact}
                                     </div>
@@ -188,6 +188,16 @@ const LoginPage = () => {
                                 )}
                             </button>
                         </form>
+
+                        <div className="font-nunito-sans flex space-x-1 text-sm justify-center mt-10">
+                            <p>Forgot Password?</p>{" "}
+                            <Link
+                                href="reset_password"
+                                className="text-red-500 font-bold"
+                            >
+                                Click here
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

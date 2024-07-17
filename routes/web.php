@@ -15,6 +15,7 @@ use App\Http\Controllers\DepStatus\DepStatusController;
 use App\Http\Controllers\Users\ChangePasswordController;
 use App\Http\Controllers\DepDevices\DepDevicesController;
 use App\Http\Controllers\Api\AppleDeviceEnrollmentController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ListOfOrders\ListOfOrdersController;
 use App\Http\Controllers\EnrollmentList\EnrollmentListController;
 use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
@@ -40,6 +41,13 @@ Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
 
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
+
+// reset password
+Route::get('/reset_password', [ResetPasswordController::class, 'getIndex'])->name('reset_password');
+Route::post('/send_resetpass_email',[ResetPasswordController::class, 'sendResetPasswordInstructions']);
+Route::get('/reset_password_email/{email}', [ResetPasswordController::class, 'getResetIndex'])->name('reset_password_email');
+Route::post('/send_resetpass_email/reset',[ResetPasswordController::class, 'resetPassword']);
+
 Route::post('login-save', [LoginController::class, 'authenticate'])->name('login-save');
 
 Route::group(['prefix' => 'api'], function () {
