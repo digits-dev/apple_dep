@@ -21,6 +21,8 @@ use App\Http\Controllers\EnrollmentStatus\EnrollmentStatusController;
 use App\Http\Controllers\ItemMaster\ItemMasterController;
 use Inertia\Inertia; // We are going to use this class to render React components
 use App\Http\Controllers\PullErpController;
+use App\Http\Controllers\Users\ProfilePageController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -66,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/postAddSave', [AdminUsersController::class, 'postAddSave'])->name('postAddSave');
     Route::post('/postEditSave', [AdminUsersController::class, 'postEditSave'])->name('postEditSave');
     Route::post('/deactivate-users', [AdminUsersController::class, 'setStatus'])->name('postDeactivateUsers');
+
+    //PROFILE PAGE
+    Route::get('/profile', [ProfilePageController::class, 'getIndex'])->name('profile_page');
 
     //CHANGE PASSWORD
     Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');

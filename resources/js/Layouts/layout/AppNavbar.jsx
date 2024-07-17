@@ -66,7 +66,13 @@ const AppNavbar = () => {
                             {auth.user.name}
                         </p>
                     </div>
-                    <div className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer">
+                    <Link
+                        href="/profile"
+                        className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer"
+                        onClick={() => {
+                            setShowMenu(false);
+                        }}
+                    >
                         <img
                             src="/images/navigation/profile-icon.png"
                             className="w-[22px] h-[22px] mr-3"
@@ -74,7 +80,7 @@ const AppNavbar = () => {
                         <span className="font-nunito-sans text-[16px]">
                             Profile
                         </span>
-                    </div>
+                    </Link>
                     <Link
                         href="/change_password"
                         className="px-5 py-2 flex items-center hover:bg-gray-200 cursor-pointer"
