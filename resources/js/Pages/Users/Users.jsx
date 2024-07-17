@@ -224,6 +224,7 @@ const Users = ({ users, options, queryParams }) => {
                 </div>
                 <div className="flex flex-col mb-3 w-full">
                     <DropdownSelect
+                        placeholder="Choose privilege"
                         selectType="select2"
                         displayName="Select a Privilege"
                         name="privilege_id"

@@ -135,6 +135,7 @@ const CreateUserForm = ({ onClose }) => {
 
             <div className="flex flex-col mb-3 w-full">
                 <DropdownSelect
+                    placeholder="Choose type"
                     selectType="select2"
                     defaultSelect="Select a Type"
                     name="type"

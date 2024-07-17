@@ -330,6 +330,7 @@ const AddPrivileges = ({ moduleses, row }) => {
                             )}
                         </div>
                         <DropdownSelect
+                            placeholder="Choose theme color"
                             selectType="react-select"
                             defaultSelect="Select them color"
                             onChange={handleInputChange}
