@@ -21,6 +21,15 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 
+const EnrollmentStatus = Object.freeze({
+    PENDING: 1,
+    ENROLLMENT_ERROR: 2,
+    ENROLLMENT_SUCCESS: 3,
+    COMPLETED: 4,
+    RETURNED: 5,
+    RETURN_ERROR: 6,
+});
+
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
@@ -117,7 +126,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     selectedItems.includes(item.id)
                                 )
                                 .filter(
-                                    (item) => item.enrollment_status_id == 1
+                                    (item) => item.enrollment_status_id == EnrollmentStatus.PENDING
                                 )
                                 .map((item) => item.id);
 
@@ -145,15 +154,52 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 }
                             } else {
                                 handleToast(
-                                    "The selected items are already enrolled!",
+                                    "The selected items are either already enrolled or it cannot be enroll.",
                                     "Error"
                                 );
                             }
+                        // Return Device Logic
                         } else {
-                            handleToast(
-                                "Return Device is not yet supported.",
-                                "Error"
-                            );
+                            setLoading(true);
+
+                            //it only get the selected pending status within selected checkbox
+                            const filteredIds = orderLines
+                                ?.filter((item) =>
+                                    selectedItems.includes(item.id)
+                                )
+                                .filter(
+                                    (item) => item.enrollment_status_id == EnrollmentStatus.ENROLLMENT_SUCCESS
+                                )
+                                .map((item) => item.id);
+
+                            if (filteredIds.length != 0) {
+                                const response = await axios.post(
+                                    "/list_of_orders/bulk-return",
+                                    {
+                                        ids: filteredIds,
+                                    }
+                                );
+
+                                if (response.data.status == "success") {
+                                    handleToast(
+                                        response.data.message,
+                                        response.data.status
+                                    );
+                                    resetCheckbox();
+                                    router.reload({ only: ["orderLines"] });
+                                } else {
+                                    handleToast(
+                                        response.data.message,
+                                        response.data.status
+                                    );
+                                    resetCheckbox();
+                                }
+                            } else {
+                                handleToast(
+                                    "The selected items are either already returned or haven't been enrolled yet.",
+                                    "Error"
+                                );
+                            }
                         }
                     } catch (error) {
                         handleToast(

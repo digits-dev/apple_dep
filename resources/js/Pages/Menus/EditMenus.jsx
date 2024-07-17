@@ -9,6 +9,7 @@ import AppContent from '../../Layouts/layout/AppContent';
 import ContentPanel from '../../Components/Table/ContentPanel';
 import { useToast } from "../../Context/ToastContext";
 
+
 const EditMenu = ({ menus, privileges, menuData }) => {
     const { setTitle } = useContext(NavbarContext);
     const [loading, setLoading] = useState(false);
@@ -62,6 +63,29 @@ const EditMenu = ({ menus, privileges, menuData }) => {
     const handlePrivilegesChange = (selectedOptions) => {
         setPrivilegesId(selectedOptions.map(option => option.value));
     };
+
+    const colourStyles = {
+        multiValue: (styles, { data }) => {
+          const color = data.color;
+          return {
+            ...styles,
+          };
+        },
+        multiValueLabel: (styles, { data }) => ({
+          ...styles,
+          color: data.color,
+        }),
+        multiValueRemove: (styles, { data }) => ({
+          ...styles,
+          color: data.color,
+          ':hover': {
+            backgroundColor: data.color,
+            color: 'white',
+          },
+          backgroundColor: 'black',
+          color: 'white',
+        }),
+    };
     
     return (
         <div>
@@ -84,6 +108,8 @@ const EditMenu = ({ menus, privileges, menuData }) => {
                                     value={privileges.filter(priv => privilegesId.includes(priv.id)).map(priv => ({ value: priv.id, label: priv.name }))}
                                     onChange={handlePrivilegesChange}
                                     options={privileges.map(priv => ({ value: priv.id, label: priv.name }))}
+                                    styles={colourStyles}
+                                    
                                 />
                             </div>
                             <div className="w-full">

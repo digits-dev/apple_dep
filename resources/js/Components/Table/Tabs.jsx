@@ -5,8 +5,9 @@ import Thead from "./Thead";
 import Row from "./Row";
 import TableHeader from "./TableHeader";
 import RowData from "./RowData";
+import axios from "axios";
 import Tbody from "../../Components/Table/Tbody";
-
+import TableButton from "../../Components/Table/Buttons/TableButton";
 const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
     console.log(tabs);
     const [activeTab, setActiveTab] = useState(tabs[0].id);
@@ -26,7 +27,54 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
         setIsOpen(false);
     };
 
-    console.log(jsonSubmitted, jsonReceived, transactionLogs);
+    const handleJsonExport = (e, logType, orderId) => {
+        e.preventDefault();
+        axios({
+            url: `/export-json/${logType}/${orderId}`,
+            method: "GET",
+            responseType: "blob",
+        })
+            .then((response) => {
+                const blob = new Blob([response.data], { type: "text/plain" });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `Json-${logType}-${orderId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch((error) => {
+                console.error("Export error:", error);
+            });
+    };
+
+    const handleTransactionLogExport = (e, orderId) => {
+        e.preventDefault();
+        axios({
+            url: `/export-transaction/${orderId}`,
+            method: "GET",
+            responseType: "blob",
+        })
+            .then((response) => {
+                console.log(response.data);
+                const url = window.URL.createObjectURL(
+                    new Blob([response.data])
+                );
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute(
+                    "download",
+                    `TransactionLogs-${orderId}.xlsx`
+                );
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            })
+            .catch((error) => {
+                console.error("Export error:", error);
+            });
+    };
 
     return (
         <div className="bg-white rounded-md mt-4 w-full font-nunito-sans">
@@ -58,7 +106,25 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                     >
                         {tab.id === 1 && (
                             <div>
-                                <h2 className="mb-4 italic">Json Response</h2>
+                                <div className="flex justify-between">
+                                    <h2 className="mb-4 italic">
+                                        Json Response
+                                    </h2>
+                                    <button>Export</button>
+                                    <TableButton
+                                        extendClass="mr-1 mb-3"
+                                        onClick={(e) =>
+                                            handleJsonExport(
+                                                e,
+                                                "Received",
+                                                jsonSubmitted[0].order_id
+                                            )
+                                        }
+                                    >
+                                        Export
+                                    </TableButton>
+                                </div>
+
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -66,19 +132,19 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 sortable={false}
                                                 justify="center"
                                             >
-                                                ID
+                                                Order ID
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Lines ID
                                             </TableHeader>
                                             <TableHeader
                                                 sortable={false}
                                                 justify="center"
                                             >
                                                 JSON
-                                            </TableHeader>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                Order ID
                                             </TableHeader>
                                         </Row>
                                     </Thead>
@@ -101,7 +167,10 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             return (
                                                 <Row key={json.id}>
                                                     <RowData center>
-                                                        {json.id}
+                                                        {json.order_id}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        {json.order_lines_id}
                                                     </RowData>
                                                     <RowData center>
                                                         <button
@@ -116,11 +185,24 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                                 );
                                                             }}
                                                         >
-                                                            Open JSON
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#123;
+                                                            </span>
+                                                            &nbsp;
+                                                            <span>JSON</span>
+                                                            &nbsp;
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#125;
+                                                            </span>
                                                         </button>
-                                                    </RowData>
-                                                    <RowData center>
-                                                        {json.order_id}
                                                     </RowData>
                                                 </Row>
                                             );
@@ -131,7 +213,25 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                         )}
                         {tab.id === 2 && (
                             <div>
-                                <h2 className="mb-4 italic">Json Request</h2>
+                                <div className="flex justify-between">
+                                    <h2 className="mb-4 italic">
+                                        Json Request
+                                    </h2>
+                                    <button>Export</button>
+                                    <TableButton
+                                        extendClass="mr-1 mb-3"
+                                        onClick={(e) =>
+                                            handleJsonExport(
+                                                e,
+                                                "Submitted",
+                                                jsonSubmitted[0].order_id
+                                            )
+                                        }
+                                    >
+                                        Export
+                                    </TableButton>
+                                </div>
+
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
@@ -139,19 +239,19 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 sortable={false}
                                                 justify="center"
                                             >
-                                                ID
+                                                Order ID
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Lines ID
                                             </TableHeader>
                                             <TableHeader
                                                 sortable={false}
                                                 justify="center"
                                             >
                                                 JSON
-                                            </TableHeader>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                Order ID
                                             </TableHeader>
                                         </Row>
                                     </Thead>
@@ -160,17 +260,11 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                             return (
                                                 <Row key={json.id}>
                                                     <RowData center>
-                                                        {json.id}
+                                                        {json.order_id}
                                                     </RowData>
-                                                    {/* <RowData>
-                                                        <pre>
-                                                            {JSON.stringify(
-                                                                parsedData,
-                                                                null,
-                                                                2
-                                                            )}
-                                                        </pre>
-                                                    </RowData> */}
+                                                    <RowData center>
+                                                        {json.order_lines_id}
+                                                    </RowData>
                                                     <RowData center>
                                                         <button
                                                             className="text-gray-500 hover:text-gray-700"
@@ -184,11 +278,24 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                                 );
                                                             }}
                                                         >
-                                                            Open JSON
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#123;
+                                                            </span>
+                                                            &nbsp;
+                                                            <span>JSON</span>
+                                                            &nbsp;
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#125;
+                                                            </span>
                                                         </button>
-                                                    </RowData>
-                                                    <RowData center>
-                                                        {json.order_id}
                                                     </RowData>
                                                 </Row>
                                             );
@@ -199,12 +306,31 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                         )}
                         {tab.id === 3 && (
                             <div>
-                                <h2 className="mb-4 italic">
-                                    Transaction Logs
-                                </h2>
+                                <div className="flex justify-between">
+                                    <h2 className="mb-4 italic">
+                                        Transaction Logs
+                                    </h2>
+                                    <TableButton
+                                        extendClass="mr-1 mb-3"
+                                        onClick={(e) =>
+                                            handleTransactionLogExport(
+                                                e,
+                                                transactionLogs[0].order_id
+                                            )
+                                        }
+                                    >
+                                        Export
+                                    </TableButton>
+                                </div>
                                 <TableContainer autoHeight>
                                     <Thead>
                                         <Row>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Lines ID
+                                            </TableHeader>
                                             <TableHeader
                                                 sortable={false}
                                                 justify="center"
@@ -236,13 +362,16 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                         {transactionLogs.map((json) => (
                                             <Row key={json.id}>
                                                 <RowData center>
+                                                    {json.order_lines_id}
+                                                </RowData>
+                                                <RowData center>
                                                     {json.dep_transaction_id}
                                                 </RowData>
                                                 <RowData center>
                                                     {json.order_type}
                                                 </RowData>
                                                 <RowData center>
-                                                    {json.dep_status}
+                                                    {json.dep_status_name}
                                                 </RowData>
                                                 <RowData center>
                                                     {json.created_at}

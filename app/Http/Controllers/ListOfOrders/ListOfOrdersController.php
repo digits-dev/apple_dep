@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ListOfOrders;
 use App\Helpers\CommonHelpers;
 use App\Exports\OrdersExport;
+use App\Exports\TransactionExport;
 use App\Http\Controllers\Controller;
 use App\Models\EnrollmentStatus;
 use App\Models\Order;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
+use Illuminate\Support\Facades\Response;
 
 
 class ListOfOrdersController extends Controller
@@ -95,7 +97,9 @@ class ListOfOrdersController extends Controller
         $orderLines = OrderLines::where('order_id', $order->id)->get();
         $jsonSubmitted = JsonRequest::where('order_id', $order->id)->get();
         $jsonReceived= JsonResponse::where('order_id', $order->id)->get();
-        $transactionLogs = TransactionLog::where('order_id', $order->id)->get();
+        $transactionLogs = TransactionLog::join('dep_statuses', 'dep_statuses.id', '=', 'transaction_logs.dep_status')
+        ->select('transaction_logs.*', 'dep_statuses.dep_status as dep_status_name')
+        ->where('transaction_logs.order_id', $order->id)->get();
         return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
     }
 
@@ -131,6 +135,49 @@ class ListOfOrdersController extends Controller
         
         return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }
+
+    public function exportText($logType,$orderId)
+    {
+        if ($logType === 'Received') {
+            $data = JsonResponse::where('order_id', $orderId)->get();
+        } else {
+            $data = JsonRequest::where('order_id', $orderId)->get();
+        }
+        
+        $content = "";
+        foreach ($data as $item) {
+            $decodedData = json_decode($item->data);
+            
+            $exportData = [
+                'id' => $item->id,
+                'order_id' => $item->order_id,
+                'order_lines_id' => $item->order_lines_id,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'data' => $decodedData, 
+            ];
+            
+            $content .= json_encode($exportData, JSON_PRETTY_PRINT) . "\n";
+        }
+        
+        $headers = [
+            'Content-Type' => 'text/plain',
+            'Content-Disposition' => 'attachment; filename="export.txt"',
+        ];
+        
+        return response()->make($content, 200, $headers);
+    }
+
+
+    public function exportTransaction($orderId)
+    {
+        date_default_timezone_set('Asia/Manila');
+
+        $filename = "Transaction Logs - " . date ('Y-m-d H:i:s');
+
+        return Excel::download(new TransactionExport($orderId), $filename . '.xlsx');
+    }
+    
 
 
     public function enrollDevices(Request $request)
@@ -257,12 +304,13 @@ class ListOfOrdersController extends Controller
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OR',
                 'order_id' => $orderId,
+                'order_lines_id' => $id,
                 'dep_transaction_id' => $transaction_id,
                 'dep_status' => $dep_status,
                 'created_at' => date('Y-m-d H:i:s'),
@@ -373,12 +421,13 @@ class ListOfOrdersController extends Controller
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insert(['order_id' => $orderId, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insert(['order_id' => $orderId, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'order_lines_id' => $id, 'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'order_lines_id' => $id, 'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'RE',
                 'order_id' => $orderId,
+                'order_lines_id' => $id,
                 'dep_transaction_id' => $transaction_id,
                 'dep_status' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
@@ -413,12 +462,11 @@ class ListOfOrdersController extends Controller
         
             $idsOfUniqueLines = [];
 
-
             // check lines if they're already enrolled through digits code and serial number
             foreach ($uniqueLines as $orderLines) {
                 $exists = OrderLines::where('digits_code', $orderLines->digits_code)
                     ->where('serial_number', $orderLines->serial_number)
-                    ->where('enrollment_status_id', 3)
+                    ->where('enrollment_status_id', self::enrollment_status['Enrollment Success'])
                     ->exists();
         
                 if (!$exists) {
@@ -428,9 +476,11 @@ class ListOfOrdersController extends Controller
         
             if (!empty($idsOfUniqueLines)) {
                 // Fetch detailed order lines
-                $requestData = OrderLines::whereIn('list_of_order_lines.id', $idsOfUniqueLines)
-                    ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                $requestData = OrderLines::select('list_of_order_lines.id as order_line_id', 'orders.id as order_id', 'list_of_order_lines.*', 'orders.*') 
+                    ->whereIn('list_of_order_lines.id', $idsOfUniqueLines)
+                    ->leftJoin('orders', 'list_of_order_lines.order_id', '=', 'orders.id')
                     ->get();
+
         
                 $header_data = $requestData->first();
         
@@ -475,18 +525,19 @@ class ListOfOrdersController extends Controller
         
                 if (isset($response['enrollDevicesResponse'])) {
                     $transaction_id = $response['deviceEnrollmentTransactionId'];
-                    $dep_status = 1;
+                    $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                    $enrollment_status = 3; //success
+                    $enrollment_status = self::enrollment_status['Enrollment Success'];
                 } else {
                     $transaction_id = $response['transactionId'];
-                    $dep_status = 2;
+                    $dep_status = self::dep_status['GRX-50025'];
                     $status_message = $response['errorMessage'];
-                    $enrollment_status = 2;  //error
+                    $enrollment_status = self::enrollment_status['Enrollment Error'];
                 }
         
                 foreach ($requestData as $deviceData) {
                     $insertData = [
+                        'order_lines_id' => $deviceData->order_line_id,
                         'sales_order_no' => $header_data->sales_order_no,
                         'item_code' => $header_data->digits_code,
                         'serial_number' => $deviceData->serial_number,
@@ -507,21 +558,24 @@ class ListOfOrdersController extends Controller
                 }
         
                 // Update enrollment status to success
-                OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => 3]);
+                OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => self::enrollment_status['Enrollment Success']]);
         
                 // Logs
                 $orderId = $header_data->order_id;
                 $encodedPayload = json_encode($payload);
                 $encodedResponse = json_encode($response);
-        
+
+                      
                 JsonRequest::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'data' => $encodedPayload,
                     'created_at' => now(),
                 ]);
         
                 JsonResponse::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'data' => $encodedResponse,
                     'created_at' => now(),
                 ]);
@@ -529,6 +583,7 @@ class ListOfOrdersController extends Controller
                 TransactionLog::insert([
                     'order_type' => 'OR',
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'dep_transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'created_at' => now(),
@@ -538,16 +593,16 @@ class ListOfOrdersController extends Controller
                 $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
 
                 $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
-                    ->where('enrollment_status_id', 3)
+                    ->where('enrollment_status_id', self::enrollment_status['Enrollment Success'])
                     ->count();
 
                 if ($enrollmentStatusSuccess === $totalOrderLines) {
-                    Order::where('id', $orderId)->update(['enrollment_status' => 3]);
+                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
                 }
         
                 $data = [
-                    'message' => $enrollment_status == 3 ? 'Enrollment Success!' : 'Enrollment Error!',
-                    'status' => $enrollment_status == 3 ? 'success' : 'error',
+                    'message' => $enrollment_status == self::enrollment_status['Enrollment Success'] ? 'Enrollment Success!' : 'Enrollment Error!',
+                    'status' => $enrollment_status == self::enrollment_status['Enrollment Success'] ? 'success' : 'error',
                 ];
         
                 return response()->json($data);
@@ -564,5 +619,131 @@ class ListOfOrdersController extends Controller
         }
         
     }
+    public function bulkReturnDevices(Request $request)
+    {
+        try {
+            $ids = $request->input('ids');
 
+            if (!empty($ids)) {
+                $requestData = OrderLines::whereIn('list_of_order_lines.id', $ids)
+                    ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                    ->get();
+        
+                $header_data = $requestData->first();
+        
+                $devicePayload = [];
+
+                foreach ($requestData as $key => $orderData) {
+                    $devicePayload[$key] = [
+                        'deviceId' => $orderData->sales_order_no,
+                        'assetTag' => $orderData->serial_number,
+                    ];
+                }
+        
+                $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+        
+                $deliveryPayload = [
+                    'deliveryNumber' => $header_data->dr_number,
+                    'shipDate' => $formattedDate,
+                    'devices' => $devicePayload,
+                ];
+        
+                $orderPayload = [
+                    'orderNumber' => $header_data->sales_order_no,
+                    'orderDate' => $formattedDate,
+                    'orderType' => 'RE',
+                    'customerId' => $header_data->customer_name,
+                    'poNumber' => $header_data->order_ref_no,
+                    'deliveries' => [$deliveryPayload],
+                ];
+        
+                $payload = [
+                    'requestContext' => [
+                        'shipTo' => config('services.apple_api.ship_to'),
+                        'timeZone' => config('services.apple_api.timezone'),
+                        'langCode' => config('services.apple_api.langCode'),
+                    ],
+                    'transactionId' => 'TXN_' . uniqid(),
+                    'depResellerId' => config('services.apple_api.ship_to'),
+                    'orders' => [$orderPayload],
+                ];
+
+                $response = $this->appleService->unenrollDevices($payload);
+        
+                if (isset($response['enrollDevicesResponse'])) {
+                    $transaction_id = $response['deviceEnrollmentTransactionId'];
+                    $dep_status = self::dep_status['Success'];
+                    $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                    $enrollment_status = self::enrollment_status['Returned'];
+                } else {
+                    $transaction_id = $response['transactionId'];
+                    $dep_status = self::dep_status['GRX-50025'];
+                    $status_message = $response['errorMessage'];
+                    $enrollment_status = self::enrollment_status['Return Error'];
+                }
+        
+                foreach ($requestData as $deviceData) {
+                    EnrollmentList::query()
+                    ->where('sales_order_no', $header_data->sales_order_no)
+                    ->where('serial_number', $deviceData->serial_number)->update([
+                        'transaction_id' => $transaction_id,
+                        'dep_status' => $dep_status,
+                        'enrollment_status' => $enrollment_status,
+                        'status_message' => $status_message,
+                    ]);
+                }
+        
+                OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => self::enrollment_status['Returned']]);
+        
+                // Logs
+                $orderId = $header_data->order_id;
+                $encodedPayload = json_encode($payload);
+                $encodedResponse = json_encode($response);
+        
+                JsonRequest::insert([
+                    'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
+                    'data' => $encodedPayload,
+                    'created_at' => now(),
+                ]);
+        
+                JsonResponse::insert([
+                    'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
+                    'data' => $encodedResponse,
+                    'created_at' => now(),
+                ]);
+        
+                TransactionLog::insert([
+                    'order_type' => 'RE',
+                    'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
+                    'dep_transaction_id' => $transaction_id,
+                    'dep_status' => $dep_status,
+                    'created_at' => now(),
+                ]);
+
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending' ]]);
+        
+                $data = [
+                    'message' => $enrollment_status == self::enrollment_status['Returned' ] ? 'Unenroll Devices Successfully!' : 'Unenroll Devices Failed!',
+                    'status' => $enrollment_status == self::enrollment_status['Returned' ] ? 'success' : 'error',
+                ];
+        
+                return response()->json($data);
+            } else {
+                $data = [
+                    'message' => 'Something went wrong!',
+                    'status' => 'error',
+                ];
+        
+                return response()->json($data);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        
+    }
+
+  
 }

@@ -224,6 +224,7 @@ const Users = ({ users, options, queryParams }) => {
                 </div>
                 <div className="flex flex-col mb-3 w-full">
                     <DropdownSelect
+                        placeholder="Choose privilege"
                         selectType="select2"
                         displayName="Select a Privilege"
                         name="privilege_id"
@@ -277,23 +278,14 @@ const Users = ({ users, options, queryParams }) => {
 
     const EditUserForm = ({ user }) => {
         const [editForms, setEditForms] = useState({
-            u_id: user?.u_id,
-            name: user?.user_name,
-            email: user?.email,
-            privilege_id: user.id_adm_privileges,
+            u_id: user?.u_id || "",
+            name: user?.user_name || "",
+            email: user?.email || "",
+            privilege_id: user?.id_adm_privileges || "",
             password: "",
-            status: user?.status,
+            status: user?.status || "",
         });
 
-        useEffect(() => {
-            if (showEditModal) {
-                setEditForms((editForms) => ({
-                    ...editForms,
-                    ['privilege_id']: user.id_adm_privileges,
-                }));
-            }
-          }, [showEditModal]);
-        console.log(editForms);
         function handleChange(e) {
             const key = e.name ? e.name : e.target.name;
             const value = e.value ? e.value : e.target.value;
@@ -317,14 +309,11 @@ const Users = ({ users, options, queryParams }) => {
                     setShowEditModal(false);
                     router.reload({ only: ["users"] });
                 } else {
-                    setErrorMessage(response.data.message);
+                    handleToast(response.data.message, response.data.type);
                 }
             } catch (error) {
                 if (error.response && error.response.status === 422) {
-                    //setErrors(error.response.data.errors);
-                } else {
-                    //setErrors({ general: 'An error occurred. Please try again.' });
-                }
+                } 
             } finally {
                 setLoading(false);
             }
@@ -368,7 +357,7 @@ const Users = ({ users, options, queryParams }) => {
                         displayName="Select a Privilege"
                         name="privilege_id"
                         options={options.privileges}
-                        value={editForms.privilege_id}
+                        value={{label:user.privilege_name, value:editForms.privilege_id}}
                         onChange={handleChange}
                     />
                 </div>
@@ -390,7 +379,7 @@ const Users = ({ users, options, queryParams }) => {
                         displayName="Select a Status"
                         name="status"
                         options={options.status}
-                        value={editForms.status}
+                        value={{label:'Active', value:editForms.status}}
                         onChange={handleChange}
                     />
                 </div>
