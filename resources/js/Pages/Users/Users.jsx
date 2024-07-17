@@ -276,7 +276,6 @@ const Users = ({ users, options, queryParams }) => {
     };
 
     const EditUserForm = ({ user }) => {
-        const [editPrivilege, setEditPrivilege] = useState([]);
         const [editForms, setEditForms] = useState({
             u_id: user?.u_id,
             name: user?.user_name,
@@ -287,13 +286,14 @@ const Users = ({ users, options, queryParams }) => {
         });
 
         useEffect(() => {
-            setTimeout(()=>{
-                setTitle("Edit Menus");
-            },5);
-    
-            setEditPrivilege([user.id_adm_privileges]);
-        }, [user.id_adm_privileges]);
-   
+            if (showEditModal) {
+                setEditForms((editForms) => ({
+                    ...editForms,
+                    ['privilege_id']: user.id_adm_privileges,
+                }));
+            }
+          }, [showEditModal]);
+        console.log(editForms);
         function handleChange(e) {
             const key = e.name ? e.name : e.target.name;
             const value = e.value ? e.value : e.target.value;
@@ -368,7 +368,7 @@ const Users = ({ users, options, queryParams }) => {
                         displayName="Select a Privilege"
                         name="privilege_id"
                         options={options.privileges}
-                        value={options.privileges.filter(priv => editPrivilege.includes(parseInt(priv.id))).map(priv => ({ value: priv.id, label: priv.name }))}
+                        value={editForms.privilege_id}
                         onChange={handleChange}
                     />
                 </div>
