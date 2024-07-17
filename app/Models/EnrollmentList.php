@@ -16,7 +16,8 @@ class EnrollmentList extends Model
         'transaction_id',
         'dep_status', 
         'enrollment_status', 
-        'status_message'
+        'status_message',
+        'order_lines_id'
     ];
     
     protected $filterable = [

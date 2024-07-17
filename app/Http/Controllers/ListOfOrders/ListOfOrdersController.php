@@ -476,9 +476,11 @@ class ListOfOrdersController extends Controller
         
             if (!empty($idsOfUniqueLines)) {
                 // Fetch detailed order lines
-                $requestData = OrderLines::whereIn('list_of_order_lines.id', $idsOfUniqueLines)
-                    ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                $requestData = OrderLines::select('list_of_order_lines.id as order_line_id', 'orders.id as order_id', 'list_of_order_lines.*', 'orders.*') 
+                    ->whereIn('list_of_order_lines.id', $idsOfUniqueLines)
+                    ->leftJoin('orders', 'list_of_order_lines.order_id', '=', 'orders.id')
                     ->get();
+
         
                 $header_data = $requestData->first();
         
@@ -535,6 +537,7 @@ class ListOfOrdersController extends Controller
         
                 foreach ($requestData as $deviceData) {
                     $insertData = [
+                        'order_lines_id' => $deviceData->order_line_id,
                         'sales_order_no' => $header_data->sales_order_no,
                         'item_code' => $header_data->digits_code,
                         'serial_number' => $deviceData->serial_number,
@@ -561,15 +564,18 @@ class ListOfOrdersController extends Controller
                 $orderId = $header_data->order_id;
                 $encodedPayload = json_encode($payload);
                 $encodedResponse = json_encode($response);
-        
+
+                      
                 JsonRequest::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'data' => $encodedPayload,
                     'created_at' => now(),
                 ]);
         
                 JsonResponse::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'data' => $encodedResponse,
                     'created_at' => now(),
                 ]);
@@ -577,6 +583,7 @@ class ListOfOrdersController extends Controller
                 TransactionLog::insert([
                     'order_type' => 'OR',
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $idsOfUniqueLines),
                     'dep_transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'created_at' => now(),
@@ -695,12 +702,14 @@ class ListOfOrdersController extends Controller
         
                 JsonRequest::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
                     'data' => $encodedPayload,
                     'created_at' => now(),
                 ]);
         
                 JsonResponse::insert([
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
                     'data' => $encodedResponse,
                     'created_at' => now(),
                 ]);
@@ -708,6 +717,7 @@ class ListOfOrdersController extends Controller
                 TransactionLog::insert([
                     'order_type' => 'RE',
                     'order_id' => $orderId,
+                    'order_lines_id' => implode(',', $ids),
                     'dep_transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'created_at' => now(),
