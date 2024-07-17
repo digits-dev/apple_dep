@@ -145,15 +145,52 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 }
                             } else {
                                 handleToast(
-                                    "The selected items are already enrolled!",
+                                    "The selected items are either already enrolled or it cannot be enroll.",
                                     "Error"
                                 );
                             }
+                        // Return Device Logic
                         } else {
-                            handleToast(
-                                "Return Device is not yet supported.",
-                                "Error"
-                            );
+                            setLoading(true);
+
+                            //it only get the selected pending status within selected checkbox
+                            const filteredIds = orderLines
+                                ?.filter((item) =>
+                                    selectedItems.includes(item.id)
+                                )
+                                .filter(
+                                    (item) => item.enrollment_status_id == 3
+                                )
+                                .map((item) => item.id);
+
+                            if (filteredIds.length != 0) {
+                                const response = await axios.post(
+                                    "/list_of_orders/bulk-return",
+                                    {
+                                        ids: filteredIds,
+                                    }
+                                );
+
+                                if (response.data.status == "success") {
+                                    handleToast(
+                                        response.data.message,
+                                        response.data.status
+                                    );
+                                    resetCheckbox();
+                                    router.reload({ only: ["orderLines"] });
+                                } else {
+                                    handleToast(
+                                        response.data.message,
+                                        response.data.status
+                                    );
+                                    resetCheckbox();
+                                }
+                            } else {
+                                handleToast(
+                                    "The selected items are either already returned or haven't been enrolled yet.",
+                                    "Error"
+                                );
+                            }
                         }
                     } catch (error) {
                         handleToast(

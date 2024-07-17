@@ -107,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
     Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
+    Route::post('/list_of_orders/bulk-return', [ListOfOrdersController::class, 'bulkReturnDevices']);
 
     //EnrollmentList
     Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);
