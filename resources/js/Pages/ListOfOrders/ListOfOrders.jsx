@@ -58,39 +58,50 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     const ListofOrdersEditActions = () => {
         return (
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
-                {auth.access.isCreate ? (
-                    <Link
-                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                        href={orderPath + `/${orderId}/edit`}
-                    >
-                        Enroll/Return Devices
-                    </Link>
-                ) : (
-                    ""
-                )}
-                {auth.access.isVoid ? (
-                    <button
-                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                        onClick={() => {
-                            handleOverrideModal();
-                            handleCloseEditModal();
-                        }}
-                    >
-                        Override Order
-                    </button>
-                ) : (
-                    ""
-                )}
-                {auth.access.isOverride ? (
-                    <Link
-                        className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                        href="#"
-                    >
-                        Void Order
-                    </Link>
-                ) : (
-                    ""
-                )}
+                {auth.access.isCreate || auth.access.isVoid || auth.access.isOverride 
+                ?
+                <>
+                    {auth.access.isCreate ? (
+                        <Link
+                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                            href={orderPath + `/${orderId}/edit`}
+                        >
+                            Enroll/Return Devices
+                        </Link>
+                    ) : (
+                        ""
+                    )}
+                    {auth.access.isVoid ? (
+                        <button
+                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                            onClick={() => {
+                                handleOverrideModal();
+                                handleCloseEditModal();
+                            }}
+                        >
+                            Override Order
+                        </button>
+                    ) : (
+                        ""
+                    )}
+                    {auth.access.isOverride ? (
+                        <Link
+                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                            href="#"
+                        >
+                            Void Order
+                        </Link>
+                    ) : (
+                        ""
+                    )}
+                </>
+                :
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-red-500 mb-2"><i className="fa fa-lock"></i> Access Denied</h1>
+                    <p class="text-lg text-gray-700 mb-3">You do not have permission to access this area.</p>
+                </div>
+              }
+                
             </div>
         );
     };

@@ -106,6 +106,7 @@ use Inertia\Response;
                 'name' => $request->name,
                 'email' => $request->email,
                 'password'  => $password,
+                'id_adm_privileges' => $request->privilege_id,
                 'status'  => $request->status,
               
             ]);

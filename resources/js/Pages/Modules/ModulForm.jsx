@@ -67,10 +67,10 @@ const CreateUserForm = ({ onClose }) => {
                 });
                 if (response.data.type == "success") {
                     handleToast(response.data.message, response.data.type);
-                    router.reload({ only: ["Modules"] });
+                    router.reload({ only: ["modules"] });
                     
                 } else {
-                    setErrorMessage(response.data.message);
+                    handleToast(response.data.message, response.data.type);
                 }
             } catch (error) {
                 if (error.response && error.response.status === 422) {

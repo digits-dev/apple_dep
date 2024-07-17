@@ -15,6 +15,7 @@ const DropdownSelect = ({ options, onChange, value, name, defaultSelect, display
             {selectType 
             ? 
                 <Select
+                    defaultValue={value}
                     name={name}
                     className="block w-full py-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     onChange={onChange}
