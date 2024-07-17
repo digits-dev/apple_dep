@@ -21,6 +21,15 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 
+const EnrollmentStatus = Object.freeze({
+    PENDING: 1,
+    ENROLLMENT_ERROR: 2,
+    ENROLLMENT_SUCCESS: 3,
+    COMPLETED: 4,
+    RETURNED: 5,
+    RETURN_ERROR: 6,
+});
+
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
@@ -117,7 +126,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     selectedItems.includes(item.id)
                                 )
                                 .filter(
-                                    (item) => item.enrollment_status_id == 1
+                                    (item) => item.enrollment_status_id == EnrollmentStatus.PENDING
                                 )
                                 .map((item) => item.id);
 
@@ -159,7 +168,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     selectedItems.includes(item.id)
                                 )
                                 .filter(
-                                    (item) => item.enrollment_status_id == 3
+                                    (item) => item.enrollment_status_id == EnrollmentStatus.ENROLLMENT_SUCCESS
                                 )
                                 .map((item) => item.id);
 
