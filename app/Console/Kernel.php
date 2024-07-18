@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('inspire')->hourly();
-        $schedule->call('\App\Http\Controllers\PullErpController@getListOfOrdersFromErpv2')->everyMinute();
+        $schedule->call('\App\Http\Controllers\PullErpController@getListOfOrdersFromErpv1')->everyMinute();
         $schedule->command('mysql:backup')->daily()->at('06:00');
     }
 
