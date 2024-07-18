@@ -1,19 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
 import { router, useForm } from "@inertiajs/react";
+import axios from "axios";
 
 const ResetPasswordEmail = ({ email }) => {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, reset } = useForm({
         email: email || "",
         new_password: "",
         confirm_password: "",
     });
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    function handleChange(e) {
+        const key = e.target.name;
+        const value = e.target.value;
+        setData((resetPasswordData) => ({
+            ...resetPasswordData,
+            [key]: value,
+        }));
+        setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
+    }
+
+    const validate = () => {
+        const newErrors = {};
+        if (!data.new_password)
+            newErrors.new_password = "New Password is required";
+        if (!data.confirm_password)
+            newErrors.confirm_password = "Confirm Password is required";
+        if (data.new_password != data.confirm_password) {
+            newErrors.confirm_password = "Passwords not Match";
+        }
+
+        return newErrors;
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        post("/send_resetpass_email/reset", {
-            onSuccess: () => {
-                reset();
+        const newErrors = validate();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            setLoading(true);
+            try {
+                const response = await axios.post(
+                    "/send_resetpass_email/reset",
+                    data
+                );
+                if (response.data.type == "success") {
+                    reset();
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        },
+                    });
+                    Toast.fire({
+                        icon: "success",
+                        title: "Password Reset Successful!",
+                    }).then(() => {
+                        router.visit("/login");
+                    });
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        },
+                    });
+                    Toast.fire({
+                        icon: "error",
+                        title: "Request expired, please request another one",
+                    }).then(() => {
+                        reset();
+                    });
+                }
+            } catch (error) {
                 const Toast = Swal.mixin({
                     toast: true,
                     position: "top-end",
@@ -26,13 +98,13 @@ const ResetPasswordEmail = ({ email }) => {
                     },
                 });
                 Toast.fire({
-                    icon: "success",
-                    title: "Password Reset Successful!",
-                }).then(() => {
-                    router.visit("/login");
+                    icon: "error",
+                    title: "An error occurred. Please try again.",
                 });
-            },
-        });
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     return (
@@ -66,9 +138,7 @@ const ResetPasswordEmail = ({ email }) => {
                         name="new_password"
                         type="password"
                         value={data.new_password}
-                        onChange={(e) =>
-                            setData("new_password", e.target.value)
-                        }
+                        onChange={handleChange}
                         logo="/images/login-page/password-icon.png"
                         placeholder="Enter New Password"
                         marginTop={2}
@@ -83,9 +153,7 @@ const ResetPasswordEmail = ({ email }) => {
                         name="confirm_password"
                         type="password"
                         value={data.confirm_password}
-                        onChange={(e) =>
-                            setData("confirm_password", e.target.value)
-                        }
+                        onChange={handleChange}
                         logo="/images/login-page/password-icon.png"
                         placeholder="Confirm Password"
                         marginTop={2}
@@ -98,9 +166,9 @@ const ResetPasswordEmail = ({ email }) => {
                     <button
                         type="submit"
                         className="bg-primary w-full text-white font-nunito-sans  py-3 text-sm font-bold rounded-md my-4 hover:opacity-70"
-                        disabled={processing}
+                        disabled={loading}
                     >
-                        {processing ? "Please Wait..." : "Reset Password"}
+                        {loading ? "Please Wait..." : "Reset Password"}
                     </button>
                 </form>
             </div>
