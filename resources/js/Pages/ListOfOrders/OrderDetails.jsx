@@ -29,14 +29,9 @@ const OrderDetails = ({
     }, []);
 
     const tabs = [
-        {
-            id: 1,
-            label: "JSON Response Received",
-            content: "Content of Tab 1",
-            jsonContent: { name: "joel", age: 16 },
-        },
-        { id: 2, label: "JSON Request Submitted", content: "Content of Tab 2" },
-        { id: 3, label: "Transaction Logs", content: "Content of Tab 3" },
+        { id: 1, label: "JSON Response Received"},
+        { id: 2, label: "JSON Request Submitted"},
+        { id: 3, label: "Transaction Logs"},
     ];
 
     return (
