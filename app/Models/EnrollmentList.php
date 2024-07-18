@@ -17,7 +17,9 @@ class EnrollmentList extends Model
         'dep_status', 
         'enrollment_status', 
         'status_message',
-        'order_lines_id'
+        'order_lines_id',
+        'created_by',
+        'updated_by'
     ];
     
     protected $filterable = [
@@ -59,8 +61,6 @@ class EnrollmentList extends Model
         return $query;
     }
 
-
-
     //ENROLLMENT STATUS
     public function eStatus(){
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
@@ -68,5 +68,24 @@ class EnrollmentList extends Model
     //DEP STATUS
     public function dStatus(){
         return $this->belongsTo(DepStatus::class, 'dep_status', 'id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Listen for saving event
+        static::saving(function ($enrollment) {
+            if (!$enrollment->exists) {
+                $enrollment->created_by = auth()->user()->id;
+                $enrollment->created_at = now();
+            }
+        });
+
+        // Listen for updating event
+        static::updating(function ($enrollment) {
+            $enrollment->updated_by = auth()->user()->id;
+            $enrollment->updated_at = now();
+        });
     }
 }

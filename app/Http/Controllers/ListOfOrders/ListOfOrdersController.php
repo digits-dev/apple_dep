@@ -556,7 +556,6 @@ class ListOfOrdersController extends Controller
                         'dep_status' => $dep_status,
                         'enrollment_status' => $enrollment_status,
                         'status_message' => $status_message,
-                        'created_at' => now(),
                     ];
         
                     EnrollmentList::updateOrCreate(
@@ -704,9 +703,10 @@ class ListOfOrdersController extends Controller
                         'dep_status' => $dep_status,
                         'enrollment_status' => $enrollment_status,
                         'status_message' => $status_message,
+                        'returned_by' => auth()->user()->id,
+                        'returned_date' => now(),
                     ]);
                 }
-        
         
                 // Logs
                 $orderId = $header_data->order_id;
