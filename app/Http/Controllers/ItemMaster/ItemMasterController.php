@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\ItemMaster;
 
+use App\Exports\ItemMasterExport;
+use app\Helpers\CommonHelpers;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Models\ItemMaster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemMasterController extends Controller
 {
@@ -20,27 +23,43 @@ class ItemMasterController extends Controller
         $this->perPage = request()->get('perPage', 10);
     }
 
-    public function getIndex()
+    public function getAllData()
     {
-        $data = [];
         $query = ItemMaster::query();
 
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('digits_code', 'LIKE', "%$search%");
-        });
+        $filter = $query->search(request());
 
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
+        $result = $filter->orderBy($this->sortBy, $this->sortDir);
 
+        return $result;
+    }
+    
+    public function export(Request $request)
+    {
+        date_default_timezone_set('Asia/Manila');
 
-        $data['itemMaster'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $filename = "Item Master - " . date ('Y-m-d H:i:s');
+
+        $data = self::getAllData();
+
+        return Excel::download(new ItemMasterExport($data), $filename . '.xlsx');
+    }
+
+    public function getIndex(Request $request)
+    {
+        $data = [];
+
+        $data['itemMaster'] = self::getAllData()->paginate($this->perPage)->withQueryString();
         $data['queryParams'] = request()->query();
-        
+
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
 
         return Inertia::render('ItemMaster/ItemMaster', $data);
     }
 
     public function addItemMaster(Request $request){
-
 
         $request->validate([
             'digits_code' => 'required',
@@ -91,5 +110,6 @@ class ItemMasterController extends Controller
         ]);
     }
 
+    
   
 }

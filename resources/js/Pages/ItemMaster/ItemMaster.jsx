@@ -64,10 +64,12 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
-                        <Export path="" />
                         <TableButton onClick={handleCreateModal}>
                             Add Item
                         </TableButton>
+                        <Export 
+                            path={`/item-master-export${window.location.search}`} 
+                            handleToast={handleToast} />
                     </TopPanel>
 
                     <TableContainer>
