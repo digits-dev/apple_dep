@@ -10,6 +10,7 @@ import TableHeader from "../../Components/Table/TableHeader";
 import Row from "../../Components/Table/Row";
 import RowData from "../../Components/Table/RowData";
 import Tbody from "../../Components/Table/Tbody";
+import moment from "moment";
 
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -69,7 +70,11 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         <p>{enrollmentList.d_status.dep_status}</p>
                         <p>{enrollmentList.status_message}</p>
                         <p>{enrollmentList.e_status.enrollment_status}</p>
-                        <p>{enrollmentList.created_at}</p>
+                        <p>
+                            {moment(enrollmentList.created_at).format(
+                                "YYYY-MM-DD HH:mm:ss"
+                            )}
+                        </p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -96,7 +101,9 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                         </div>
                         <div>
                             <span className="font-bold">Completed Date:</span>{" "}
-                            {data.completedOn}
+                            {moment(data.completedOn).format(
+                                "YYYY-MM-DD HH:mm:ss"
+                            )}
                         </div>
                         <div>
                             <span className="font-bold">Status Code:</span>{" "}
@@ -214,8 +221,12 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                         </TableHeader>
                                                                     </Row>
                                                                 </Thead>
-                                                                
-                                                                <Tbody data={delivery.devices}>
+
+                                                                <Tbody
+                                                                    data={
+                                                                        delivery.devices
+                                                                    }
+                                                                >
                                                                     {delivery.devices.map(
                                                                         (
                                                                             device,
@@ -245,8 +256,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                             </Row>
                                                                         )
                                                                     )}
-					                                            </Tbody>
-                                                          
+                                                                </Tbody>
                                                             </TableContainer>
                                                         </div>
                                                     </div>

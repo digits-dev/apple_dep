@@ -35,6 +35,7 @@ class ModulsController extends Controller{
             $query->where('adm_modules.name', 'LIKE', "%$search%");
         });
         $modules = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        
         return Inertia::render('Modules/Modules', [
             'modules' => $modules,
             'queryParams' => request()->query()

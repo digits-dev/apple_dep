@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use app\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\AppServiceProvider;
@@ -55,6 +56,8 @@ class LoginController extends Controller
             Session::put("admin_privileges", $session_details['priv']->id);
             Session::put('admin_privileges_roles', $session_details['roles']);
             Session::put('theme_color', $session_details['priv']->theme_color);
+            CommonHelpers::insertLog(trans("adm_default.log_login", ['email' => $users->email, 'ip' => $request->server('REMOTE_ADDR')]));
+
             return redirect()->intended('dashboard');
         }
         return back()->withErrors([
@@ -72,6 +75,7 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        CommonHelpers::insertLog(trans("adm_default.log_logout", ['email' => Auth::user()->email, 'ip' => $request->server('REMOTE_ADDR')]));
         Auth::logout();
         $request->session()->invalidate();
     

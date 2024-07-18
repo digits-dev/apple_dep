@@ -15,25 +15,31 @@ const SidebarAccordion = ({ open }) => {
             title: "Privileges",
             url: "privileges",
             image: "/images/navigation/privileges-icon.png",
-            icon: "fa fa-cog"
+            icon: "fa fa-cog",
         },
         {
             title: "User Management",
             url: "users",
             image: "/images/navigation/user-management-icon.png",
-            icon: "fa fa-users"
+            icon: "fa fa-users",
         },
         {
             title: "Menu Management",
             url: "menu_management",
             image: "/images/navigation/menu-icon-2.png",
-            icon: "fa fa-bars"
+            icon: "fa fa-bars",
         },
         {
             title: "Module Generator",
             url: "module_generator",
             image: "/images/navigation/module-icon.png",
-            icon: "fa fa-database"
+            icon: "fa fa-database",
+        },
+        {
+            title: "Log User Access",
+            url: "logs",
+            image: "/images/navigation/logs-icon.png",
+            icon: "fa fa-database",
         },
     ];
 
