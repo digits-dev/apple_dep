@@ -98,7 +98,7 @@ const SidebarAccordion = ({ open }) => {
                     }}
                 >
                     <li
-                        className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
+                        className={`text-white text-sm flex items-center gap-x-4 cursor-pointer px-2 py-3  hover:bg-sidebar-hover-color rounded-[10px] mb-2 ${
                             formatActiveSlug(window.location.pathname) ===
                             "dashboard"
                                 ? "active"
@@ -107,7 +107,7 @@ const SidebarAccordion = ({ open }) => {
                     >
                         <img
                             src="/images/navigation/dashboard-icon.png"
-                            className="w-[24px] h-[24px]"
+                            className="w-[16px] h-[16px] ml-1"
                         />
                         <p
                             className={`font-nunito-sans font-semibold single-line ${
@@ -129,9 +129,7 @@ const SidebarAccordion = ({ open }) => {
                             className={`flex cursor-pointer items-center justify-between px-2 py-3 hover:bg-sidebar-hover-color rounded-[10px]`}
                             onClick={() => handleToggle(index)}
                         >
-                            <i
-                                className={`w-[24px] h-[24px] ${item.icon} text-[24px]`}
-                            ></i>
+                            <i className={`ml-1 ${item.icon} text-[15px]`}></i>
                             <span
                                 className={`pl-4 flex-1 font-semibold  ${
                                     !open && "hidden"
@@ -174,7 +172,7 @@ const SidebarAccordion = ({ open }) => {
                                 onClick={() => handleToggle(index)}
                             >
                                 <i
-                                    className={`w-[24px] h-[24px] ${item.icon} text-[24px] text-center`}
+                                    className={`ml-1 ${item.icon} text-[16px] text-center`}
                                 ></i>
                                 <span
                                     className={`pl-4 flex-1 font-semibold single-lines ${
@@ -245,7 +243,7 @@ const SidebarAccordion = ({ open }) => {
                                                 <div className="border-l-none flex-1 w-2 "></div>
                                             </div>
                                             <div
-                                                className={`p-2 flex flex-1 rounded-[5px] my-1 hover:bg-sidebar-hover-color cursor-pointer ${
+                                                className={`p-2 flex flex-1 items-center rounded-[5px] my-1 hover:bg-sidebar-hover-color cursor-pointer ${
                                                     open &&
                                                     formatActiveSlug(
                                                         window.location.pathname
@@ -255,9 +253,9 @@ const SidebarAccordion = ({ open }) => {
                                                 }`}
                                             >
                                                 <i
-                                                    className={`w-[18px] h-[18px] ${
+                                                    className={` ${
                                                         child.icon
-                                                    } text-[18px] text-center  ${
+                                                    } text-[12px]  ${
                                                         !open && "hidden"
                                                     }`}
                                                 ></i>
@@ -326,7 +324,7 @@ const SidebarAccordion = ({ open }) => {
                                 >
                                     <img
                                         src={menu.image}
-                                        className="w-[24px] h-[24px]"
+                                        className="w-[16px] h-[16px] ml-1"
                                     />
                                     <p
                                         className={`font-nunito-sans font-semibold single-line ${

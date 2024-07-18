@@ -24,6 +24,8 @@ module.exports = {
                     "linear-gradient(to bottom, #060505, #333232)",
                 "overview-gradient":
                     "linear-gradient(to bottom, #060505, #787575)",
+                "radial-gradient-gray":
+                    "radial-gradient(circle, #353131, #191717)",
             },
             fontFamily: {
                 "nunito-sans": ["Nunito Sans", "sans-serif"],
