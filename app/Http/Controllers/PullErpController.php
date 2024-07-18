@@ -40,13 +40,7 @@ class PullErpController extends Controller
                 }
             }
 
-            // Check for duplicate serial numbers
-            $serialCount = array_count_values($serialNumbers);
-            $duplicates = array_filter($serialCount, function($count) {
-                return $count > 1;
-            });
-
-            if(count($serialNumbers) === (int)$item->shipped_quantity && empty($duplicates)){
+            if(count($serialNumbers) === (int)$item->shipped_quantity){
                 for($i = 0; $i < (int)$item->shipped_quantity; $i++){
                     $res = clone $item;
                     $res->final_qty = 1;
