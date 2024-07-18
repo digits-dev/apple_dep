@@ -457,14 +457,14 @@ class ListOfOrdersController extends Controller
     {
         try {
             $ids = $request->input('ids');
-        
+
             // Fetch unique lines
             $uniqueLines = OrderLines::whereIn('list_of_order_lines.id', $ids)
                 ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
                 ->selectRaw('MIN(list_of_order_lines.id) as id, list_of_order_lines.serial_number, list_of_order_lines.digits_code')
                 ->groupBy('list_of_order_lines.serial_number', 'list_of_order_lines.digits_code')
                 ->get();
-        
+
             $idsOfUniqueLines = [];
 
             // check lines if they're already enrolled through digits code and serial number
@@ -478,7 +478,7 @@ class ListOfOrdersController extends Controller
                     $idsOfUniqueLines[] = $orderLines->id;
                 }
             }
-        
+
             if (!empty($idsOfUniqueLines)) {
                 // Fetch detailed order lines
                 $requestData = OrderLines::select('list_of_order_lines.id as order_line_id', 'orders.id as order_id', 'list_of_order_lines.*', 'orders.*') 
@@ -533,11 +533,17 @@ class ListOfOrdersController extends Controller
                     $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
                     $enrollment_status = self::enrollment_status['Enrollment Success'];
+
+                    // Update enrollment status to success
+                    OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => self::enrollment_status['Enrollment Success']]);
+
                 } else {
                     $transaction_id = $response['transactionId'];
                     $dep_status = self::dep_status['GRX-50025'];
                     $status_message = $response['errorMessage'];
                     $enrollment_status = self::enrollment_status['Enrollment Error'];
+
+                    OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => self::enrollment_status['Enrollment Error']]);
                 }
         
                 foreach ($requestData as $deviceData) {
@@ -561,9 +567,6 @@ class ListOfOrdersController extends Controller
                         $insertData
                     );
                 }
-        
-                // Update enrollment status to success
-                OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => self::enrollment_status['Enrollment Success']]);
         
                 // Logs
                 $orderId = $header_data->order_id;
@@ -604,7 +607,7 @@ class ListOfOrdersController extends Controller
                 if ($enrollmentStatusSuccess === $totalOrderLines) {
                     Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
                 }
-        
+                
                 $data = [
                     'message' => $enrollment_status == self::enrollment_status['Enrollment Success'] ? 'Enrollment Success!' : 'Enrollment Error!',
                     'status' => $enrollment_status == self::enrollment_status['Enrollment Success'] ? 'success' : 'error',
@@ -674,17 +677,23 @@ class ListOfOrdersController extends Controller
                 ];
 
                 $response = $this->appleService->unenrollDevices($payload);
-        
+
                 if (isset($response['enrollDevicesResponse'])) {
                     $transaction_id = $response['deviceEnrollmentTransactionId'];
                     $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
                     $enrollment_status = self::enrollment_status['Returned'];
+
+                    OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => self::enrollment_status['Returned']]);
+
                 } else {
                     $transaction_id = $response['transactionId'];
                     $dep_status = self::dep_status['GRX-50025'];
                     $status_message = $response['errorMessage'];
                     $enrollment_status = self::enrollment_status['Return Error'];
+
+                    OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => self::enrollment_status['Return Error']]);
+
                 }
         
                 foreach ($requestData as $deviceData) {
@@ -698,7 +707,6 @@ class ListOfOrdersController extends Controller
                     ]);
                 }
         
-                OrderLines::whereIn('id', $ids)->update(['enrollment_status_id' => self::enrollment_status['Returned']]);
         
                 // Logs
                 $orderId = $header_data->order_id;
@@ -728,7 +736,7 @@ class ListOfOrdersController extends Controller
                     'created_at' => now(),
                 ]);
 
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending' ]]);
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
         
                 $data = [
                     'message' => $enrollment_status == self::enrollment_status['Returned' ] ? 'Unenroll Devices Successfully!' : 'Unenroll Devices Failed!',

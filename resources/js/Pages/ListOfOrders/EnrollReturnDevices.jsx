@@ -30,6 +30,17 @@ const EnrollmentStatus = Object.freeze({
     RETURN_ERROR: 6,
 });
 
+const allowedToEnroll = [
+    EnrollmentStatus.PENDING, 
+    EnrollmentStatus.ENROLLMENT_ERROR, 
+    EnrollmentStatus.RETURNED, 
+];
+
+const allowedToReturn = [
+    EnrollmentStatus.ENROLLMENT_SUCCESS,
+    EnrollmentStatus.RETURN_ERROR,
+]
+
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
@@ -126,7 +137,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     selectedItems.includes(item.id)
                                 )
                                 .filter(
-                                    (item) => item.enrollment_status_id == EnrollmentStatus.PENDING
+                                    (item) => allowedToEnroll.includes(item.enrollment_status_id)
                                 )
                                 .map((item) => item.id);
 
@@ -151,6 +162,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.status
                                     );
                                     resetCheckbox();
+                                    router.reload({ only: ["orderLines"] });
                                 }
                             } else {
                                 handleToast(
@@ -168,7 +180,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     selectedItems.includes(item.id)
                                 )
                                 .filter(
-                                    (item) => item.enrollment_status_id == EnrollmentStatus.ENROLLMENT_SUCCESS
+                                    (item) => allowedToReturn.includes(item.enrollment_status_id)
                                 )
                                 .map((item) => item.id);
 
@@ -193,6 +205,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.status
                                     );
                                     resetCheckbox();
+                                    router.reload({ only: ["orderLines"] });
+
                                 }
                             } else {
                                 handleToast(
