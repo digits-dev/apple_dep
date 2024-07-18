@@ -110,7 +110,6 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                     <h2 className="mb-4 italic">
                                         Json Response
                                     </h2>
-                                    <button>Export</button>
                                     <TableButton
                                         extendClass="mr-1 mb-3"
                                         onClick={(e) =>
@@ -217,7 +216,6 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                     <h2 className="mb-4 italic">
                                         Json Request
                                     </h2>
-                                    <button>Export</button>
                                     <TableButton
                                         extendClass="mr-1 mb-3"
                                         onClick={(e) =>

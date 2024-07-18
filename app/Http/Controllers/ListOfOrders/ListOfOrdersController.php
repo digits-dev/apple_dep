@@ -263,6 +263,7 @@ class ListOfOrdersController extends Controller
                 'dep_status' => $dep_status,
                 'enrollment_status' => $enrollment_status,
                 'status_message' => $status_message,
+                'created_by' => auth()->user()->id,
                 'created_at' => date('Y-m-d H:i:s')
             ];
 
@@ -292,7 +293,9 @@ class ListOfOrdersController extends Controller
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
-                    'status_message' => $status_message
+                    'status_message' => $status_message,
+                    'updated_by' => auth()->user()->id,
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ]);
             }
             
@@ -410,7 +413,9 @@ class ListOfOrdersController extends Controller
                 'transaction_id' => $transaction_id,
                 'dep_status' => $dep_status,
                 'enrollment_status' => $enrollment_status,
-                'status_message' => $status_message
+                'status_message' => $status_message,
+                'returned_by' => auth()->user()->id,
+                'returned_date' => date('Y-m-d H:i:s'),
             ]);
 
             OrderLines::where('id', $id)->update(['enrollment_status_id' => self::enrollment_status['Returned' ]]);
