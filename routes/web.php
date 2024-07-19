@@ -141,7 +141,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
 
     //SUBMASTERS
-
     Route::post('/item_master_create', [ItemMasterController::class, 'addItemMaster']);
     Route::put('/item_master_update/{itemMaster}', [ItemMasterController::class, 'updateItemMaster']);
 
