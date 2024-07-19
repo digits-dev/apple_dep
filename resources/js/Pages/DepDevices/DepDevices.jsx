@@ -10,20 +10,25 @@ import ContentPanel from "../../Components/Table/ContentPanel";
 import RowData from "../../Components/Table/RowData";
 import Row from "../../Components/Table/Row";
 import Export from "../../Components/Table/Buttons/Export";
+import RowAction from "../../Components/Table/RowAction";
 import Filters from "../../Components/Table/Buttons/Filters";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import InputComponent from "../../Components/Forms/Input";
 import { useEffect, useState } from "react";
+import Modal from "../../Components/Modal/Modal";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 
 const DepDevices = ({ devices, queryParams }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [orderId, setOrderId] = useState(null);
     const { setTitle } = useNavbarContext();
+    const [showModal, setShowModal] = useState(false);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -56,6 +61,88 @@ const DepDevices = ({ devices, queryParams }) => {
         router.get(`/dep_devices?${queryString}`);
     };
 
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleOpenModal = () => {
+        setShowModal(true);
+    };
+
+    const EnrollReturnDeviceActions = () => {
+        const handleSwal = (e, action) => {
+            e.preventDefault();
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${
+                    action == "enroll" ? "Enroll" : "Return"
+                } this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    EnrollReturnDevice(action);
+                }
+            });
+        };
+
+        const EnrollReturnDevice = async (action) => {
+            setShowModal(false);
+            setLoading(true);
+
+            try {
+                let response;
+                if (action == "enroll") {
+                    response = await axios.post(`/dep_devices/enroll`, {
+                        id: orderId,
+                    });
+                } else {
+                    response = await axios.post(`/list_of_orders/return`, {
+                        id: orderId,
+                    });
+                }
+                console.log(response);
+                if (response.data.status == "success") {
+                    handleToast(response.data.message, response.data.status);
+
+                    router.reload({ only: ["orderLines"] });
+                } else {
+                    router.reload({ only: ["orderLines"] });
+                    handleToast(response.data.message, "Error");
+                }
+            } catch (error) {
+                handleToast(
+                    "Something went wrong, please try again later.",
+                    "Error"
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        return (
+            <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
+                <>
+                    <button
+                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
+                        onClick={(e) => handleSwal(e, "enroll")}
+                    >
+                        Enroll Device
+                    </button>
+
+                    <button
+                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                        // disabled={[1, 5].includes(enrollmentStatus)}
+                        onClick={(e) => handleSwal(e, "return")}
+                    >
+                        Return Device
+                    </button>
+                </>
+            </div>
+        );
+    };
     return (
         <>
             <Head title="DEP Devices" />
@@ -96,7 +183,7 @@ const DepDevices = ({ devices, queryParams }) => {
                         <Thead>
                             <Row>
                                 <TableHeader
-                                    name="item_code"
+                                    name="digits_code"
                                     queryParams={queryParams}
                                     width="md"
                                     justify="center"
@@ -129,6 +216,9 @@ const DepDevices = ({ devices, queryParams }) => {
                                 >
                                     Customer Name
                                 </TableHeader>
+                                <TableHeader sortable={false} justify="center">
+                                    Action
+                                </TableHeader>
                             </Row>
                         </Thead>
                         <Tbody data={devices.data}>
@@ -136,7 +226,7 @@ const DepDevices = ({ devices, queryParams }) => {
                                 devices.data.map((item, index) => (
                                     <Row key={item.serial_number + index}>
                                         <RowData isLoading={loading} center>
-                                            {item.item_code}
+                                            {item.digits_code}
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item.item_description}
@@ -147,6 +237,22 @@ const DepDevices = ({ devices, queryParams }) => {
                                         <RowData isLoading={loading} center>
                                             {item.customer_name}
                                         </RowData>
+                                        <RowData center>
+                                            <RowAction
+                                                action="add"
+                                                type="button"
+                                                onClick={() => {
+                                                    handleOpenModal();
+                                                    setOrderId(item.id);
+                                                    // setEnrollmentStatus(
+                                                    //     order.enrollment_status_id
+                                                    // );
+                                                    // setEnrollmentExist(
+                                                    //     order.enrollment_exist
+                                                    // );
+                                                }}
+                                            />
+                                        </RowData>
                                     </Row>
                                 ))}
                         </Tbody>
@@ -154,6 +260,13 @@ const DepDevices = ({ devices, queryParams }) => {
 
                     <Pagination paginate={devices} />
                 </ContentPanel>
+                <Modal
+                    show={showModal}
+                    onClose={handleCloseModal}
+                    title="Actions"
+                >
+                    <EnrollReturnDeviceActions />
+                </Modal>
             </AppContent>
         </>
     );

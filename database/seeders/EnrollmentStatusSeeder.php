@@ -47,7 +47,7 @@ class EnrollmentStatusSeeder extends Seeder
             [
                 'enrollment_status' => 'Return Error',
                 'status' => 1,
-                'color' => 'orange',
+                'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];

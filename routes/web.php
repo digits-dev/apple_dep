@@ -124,6 +124,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);
     Route::get('/enrollment_list/{transactionId}/check_status', [EnrollmentListController::class, 'checkTransactionStatus']);
 
+    // DEP Devices
+    Route::post('/dep_devices/enroll', [DepDevicesController::class, 'depEnrollDevice']);
+    Route::post('/list_of_orders/return', [DepDevicesController::class, 'unEnrollDevices']);
+
     //IMPORTS
     Route::post('/customers-import', [CustomerController::class, 'import']);
     Route::post('/actions-import', [ActionController::class, 'import']);

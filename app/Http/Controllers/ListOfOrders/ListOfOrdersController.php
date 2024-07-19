@@ -418,7 +418,7 @@ class ListOfOrdersController extends Controller
                 'returned_date' => date('Y-m-d H:i:s'),
             ]);
 
-            OrderLines::where('id', $id)->update(['enrollment_status_id' => self::enrollment_status['Returned' ]]);
+            OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status ]);
 
             
             // insert the request and response data to the database

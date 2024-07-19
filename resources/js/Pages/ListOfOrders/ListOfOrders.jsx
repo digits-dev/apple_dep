@@ -58,71 +58,74 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     const ListofOrdersEditActions = () => {
         return (
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
-                {auth.access.isCreate || auth.access.isVoid || auth.access.isOverride 
-                ?
-                <>
-                    {auth.access.isCreate ? (
-                        <Link
-                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                            href={orderPath + `/${orderId}/edit`}
-                        >
-                            Enroll/Return Devices
-                        </Link>
-                    ) : (
-                        ""
-                    )}
-                    {auth.access.isVoid ? (
-                        <button
-                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                            onClick={() => {
-                                handleOverrideModal();
-                                handleCloseEditModal();
-                            }}
-                        >
-                            Override Order
-                        </button>
-                    ) : (
-                        ""
-                    )}
-                    {auth.access.isOverride ? (
-                        <Link
-                            className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                            href="#"
-                        >
-                            Void Order
-                        </Link>
-                    ) : (
-                        ""
-                    )}
-                </>
-                :
-                <div class="text-center">
-                    <h1 class="text-3xl font-bold text-red-500 mb-2"><i className="fa fa-lock"></i> Access Denied</h1>
-                    <p class="text-lg text-gray-700 mb-3">You do not have permission to access this area.</p>
-                </div>
-              }
-                
+                {auth.access.isCreate ||
+                auth.access.isVoid ||
+                auth.access.isOverride ? (
+                    <>
+                        {auth.access.isCreate ? (
+                            <Link
+                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                                href={orderPath + `/${orderId}/edit`}
+                            >
+                                Enroll/Return Devices
+                            </Link>
+                        ) : (
+                            ""
+                        )}
+                        {auth.access.isVoid ? (
+                            <button
+                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                                onClick={() => {
+                                    handleOverrideModal();
+                                    handleCloseEditModal();
+                                }}
+                            >
+                                Override Order
+                            </button>
+                        ) : (
+                            ""
+                        )}
+                        {auth.access.isOverride ? (
+                            <Link
+                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                                href="#"
+                            >
+                                Void Order
+                            </Link>
+                        ) : (
+                            ""
+                        )}
+                    </>
+                ) : (
+                    <div class="text-center">
+                        <h1 class="text-3xl font-bold text-red-500 mb-2">
+                            <i className="fa fa-lock"></i> Access Denied
+                        </h1>
+                        <p class="text-lg text-gray-700 mb-3">
+                            You do not have permission to access this area.
+                        </p>
+                    </div>
+                )}
             </div>
         );
     };
 
     const [filters, setFilters] = useState({
-        sales_order_no: '',
-        customer_name: '',
-        order_ref_no: '',
-        dep_order: '',
-        enrollment_status: '',
-        order_date: '',
+        sales_order_no: "",
+        customer_name: "",
+        order_ref_no: "",
+        dep_order: "",
+        enrollment_status: "",
+        order_date: "",
     });
 
     const handleFilter = (e) => {
         const { name, value } = e.target;
-        setFilters(filters => ({
-        ...filters,
-        [name]: value,
+        setFilters((filters) => ({
+            ...filters,
+            [name]: value,
         }));
-
-    }
+    };
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
@@ -130,7 +133,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         const queryString = new URLSearchParams(filters).toString();
         router.get(`/list_of_orders?${queryString}`);
     };
-
 
     return (
         <>
@@ -146,12 +148,12 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                 value={filters.sales_order_no}
                                 onChange={handleFilter}
                             />
-                             <InputComponent
+                            <InputComponent
                                 name="customer_name"
                                 value={filters.customer_name}
                                 onChange={handleFilter}
                             />
-                             <InputComponent
+                            <InputComponent
                                 name="order_ref_no"
                                 value={filters.order_ref_no}
                                 onChange={handleFilter}
