@@ -22,8 +22,9 @@ import { useToast } from "../../Context/ToastContext";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import RowStatus from "../../Components/Table/RowStatus";
+import Select from "../../Components/Forms/Select";
 
-const DepDevices = ({ devices, queryParams }) => {
+const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -42,10 +43,11 @@ const DepDevices = ({ devices, queryParams }) => {
     }, []);
 
     const [filters, setFilters] = useState({
-        item_code: "",
+        digits_code: "",
         item_description: "",
         serial_number: "",
         customer_name: "",
+        enrollment_status_id: "",
     });
 
     const handleFilter = (e) => {
@@ -159,8 +161,9 @@ const DepDevices = ({ devices, queryParams }) => {
                         <PerPage queryParams={queryParams} />
                         <Filters onSubmit={handleFilterSubmit}>
                             <InputComponent
-                                name="item_code"
-                                value={filters.item_code}
+                                name="digits_code"
+                                displayName="Item Code"
+                                value={filters.digits_code}
                                 onChange={handleFilter}
                             />
                             <InputComponent
@@ -176,6 +179,12 @@ const DepDevices = ({ devices, queryParams }) => {
                             <InputComponent
                                 name="customer_name"
                                 value={filters.customer_name}
+                                onChange={handleFilter}
+                            />
+                            <Select
+                                name="enrollment_status_id"
+                                displayName="Enrollment Status"
+                                options={enrollmentStatuses}
                                 onChange={handleFilter}
                             />
                         </Filters>

@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -31,6 +32,11 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
                     "Status Message",
                     "Enrollment Status",
                     "Created Date",
+                    "Created By",
+                    'Updated Date',
+                    'Updated By',
+                    'Returned Date',
+                    'Returned By'
                 ];
 
         return $headers;
@@ -46,7 +52,12 @@ class EnrollmentListExport implements  FromQuery, WithHeadings, WithMapping, Sho
                     $item->dStatus->dep_status,
                     $item->status_message,
                     $item->eStatus->enrollment_status,
-                    $item->created_date,
+                    !empty($item->created_at) ? date('Y-m-d', strtotime($item->created_at)) : null,
+                    $item->createdBy->name,
+                    !empty($item->updated_at) ? date('Y-m-d', strtotime($item->updated_at)) : null,
+                    $item->updatedBy->name ?? '',
+                    !empty($item->returned_date) ? date('Y-m-d', strtotime($item->returned_date)) : null,
+                    $item->returnedBy->name ?? '',
                 ];
        
         return $enrollmentLists;

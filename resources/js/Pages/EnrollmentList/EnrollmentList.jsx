@@ -19,8 +19,11 @@ import { useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import moment from "moment";
+import ReactSelect from "../../Components/Forms/ReactSelect";
 
-const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses }) => {
+
+const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses, users }) => {
     queryParams = queryParams || {};
 
     const { handleToast } = useToast();
@@ -38,16 +41,34 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
         dep_status: '',
         status_message: '',
         enrollment_status: '',
-        created_date: '',
+        created_at: '',
+        created_by: '',
+        updated_at: '',
+        updated_by: '',
+        returned_by: '',
+        returned_date: '',
     });
 
-    const handleFilter = (e) => {
-        const { name, value } = e.target;
-        setFilters(filters => ({
-        ...filters,
-        [name]: value,
-        }));
+    const handleFilter = (e, attrName) => {
+        if(attrName) {
+            const { value } = e;
+
+            setFilters(filters => ({
+                ...filters,
+                [attrName]: value,
+            }));
+          
+        }else{
+            const { name, value } = e.target;
+
+            setFilters(filters => ({
+            ...filters,
+            [name]: value,
+            }));
+        }
+       
     }
+    
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
@@ -55,6 +76,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
         const queryString = new URLSearchParams(filters).toString();
         router.get(`/enrollment_list?${queryString}`);
     };
+
 
 
     return (
@@ -103,10 +125,52 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                             />
                             <InputComponent
                                 type="date"
-                                name="created_date"
-                                value={filters.created_date}
+                                name="created_at"
+                                displayName="Created Date"
+                                value={filters.created_at}
                                 onChange={handleFilter}
                             />
+
+                            <ReactSelect 
+                                placeholder="Select User" 
+                                name="created_by" 
+                                options={users} 
+                                value={users.find(user => user.value === filters.created_by)} 
+                                onChange={(e) => handleFilter(e,'created_by')}  
+                            />
+                     
+                            <InputComponent
+                                type="date"
+                                name="updated_at"
+                                displayName="Updated Date"
+                                value={filters.updated_at}
+                                onChange={handleFilter}
+                            />
+
+                            <ReactSelect 
+                                placeholder="Select User" 
+                                name="updated_by" 
+                                options={users} 
+                                value={users.find(user => user.value === filters.updated_by)} 
+                                onChange={(e) => handleFilter(e,'updated_by')}  
+                            />
+
+                            <InputComponent
+                                type="date"
+                                name="returned_date"
+                                value={filters.returned_date}
+                                onChange={handleFilter}
+                            />
+
+                            <ReactSelect 
+                                placeholder="Select User"
+                                name="returned_by"
+                                options={users} 
+                                value={users.find(user => user.value === filters.returned_by)} 
+                                menuPlacement="top" 
+                                onChange={(e) => handleFilter(e,'returned_by')} 
+                            />
+                   
                         </Filters>
                         <Export
                             path={`/enrollment-list-export${window.location.search}`}
@@ -122,6 +186,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                     queryParams={queryParams}
                                     justify="center"
                                     sticky="left"
+                                    
                                 >
                                     Sales Order #
                                 </TableHeader>
@@ -176,11 +241,46 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="created_at"
                                     queryParams={queryParams}
-                                    justify="center"
+                                    width="lg"
                                 >
                                     Created Date
+                                </TableHeader>
+                                <TableHeader
+                                    name="created_by"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                    Created By
+                                </TableHeader>
+                                <TableHeader
+                                    name="updated_at"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                    Updated Date
+                                </TableHeader>
+                                <TableHeader
+                                    name="updated_by"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                    Updated By
+                                </TableHeader>
+                                <TableHeader
+                                    name="returned_date"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                   Returned Date
+                                </TableHeader>
+                                <TableHeader
+                                    name="returned_by"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                    Returned By
                                 </TableHeader>
 
                                 <TableHeader
@@ -221,8 +321,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                             {item?.d_status?.dep_status}
                                         </RowStatus>
 
-                                  
-
                                         <RowData isLoading={loading} center>
                                             {item.status_message}
                                         </RowData>
@@ -234,9 +332,30 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                             {item?.e_status?.enrollment_status}
                                         </RowStatus>
 
-                                        <RowData isLoading={loading} center>
-                                            {item.created_date}
+                                        <RowData isLoading={loading} >
+                                            {item.created_at && moment(item.created_at).format('YYYY-MM-DD')}
                                         </RowData>
+
+                                        <RowData isLoading={loading} >
+                                            {item?.created_by?.name}
+                                        </RowData>
+
+                                        <RowData isLoading={loading} >
+                                            {item.updated_at && moment(item.updated_at).format('YYYY-MM-DD')}
+                                        </RowData>
+
+                                        <RowData isLoading={loading} >
+                                            {item?.updated_by?.name}
+                                        </RowData>
+
+                                        <RowData isLoading={loading} >
+                                            {item.returned_date && moment(item.returned_date).format('YYYY-MM-DD')}
+                                        </RowData>
+
+                                        <RowData isLoading={loading} >
+                                            {item?.returned_by?.name}
+                                        </RowData>
+
                                         <RowData
                                             isLoading={loading}
                                             sticky="right"

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DepStatus;
 use App\Models\EnrollmentList;
 use App\Models\EnrollmentStatus;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -31,7 +32,7 @@ class EnrollmentListController extends Controller
     
     public function getAllData()
     {
-        $query = EnrollmentList::query()->with(['dStatus', 'eStatus']);
+        $query = EnrollmentList::query()->with(['dStatus', 'eStatus', 'createdBy', 'updatedBy', 'returnedBy']);
 
         $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
 
@@ -61,6 +62,7 @@ class EnrollmentListController extends Controller
 
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['depStatuses'] = DepStatus::select('id', 'dep_status as name')->get();
+        $data['users'] = User::select('id as value', 'name as label')->get();
 
         $data['queryParams'] = request()->query();
 

@@ -19,7 +19,7 @@ class ResetPasswordController extends Controller
         $iv = Str::random(16);
         
         $request->validate([
-            'email' => 'required',
+            'email' => 'required|email|exists:users,email',
         ]);
         
         $encryptedEmail = openssl_encrypt($request->email, 'aes-256-cbc', $key, 0, $iv);

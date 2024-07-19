@@ -5,6 +5,7 @@ use App\Helpers\CommonHelpers;
 use App\Exports\DevicesExport;
 use App\Http\Controllers\Controller;
 use App\Models\DepDevice;
+use App\Models\EnrollmentStatus;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -48,11 +49,11 @@ class DepDevicesController extends Controller
     public function getAllData()
     {
         $query = DepDevice::getData();
-        
 
         $filter = $query->searchAndFilter(request());
 
         $result = $filter->orderBy($this->sortBy, $this->sortDir);
+
         return $result;
     }
     
@@ -76,6 +77,7 @@ class DepDevicesController extends Controller
         }
 
         $data['devices'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['queryParams'] = request()->query();
 
         return Inertia::render('DepDevices/DepDevices', $data);

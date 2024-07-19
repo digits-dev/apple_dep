@@ -20,6 +20,11 @@ class Order extends Model
             $search = $request->input('search');
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
+                    if($field === 'enrollment_status') {
+                        $query->orWhereHas('status', function ($query) use ($search) {
+                            $query->where('enrollment_status', 'LIKE', "%$search%");
+                        });
+                    }
                     $query->orWhere($field, 'LIKE', "%$search%");
                 }
             });

@@ -16,6 +16,7 @@ class DepDevice extends Model
         'item_description',
         'serial_number',
         'customer_name',
+        'enrollment_status_id'
     ];
 
     public function scopeSearchAndFilter($query, $request){
@@ -25,6 +26,10 @@ class DepDevice extends Model
                 foreach ($this->filterable as $field) {
                    if ($field === 'customer_name') {
                         $query->orWhere('orders.customer_name', 'LIKE', "%$search%");
+                    } else if($field === 'enrollment_status_id') {
+                        $query->orWhereHas('eStatus', function ($query) use ($search) {
+                            $query->where('enrollment_status', 'LIKE', "%$search%");
+                        });
                     } else {
                         $query->orWhere('list_of_order_lines.' . $field, 'LIKE', "%$search%");
                     }
@@ -45,7 +50,9 @@ class DepDevice extends Model
     
         return $query;
     }
-
+    public function eStatus(){
+        return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');
+    }
 
     public function scopeGetData($query) {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
