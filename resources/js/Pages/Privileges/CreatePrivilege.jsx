@@ -58,32 +58,35 @@ const AddPrivileges = ({ moduleses, row }) => {
     }, []);
     
     const handleSelectAll = (e, permission) => {
-        const { type, checked } = e.target;
+        const { type, checked, value } = e.target;
         const actualValue = type === "checkbox" ? (checked ? "1" : "") : value;
         setSelectAll((prevState) => ({
             ...prevState,
             [permission]: !prevState[permission],
         }));
         // Update roles state based on new select all state
-        modules.map((item) => {
-            const isChecked = !roles[item.id]?.is_visible;
-            setRoles((prevRoles) => ({
-                ...prevRoles,
-                [item.id]: {
-                    [permission]: isChecked,
-                },
-            }));
+        setModules(modules.map(modul => {
+            return {
+                ...modul,
+                roles: {
+                    ...modul.roles,
+                    [permission]: checked,
+                }
+            };
+            
+        }));
 
-            setForms({
+        modules.map(item => {
+            setForms(forms => ({
                 ...forms,
                 privileges: {
                     ...forms.privileges,
                     [item.id]: {
-                        ...forms.privileges[item.id],
+                        ...forms.privileges?.[item.id],
                         [permission]: actualValue,
                     },
                 },
-            });
+            }));
         });
     };
 
