@@ -52,7 +52,7 @@
             <h2>Password Reset</h2>
             <p>If you've lost your password or wish to reset it, use the link below to get started.</p>
             <p>
-                <a href="http://apple_dep.test/reset_password_email/{{ $email }}" class="button" style="color: white">Reset Your Password</a>
+                <a href="{{ url('/reset_password_email/' . $email) }}" class="button" style="color: white">Reset Your Password</a>
             </p>
             <p>If you did not request a password reset, you can safely ignore this email. Only a person with access to your email can reset your account password.</p>
         </div>
