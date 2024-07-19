@@ -31,15 +31,15 @@ const EnrollmentStatus = Object.freeze({
 });
 
 const allowedToEnroll = [
-    EnrollmentStatus.PENDING, 
-    EnrollmentStatus.ENROLLMENT_ERROR, 
-    EnrollmentStatus.RETURNED, 
+    EnrollmentStatus.PENDING,
+    EnrollmentStatus.ENROLLMENT_ERROR,
+    EnrollmentStatus.RETURNED,
 ];
 
 const allowedToReturn = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
     EnrollmentStatus.RETURN_ERROR,
-]
+];
 
 const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const { setTitle } = useContext(NavbarContext);
@@ -136,8 +136,10 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 ?.filter((item) =>
                                     selectedItems.includes(item.id)
                                 )
-                                .filter(
-                                    (item) => allowedToEnroll.includes(item.enrollment_status_id)
+                                .filter((item) =>
+                                    allowedToEnroll.includes(
+                                        item.enrollment_status_id
+                                    )
                                 )
                                 .map((item) => item.id);
 
@@ -170,7 +172,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     "Error"
                                 );
                             }
-                        // Return Device Logic
+                            // Return Device Logic
                         } else {
                             setLoading(true);
 
@@ -179,8 +181,10 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 ?.filter((item) =>
                                     selectedItems.includes(item.id)
                                 )
-                                .filter(
-                                    (item) => allowedToReturn.includes(item.enrollment_status_id)
+                                .filter((item) =>
+                                    allowedToReturn.includes(
+                                        item.enrollment_status_id
+                                    )
                                 )
                                 .map((item) => item.id);
 
@@ -206,7 +210,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     );
                                     resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
-
                                 }
                             } else {
                                 handleToast(
@@ -248,8 +251,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
         };
 
         const EnrollReturnDevice = async (action) => {
-                setShowModal(false);
-                setLoading(true);
+            setShowModal(false);
+            setLoading(true);
 
             try {
                 let response;
@@ -276,33 +279,49 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                     "Something went wrong, please try again later.",
                     "Error"
                 );
-            } finally{
+            } finally {
                 setLoading(false);
             }
         };
 
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
-                    <>
-                        {(enrollmentExist == 0 ||
-                            (enrollmentExist == 1 &&
-                                enrollmentStatus == 5)) && (
-                            <button
-                                className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
-                                onClick={(e) => handleSwal(e, "enroll")}
-                            >
-                                Enroll Device
-                            </button>
-                        )}
+                <>
+                    {![3, 6].includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
+                            onClick={(e) => handleSwal(e, "enroll")}
+                        >
+                            Enroll Device
+                        </button>
+                    )}
 
+                    {![1, 2, 5].includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
-                            disabled={[1, 5].includes(enrollmentStatus)}
                             onClick={(e) => handleSwal(e, "return")}
                         >
                             Return Device
                         </button>
-                    </>
+                    )}
+                    {/* {(enrollmentExist == 0 ||
+                        (enrollmentExist == 1 && enrollmentStatus == 5)) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
+                            onClick={(e) => handleSwal(e, "enroll")}
+                        >
+                            Enroll Device
+                        </button>
+                    )}
+
+                    <button
+                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                        disabled={[1, 5].includes(enrollmentStatus)}
+                        onClick={(e) => handleSwal(e, "return")}
+                    >
+                        Return Device
+                    </button> */}
+                </>
             </div>
         );
     };
@@ -427,9 +446,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                                 setEnrollmentStatus(
                                                     order.enrollment_status_id
                                                 );
-                                                setEnrollmentExist(
-                                                    order.enrollment_exist
-                                                );
+                                                // setEnrollmentExist(
+                                                //     order.enrollment_exist
+                                                // );
                                             }}
                                         />
                                     </RowData>

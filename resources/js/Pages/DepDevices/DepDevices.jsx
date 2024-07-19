@@ -28,6 +28,7 @@ const DepDevices = ({ devices, queryParams }) => {
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [orderId, setOrderId] = useState(null);
+    const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const { setTitle } = useNavbarContext();
     const [showModal, setShowModal] = useState(false);
 
@@ -96,7 +97,7 @@ const DepDevices = ({ devices, queryParams }) => {
             try {
                 let response;
                 if (action == "enroll") {
-                    response = await axios.post(`/dep_devices/enroll`, {
+                    response = await axios.post(`/list_of_orders/enroll`, {
                         id: orderId,
                     });
                 } else {
@@ -108,9 +109,9 @@ const DepDevices = ({ devices, queryParams }) => {
                 if (response.data.status == "success") {
                     handleToast(response.data.message, response.data.status);
 
-                    router.reload({ only: ["orderLines"] });
+                    router.reload({ only: ["devices"] });
                 } else {
-                    router.reload({ only: ["orderLines"] });
+                    router.reload({ only: ["devices"] });
                     handleToast(response.data.message, "Error");
                 }
             } catch (error) {
@@ -126,20 +127,23 @@ const DepDevices = ({ devices, queryParams }) => {
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
                 <>
-                    <button
-                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
-                        onClick={(e) => handleSwal(e, "enroll")}
-                    >
-                        Enroll Device
-                    </button>
+                    {![3, 6].includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
+                            onClick={(e) => handleSwal(e, "enroll")}
+                        >
+                            Enroll Device
+                        </button>
+                    )}
 
-                    <button
-                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
-                        // disabled={[1, 5].includes(enrollmentStatus)}
-                        onClick={(e) => handleSwal(e, "return")}
-                    >
-                        Return Device
-                    </button>
+                    {![1, 2, 5].includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                            onClick={(e) => handleSwal(e, "return")}
+                        >
+                            Return Device
+                        </button>
+                    )}
                 </>
             </div>
         );
@@ -148,6 +152,7 @@ const DepDevices = ({ devices, queryParams }) => {
         <>
             <Head title="DEP Devices" />
             <AppContent>
+                <Modal show={loading} modalLoading />
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -260,12 +265,9 @@ const DepDevices = ({ devices, queryParams }) => {
                                                 onClick={() => {
                                                     handleOpenModal();
                                                     setOrderId(item.id);
-                                                    // setEnrollmentStatus(
-                                                    //     order.enrollment_status_id
-                                                    // );
-                                                    // setEnrollmentExist(
-                                                    //     order.enrollment_exist
-                                                    // );
+                                                    setEnrollmentStatus(
+                                                        item.enrollment_status_id
+                                                    );
                                                 }}
                                             />
                                         </RowData>

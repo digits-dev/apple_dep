@@ -110,26 +110,22 @@ class ListOfOrdersController extends Controller
 
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
-        ->with('status')->orderBy($this->sortBy, $this->sortDir)->get();
-
-        $orderLines = OrderLines::query()
-        ->where('order_id', $order->id)
         ->with('status')
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
 
         
-        $orderLines = $orderLines->map(function($orderLine) {
-            $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
-            ->whereIn('enrollment_status', [2, 3, 5, 6])
-            ->exists();
+        // $orderLines = $orderLines->map(function($orderLine) {
+        //     $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
+        //     ->whereIn('enrollment_status', [2, 3, 5, 6])
+        //     ->exists();
             
-            $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
+        //     $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
             
-            return $orderLine;
-        });
+        //     return $orderLine;
+        // });
         
-        $data['orderLines'] = $orderLines;
+        // $data['orderLines'] = $orderLines;
 
         $data['queryParams'] = request()->query();
         
