@@ -23,7 +23,7 @@ use App\Http\Controllers\ItemMaster\ItemMasterController;
 use Inertia\Inertia; // We are going to use this class to render React components
 use App\Http\Controllers\PullErpController;
 use App\Http\Controllers\Users\ProfilePageController;
-
+use App\Http\Controllers\PullErrors\PullErrorsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,7 +36,7 @@ use App\Http\Controllers\Users\ProfilePageController;
 */
 
 //query from beach
-Route::get('/query', [PullErpController::class, 'getListOfOrdersFromErpv2']);
+Route::get('/query', [PullErpController::class, 'getListOfOrdersFromErpv1']);
 Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
 
 Route::get('/', [LoginController::class, 'index']);
@@ -111,7 +111,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/item-master-export', [ItemMasterController::class, 'export']);
     Route::get('/export-json/{log_type}/{order_id}', [ListOfOrdersController::class, 'exportText'])->name('export-json');
     Route::get('/export-transaction/{order_id}', [ListOfOrdersController::class, 'exportTransaction'])->name('export-transaction');
-
+    Route::get('/pull-errors', [PullErrorsController::class, 'export']);
     //List of Orders
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);

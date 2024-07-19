@@ -231,7 +231,6 @@ class AdmModules extends Seeder
                 'is_protected' => 0,
                 'is_active' => 1,
             ],
-
             [
 
                 'created_at' => date('Y-m-d H:i:s'),
@@ -240,6 +239,17 @@ class AdmModules extends Seeder
                 'path' => 'item_master',
                 'table_name' => 'item_master',
                 'controller' => 'ItemMaster\ItemMasterController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'ERP Pull Error',
+                'icon' => 'fa fa-list',
+                'path' => 'erp_pull_erp',
+                'table_name' => 'pull_erp_erros',
+                'controller' => 'PullErrors\PullErrorsController',
                 'is_protected' => 0,
                 'is_active' => 1,
             ]

@@ -212,6 +212,25 @@ class AdmMenus extends Seeder
                 'sorting'           => 1
             ]
         );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'ERP Pull Error',
+            ],
+            [
+                'name'              => 'ERP Pull Error',
+                'type'              => 'Route',
+                'path'              => 'PullErrors\PullErrorsControllerGetIndex',
+                'slug'              => 'erp_pull_erp',
+                'color'             => NULL,
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
 }

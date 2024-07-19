@@ -86,7 +86,7 @@ class ModulsController extends Controller{
 
                 //MAKE FILE CONTROLLER
                 $pathViewController = base_path("resources/js/Pages/".$viewFolderName[1]."/");
-                $viewContent = self::viewContent();
+                $viewContent = self::viewContent($viewFolderName[1]);
                 $viewContent = trim($viewContent);
                 file_put_contents($pathViewController.$viewFolderName[1].'.jsx', $viewContent);
 
@@ -180,16 +180,16 @@ class ModulsController extends Controller{
                 ?>';
     }
 
-    public function viewContent(){
+    public function viewContent($name){
         return '
         import { Head, Link, router, usePage } from "@inertiajs/react";
         import React, { useState } from "react";
-        const JsxName = () => {
+        const '.$name.' = () => {
           return(
             <></>
            );
         };
-        export default JsxName;
+        export default '.$name.';
         ';
     }
 
