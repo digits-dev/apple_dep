@@ -45,7 +45,6 @@ class EnrollmentListController extends Controller
     
     public function export(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
 
         $filename = "Enrollment List - " . date ('Y-m-d H:i:s');
 

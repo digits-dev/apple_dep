@@ -64,7 +64,7 @@ class ListOfOrdersController extends Controller
     
     public function export(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
+        
 
         $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
 
@@ -167,7 +167,6 @@ class ListOfOrdersController extends Controller
 
     public function exportTransaction($orderId)
     {
-        date_default_timezone_set('Asia/Manila');
 
         $filename = "Transaction Logs - " . date ('Y-m-d H:i:s');
 
