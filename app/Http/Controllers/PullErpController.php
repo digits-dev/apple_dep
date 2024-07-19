@@ -215,7 +215,6 @@ class PullErpController extends Controller
         }
      
         //SAVE HEADER
-       
         $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
         $latestRequestId = $latestRequest->id ?? 0;
         foreach($uniqueHeaderData as $insert_data){
@@ -268,31 +267,49 @@ class PullErpController extends Controller
 
     public function savePullErpErrors($params){
         foreach($params as $key => $insert){
-            PullErpErros::create(
-            [
-                'order_number'      => $insert->order_number,
-                'customer_name'     => $insert->customer_name,
-                'line_number'       => $insert->line_number,
-                'order_ref_no'      => $insert->cust_po_number,
-                'dr_number'         => $insert->dr,
-                'digits_code'       => $insert->ordered_item,
-                'item_description'  => $insert->description,
-                'brand'             => $insert->brand,
-                'wh_category'       => $insert->wh_category,
-                'shipped_quantity'  => $insert->shipped_quantity,
-                'confirm_date'      => $insert->confirm_date,
-                'serial1'           => $insert->serial1,
-                'serial2'           => $insert->serial2,
-                'serial3'           => $insert->serial3,
-                'serial4'           => $insert->serial4,
-                'serial5'           => $insert->serial5,
-                'serial6'           => $insert->serial6,
-                'serial7'           => $insert->serial7,
-                'serial8'           => $insert->serial8,
-                'serial9'           => $insert->serial9,
-                'serial10'          => $insert->serial10,
-                'errors_message'    => $insert->errors_message
-            ]);
+            $isExist = PullErpErros::where('order_number', $insert->order_number)
+            ->where('order_ref_no', $insert->cust_po_number)
+            ->where('digits_code', $insert->ordered_item)
+            ->where('serial1', $insert->serial1)
+            ->where('serial2', $insert->serial2)
+            ->where('serial3', $insert->serial3)
+            ->where('serial4', $insert->serial4)
+            ->where('serial5', $insert->serial5)
+            ->where('serial6', $insert->serial6)
+            ->where('serial7', $insert->serial7)
+            ->where('serial8', $insert->serial8)
+            ->where('serial9', $insert->serial9)
+            ->where('serial10', $insert->serial10)
+            ->exists();
+            if(!$isExist){
+                PullErpErros::create(
+                    [
+                        'order_number'      => $insert->order_number,
+                        'customer_name'     => $insert->customer_name,
+                        'line_number'       => $insert->line_number,
+                        'order_ref_no'      => $insert->cust_po_number,
+                        'dr_number'         => $insert->dr,
+                        'digits_code'       => $insert->ordered_item,
+                        'item_description'  => $insert->description,
+                        'brand'             => $insert->brand,
+                        'wh_category'       => $insert->wh_category,
+                        'shipped_quantity'  => $insert->shipped_quantity,
+                        'confirm_date'      => $insert->confirm_date,
+                        'serial1'           => $insert->serial1,
+                        'serial2'           => $insert->serial2,
+                        'serial3'           => $insert->serial3,
+                        'serial4'           => $insert->serial4,
+                        'serial5'           => $insert->serial5,
+                        'serial6'           => $insert->serial6,
+                        'serial7'           => $insert->serial7,
+                        'serial8'           => $insert->serial8,
+                        'serial9'           => $insert->serial9,
+                        'serial10'          => $insert->serial10,
+                        'errors_message'    => $insert->errors_message
+                    ]
+                );
+            }
+           
         }
     }
 
