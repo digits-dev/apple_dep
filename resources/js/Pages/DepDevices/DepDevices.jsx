@@ -21,6 +21,7 @@ import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
+import RowStatus from "../../Components/Table/RowStatus";
 
 const DepDevices = ({ devices, queryParams }) => {
     queryParams = queryParams || {};
@@ -216,6 +217,14 @@ const DepDevices = ({ devices, queryParams }) => {
                                 >
                                     Customer Name
                                 </TableHeader>
+                                <TableHeader
+                                    name="enrollment_status_id"
+                                    queryParams={queryParams}
+                                    justify="center"
+                                    width="lg"
+                                >
+                                    Enrollment Status
+                                </TableHeader>
                                 <TableHeader sortable={false} justify="center">
                                     Action
                                 </TableHeader>
@@ -237,6 +246,13 @@ const DepDevices = ({ devices, queryParams }) => {
                                         <RowData isLoading={loading} center>
                                             {item.customer_name}
                                         </RowData>
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item.color}
+                                            center
+                                        >
+                                            {item.enrollment_status}
+                                        </RowStatus>
                                         <RowData center>
                                             <RowAction
                                                 action="add"

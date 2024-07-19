@@ -49,7 +49,8 @@ class DepDevice extends Model
 
     public function scopeGetData($query) {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
-         ->select('list_of_order_lines.*', 'orders.customer_name');
+        ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
+        ->select('list_of_order_lines.*', 'orders.customer_name', 'es.enrollment_status', 'es.color');
      }
 
 }
