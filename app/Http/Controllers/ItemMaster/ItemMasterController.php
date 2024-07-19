@@ -36,7 +36,6 @@ class ItemMasterController extends Controller
     
     public function export(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
 
         $filename = "Item Master - " . date ('Y-m-d H:i:s');
 

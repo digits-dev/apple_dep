@@ -27,6 +27,7 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
                     "Item Description",
                     "Serial Number",
                     "Customer Name",
+                    "Enrollment Status"
                 ];
 
         return $headers;
@@ -35,10 +36,11 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
     public function map($item): array {
 
        $devices = [
-                    $item->item_code,
+                    $item->digits_code,
                     $item->item_description,
                     $item->serial_number,
                     $item->customer_name ,
+                    $item->eStatus->enrollment_status,
                 ];
        
         return $devices;

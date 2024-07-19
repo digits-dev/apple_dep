@@ -81,7 +81,6 @@ class DepStatusController extends Controller
 
     public function export()
     {
-        date_default_timezone_set('Asia/Manila');
 
         $filename            = "DEP Status - " . date ('Y-m-d H:i:s');
         $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);

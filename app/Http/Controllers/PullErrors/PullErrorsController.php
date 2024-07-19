@@ -47,7 +47,6 @@
         }
 
         public function export(Request $request){
-            date_default_timezone_set('Asia/Manila');
             $filename = "Pull-errors - " . date ('Y-m-d H:i:s');
             $data = self::getAllData();
             return Excel::download(new PullErpErrorsExport($data), $filename . '.xlsx');

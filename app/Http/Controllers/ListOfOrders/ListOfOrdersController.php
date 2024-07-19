@@ -64,7 +64,7 @@ class ListOfOrdersController extends Controller
     
     public function export(Request $request)
     {
-        date_default_timezone_set('Asia/Manila');
+        
 
         $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
 
@@ -167,7 +167,6 @@ class ListOfOrdersController extends Controller
 
     public function exportTransaction($orderId)
     {
-        date_default_timezone_set('Asia/Manila');
 
         $filename = "Transaction Logs - " . date ('Y-m-d H:i:s');
 
@@ -541,28 +540,44 @@ class ListOfOrdersController extends Controller
 
                     OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => self::enrollment_status['Enrollment Error']]);
                 }
-        
+
                 foreach ($requestData as $deviceData) {
-                    $insertData = [
-                        'order_lines_id' => $deviceData->order_line_id,
-                        'sales_order_no' => $header_data->sales_order_no,
-                        'item_code' => $header_data->digits_code,
-                        'serial_number' => $deviceData->serial_number,
-                        'transaction_id' => $transaction_id,
-                        'dep_status' => $dep_status,
-                        'enrollment_status' => $enrollment_status,
-                        'status_message' => $status_message,
-                    ];
-        
-                    EnrollmentList::updateOrCreate(
-                        [
+
+                    $enrollment =  EnrollmentList::query()
+                                    ->where('sales_order_no', $header_data->sales_order_no)
+                                    ->where('serial_number', $deviceData->serial_number)->first();
+                 
+
+                    if ($enrollment) {
+
+                        $enrollment->update([
+                            'transaction_id' => $transaction_id,
+                            'dep_status' => $dep_status,
+                            'enrollment_status' => $enrollment_status,
+                            'status_message' => $status_message,
+                            'updated_by' => auth()->user()->id,
+                            'updated_at' => now(),
+                        ]);
+
+                    } else {
+                        $insertData = [
+                            'order_lines_id' => $deviceData->order_line_id,
                             'sales_order_no' => $header_data->sales_order_no,
+                            'item_code' => $header_data->digits_code,
                             'serial_number' => $deviceData->serial_number,
-                        ],
-                        $insertData
-                    );
+                            'transaction_id' => $transaction_id,
+                            'dep_status' => $dep_status,
+                            'enrollment_status' => $enrollment_status,
+                            'status_message' => $status_message,
+                            'created_by' => auth()->user()->id,
+                            'created_at' => now()
+                        ];
+
+                        EnrollmentList::insert($insertData);
+                    }
+               
                 }
-        
+
                 // Logs
                 $orderId = $header_data->order_id;
                 $encodedPayload = json_encode($payload);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class EnrollmentList extends Model
 {
@@ -30,7 +31,12 @@ class EnrollmentList extends Model
         'dep_status',
         'status_message',
         'enrollment_status',
-        'created_date',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'returned_date',
+        'returned_by',
     ];
 
     public function scopeSearchAndFilter($query, $request){
@@ -39,8 +45,25 @@ class EnrollmentList extends Model
             $search = $request->input('search');
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
-                    if ($field === 'created_date') {
-                        $query->orWhereDate('created_at', $search);
+                    if (in_array($field, ['created_at', 'updated_at', 'returned_date'])) {
+                        $query->orWhereDate($field, $search);
+                        
+                    } elseif (in_array($field, ['created_by', 'updated_by', 'returned_by'])) {
+                        $relation = Str::camel($field);
+                        $query->orWhereHas($relation, function ($query) use ($search) {
+                            $query->where('name', 'LIKE', "%$search%");
+                        });
+
+                    } elseif ($field === 'dep_status') {
+                        $query->orWhereHas('dStatus', function ($query) use ($search) {
+                            $query->where('dep_status', 'LIKE', "%$search%");
+                        });
+
+                    } elseif ($field === 'enrollment_status') {
+                        $query->orWhereHas('eStatus', function ($query) use ($search) {
+                            $query->where('enrollment_status', 'LIKE', "%$search%");
+                        });
+
                     } else {
                         $query->orWhere($field, 'LIKE', "%$search%");
                     }
@@ -49,12 +72,18 @@ class EnrollmentList extends Model
         }
 
         foreach ($this->filterable as $field) {
-            if ($field === 'created_date' && $request->filled('created_date')) {
+            if (in_array($field, ['created_at', 'updated_at', 'returned_date']) && $request->filled($field)) {
                 $date = $request->input($field);
                 $query->whereDate('created_at', $date);
-            } elseif ($request->filled($field)) {
+
+            } elseif (in_array($field, ['created_by', 'updated_by', 'returned_by']) && $request->filled($field)) {
+                $value = $request->input($field);
+                $query->where($field, '=', $value);
+
+            } else if ($request->filled($field)) {
                 $value = $request->input($field);
                 $query->where($field, 'LIKE', "%$value%");
+
             }
         }
     
@@ -70,22 +99,14 @@ class EnrollmentList extends Model
         return $this->belongsTo(DepStatus::class, 'dep_status', 'id');
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Listen for saving event
-        static::saving(function ($enrollment) {
-            if (!$enrollment->exists) {
-                $enrollment->created_by = auth()->user()->id;
-                $enrollment->created_at = now();
-            }
-        });
-
-        // Listen for updating event
-        static::updating(function ($enrollment) {
-            $enrollment->updated_by = auth()->user()->id;
-            $enrollment->updated_at = now();
-        });
+    public function createdBy(){
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
+    public function updatedBy(){
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
+    public function returnedBy(){
+        return $this->belongsTo(User::class, 'returned_by', 'id');
+    }
+
 }
