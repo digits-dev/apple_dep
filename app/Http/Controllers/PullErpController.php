@@ -215,46 +215,54 @@ class PullErpController extends Controller
         }
      
         //SAVE HEADER
+       
         $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
         $latestRequestId = $latestRequest->id ?? 0;
         foreach($uniqueHeaderData as $insert_data){
-            $headerId = Order::updateOrInsert(
-            ['sales_order_no'=>$insert_data->order_number,
-             'order_ref_no'=>$insert_data->cust_po_number
-            ],
-            [
-                'sales_order_no'    => $insert_data->order_number,
-                'customer_name'     => $insert_data->customer_name,
-                'order_ref_no'      => $insert_data->cust_po_number,
-                'dr_number'         => $insert_data->dr,
-                'dep_order'         => 1,
-                'enrollment_status' => "1",
-                'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
-            ]);
+            //CHECK IF ORDER EXIST
+            $isExist = Order::where('sales_order_no', $insert_data->order_number)
+					->where('order_ref_no', $insert_data->cust_po_number)
+					->exists();
+            if(!$isExist){
+                $headerId = Order::create(
+                    [
+                        'sales_order_no'    => $insert_data->order_number,
+                        'customer_name'     => $insert_data->customer_name,
+                        'order_ref_no'      => $insert_data->cust_po_number,
+                        'dr_number'         => $insert_data->dr,
+                        'dep_order'         => 1,
+                        'enrollment_status' => "1",
+                        'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
+                    ]
+                );
+            }
+           
         }
         //SAVE LINES
         $header_ids = DB::table('orders')->where('id','>', $latestRequestId)->get()->toArray();
-        $insertData = [];
-        foreach($finalDataLines as $key => $line){
-            $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
-            if($search !== false){
-                $line->header_id = $header_ids[$search]->id;
-                $insertData[] = $line;
+        if($header_ids){
+            $insertData = [];
+            foreach($finalDataLines as $key => $line){
+                $search = array_search($line->order_number, array_column($header_ids,'sales_order_no'));
+                if($search !== false){
+                    $line->header_id = $header_ids[$search]->id;
+                    $insertData[] = $line;
+                }
             }
-        }
-        
-        foreach($insertData as $key => $insertLines){
-            OrderLines::create(
-            [
-                'order_id'          => $insertLines->header_id,
-                'digits_code'       => $insertLines->ordered_item,
-                'item_description'  => $insertLines->description,
-                'brand'             => $insertLines->brand,
-                'wh_category'       => $insertLines->wh_category,
-                'quantity'          => $insertLines->final_qty,
-                'serial_number'     => $insertLines->final_serial,
-                'enrollment_status_id' => 1,
-            ]);
+            
+            foreach($insertData as $key => $insertLines){
+                OrderLines::create(
+                [
+                    'order_id'          => $insertLines->header_id,
+                    'digits_code'       => $insertLines->ordered_item,
+                    'item_description'  => $insertLines->description,
+                    'brand'             => $insertLines->brand,
+                    'wh_category'       => $insertLines->wh_category,
+                    'quantity'          => $insertLines->final_qty,
+                    'serial_number'     => $insertLines->final_serial,
+                    'enrollment_status_id' => 1,
+                ]);
+            }
         }
     }
 
