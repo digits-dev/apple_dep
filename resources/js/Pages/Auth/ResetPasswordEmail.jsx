@@ -108,7 +108,7 @@ const ResetPasswordEmail = ({ email }) => {
     };
 
     return (
-        <div className="bg-login-bg-color h-screen flex flex-col items-center justify-center">
+        <div className="bg-login-bg-color h-screen flex flex-col items-center justify-center p-5">
             <div className="flex flex-col justify-center items-center space-y-1 mb-5">
                 <div className="flex">
                     <img
