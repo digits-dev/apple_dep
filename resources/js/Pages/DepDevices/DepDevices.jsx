@@ -28,6 +28,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [processing, setProcessing] = useState(false);
     const [orderId, setOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const { setTitle } = useNavbarContext();
@@ -94,7 +95,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
 
         const EnrollReturnDevice = async (action) => {
             setShowModal(false);
-            setLoading(true);
+            setProcessing(true);
 
             try {
                 let response;
@@ -122,7 +123,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                     "Error"
                 );
             } finally {
-                setLoading(false);
+                setProcessing(false);
             }
         };
 
@@ -154,7 +155,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
         <>
             <Head title="DEP Devices" />
             <AppContent>
-                <Modal show={loading} modalLoading />
+                <Modal show={processing} modalLoading />  
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
