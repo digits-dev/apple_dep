@@ -37,16 +37,21 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
         $users = DB::table("users")->where("email", $credentials['email'])->first();
-        if(!$users){
-            $error = 'No privilege set, Please contact administrator!';
-            return redirect('login')->withErrors(['no_datas' => $error]);
-        }
         $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
+        if(!$users){
+            $error = 'The provided credentials do not match our records!';
+            return redirect('login')->withErrors(['message' => $error]);
+        }
+
+        if(!$session_details['priv']){
+            $error = 'No privilege set! Please contact Administrator!';
+            return redirect('login')->withErrors(['message' => $error]);
+        }
 
         if($users->status == 0 || $users->status == 'INACTIVE'){
             $accDeact = "Account Doesn't Exist/Deactivated";
             Session::flush();
-            return redirect('login')->withErrors(['acc_deact'=>$accDeact]);
+            return redirect('login')->withErrors(['message'=>$accDeact]);
         }
 
         if (Auth::attempt($credentials)) {
@@ -57,7 +62,6 @@ class LoginController extends Controller
             Session::put('admin_privileges_roles', $session_details['roles']);
             Session::put('theme_color', $session_details['priv']->theme_color);
             CommonHelpers::insertLog(trans("adm_default.log_login", ['email' => $users->email, 'ip' => $request->server('REMOTE_ADDR')]));
-
             return redirect()->intended('dashboard');
         }
         return back()->withErrors([

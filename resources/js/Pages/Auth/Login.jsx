@@ -3,7 +3,8 @@ import { usePage, router, Link } from "@inertiajs/react";
 import Slider from "../../Components/LoginPage/Slider";
 
 const LoginPage = () => {
-    const { errors } = usePage().props;
+    const { errors:initialErrors  } = usePage().props;
+    const [errors, setErrors] = useState(initialErrors || {});
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -16,6 +17,16 @@ const LoginPage = () => {
 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            const timer = setTimeout(() => {
+                setErrors({});
+            }, 5000); // Clear errors after 5 seconds
+
+            return () => clearTimeout(timer);
+        }
+    }, [errors]);
 
     const formatTime = (date) => {
         return date.toLocaleTimeString("en-US", {
@@ -35,13 +46,14 @@ const LoginPage = () => {
                 password,
             },
             {
-                onError: (errors) => {
-                    if (errors.email) {
+                onError: (newErrors) => {
+                    if (newErrors.email) {
                         setEmail("");
                     }
-                    if (errors.password) {
+                    if (newErrors.password) {
                         setPassword("");
                     }
+                    setErrors(newErrors);
                 },
                 onFinish: () => setLoading(false),
             }
@@ -165,14 +177,9 @@ const LoginPage = () => {
                                         {errors.password}
                                     </div>
                                 )}
-                                {errors.no_datas && (
+                                {errors.message && (
                                     <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
-                                        {errors.no_datas}
-                                    </div>
-                                )}
-                                {errors.acc_deact && (
-                                    <div className="font-nunito-sans text-center my-3 font-bold text-red-600">
-                                        {errors.acc_deact}
+                                        {errors.message}
                                     </div>
                                 )}
                             </div>
