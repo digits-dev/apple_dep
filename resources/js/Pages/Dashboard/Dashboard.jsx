@@ -28,14 +28,12 @@ const Dashboard = ({ customer, orders, devices, orders_count_wdate }) => {
     return (
         <>
             <Head title="Dashboard" />
-            <AppContent>
-                <Overview
-                    customer={customer}
-                    orders={orders}
-                    devices={devices}
-                />
-                <Orders orders_count_wdate={orders_count_wdate} />
-            </AppContent>
+            <Overview
+                customer={customer}
+                orders={orders}
+                devices={devices}
+            />
+            <Orders orders_count_wdate={orders_count_wdate} />
         </>
     );
 };

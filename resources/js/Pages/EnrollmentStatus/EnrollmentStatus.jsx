@@ -129,7 +129,6 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
     return (
         <>
         <Head title="Enrollment Status" />
-        <AppContent>
             <ContentPanel>
                 <TopPanel>
                     <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
@@ -277,7 +276,6 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                     updateFormValues={updateFormValues} 
                 />
             </Modal>
-        </AppContent>
         </>
     );
 };

@@ -154,7 +154,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="DEP Devices" />
-            <AppContent>
                 <Modal show={processing} modalLoading />  
                 <ContentPanel>
                     <TopPanel>
@@ -295,7 +294,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                 >
                     <EnrollReturnDeviceActions />
                 </Modal>
-            </AppContent>
         </>
     );
 };

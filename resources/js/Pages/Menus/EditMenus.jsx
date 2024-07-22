@@ -89,7 +89,6 @@ const EditMenu = ({ menus, privileges, menuData }) => {
     
     return (
         <div>
-            <AppContent>
                 <ContentPanel>
                     {/* <div className="bg-mobile-gradient p-3 rounded-tl-lg rounded-tr-lg">
                         <p className="text-white font-extrabold text-center">
@@ -145,7 +144,6 @@ const EditMenu = ({ menus, privileges, menuData }) => {
                             </div>
                     </form>
                 </ContentPanel>
-            </AppContent>
         </div>
     );
 };

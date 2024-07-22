@@ -24,7 +24,6 @@ const Privileges = ({ privileges, queryParams }) => {
     return (
         <>
             <Head title="Privileges" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -100,7 +99,6 @@ const Privileges = ({ privileges, queryParams }) => {
                     </TableContainer>
                     <Pagination paginate={privileges} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

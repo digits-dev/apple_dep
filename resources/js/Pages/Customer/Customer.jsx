@@ -126,7 +126,6 @@ const Customer = ({ customers, queryParams }) => {
     return (
         <>
             <Head title="Customer" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                     <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
@@ -264,8 +263,6 @@ const Customer = ({ customers, queryParams }) => {
                     updateFormValues={updateFormValues} />
             </Modal>
 
-        
-        </AppContent>
         </>
     );
 };

@@ -330,7 +330,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     return (
         <>
             <Head title="Enroll/Return Devices" />
-            <AppContent>
                 <Modal show={loading} modalLoading />
                 <ContentPanel>
                     <div className="flex justify-between items-start text-gray-800 mb-8">
@@ -465,7 +464,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 >
                     <EnrollReturnDeviceActions />
                 </Modal>
-            </AppContent>
         </>
     );
 };

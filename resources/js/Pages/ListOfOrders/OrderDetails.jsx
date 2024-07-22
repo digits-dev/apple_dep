@@ -37,7 +37,6 @@ const OrderDetails = ({
     return (
         <>
             <Head title="Order Details" />
-            <AppContent>
                 <ContentPanel>
                     <div className="flex justify-between items-start  text-gray-800 mb-8">
                         <div className="flex gap-10 ">
@@ -87,7 +86,6 @@ const OrderDetails = ({
                     jsonReceived={jsonReceived}
                     transactionLogs={transactionLogs}
                 />
-            </AppContent>
         </>
     );
 };

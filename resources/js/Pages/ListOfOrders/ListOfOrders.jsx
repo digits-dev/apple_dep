@@ -137,7 +137,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="List of Orders" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -349,7 +348,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         action="edit"
                     />
                 </Modal>
-            </AppContent>
         </>
     );
 };

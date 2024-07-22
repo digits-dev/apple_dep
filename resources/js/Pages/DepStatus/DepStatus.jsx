@@ -148,7 +148,6 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
     return (
         <>
             <Head title="DEP Status" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <BulkActions
@@ -323,7 +322,6 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                         updateFormValues={updateFormValues}
                     />
                 </Modal>
-            </AppContent>
         </>
     );
 };

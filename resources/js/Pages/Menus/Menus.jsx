@@ -260,7 +260,6 @@ const MenusIndex = ({
     return (
         <div ref={scrollContainerRef} onWheel={handleWheel}>
             <Head title="Menu Management" />
-            <AppContent>
                 <ContentPanel>
                     <div className="mb-5 text-red-400">
                         *Welcome to the Menu Management page! To rearrange the
@@ -319,7 +318,6 @@ const MenusIndex = ({
                         </div>
                     </div>
                 </ContentPanel>
-            </AppContent>
         </div>
     );
 };

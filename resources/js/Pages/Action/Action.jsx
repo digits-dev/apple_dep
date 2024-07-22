@@ -149,7 +149,6 @@ const Action = ({ actions, queryParams }) => {
     return (
         <>
             <Head title="Actions" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <BulkActions
@@ -315,7 +314,6 @@ const Action = ({ actions, queryParams }) => {
                         updateFormValues={updateFormValues}
                     />
                 </Modal>
-            </AppContent>
         </>
     );
 };

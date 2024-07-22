@@ -80,7 +80,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
     return (
         <>
             <Head title="Enrollment List" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -375,7 +374,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
 
                     <Pagination paginate={enrollmentLists} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

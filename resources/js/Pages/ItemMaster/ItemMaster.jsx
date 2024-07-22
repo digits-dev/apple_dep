@@ -59,7 +59,6 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
     return (
         <>
             <Head title="Item Master" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -282,7 +281,6 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                     </Modal>
                     <Pagination paginate={itemMaster} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

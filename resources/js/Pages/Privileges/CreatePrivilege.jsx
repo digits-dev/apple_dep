@@ -293,7 +293,6 @@ const AddPrivileges = ({ moduleses, row }) => {
  
     return (
         <>
-            <AppContent>
                 <form onSubmit={row.length === 0 ? handleCreate : handleEdit}>
                     <ContentPanel marginBottom={2}>
                         <input
@@ -703,7 +702,6 @@ const AddPrivileges = ({ moduleses, row }) => {
                         </div>
                     </ContentPanel>
                 </form>
-            </AppContent>
         </>
     );
 };
