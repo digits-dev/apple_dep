@@ -56,6 +56,21 @@ const AddPrivileges = ({ moduleses, row }) => {
         }
 
     }, []);
+
+    useEffect(()=>{
+        modules.map(item => {
+            setSelectAll((prevState) => ({
+                ...prevState,
+                is_visible: item.roles?.is_visible,
+                is_create: item.roles?.is_create,
+                is_read: item.roles?.is_read,
+                is_edit: item.roles?.is_edit,
+                is_delete: item.roles?.is_delete,
+                is_void: item.roles?.is_void,
+                is_override: item.roles?.is_override
+            }));
+        });
+    },[modules]);
     
     const handleSelectAll = (e, permission) => {
         const { type, checked, value } = e.target;
