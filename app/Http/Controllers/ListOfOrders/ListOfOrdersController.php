@@ -543,39 +543,22 @@ class ListOfOrdersController extends Controller
 
                 foreach ($requestData as $deviceData) {
 
-                    $enrollment =  EnrollmentList::query()
-                                    ->where('sales_order_no', $header_data->sales_order_no)
-                                    ->where('serial_number', $deviceData->serial_number)->first();
-                 
-
-                    if ($enrollment) {
-
-                        $enrollment->update([
-                            'transaction_id' => $transaction_id,
-                            'dep_status' => $dep_status,
-                            'enrollment_status' => $enrollment_status,
-                            'status_message' => $status_message,
-                            'updated_by' => auth()->user()->id,
-                            'updated_at' => now(),
-                        ]);
-
-                    } else {
-                        $insertData = [
-                            'order_lines_id' => $deviceData->order_line_id,
+                    EnrollmentList::updateOrCreate(
+                        [
                             'sales_order_no' => $header_data->sales_order_no,
-                            'item_code' => $header_data->digits_code,
-                            'serial_number' => $deviceData->serial_number,
-                            'transaction_id' => $transaction_id,
-                            'dep_status' => $dep_status,
+                            'serial_number'  => $deviceData->serial_number
+                        ],
+                        [
+                            'order_lines_id'    => $deviceData->order_line_id,
+                            'sales_order_no'    => $header_data->sales_order_no,
+                            'item_code'         => $header_data->digits_code,
+                            'serial_number'     => $deviceData->serial_number,
+                            'transaction_id'    => $transaction_id,
+                            'dep_status'        => $dep_status,
                             'enrollment_status' => $enrollment_status,
-                            'status_message' => $status_message,
-                            'created_by' => auth()->user()->id,
-                            'created_at' => now()
-                        ];
-
-                        EnrollmentList::insert($insertData);
-                    }
-               
+                            'status_message'    => $status_message,
+                        ],
+                    );
                 }
 
                 // Logs
@@ -707,16 +690,28 @@ class ListOfOrdersController extends Controller
                 }
         
                 foreach ($requestData as $deviceData) {
-                    EnrollmentList::query()
+                    $enrollment = EnrollmentList::query()
                     ->where('sales_order_no', $header_data->sales_order_no)
-                    ->where('serial_number', $deviceData->serial_number)->update([
-                        'transaction_id' => $transaction_id,
-                        'dep_status' => $dep_status,
-                        'enrollment_status' => $enrollment_status,
-                        'status_message' => $status_message,
-                        'returned_by' => auth()->user()->id,
-                        'returned_date' => now(),
-                    ]);
+                    ->where('serial_number', $deviceData->serial_number)
+                    ->first();
+
+                    if($enrollment){
+                        $enrollment->fill([
+                            'transaction_id' => $transaction_id,
+                            'dep_status' => $dep_status,
+                            'enrollment_status' => $enrollment_status,
+                            'status_message' => $status_message,
+                        ]);
+    
+                        if($enrollment_status == self::enrollment_status['Returned']){
+                            $enrollment->fill([
+                                'returned_by' => auth()->user()->id,
+                                'returned_date' => now(),
+                            ]);
+                        }
+    
+                        $enrollment->save();
+                    }
                 }
         
                 // Logs

@@ -32,9 +32,7 @@ class EnrollmentListController extends Controller
     
     public function getAllData()
     {
-        $query = EnrollmentList::query()->with(['dStatus', 'eStatus', 'createdBy', 'updatedBy', 'returnedBy']);
-
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
+        $query = EnrollmentList::query()->with(['dStatus:id,dep_status,color', 'eStatus:id,enrollment_status,color', 'createdBy:id,name', 'updatedBy:id,name', 'returnedBy:id,name']);
 
         $filter = $query->searchAndFilter(request());
 

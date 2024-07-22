@@ -156,15 +156,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 }
                             } else {
                                 handleToast(
@@ -201,15 +201,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 }
                             } else {
                                 handleToast(
@@ -224,6 +224,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             "Error"
                         );
                     } finally {
+                        resetCheckbox();
                         setLoading(false);
                     }
                 }
