@@ -239,7 +239,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                 >
                                     Enrollment Status
                                 </TableHeader>
-                                <TableHeader sortable={false} justify="center">
+                                <TableHeader sortable={false} justify="center" sticky="right" width="sm">
                                     Action
                                 </TableHeader>
                             </Row>
@@ -267,7 +267,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                         >
                                             {item.enrollment_status}
                                         </RowStatus>
-                                        <RowData center>
+                                        <RowData center sticky="right">
                                             <RowAction
                                                 action="add"
                                                 type="button"

@@ -403,15 +403,25 @@ class ListOfOrdersController extends Controller
                 $status_message = $response['errorMessage'];
             }
 
-            EnrollmentList::where('order_lines_id', $id)
-            ->update([
-                'transaction_id' => $transaction_id,
-                'dep_status' => $dep_status,
-                'enrollment_status' => $enrollment_status,
-                'status_message' => $status_message,
-                'returned_by' => auth()->user()->id,
-                'returned_date' => date('Y-m-d H:i:s'),
-            ]);
+            $enrollment = EnrollmentList::where('order_lines_id', $id)->first();
+
+            if($enrollment){
+                $enrollment->fill([
+                    'transaction_id' => $transaction_id,
+                    'dep_status' => $dep_status,
+                    'enrollment_status' => $enrollment_status,
+                    'status_message' => $status_message,
+                ]);
+
+                if($enrollment_status == self::enrollment_status['Returned']){
+                    $enrollment->fill([
+                        'returned_by' => auth()->user()->id,
+                        'returned_date' => now(),
+                    ]);
+                }
+
+                $enrollment->save();
+            }
 
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status ]);
 
