@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class DepStatusController extends Controller
 {
@@ -47,15 +48,43 @@ class DepStatusController extends Controller
 
     public function store(Request $request){
 
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to add.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'dep_status' => 'required|unique:dep_statuses,dep_status',
             'color' => 'required',
         ]);
         
         DepStatus::create(['dep_status'=> $request->input('dep_status'), 'color' => $request->input('color')]);
+
+        $data = [
+            'message' => "Successfully Added Status.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
     
     public function update(Request $request, DepStatus $dep_status){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'dep_status' => "required|unique:dep_statuses,dep_status,$dep_status->id,id",
             'status' => 'required',
@@ -63,9 +92,26 @@ class DepStatusController extends Controller
         ]);
 
         $dep_status->update(['dep_status'=> $request->input('dep_status'), 'status' => $request->input('status'), 'color' => $request->input('color') ]);
+
+        $data = [
+            'message' => "Successfully Updated.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     public function bulkUpdate(Request $request){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
 
         $ids = $request->input('ids');
         $status = $request->input('status');
@@ -106,6 +152,17 @@ class DepStatusController extends Controller
 
     public function import(Request $request)
     {   
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to import.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
@@ -114,14 +171,34 @@ class DepStatusController extends Controller
             $importFile = $request->file('file');
 
             Excel::import(new ImportDepStatus, $importFile);
+
+            $data = [
+                'message' => "Import Successful.", 
+                'status' => 'success'
+            ];
     
-            return to_route('/dep_status');
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            return  back()->with($data);
+        } catch (ValidationException $e) {
             // Handle validation errors during import
-            return back()->with('error', 'Validation error: ' . $e-> $e->getMessage());
+
+            $data = [
+                'message' => "Import Failed, Please check template file.", 
+                'status' => 'error',
+                'error', 'Validation error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
+
         } catch (\Exception $e) {
             // Handle other errors
-            return back()->with('error', 'Error: ' . $e->getMessage());
+
+            $data = [
+                'message' => "Something went wrong, Please try again later.", 
+                'status' => 'error',
+                'error', 'Error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
         }
       
     }

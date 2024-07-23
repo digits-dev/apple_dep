@@ -253,10 +253,7 @@ const Customer = ({ customers, queryParams }) => {
                 title="Add Customer"
             >
                 <CustomerForm 
-                    handleShow={()=>{
-                        handleShowCreate(); 
-                        handleToast('Created Customer', 'success');
-                    }} 
+                    handleShow={handleShowCreate} 
                     action="create" />
             </Modal>
 
@@ -266,10 +263,7 @@ const Customer = ({ customers, queryParams }) => {
                 title="Edit Customer"
             >
                 <CustomerForm 
-                    handleShow={()=>{
-                        handleShowEdit(); 
-                        handleToast('Updated Customer', 'success');
-                    }} 
+                    handleShow={handleShowEdit} 
                     action="edit" 
                     updateFormValues={updateFormValues} />
             </Modal>

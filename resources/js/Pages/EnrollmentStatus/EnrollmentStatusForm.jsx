@@ -14,9 +14,23 @@ const EnrollmentStatusForm = ({action, handleShow, updateFormValues}) => {
         e.preventDefault();
 
         if(action == 'edit'){
-            put(`/enrollment_statuses/${updateFormValues?.currentId}`, {onSuccess: ()=>{handleShow(); reset()}});
+            put(`/enrollment_statuses/${updateFormValues?.currentId}`, {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
+                    handleShow();
+                    reset();
+                    handleToast(message, status);
+                }
+            });
         } else {
-            post('/enrollment_statuses', {onSuccess: ()=>{handleShow(); reset()}});
+            post('/enrollment_statuses', {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
+                    handleShow();
+                    reset();
+                    handleToast(message, status);
+                }
+            });
         }
     }
 

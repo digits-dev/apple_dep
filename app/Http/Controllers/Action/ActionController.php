@@ -51,20 +51,55 @@ class ActionController extends Controller
     
     public function store(Request $request){
 
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to add.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'action_name' => 'required|unique:actions,action_name',
         ]);
         
         Action::create(['action_name'=> $request->input('action_name')]);
+
+        $data = [
+            'message' => "Successfully Added Action.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
     
     public function update(Request $request, Action $action){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'action_name' => "required|unique:actions,action_name,$action->id,id",
             'status' => 'required',
         ]);
         
         $action->update(['action_name'=> $request->input('action_name'), 'status' => $request->input('status')]);
+
+        $data = [
+            'message' => "Successfully Updated.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     public function bulkUpdate(Request $request){
@@ -108,6 +143,16 @@ class ActionController extends Controller
 
     public function import(Request $request)
     {   
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to import.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
@@ -117,13 +162,35 @@ class ActionController extends Controller
 
             Excel::import(new ImportActions, $importFile);
     
-            return to_route('/action');
+            $data = [
+                'message' => "Import Successful.", 
+                'status' => 'success'
+            ];
+    
+            return  back()->with($data);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            // Handle validation errors during import
-            return back()->with('error', 'Validation error: ' . $e-> $e->getMessage());
+             // Handle validation errors during import
+
+            $data = [
+                'message' => "Import Failed, Please check template file.", 
+                'status' => 'error',
+                'error', 'Validation error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
+
         } catch (\Exception $e) {
-            // Handle other errors
-            return back()->with('error', 'Error: ' . $e->getMessage());
+             // Handle other errors
+
+            $data = [
+                'message' => "Something went wrong, Please try again later.", 
+                'status' => 'error',
+                'error', 'Error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
+
         }
       
     }

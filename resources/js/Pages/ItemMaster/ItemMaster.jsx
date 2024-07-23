@@ -266,10 +266,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         width="xl"
                     >
                         <ItemMasterForm
-                            handleShow={() => {
-                                handleCreateModal();
-                                handleToast("Item Add Success", "success");
-                            }}
+                            handleShow={handleCreateModal}
                         />
                     </Modal>
                     <Modal
@@ -279,10 +276,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         width="xl"
                     >
                         <ItemMasterForm
-                            handleShow={() => {
-                                handleUpdateModal();
-                                handleToast("Item Update Success", "success");
-                            }}
+                            handleShow={handleUpdateModal}
                             setUpdateFormValues={updateFormValues}
                             action="edit"
                         />

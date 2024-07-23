@@ -15,6 +15,7 @@ class ImportEnrollmentStatusTemplate implements FromArray, WithHeadings, ShouldA
     {
         return [
             'Enrollment Status',
+            'Color(optional)'
         ];
     }
 
@@ -23,9 +24,11 @@ class ImportEnrollmentStatusTemplate implements FromArray, WithHeadings, ShouldA
         return [
             [
                 'Complete',
+                'green'
             ],
             [
                 'Failed',
+                '#cf0c0c'
             ],
         ];
     }

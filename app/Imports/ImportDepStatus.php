@@ -23,6 +23,7 @@ class ImportDepStatus implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithV
 
         return new DepStatus([
             'dep_status' => $row['dep_status'],
+            'color' => $row['color'] ?? '#322e2e',
         ]);
 
     }

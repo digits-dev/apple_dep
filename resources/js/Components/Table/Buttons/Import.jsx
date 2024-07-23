@@ -18,8 +18,18 @@ const Import = ({importPath, templatePath, }) => {
     e.preventDefault()
     post(importPath, {
       forceFormData: true,  
-      onSuccess: () => {handleShow(); reset(); handleToast('Import Success', 'success');},
-      onError: () => {handleShow(); handleToast('Import Failed', 'error');}
+      onSuccess: (data) => {
+        const { status, message } = data.props.auth.sessions;
+        handleShow();
+        reset();
+        handleToast(message, status);
+      },
+      onError: (data) => {
+        const { status, message } = data.props.auth.sessions;
+        handleShow();
+        reset();
+        handleToast(message, status);
+      }
     });
   }
   

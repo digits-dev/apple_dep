@@ -24,6 +24,7 @@ class ImportEnrollmentStatus implements ToModel, SkipsEmptyRows, WithHeadingRow,
 
         return new EnrollmentStatus([
             'enrollment_status' => $row['enrollment_status'],
+            'color' => $row['color'] ?? '#322e2e',
         ]);
 
     }

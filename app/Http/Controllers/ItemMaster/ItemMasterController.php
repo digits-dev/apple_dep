@@ -65,15 +65,15 @@ class ItemMasterController extends Controller
 
     public function addItemMaster(Request $request){
 
-        // if(!CommonHelpers::isCreate()) {
+        if(!CommonHelpers::isCreate()) {
 
-        //     $data = [
-        //         'message'=>"You don't have permission to add.", 
-        //         'status'=>'error'
-        //     ];
+            $data = [
+                'message' => "You don't have permission to add.", 
+                'status' => 'error'
+            ];
 
-        //     return response()->json($data);
-        // }
+            return back()->with($data);
+        }
 
 
         $request->validate([
@@ -98,19 +98,27 @@ class ItemMasterController extends Controller
             'brand_description'=> $request->input('brand_description'),
         ]);
 
+        $data = [
+            'message' => "Successfully Added Item.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
+
     }
 
     public function updateItemMaster(Request $request, ItemMaster $itemMaster) {
 
-        // if(!CommonHelpers::isUpdate()) {
 
-        //     $data = [
-        //         'message'=>"You don't have permission to update.", 
-        //         'status'=>'error'
-        //     ];
+        if(!CommonHelpers::isUpdate()) {
 
-        //     return response()->json($data);
-        // }
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
 
         $request->validate([
             'digits_code' => 'required',
@@ -133,6 +141,13 @@ class ItemMasterController extends Controller
             'item_description'=> $request->input('item_description'),
             'brand_description'=> $request->input('brand_description'),
         ]);
+
+        $data = [
+            'message' => "Successfully Updated Item.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     

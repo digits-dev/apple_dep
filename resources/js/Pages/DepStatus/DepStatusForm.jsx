@@ -15,16 +15,20 @@ const DepStatusForm = ({ action, handleShow, updateFormValues }) => {
 
         if (action == "edit") {
             put(`/dep_statuses/${updateFormValues?.currentId}`, {
-                onSuccess: () => {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
                     handleShow();
                     reset();
+                    handleToast(message, status);
                 },
             });
         } else {
             post("/dep_statuses", {
-                onSuccess: () => {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
                     handleShow();
                     reset();
+                    handleToast(message, status);
                 },
             });
         }

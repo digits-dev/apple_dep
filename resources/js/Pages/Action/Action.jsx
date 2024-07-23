@@ -307,10 +307,7 @@ const Action = ({ actions, queryParams }) => {
                     title="Add Action"
                 >
                     <ActionForm
-                        handleShow={() => {
-                            handleShowCreate();
-                            handleToast("Created Action", "success");
-                        }}
+                        handleShow={handleShowCreate}
                         action="create"
                     />
                 </Modal>
@@ -321,10 +318,7 @@ const Action = ({ actions, queryParams }) => {
                     title="Edit Action"
                 >
                     <ActionForm
-                        handleShow={() => {
-                            handleShowEdit();
-                            handleToast("Updated Action", "success");
-                        }}
+                        handleShow={handleShowEdit}
                         action="edit"
                         updateFormValues={updateFormValues}
                     />

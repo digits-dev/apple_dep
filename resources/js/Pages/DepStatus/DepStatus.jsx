@@ -313,10 +313,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     title="Add Status"
                 >
                     <DepStatusForm
-                        handleShow={() => {
-                            handleShowCreate();
-                            handleToast("Created Status", "success");
-                        }}
+                        handleShow={handleShowCreate}
                         action="create"
                     />
                 </Modal>
@@ -327,10 +324,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                     title="Edit Status"
                 >
                     <DepStatusForm
-                        handleShow={() => {
-                            handleShowEdit();
-                            handleToast("Updated Status", "success");
-                        }}
+                        handleShow={handleShowEdit}
                         action="edit"
                         updateFormValues={updateFormValues}
                     />

@@ -270,10 +270,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 title="Add Status"
             >
                 <EnrollmentStatusForm 
-                    handleShow={()=>{
-                        handleShowCreate(); 
-                        handleToast("Created Status", "success");
-                    }} 
+                    handleShow={handleShowCreate} 
                     action="create" />
             </Modal>
 
@@ -283,10 +280,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 title="Edit Status"
             >
                 <EnrollmentStatusForm 
-                    handleShow={()=>{
-                        handleShowEdit(); 
-                        handleToast("Updated Status", "success");
-                    }} 
+                    handleShow={handleShowEdit} 
                     action="edit" 
                     updateFormValues={updateFormValues} 
                 />
