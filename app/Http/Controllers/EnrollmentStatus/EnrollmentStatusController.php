@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\EnrollmentStatus;
 use App\Exports\EnrollmentStatusExport;
+use app\Helpers\CommonHelpers;
 use App\Imports\ImportEnrollmentStatus;
 use App\ImportTemplates\ImportEnrollmentStatusTemplate;
 use Illuminate\Http\Request;
@@ -25,6 +26,10 @@ class EnrollmentStatusController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $query = EnrollmentStatus::query();
 
         $query->when(request('search'), function ($query, $search) {

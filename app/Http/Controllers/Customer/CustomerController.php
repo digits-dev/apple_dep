@@ -30,6 +30,7 @@ class CustomerController extends Controller
         if(!CommonHelpers::isView()) {
             return Inertia::render('Errors/RestrictionPage');
         }
+        
         $query = Customer::query();
 
         $query->when(request('search'), function ($query, $search) {

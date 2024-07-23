@@ -27,6 +27,11 @@ class ActionController extends Controller
 
     public function getIndex()
     {
+
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $data = [];
         $query = Action::query();
 
@@ -35,7 +40,6 @@ class ActionController extends Controller
         });
 
         $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
-
 
         $data['actions'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
         $data['queryParams'] = request()->query();

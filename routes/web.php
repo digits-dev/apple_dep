@@ -114,7 +114,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pull-errors', [PullErrorsController::class, 'export']);
     //List of Orders
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
-    Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
+    Route::get('/list_of_orders/{order}/enroll-return', [ListOfOrdersController::class, 'showEnrollReturn']);
     Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
     Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);

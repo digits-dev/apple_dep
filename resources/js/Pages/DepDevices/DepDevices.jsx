@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
@@ -25,6 +25,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Select from "../../Components/Forms/Select";
 
 const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -239,9 +240,10 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                 >
                                     Enrollment Status
                                 </TableHeader>
+                                {auth.access.isCreate &&
                                 <TableHeader sortable={false} justify="center" sticky="right" width="sm">
                                     Action
-                                </TableHeader>
+                                </TableHeader>}
                             </Row>
                         </Thead>
                         <Tbody data={devices.data}>
@@ -267,6 +269,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                         >
                                             {item.enrollment_status}
                                         </RowStatus>
+
+                                        {auth.access.isCreate &&
                                         <RowData center sticky="right">
                                             <RowAction
                                                 action="add"
@@ -279,7 +283,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                                     );
                                                 }}
                                             />
-                                        </RowData>
+                                        </RowData>}
+                                        
                                     </Row>
                                 ))}
                         </Tbody>

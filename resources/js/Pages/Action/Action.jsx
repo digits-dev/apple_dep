@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -26,6 +26,7 @@ import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 
 const Action = ({ actions, queryParams }) => {
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
 
     const { handleToast } = useToast();
@@ -151,25 +152,33 @@ const Action = ({ actions, queryParams }) => {
             <Head title="Actions" />
                 <ContentPanel>
                     <TopPanel>
+                        {auth.access.isUpdate && 
                         <BulkActions
                             actions={bulkActions}
                             onActionSelected={handleActionSelected}
-                        />
+                        />}
+
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
-                        <TableButton onClick={handleShowCreate}>
-                            Add Action
-                        </TableButton>
-                        <Import
-                            importPath="/actions-import"
-                            templatePath="/actions-import-template"
-                        />
+
+                        {auth.access.isCreate && 
+                        <>
+                            <TableButton onClick={handleShowCreate}>
+                                Add Action
+                            </TableButton>
+                            <Import
+                                importPath="/actions-import"
+                                templatePath="/actions-import-template"
+                            />
+                        </>}
+                       
                         <Export path="/actions-export" />
                     </TopPanel>
 
                     <TableContainer>
                         <Thead>
                             <Row>
+                                {auth.access.isUpdate && 
                                 <TableHeader
                                     width="sm"
                                     sortable={false}
@@ -182,7 +191,8 @@ const Action = ({ actions, queryParams }) => {
                                         handleClick={handleSelectAll}
                                         isChecked={selectAll}
                                     />
-                                </TableHeader>
+                                </TableHeader>}
+
                                 <TableHeader
                                     name="id"
                                     queryParams={queryParams}
@@ -212,13 +222,14 @@ const Action = ({ actions, queryParams }) => {
                                     Status
                                 </TableHeader>
 
+                                {auth.access.isUpdate && 
                                 <TableHeader
                                     sortable={false}
                                     width="auto"
                                     justify="center"
                                 >
                                     Action
-                                </TableHeader>
+                                </TableHeader>}
                             </Row>
                         </Thead>
 
@@ -226,6 +237,7 @@ const Action = ({ actions, queryParams }) => {
                             {actions &&
                                 actions.data.map((item) => (
                                     <Row key={item.id}>
+                                        {auth.access.isUpdate && 
                                         <RowData center>
                                             <Checkbox
                                                 type="checkbox"
@@ -239,7 +251,8 @@ const Action = ({ actions, queryParams }) => {
                                                     item.id
                                                 )}
                                             />
-                                        </RowData>
+                                        </RowData>}
+
                                         <RowData isLoading={loading}>
                                             {item.id}
                                         </RowData>
@@ -262,6 +275,8 @@ const Action = ({ actions, queryParams }) => {
                                                 ? "Active"
                                                 : "Inactive"}
                                         </RowStatus>
+
+                                        {auth.access.isUpdate &&
                                         <RowData isLoading={loading} center>
                                             <RowAction
                                                 type="button"
@@ -277,7 +292,7 @@ const Action = ({ actions, queryParams }) => {
                                                 action="edit"
                                                 size="md"
                                             />
-                                        </RowData>
+                                        </RowData>}
                                     </Row>
                                 ))}
                         </Tbody>

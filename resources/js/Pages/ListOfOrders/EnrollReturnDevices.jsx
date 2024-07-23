@@ -1,4 +1,4 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import { NavbarContext } from "../../Context/NavbarContext";
 import { useContext } from "react";

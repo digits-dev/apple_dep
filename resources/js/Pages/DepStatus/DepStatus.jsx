@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -26,6 +26,7 @@ import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 
 const DepStatus = ({ dep_statuses, queryParams }) => {
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
 
     const { handleToast } = useToast();
@@ -150,25 +151,32 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
             <Head title="DEP Status" />
                 <ContentPanel>
                     <TopPanel>
+                        {auth.access.isUpdate &&
                         <BulkActions
                             actions={bulkActions}
                             onActionSelected={handleActionSelected}
-                        />
+                        />}
+
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
-                        <TableButton onClick={handleShowCreate}>
-                            Add DEP Status
-                        </TableButton>
-                        <Import
-                            importPath="/dep-status-import"
-                            templatePath="/dep-status-import-template"
-                        />
+
+                        {auth.access.isCreate &&
+                        <>
+                            <TableButton onClick={handleShowCreate}>
+                                Add DEP Status
+                            </TableButton>
+                            <Import
+                                importPath="/dep-status-import"
+                                templatePath="/dep-status-import-template"
+                            />
+                        </>}
                         <Export path="/dep-status-export" />
                     </TopPanel>
 
                     <TableContainer>
                         <Thead>
                             <Row>
+                                {auth.access.isUpdate &&
                                 <TableHeader
                                     width="sm"
                                     sortable={false}
@@ -181,7 +189,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                         handleClick={handleSelectAll}
                                         isChecked={selectAll}
                                     />
-                                </TableHeader>
+                                </TableHeader>}
 
                                 <TableHeader
                                     name="id"
@@ -212,13 +220,14 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                     Status
                                 </TableHeader>
 
+                                {auth.access.isUpdate &&
                                 <TableHeader
                                     sortable={false}
                                     width="auto"
                                     justify="center"
                                 >
                                     Action
-                                </TableHeader>
+                                </TableHeader>}
                             </Row>
                         </Thead>
 
@@ -226,6 +235,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                             {dep_statuses &&
                                 dep_statuses.data.map((item) => (
                                     <Row key={item.id}>
+                                        {auth.access.isUpdate &&
                                         <RowData center>
                                             <Checkbox
                                                 type="checkbox"
@@ -239,7 +249,8 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                                     item.id
                                                 )}
                                             />
-                                        </RowData>
+                                        </RowData>}
+
                                         <RowData isLoading={loading}>
                                             {item.id}
                                         </RowData>
@@ -266,6 +277,8 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                                 ? "Active"
                                                 : "Inactive"}
                                         </RowStatus>
+
+                                        {auth.access.isUpdate &&
                                         <RowData isLoading={loading} center>
                                             <RowAction
                                                 type="button"
@@ -282,7 +295,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                                 action="edit"
                                                 size="md"
                                             />
-                                        </RowData>
+                                        </RowData>}
                                     </Row>
                                 ))}
                         </Tbody>

@@ -64,7 +64,6 @@ class ListOfOrdersController extends Controller
     
     public function export(Request $request)
     {
-        
 
         $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
 
@@ -76,6 +75,10 @@ class ListOfOrdersController extends Controller
     public function getIndex(Request $request)
     {
 
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $data = [];
 
         $data['orders'] = self::getAllData()->paginate($this->perPage)->withQueryString();
@@ -83,10 +86,6 @@ class ListOfOrdersController extends Controller
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
 
         $data['queryParams'] = request()->query();
-
-        if(!CommonHelpers::isView()) {
-            return Inertia::render('Errors/RestrictionPage');
-        }
 
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
@@ -103,7 +102,11 @@ class ListOfOrdersController extends Controller
         return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
     }
 
-    public function edit(Order $order){
+    public function showEnrollReturn(Order $order){
+
+        if(!CommonHelpers::isCreate()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
        
         $data = [];
         $data ['order'] = $order;
@@ -113,19 +116,6 @@ class ListOfOrdersController extends Controller
         ->with('status')
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
-
-        
-        // $orderLines = $orderLines->map(function($orderLine) {
-        //     $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
-        //     ->whereIn('enrollment_status', [2, 3, 5, 6])
-        //     ->exists();
-            
-        //     $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
-            
-        //     return $orderLine;
-        // });
-        
-        // $data['orderLines'] = $orderLines;
 
         $data['queryParams'] = request()->query();
         
@@ -177,6 +167,7 @@ class ListOfOrdersController extends Controller
 
     public function enrollDevices(Request $request)
     {
+
         try {
             $id = $request->input('id'); 
 
@@ -460,6 +451,7 @@ class ListOfOrdersController extends Controller
 
     public function bulkEnrollDevices(Request $request)
     {
+
         try {
             $ids = $request->input('ids');
 

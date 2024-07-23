@@ -25,6 +25,7 @@ import { useToast } from "../../Context/ToastContext";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 
 const Customer = ({ customers, queryParams }) => {
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
 
     const { handleToast } = useToast();
@@ -128,9 +129,13 @@ const Customer = ({ customers, queryParams }) => {
             <Head title="Customer" />
                 <ContentPanel>
                     <TopPanel>
-                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
-                        <TableSearch queryParams={queryParams} />
-                        <PerPage queryParams={queryParams} />
+                    {auth.access.isUpdate && 
+                    <BulkActions 
+                        actions={bulkActions} 
+                        onActionSelected={handleActionSelected} 
+                    />}
+                    <TableSearch queryParams={queryParams} />
+                    <PerPage queryParams={queryParams} />
                         {/* <TableButton onClick={handleShowCreate}>
                         Add Customer
                     </TableButton> */}
@@ -138,12 +143,13 @@ const Customer = ({ customers, queryParams }) => {
                             importPath="/customers-import"
                             templatePath="/customers-import-template"
                         /> */}
-                        <Export path="/customers-export" />
+                    <Export path="/customers-export" />
                     </TopPanel>
 
                     <TableContainer>
                         <Thead>
                             <Row>
+                                {auth.access.isUpdate &&
                                 <TableHeader
                                         width="sm"
                                         sortable={false}
@@ -156,7 +162,8 @@ const Customer = ({ customers, queryParams }) => {
                                             handleClick={handleSelectAll}
                                             isChecked={selectAll}
                                         />
-                                </TableHeader>
+                                </TableHeader>}
+
                                 <TableHeader
                                     name="id"
                                     queryParams={queryParams}
@@ -186,20 +193,21 @@ const Customer = ({ customers, queryParams }) => {
                                     Status
                             </TableHeader>
     
-                  
+                            {auth.access.isUpdate &&
                             <TableHeader
 								sortable={false}
 								width="auto"
                                 justify="center"
 							>
 								Action
-							</TableHeader>
+							</TableHeader>}
                         </Row>
                     </Thead>
                     <Tbody data={customers.data}>
                      {customers &&
                             customers.data.map((item) => (
                                 <Row key={item.id} >
+                                    {auth.access.isUpdate &&
                                     <RowData center>
                                         <Checkbox
                                             type="checkbox"
@@ -207,7 +215,8 @@ const Customer = ({ customers, queryParams }) => {
                                             handleClick={()=>handleCheckboxChange(item.id)}
                                             isChecked={selectedItems.includes(item.id)}
                                         />
-                                    </RowData>
+                                    </RowData>}
+
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
@@ -220,6 +229,8 @@ const Customer = ({ customers, queryParams }) => {
                                     >
                                             {item.status ? "Active" : "Inactive"}
                                     </RowStatus>
+
+                                    {auth.access.isUpdate &&
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
@@ -227,7 +238,7 @@ const Customer = ({ customers, queryParams }) => {
                                             action="edit"
                                             size="md"
                                         />
-                                    </RowData>
+                                    </RowData>}
                                 </Row>
                             ))}
                     </Tbody>

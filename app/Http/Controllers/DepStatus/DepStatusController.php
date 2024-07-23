@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\DepStatus;
 use App\Exports\DepStatusExport;
+use app\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Imports\ImportDepStatus;
 use App\ImportTemplates\ImportDepStatusTemplate;
@@ -25,6 +26,10 @@ class DepStatusController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $query = DepStatus::query();
 
         $query->when(request('search'), function ($query, $search) {

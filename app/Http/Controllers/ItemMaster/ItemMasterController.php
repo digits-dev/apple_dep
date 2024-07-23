@@ -46,6 +46,11 @@ class ItemMasterController extends Controller
 
     public function getIndex(Request $request)
     {
+
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $data = [];
 
         $data['itemMaster'] = self::getAllData()->paginate($this->perPage)->withQueryString();
@@ -59,6 +64,17 @@ class ItemMasterController extends Controller
     }
 
     public function addItemMaster(Request $request){
+
+        // if(!CommonHelpers::isCreate()) {
+
+        //     $data = [
+        //         'message'=>"You don't have permission to add.", 
+        //         'status'=>'error'
+        //     ];
+
+        //     return response()->json($data);
+        // }
+
 
         $request->validate([
             'digits_code' => 'required',
@@ -85,6 +101,16 @@ class ItemMasterController extends Controller
     }
 
     public function updateItemMaster(Request $request, ItemMaster $itemMaster) {
+
+        // if(!CommonHelpers::isUpdate()) {
+
+        //     $data = [
+        //         'message'=>"You don't have permission to update.", 
+        //         'status'=>'error'
+        //     ];
+
+        //     return response()->json($data);
+        // }
 
         $request->validate([
             'digits_code' => 'required',
