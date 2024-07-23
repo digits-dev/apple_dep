@@ -168,6 +168,16 @@ class ListOfOrdersController extends Controller
     public function enrollDevices(Request $request)
     {
 
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to enroll.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $id = $request->input('id'); 
 
@@ -332,6 +342,17 @@ class ListOfOrdersController extends Controller
 
     public function unEnrollDevices(Request $request)
     {
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to return.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $id = $request->input('id'); 
 
@@ -451,6 +472,16 @@ class ListOfOrdersController extends Controller
 
     public function bulkEnrollDevices(Request $request)
     {
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to enroll.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
 
         try {
             $ids = $request->input('ids');
@@ -624,6 +655,16 @@ class ListOfOrdersController extends Controller
     }
     public function bulkReturnDevices(Request $request)
     {
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to return.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $ids = $request->input('ids');
 

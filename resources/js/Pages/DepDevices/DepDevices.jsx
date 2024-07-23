@@ -101,11 +101,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
             try {
                 let response;
                 if (action == "enroll") {
-                    response = await axios.post(`/list_of_orders/enroll`, {
+                    response = await axios.post(`/dep_devices/enroll`, {
                         id: orderId,
                     });
                 } else {
-                    response = await axios.post(`/list_of_orders/return`, {
+                    response = await axios.post(`/dep_devices/return`, {
                         id: orderId,
                     });
                 }
