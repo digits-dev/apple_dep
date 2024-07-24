@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\EnrollmentStatus;
 use App\Exports\EnrollmentStatusExport;
+use app\Helpers\CommonHelpers;
 use App\Imports\ImportEnrollmentStatus;
 use App\ImportTemplates\ImportEnrollmentStatusTemplate;
 use Illuminate\Http\Request;
@@ -25,6 +26,10 @@ class EnrollmentStatusController extends Controller
 
     public function getIndex()
     {
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $query = EnrollmentStatus::query();
 
         $query->when(request('search'), function ($query, $search) {
@@ -42,15 +47,43 @@ class EnrollmentStatusController extends Controller
     
     public function store(Request $request){
 
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to add.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'enrollment_status' => 'required|unique:enrollment_statuses,enrollment_status',
             'color' => 'required',
         ]);
         
         EnrollmentStatus::create(['enrollment_status'=> $request->input('enrollment_status'), 'color' => $request->input('color')]);
+
+        $data = [
+            'message' => "Successfully Added Status.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
     
     public function update(Request $request, EnrollmentStatus $enrollment_status){
+        
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'enrollment_status' => "required|unique:enrollment_statuses,enrollment_status,$enrollment_status->id,id",
             'status' => 'required',
@@ -58,9 +91,26 @@ class EnrollmentStatusController extends Controller
         ]);
 
         $enrollment_status->update(['enrollment_status'=> $request->input('enrollment_status'),  'status' => $request->input('status'), 'color' => $request->input('color')]);
+
+        $data = [
+            'message' => "Successfully Updated.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     public function bulkUpdate(Request $request){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
 
         $ids = $request->input('ids');
         $status = $request->input('status');
@@ -103,6 +153,16 @@ class EnrollmentStatusController extends Controller
 
     public function import(Request $request)
     {   
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to import.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
@@ -112,13 +172,36 @@ class EnrollmentStatusController extends Controller
 
             Excel::import(new ImportEnrollmentStatus, $importFile);
     
-            return to_route('/enrollment_status');
+            
+            $data = [
+                'message' => "Import Successful.", 
+                'status' => 'success'
+            ];
+    
+            return  back()->with($data);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            // Handle validation errors during import
-            return back()->with('error', 'Validation error: ' . $e->getMessage());
+             // Handle validation errors during import
+
+             $data = [
+                'message' => "Import Failed, Please check template file.", 
+                'status' => 'error',
+                'error', 'Validation error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
+
         } catch (\Exception $e) {
             // Handle other errors
-            return back()->with('error', 'Error: ' . $e->getMessage());
+
+            $data = [
+                'message' => "Something went wrong, Please try again later.", 
+                'status' => 'error',
+                'error', 'Error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
+
         }
       
     }

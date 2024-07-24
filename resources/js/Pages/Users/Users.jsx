@@ -418,7 +418,6 @@ const Users = ({ users, options, queryParams }) => {
     return (
         <>
             <Head title="Users Management" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <BulkActions
@@ -427,7 +426,7 @@ const Users = ({ users, options, queryParams }) => {
                         />
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
-                        <Import />
+                        {/* <Import /> */}
                         <Filters />
                         <TableButton onClick={handleCreate}>
                             Create User
@@ -581,7 +580,6 @@ const Users = ({ users, options, queryParams }) => {
                         onClose={handleCloseEditModal}
                     />
                 </Modal>
-            </AppContent>
         </>
     );
 };

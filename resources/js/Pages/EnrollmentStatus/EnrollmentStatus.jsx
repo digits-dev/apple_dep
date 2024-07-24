@@ -1,4 +1,4 @@
-import { Head,  router } from "@inertiajs/react";
+import { Head,  router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
@@ -26,7 +26,7 @@ import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 
 const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
- 
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
 
     const { handleToast } = useToast();
@@ -129,22 +129,31 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
     return (
         <>
         <Head title="Enrollment Status" />
-        <AppContent>
             <ContentPanel>
                 <TopPanel>
-                    <BulkActions actions={bulkActions} onActionSelected={handleActionSelected} />
+                    {auth.access.isUpdate && 
+                    <BulkActions 
+                        actions={bulkActions} 
+                        onActionSelected={handleActionSelected} 
+                    />}
+
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    <TableButton onClick={handleShowCreate}>
-                        Add Enrollment Status
-                    </TableButton>
-                    <Import importPath="/enrollment-status-import" templatePath="/enrollment-status-import-template"/>
+
+                    {auth.access.isCreate && 
+                    <>
+                        <TableButton onClick={handleShowCreate}>
+                            Add Enrollment Status
+                        </TableButton>
+                        <Import importPath="/enrollment-status-import" templatePath="/enrollment-status-import-template"/>
+                    </>}
                     <Export  path="/enrollment-status-export"/>
                 </TopPanel>
 
                 <TableContainer>
                     <Thead>
                         <Row>
+                            {auth.access.isUpdate &&
                             <TableHeader
                                     width="sm"
                                     sortable={false}
@@ -157,7 +166,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     handleClick={handleSelectAll}
                                     isChecked={selectAll}
                                 />
-                            </TableHeader>
+                            </TableHeader>}
 
                             <TableHeader
                                 name="id"
@@ -188,13 +197,14 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     Status
                             </TableHeader>
                 
+                            {auth.access.isUpdate &&
                             <TableHeader
                                 sortable={false}
                                 width="auto"
                                 justify="center"
                             >
                                 Action
-                            </TableHeader>
+                            </TableHeader>}
                         </Row>
                     </Thead>
 
@@ -202,6 +212,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                         {enrollment_status &&
                             enrollment_status.data.map((item) => (
                                 <Row key={item.id} >
+                                    {auth.access.isUpdate &&
                                     <RowData center>
                                         <Checkbox
                                             type="checkbox"
@@ -209,7 +220,8 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                             handleClick={()=>handleCheckboxChange(item.id)}
                                             isChecked={selectedItems.includes(item.id)}
                                         />
-                                    </RowData>
+                                    </RowData>}
+
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
@@ -227,6 +239,8 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     >
                                             {item.status ? "Active" : "Inactive"}
                                     </RowStatus>
+
+                                    {auth.access.isUpdate &&
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
@@ -241,7 +255,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                             action="edit"
                                             size="md"
                                         />
-                                    </RowData>
+                                    </RowData>}
                             </Row>
                             ))}
                     </Tbody>
@@ -256,10 +270,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 title="Add Status"
             >
                 <EnrollmentStatusForm 
-                    handleShow={()=>{
-                        handleShowCreate(); 
-                        handleToast("Created Status", "success");
-                    }} 
+                    handleShow={handleShowCreate} 
                     action="create" />
             </Modal>
 
@@ -269,15 +280,11 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                 title="Edit Status"
             >
                 <EnrollmentStatusForm 
-                    handleShow={()=>{
-                        handleShowEdit(); 
-                        handleToast("Updated Status", "success");
-                    }} 
+                    handleShow={handleShowEdit} 
                     action="edit" 
                     updateFormValues={updateFormValues} 
                 />
             </Modal>
-        </AppContent>
         </>
     );
 };

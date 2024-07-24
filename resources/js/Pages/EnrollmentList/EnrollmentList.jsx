@@ -19,13 +19,11 @@ import { useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
-import moment from "moment";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 
 
 const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses, users }) => {
     queryParams = queryParams || {};
-
     const { handleToast } = useToast();
 
     const [loading, setLoading] = useState(false);
@@ -82,7 +80,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
     return (
         <>
             <Head title="Enrollment List" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -333,7 +330,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                         </RowStatus>
 
                                         <RowData isLoading={loading} >
-                                            {item.created_at && moment(item.created_at).format('YYYY-MM-DD')}
+                                            {item.created_at}
                                         </RowData>
 
                                         <RowData isLoading={loading} >
@@ -341,7 +338,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                         </RowData>
 
                                         <RowData isLoading={loading} >
-                                            {item.updated_at && moment(item.updated_at).format('YYYY-MM-DD')}
+                                            {item.updated_at}
                                         </RowData>
 
                                         <RowData isLoading={loading} >
@@ -349,7 +346,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                         </RowData>
 
                                         <RowData isLoading={loading} >
-                                            {item.returned_date && moment(item.returned_date).format('YYYY-MM-DD')}
+                                            {item.returned_date}
                                         </RowData>
 
                                         <RowData isLoading={loading} >
@@ -377,7 +374,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
 
                     <Pagination paginate={enrollmentLists} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

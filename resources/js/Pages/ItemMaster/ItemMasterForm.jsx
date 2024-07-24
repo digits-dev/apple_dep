@@ -1,8 +1,10 @@
 import { useForm } from "@inertiajs/react";
 import React from "react";
 import InputComponent from "../../Components/Forms/Input";
+import { useToast } from "../../Context/ToastContext";
 
 function ItemMasterForm({ action, handleShow, setUpdateFormValues }) {
+    const { handleToast } = useToast();
     const { data, setData, post, put, processing, errors, reset } = useForm({
         digits_code: setUpdateFormValues?.digits_code || "",
         upc_code_up_1: setUpdateFormValues?.upc_code_up_1 || "",
@@ -21,17 +23,22 @@ function ItemMasterForm({ action, handleShow, setUpdateFormValues }) {
 
         if (action == "edit") {
             put(`/item_master_update/${setUpdateFormValues?.currentId}`, {
-                onSuccess: () => {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
                     handleShow();
                     reset();
+                    handleToast(message, status);
                 },
             });
         } else {
             post("/item_master_create", {
-                onSuccess: () => {
+                onSuccess: (data) => {
+                    const { status, message } = data.props.auth.sessions;
                     handleShow();
                     reset();
+                    handleToast(message, status);
                 },
+
             });
         }
     };

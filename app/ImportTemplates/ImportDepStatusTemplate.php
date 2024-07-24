@@ -15,6 +15,7 @@ class ImportDepStatusTemplate implements FromArray, WithHeadings, ShouldAutoSize
     {
         return [
             'Dep Status',
+            'Color(optional)'
         ];
     }
 
@@ -23,12 +24,15 @@ class ImportDepStatusTemplate implements FromArray, WithHeadings, ShouldAutoSize
         return [
             [
                 'Complete',
+                'green'
             ],
             [
                 'Incomplete',
+                'red'
             ],
             [
                 'In progress',
+                '#327000'
             ],
         ];
     }

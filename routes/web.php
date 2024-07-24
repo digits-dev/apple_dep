@@ -112,15 +112,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/export-json/{log_type}/{order_id}', [ListOfOrdersController::class, 'exportText'])->name('export-json');
     Route::get('/export-transaction/{order_id}', [ListOfOrdersController::class, 'exportTransaction'])->name('export-transaction');
     Route::get('/pull-errors', [PullErrorsController::class, 'export']);
-    //List of Orders
+
+    //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
-    Route::get('/list_of_orders/{order}/edit', [ListOfOrdersController::class, 'edit']);
+    Route::get('/list_of_orders/{order}/enroll-return', [ListOfOrdersController::class, 'showEnrollReturn']);
     Route::post('/list_of_orders/enroll', [ListOfOrdersController::class, 'enrollDevices']);
     Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
     Route::post('/list_of_orders/bulk-return', [ListOfOrdersController::class, 'bulkReturnDevices']);
 
-    //EnrollmentList
+    //DEP DEVICES
+    Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);
+    Route::post('/dep_devices/return', [DepDevicesController::class, 'unEnrollDevices']);
+
+    //ENROLLMENT LIST
     Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);
     Route::get('/enrollment_list/{transactionId}/check_status', [EnrollmentListController::class, 'checkTransactionStatus']);
 

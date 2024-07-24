@@ -95,7 +95,6 @@ const ChangePassword = () => {
     return (
         <>
             <Head title="Change Password" />
-            <AppContent>
                 <ContentPanel>
                     <Link
                         href="dashboard"
@@ -170,7 +169,6 @@ const ChangePassword = () => {
                         </div>
                     </form>
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

@@ -15,7 +15,7 @@ const DissapearingToast = ({ type, message }) => {
     return (
         <>
             {isShow && (
-                <div className="toast-container m-2 flex bg-white overflow-hidden rounded-lg font-nunito-sans">
+                <div className="toast-container mb-4 flex bg-white overflow-hidden rounded-lg font-nunito-sans">
                     <div
                         className={`w-[10px] ${
                             type == "success" ? "bg-green-500" : "bg-red-500"

@@ -10,27 +10,23 @@ class EnrollmentList extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+        'returned_date' => 'datetime:Y-m-d',
+    ];
+
     protected $fillable = [
         'sales_order_no', 
         'item_code', 
         'serial_number',
         'transaction_id',
         'dep_status', 
+        'status_message',
         'enrollment_status', 
-        'status_message',
         'order_lines_id',
-        'created_by',
-        'updated_by'
-    ];
-    
-    protected $filterable = [
-        'sales_order_no',
-        'item_code',
-        'serial_number',
-        'transaction_id',
-        'dep_status',
-        'status_message',
-        'enrollment_status',
         'created_at',
         'created_by',
         'updated_at',
@@ -38,13 +34,26 @@ class EnrollmentList extends Model
         'returned_date',
         'returned_by',
     ];
+    
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->created_at = now();
+            $model->created_by = auth()->user()->id;
+        });
+
+        static::updating(function ($model) {
+            $model->updated_at = now();
+            $model->updated_by = auth()->user()->id;
+        });
+    }
 
     public function scopeSearchAndFilter($query, $request){
 
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($query) use ($search) {
-                foreach ($this->filterable as $field) {
+                foreach ($this->fillable as $field) {
                     if (in_array($field, ['created_at', 'updated_at', 'returned_date'])) {
                         $query->orWhereDate($field, $search);
                         
@@ -71,7 +80,7 @@ class EnrollmentList extends Model
             });
         }
 
-        foreach ($this->filterable as $field) {
+        foreach ($this->fillable as $field) {
             if (in_array($field, ['created_at', 'updated_at', 'returned_date']) && $request->filled($field)) {
                 $date = $request->input($field);
                 $query->whereDate('created_at', $date);

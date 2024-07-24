@@ -26,6 +26,7 @@ import OverrideOrderForm from "./OverrideOrderForm";
 const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     queryParams = queryParams || {};
     const { auth } = usePage().props;
+    const accessPrivileges = auth.access.isCreate || auth.access.isVoid || auth.access.isOverride;
     const [loading, setLoading] = useState(false);
     const [showEditActionModal, setShowEditActionModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
@@ -55,17 +56,16 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
 
+
     const ListofOrdersEditActions = () => {
         return (
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
-                {auth.access.isCreate ||
-                auth.access.isVoid ||
-                auth.access.isOverride ? (
+                {accessPrivileges ? (
                     <>
                         {auth.access.isCreate ? (
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                                href={orderPath + `/${orderId}/edit`}
+                                href={orderPath + `/${orderId}/enroll-return`}
                             >
                                 Enroll/Return Devices
                             </Link>
@@ -102,7 +102,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                             <i className="fa fa-lock"></i> Access Denied
                         </h1>
                         <p class="text-lg text-gray-700 mb-3">
-                            You do not have permission to access this area.
+                            You don't have permission to access this area.
                         </p>
                     </div>
                 )}
@@ -137,7 +137,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="List of Orders" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -296,6 +295,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                                     size="md"
                                                 />
 
+                                                {accessPrivileges  &&  
                                                 <RowAction
                                                     type="button"
                                                     onClick={() => {
@@ -318,7 +318,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                                     }}
                                                     action="edit"
                                                     size="md"
-                                                />
+                                                />}
+
+                                                
                                             </RowActions>
                                         </RowData>
                                     </Row>
@@ -349,7 +351,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         action="edit"
                     />
                 </Modal>
-            </AppContent>
         </>
     );
 };

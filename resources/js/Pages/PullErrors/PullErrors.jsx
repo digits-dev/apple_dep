@@ -73,7 +73,6 @@ const PullErrors = ({ PullErrors, queryParams }) => {
     return (
         <>
             <Head title="Erp Pull Errors" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -284,7 +283,6 @@ const PullErrors = ({ PullErrors, queryParams }) => {
 
                     <Pagination paginate={PullErrors} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

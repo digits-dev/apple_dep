@@ -134,3 +134,22 @@ button:disabled {
 .slide-in-left {
     animation: slideInLeft 0.5s forwards;
 }
+
+
+/* border bottom for rows  */
+
+tbody tr {
+    position: relative; 
+}
+  
+tbody tr:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%; 
+    border-bottom: 0.60px solid #797878; 
+    z-index: 40;
+}
+
+/* end of border bottom for rows  */

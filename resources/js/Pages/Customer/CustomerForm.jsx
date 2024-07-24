@@ -13,9 +13,23 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
         e.preventDefault();
 
         if(action == 'edit'){
-            put(`/customers/${updateFormValues?.currentId}`, {onSuccess: ()=>{handleShow(); reset()}});
+            put(`/customers/${updateFormValues?.currentId}`, {
+                onSuccess: (data)=>{
+                    const { status, message } = data.props.auth.sessions;
+                    handleShow();
+                    reset();
+                    handleToast(message, status);
+                }
+            });
         } else {
-            post('/customers', {onSuccess: ()=>{handleShow(); reset()}});
+            post('/customers', {
+                onSuccess: (data )=>{
+                    const { status, message } = data.props.auth.sessions;
+                    handleShow();
+                    reset();
+                    handleToast(message, status);
+                }
+            });
         }
     }
 

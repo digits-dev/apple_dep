@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
@@ -25,6 +25,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Select from "../../Components/Forms/Select";
 
 const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
+    const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -100,11 +101,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
             try {
                 let response;
                 if (action == "enroll") {
-                    response = await axios.post(`/list_of_orders/enroll`, {
+                    response = await axios.post(`/dep_devices/enroll`, {
                         id: orderId,
                     });
                 } else {
-                    response = await axios.post(`/list_of_orders/return`, {
+                    response = await axios.post(`/dep_devices/return`, {
                         id: orderId,
                     });
                 }
@@ -154,7 +155,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="DEP Devices" />
-            <AppContent>
                 <Modal show={processing} modalLoading />  
                 <ContentPanel>
                     <TopPanel>
@@ -240,9 +240,10 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                 >
                                     Enrollment Status
                                 </TableHeader>
-                                <TableHeader sortable={false} justify="center">
+                                {auth.access.isCreate &&
+                                <TableHeader sortable={false} justify="center" sticky="right" width="sm">
                                     Action
-                                </TableHeader>
+                                </TableHeader>}
                             </Row>
                         </Thead>
                         <Tbody data={devices.data}>
@@ -268,7 +269,9 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                         >
                                             {item.enrollment_status}
                                         </RowStatus>
-                                        <RowData center>
+
+                                        {auth.access.isCreate &&
+                                        <RowData center sticky="right">
                                             <RowAction
                                                 action="add"
                                                 type="button"
@@ -280,7 +283,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                                     );
                                                 }}
                                             />
-                                        </RowData>
+                                        </RowData>}
+                                        
                                     </Row>
                                 ))}
                         </Tbody>
@@ -295,7 +299,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                 >
                     <EnrollReturnDeviceActions />
                 </Modal>
-            </AppContent>
         </>
     );
 };

@@ -64,7 +64,6 @@ class ListOfOrdersController extends Controller
     
     public function export(Request $request)
     {
-        
 
         $filename = "List Of Orders - " . date ('Y-m-d H:i:s');
 
@@ -76,6 +75,10 @@ class ListOfOrdersController extends Controller
     public function getIndex(Request $request)
     {
 
+        if(!CommonHelpers::isView()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
         $data = [];
 
         $data['orders'] = self::getAllData()->paginate($this->perPage)->withQueryString();
@@ -83,10 +86,6 @@ class ListOfOrdersController extends Controller
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
 
         $data['queryParams'] = request()->query();
-
-        if(!CommonHelpers::isView()) {
-            return Inertia::render('Errors/RestrictionPage');
-        }
 
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
@@ -103,7 +102,11 @@ class ListOfOrdersController extends Controller
         return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
     }
 
-    public function edit(Order $order){
+    public function showEnrollReturn(Order $order){
+
+        if(!CommonHelpers::isCreate()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
        
         $data = [];
         $data ['order'] = $order;
@@ -113,19 +116,6 @@ class ListOfOrdersController extends Controller
         ->with('status')
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
-
-        
-        // $orderLines = $orderLines->map(function($orderLine) {
-        //     $enrollmentExists = EnrollmentList::where('serial_number', $orderLine->serial_number)
-        //     ->whereIn('enrollment_status', [2, 3, 5, 6])
-        //     ->exists();
-            
-        //     $orderLine->enrollment_exist = $enrollmentExists ? 1 : 0;
-            
-        //     return $orderLine;
-        // });
-        
-        // $data['orderLines'] = $orderLines;
 
         $data['queryParams'] = request()->query();
         
@@ -177,6 +167,17 @@ class ListOfOrdersController extends Controller
 
     public function enrollDevices(Request $request)
     {
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to enroll.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $id = $request->input('id'); 
 
@@ -341,6 +342,17 @@ class ListOfOrdersController extends Controller
 
     public function unEnrollDevices(Request $request)
     {
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to return.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $id = $request->input('id'); 
 
@@ -403,15 +415,25 @@ class ListOfOrdersController extends Controller
                 $status_message = $response['errorMessage'];
             }
 
-            EnrollmentList::where('order_lines_id', $id)
-            ->update([
-                'transaction_id' => $transaction_id,
-                'dep_status' => $dep_status,
-                'enrollment_status' => $enrollment_status,
-                'status_message' => $status_message,
-                'returned_by' => auth()->user()->id,
-                'returned_date' => date('Y-m-d H:i:s'),
-            ]);
+            $enrollment = EnrollmentList::where('order_lines_id', $id)->first();
+
+            if($enrollment){
+                $enrollment->fill([
+                    'transaction_id' => $transaction_id,
+                    'dep_status' => $dep_status,
+                    'enrollment_status' => $enrollment_status,
+                    'status_message' => $status_message,
+                ]);
+
+                if($enrollment_status == self::enrollment_status['Returned']){
+                    $enrollment->fill([
+                        'returned_by' => auth()->user()->id,
+                        'returned_date' => now(),
+                    ]);
+                }
+
+                $enrollment->save();
+            }
 
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status ]);
 
@@ -450,6 +472,17 @@ class ListOfOrdersController extends Controller
 
     public function bulkEnrollDevices(Request $request)
     {
+
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to enroll.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $ids = $request->input('ids');
 
@@ -543,39 +576,22 @@ class ListOfOrdersController extends Controller
 
                 foreach ($requestData as $deviceData) {
 
-                    $enrollment =  EnrollmentList::query()
-                                    ->where('sales_order_no', $header_data->sales_order_no)
-                                    ->where('serial_number', $deviceData->serial_number)->first();
-                 
-
-                    if ($enrollment) {
-
-                        $enrollment->update([
-                            'transaction_id' => $transaction_id,
-                            'dep_status' => $dep_status,
-                            'enrollment_status' => $enrollment_status,
-                            'status_message' => $status_message,
-                            'updated_by' => auth()->user()->id,
-                            'updated_at' => now(),
-                        ]);
-
-                    } else {
-                        $insertData = [
-                            'order_lines_id' => $deviceData->order_line_id,
+                    EnrollmentList::updateOrCreate(
+                        [
                             'sales_order_no' => $header_data->sales_order_no,
-                            'item_code' => $header_data->digits_code,
-                            'serial_number' => $deviceData->serial_number,
-                            'transaction_id' => $transaction_id,
-                            'dep_status' => $dep_status,
+                            'serial_number'  => $deviceData->serial_number
+                        ],
+                        [
+                            'order_lines_id'    => $deviceData->order_line_id,
+                            'sales_order_no'    => $header_data->sales_order_no,
+                            'item_code'         => $header_data->digits_code,
+                            'serial_number'     => $deviceData->serial_number,
+                            'transaction_id'    => $transaction_id,
+                            'dep_status'        => $dep_status,
                             'enrollment_status' => $enrollment_status,
-                            'status_message' => $status_message,
-                            'created_by' => auth()->user()->id,
-                            'created_at' => now()
-                        ];
-
-                        EnrollmentList::insert($insertData);
-                    }
-               
+                            'status_message'    => $status_message,
+                        ],
+                    );
                 }
 
                 // Logs
@@ -639,6 +655,16 @@ class ListOfOrdersController extends Controller
     }
     public function bulkReturnDevices(Request $request)
     {
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to return.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
         try {
             $ids = $request->input('ids');
 
@@ -707,16 +733,28 @@ class ListOfOrdersController extends Controller
                 }
         
                 foreach ($requestData as $deviceData) {
-                    EnrollmentList::query()
+                    $enrollment = EnrollmentList::query()
                     ->where('sales_order_no', $header_data->sales_order_no)
-                    ->where('serial_number', $deviceData->serial_number)->update([
-                        'transaction_id' => $transaction_id,
-                        'dep_status' => $dep_status,
-                        'enrollment_status' => $enrollment_status,
-                        'status_message' => $status_message,
-                        'returned_by' => auth()->user()->id,
-                        'returned_date' => now(),
-                    ]);
+                    ->where('serial_number', $deviceData->serial_number)
+                    ->first();
+
+                    if($enrollment){
+                        $enrollment->fill([
+                            'transaction_id' => $transaction_id,
+                            'dep_status' => $dep_status,
+                            'enrollment_status' => $enrollment_status,
+                            'status_message' => $status_message,
+                        ]);
+    
+                        if($enrollment_status == self::enrollment_status['Returned']){
+                            $enrollment->fill([
+                                'returned_by' => auth()->user()->id,
+                                'returned_date' => now(),
+                            ]);
+                        }
+    
+                        $enrollment->save();
+                    }
                 }
         
                 // Logs

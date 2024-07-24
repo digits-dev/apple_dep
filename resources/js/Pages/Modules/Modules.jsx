@@ -36,7 +36,6 @@ const Modules = ({ modules, queryParams }) => {
     return (
         <>
             <Head title="Modules" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -122,7 +121,6 @@ const Modules = ({ modules, queryParams }) => {
                 >
                     <ModulForm onClose={handleCloseCreateModal} />
                 </Modal>
-            </AppContent>
         </>
     );
 };

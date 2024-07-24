@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import TableSearch from "../../Components/Table/TableSearch";
@@ -21,6 +21,7 @@ import { useToast } from "../../Context/ToastContext";
 import RowAction from "../../Components/Table/RowAction";
 
 const ItemMaster = ({ itemMaster, queryParams }) => {
+    const { auth } = usePage().props;
     const { setTitle } = useNavbarContext();
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -59,14 +60,16 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
     return (
         <>
             <Head title="Item Master" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
+
+                        {auth.access.isCreate &&   
                         <TableButton onClick={handleCreateModal}>
                             Add Item
-                        </TableButton>
+                        </TableButton>}
+                      
                         <Export 
                             path={`/item-master-export${window.location.search}`} 
                             handleToast={handleToast} />
@@ -154,6 +157,8 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                 >
                                     Brand Description
                                 </TableHeader>
+
+                                {auth.access.isUpdate &&   
                                 <TableHeader
                                     sticky="right"
                                     sortable={false}
@@ -161,7 +166,8 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                     justify="center"
                                 >
                                     Action
-                                </TableHeader>
+                                </TableHeader>}
+                               
                             </Row>
                         </Thead>
                         <Tbody data={itemMaster.data}>
@@ -211,6 +217,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                             {item.brand_description}
                                         </RowData>
 
+                                        {auth.access.isUpdate &&   
                                         <RowData
                                             isLoading={loading}
                                             center
@@ -247,7 +254,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                                 action="edit"
                                                 size="md"
                                             />
-                                        </RowData>
+                                        </RowData> }
                                     </Row>
                                 ))}
                         </Tbody>
@@ -259,10 +266,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         width="xl"
                     >
                         <ItemMasterForm
-                            handleShow={() => {
-                                handleCreateModal();
-                                handleToast("Item Add Success", "success");
-                            }}
+                            handleShow={handleCreateModal}
                         />
                     </Modal>
                     <Modal
@@ -272,17 +276,13 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         width="xl"
                     >
                         <ItemMasterForm
-                            handleShow={() => {
-                                handleUpdateModal();
-                                handleToast("Item Update Success", "success");
-                            }}
+                            handleShow={handleUpdateModal}
                             setUpdateFormValues={updateFormValues}
                             action="edit"
                         />
                     </Modal>
                     <Pagination paginate={itemMaster} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

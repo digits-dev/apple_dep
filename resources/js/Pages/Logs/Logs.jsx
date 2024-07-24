@@ -30,7 +30,6 @@ const Logs = ({ logs, queryParams }) => {
     return (
         <>
             <Head title="Item Master" />
-            <AppContent>
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -120,7 +119,6 @@ const Logs = ({ logs, queryParams }) => {
                     </TableContainer>
                     <Pagination paginate={logs} />
                 </ContentPanel>
-            </AppContent>
         </>
     );
 };

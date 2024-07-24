@@ -30,6 +30,7 @@ class CustomerController extends Controller
         if(!CommonHelpers::isView()) {
             return Inertia::render('Errors/RestrictionPage');
         }
+        
         $query = Customer::query();
 
         $query->when(request('search'), function ($query, $search) {
@@ -46,22 +47,67 @@ class CustomerController extends Controller
 
     public function store(Request $request){
 
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to add.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'customer_name' => 'required|unique:customers,customer_name',
         ]);
         
         Customer::create(['customer_name'=> $request->input('customer_name')]);
+
+        $data = [
+            'message' => "Successfully Added Customer.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
     public function update(Request $request, Customer $customer){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
         $request->validate([
             'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
             'status' => 'required',
         ]);
 
         $customer->update(['customer_name'=> $request->input('customer_name'), 'status' => $request->input('status')]);
+
+        $data = [
+            'message' => "Successfully Updated.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     public function bulkUpdate(Request $request){
+
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
 
         $ids = $request->input('ids');
         $status = $request->input('status');

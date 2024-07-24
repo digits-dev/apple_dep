@@ -1,4 +1,4 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import { NavbarContext } from "../../Context/NavbarContext";
 import { useContext } from "react";
@@ -156,15 +156,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 }
                             } else {
                                 handleToast(
@@ -201,15 +201,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
-                                    resetCheckbox();
                                     router.reload({ only: ["orderLines"] });
+
                                 }
                             } else {
                                 handleToast(
@@ -224,6 +224,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             "Error"
                         );
                     } finally {
+                        resetCheckbox();
                         setLoading(false);
                     }
                 }
@@ -329,7 +330,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     return (
         <>
             <Head title="Enroll/Return Devices" />
-            <AppContent>
                 <Modal show={loading} modalLoading />
                 <ContentPanel>
                     <div className="flex justify-between items-start text-gray-800 mb-8">
@@ -464,7 +464,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 >
                     <EnrollReturnDeviceActions />
                 </Modal>
-            </AppContent>
         </>
     );
 };
