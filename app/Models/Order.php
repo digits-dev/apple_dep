@@ -12,54 +12,81 @@ class Order extends Model
 
     protected $guarded = [];
 
-    protected $filterable = ['sales_order_no', 'customer_name', 'order_ref_no', 'dep_order', 'enrollment_status', 'order_date'];
+    protected $filterable = [
+        'sales_order_no',
+        'customer_name',
+        'order_ref_no',
+        'dep_order',
+        'enrollment_status',
+        'order_date'
+    ];
 
-    public function scopeSearchAndFilter($query, $request){
-
+    public function scopeSearchAndFilter($query, $request)
+    {
+        //search function
         if ($request->filled('search')) {
             $search = $request->input('search');
+
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
-                    if($field === 'enrollment_status') {
+                    if ($field === 'enrollment_status') {
                         $query->orWhereHas('status', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
                         });
+                    } else if ($field === 'order_date') {
+                        $query->orWhereDate($field, $search);
+                    } else {
+                        $query->orWhere($field, 'LIKE', "%$search%");
                     }
-                    $query->orWhere($field, 'LIKE', "%$search%");
                 }
             });
-        }
+        } else {
 
-        foreach ($this->filterable as $field) {
-            if ($request->filled($field)) {
-                $value = $request->input($field);
-                $query->where($field, 'LIKE', "%$value%");
+            //filter function
+            foreach ($this->filterable as $field) {
+                if ($request->filled($field)) {
+                    $value = $request->input($field);
+
+                    if (in_array($field, [ 'dep_order', 'enrollment_status' ])) {
+                        $query->where($field, '=', $value);
+
+                    } else if ($field === 'order_date') {
+                        $query->whereDate($field, $value);
+
+                    } else {
+                        $query->where($field, 'LIKE', "%$value%");
+
+                    }
+
+                }
             }
         }
-    
+
         return $query;
     }
 
-    public function status(){
+    public function status()
+    {
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
     }
 
 
-    public function scopeGetOrdersFromErp(){
+    public function scopeGetOrdersFromErp()
+    {
         $query = "
-        select 
-            
-            OEH.ORDER_NUMBER, 
-            OEH.CUST_PO_NUMBER, 
-            OEL.LINE_NUMBER,  
+        select
+
+            OEH.ORDER_NUMBER,
+            OEH.CUST_PO_NUMBER,
+            OEL.LINE_NUMBER,
             OEL.ORDERED_ITEM,
-            MSI.DESCRIPTION, 
-            MSI.ATTRIBUTE7 AS BRAND, 
+            MSI.DESCRIPTION,
+            MSI.ATTRIBUTE7 AS BRAND,
             MSI.ATTRIBUTE8 AS WH_CATEGORY,
             OEL.SHIPPED_QUANTITY,
-            CustName.PARTY_NAME as Customer_name, 
-            wnd.Confirm_Date, 
-            wnd.NAME as DR, 
+            CustName.PARTY_NAME as Customer_name,
+            wnd.Confirm_Date,
+            wnd.NAME as DR,
                 MTRL.ATTRIBUTE12 SERIAL1,
                 MTRL.ATTRIBUTE13 SERIAL2,
                 MTRL.ATTRIBUTE14 SERIAL3,
@@ -70,10 +97,10 @@ class Order extends Model
                 MTRL.ATTRIBUTE7 SERIAL8,
                 MTRL.ATTRIBUTE8 SERIAL9,
                 MTRL.ATTRIBUTE9 SERIAL10
-            
-            
-        from 
-            OE_ORDER_HEADERS_ALL OEH, 
+
+
+        from
+            OE_ORDER_HEADERS_ALL OEH,
             OE_ORDER_LINES_ALL OEL,
             org_organization_definitions OOD,
             wsh_delivery_details wdd,
@@ -83,14 +110,14 @@ class Order extends Model
             hz_cust_accounts CustAccount,
             MTL_TXN_REQUEST_LINES  MTRL,
             MTL_system_items MSI
-            
+
         where
 
             OEH.HEADER_ID = OEL.HEADER_ID(+)
             and OEH.SHIP_FROM_ORG_ID = OOD.ORGANIZATION_ID (+)
             and OEL.LINE_ID = wdd.source_line_id (+)
-            and wdd.delivery_detail_id = wda.delivery_detail_id(+) 
-            and wda.delivery_id = wnd.delivery_id(+) 
+            and wdd.delivery_detail_id = wda.delivery_detail_id(+)
+            and wda.delivery_id = wnd.delivery_id(+)
             and OEH.ORDER_CATEGORY_CODE != 'RETURN'
             AND wdd.CUSTOMER_ID = CustAccount.cust_account_id
             AND CustAccount.Party_id = CustName.PARTY_ID
@@ -99,8 +126,8 @@ class Order extends Model
             and wdd.OE_INTERFACED_FLAG = 'Y'
             AND wdd.MOVE_ORDER_LINE_ID = MTRL.LINE_ID
             AND OEL.INVENTORY_ITEM_ID = MSI.INVENTORY_ITEM_ID
-            AND MSI.ORGANIZATION_ID = OOD.ORGANIZATION_ID 
-            AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE' ,'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO') 
+            AND MSI.ORGANIZATION_ID = OOD.ORGANIZATION_ID
+            AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE' ,'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO')
             and wnd.Confirm_Date between TO_DATE('2024/07/10 00:00:00','RRRR/MM/DD HH24:MI:SS') and TO_DATE('2024/07/10 23:59:59','RRRR/MM/DD HH24:MI:SS')
             and (SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CRP' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DLR' or

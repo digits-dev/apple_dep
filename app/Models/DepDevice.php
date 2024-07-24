@@ -19,14 +19,17 @@ class DepDevice extends Model
         'enrollment_status_id'
     ];
 
-    public function scopeSearchAndFilter($query, $request){
+    public function scopeSearchAndFilter($query, $request)
+    {
+        //search function
         if ($request->filled('search')) {
             $search = $request->input('search');
+
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
-                   if ($field === 'customer_name') {
+                    if ($field === 'customer_name') {
                         $query->orWhere('orders.customer_name', 'LIKE', "%$search%");
-                    } else if($field === 'enrollment_status_id') {
+                    } else if ($field === 'enrollment_status_id') {
                         $query->orWhereHas('eStatus', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
                         });
@@ -35,29 +38,36 @@ class DepDevice extends Model
                     }
                 }
             });
-        }
+        } else {
 
-        foreach ($this->filterable as $field) {
-            if ($request->filled($field)) {
-                $value = $request->input($field);
-                 if ($field === 'customer_name') {
-                    $query->where('orders.customer_name', 'LIKE', "%$value%");
-                } else {
-                    $query->where('list_of_order_lines.' . $field, 'LIKE', "%$value%");
+            //filter function
+            foreach ($this->filterable as $field) {
+                if ($request->filled($field)) {
+                    $value = $request->input($field);
+
+                    if ($field === 'customer_name') {
+                        $query->where('orders.customer_name', 'LIKE', "%$value%");
+                    } else if ($field === 'enrollment_status_id') {
+                        $query->where('list_of_order_lines.' . $field, '=', $value);
+                    } else {
+                        $query->where('list_of_order_lines.' . $field, 'LIKE', "%$value%");
+                    }
                 }
             }
         }
-    
+
         return $query;
     }
-    public function eStatus(){
+    public function eStatus()
+    {
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');
     }
 
-    public function scopeGetData($query) {
+    public function scopeGetData($query)
+    {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
-        ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
-        ->select('list_of_order_lines.*', 'orders.customer_name', 'es.enrollment_status', 'es.color');
-     }
+            ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
+            ->select('list_of_order_lines.*', 'orders.customer_name', 'es.enrollment_status', 'es.color');
+    }
 
 }

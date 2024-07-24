@@ -62,14 +62,14 @@ const Modules = ({ modules, queryParams }) => {
                                     Name
                                 </TableHeader>
                                 <TableHeader
-                                    name="is_superadmin"
+                                    name="path"
                                     queryParams={queryParams}
                                     width="sm"
                                 >
                                     Path
                                 </TableHeader>
                                 <TableHeader
-                                    name="is_superadmin"
+                                    name="controller"
                                     queryParams={queryParams}
                                     width="sm"
                                 >
@@ -102,10 +102,10 @@ const Modules = ({ modules, queryParams }) => {
                                             {item.controller}
                                         </RowData>
                                         {/* <RowData center>
-                                            <RowAction action="edit" 
-                                                    href={`edit-module/${item.id}`}                                                                              
+                                            <RowAction action="edit"
+                                                    href={`edit-module/${item.id}`}
                                             >
-                                                
+
                                             </RowAction>
                                         </RowData> */}
                                     </Row>

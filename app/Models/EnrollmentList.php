@@ -13,19 +13,19 @@ class EnrollmentList extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'created_at' => 'datetime:Y-m-d',
-        'updated_at' => 'datetime:Y-m-d',
+        'created_at'    => 'datetime:Y-m-d',
+        'updated_at'    => 'datetime:Y-m-d',
         'returned_date' => 'datetime:Y-m-d',
     ];
 
     protected $fillable = [
-        'sales_order_no', 
-        'item_code', 
+        'sales_order_no',
+        'item_code',
         'serial_number',
         'transaction_id',
-        'dep_status', 
+        'dep_status',
         'status_message',
-        'enrollment_status', 
+        'enrollment_status',
         'order_lines_id',
         'created_at',
         'created_by',
@@ -34,7 +34,7 @@ class EnrollmentList extends Model
         'returned_date',
         'returned_by',
     ];
-    
+
     protected static function booted()
     {
         static::creating(function ($model) {
@@ -48,17 +48,20 @@ class EnrollmentList extends Model
         });
     }
 
-    public function scopeSearchAndFilter($query, $request){
-
+    public function scopeSearchAndFilter($query, $request)
+    {
+        //search function
         if ($request->filled('search')) {
             $search = $request->input('search');
+
             $query->where(function ($query) use ($search) {
                 foreach ($this->fillable as $field) {
-                    if (in_array($field, ['created_at', 'updated_at', 'returned_date'])) {
+                    if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
                         $query->orWhereDate($field, $search);
-                        
-                    } elseif (in_array($field, ['created_by', 'updated_by', 'returned_by'])) {
+
+                    } elseif (in_array($field, [ 'created_by', 'updated_by', 'returned_by' ])) {
                         $relation = Str::camel($field);
+
                         $query->orWhereHas($relation, function ($query) use ($search) {
                             $query->where('name', 'LIKE', "%$search%");
                         });
@@ -78,43 +81,50 @@ class EnrollmentList extends Model
                     }
                 }
             });
-        }
+        } else {
 
-        foreach ($this->fillable as $field) {
-            if (in_array($field, ['created_at', 'updated_at', 'returned_date']) && $request->filled($field)) {
-                $date = $request->input($field);
-                $query->whereDate('created_at', $date);
+            //filter function
+            foreach ($this->fillable as $field) {
+                if ($request->filled($field)) {
+                    $value = $request->input($field);
 
-            } elseif (in_array($field, ['created_by', 'updated_by', 'returned_by']) && $request->filled($field)) {
-                $value = $request->input($field);
-                $query->where($field, '=', $value);
+                    if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
+                        $query->whereDate('created_at', $value);
 
-            } else if ($request->filled($field)) {
-                $value = $request->input($field);
-                $query->where($field, 'LIKE', "%$value%");
+                    } elseif (in_array($field, [ 'created_by', 'updated_by', 'returned_by' ])) {
+                        $query->where($field, '=', $value);
 
+                    } else {
+                        $query->where($field, 'LIKE', "%$value%");
+                    }
+                }
             }
         }
-    
+
         return $query;
     }
 
     //ENROLLMENT STATUS
-    public function eStatus(){
+    public function eStatus()
+    {
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
     }
     //DEP STATUS
-    public function dStatus(){
+    public function dStatus()
+    {
         return $this->belongsTo(DepStatus::class, 'dep_status', 'id');
     }
 
-    public function createdBy(){
+    public function createdBy()
+    {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
-    public function updatedBy(){
+    public function updatedBy()
+    {
         return $this->belongsTo(User::class, 'updated_by', 'id');
     }
-    public function returnedBy(){
+    public function returnedBy()
+    {
         return $this->belongsTo(User::class, 'returned_by', 'id');
     }
 
