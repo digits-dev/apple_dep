@@ -37,14 +37,15 @@ class ModulsController extends Controller{
         $modules = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
         
         return Inertia::render('Modules/Modules', [
-            'modules' => $modules,
+            'modules' => Inertia::always($modules),
             'queryParams' => request()->query()
         ]);
     }
+    
 
     public function getAddModuls(){
         if(!CommonHelpers::isCreate()) {
-            CommonHelpers::redirect(CommonHelpers::adminPath(), trans("ad_default.denied_access"));
+            return Inertia::render('Errors/RestrictionPage');
         }
         $data = [];
         $data['page_title'] = "Add Module";
@@ -53,7 +54,7 @@ class ModulsController extends Controller{
 
     public function postAddSave(Request $request){
         if (!CommonHelpers::isCreate()) {
-            CommonHelpers::redirect(CommonHelpers::adminPath(), 'Access denied!');
+            return Inertia::render('Errors/RestrictionPage');
         }
 
         if($request->type === 'route'){
@@ -64,13 +65,13 @@ class ModulsController extends Controller{
             $viewContentName = preg_split('/(?=[A-Z])/',$request->controller);
 
             if(!isset($viewFolderName[1]) && !isset($viewFolderName[2])){
-                return json_encode(["message"=>"Invalid Controller name! please refer tot this example(SampleModule)", "type"=>"danger"]);
+                return json_encode(['message'=>'Invalid Controller name! please refer tot this example(SampleModule)', 'status'=>'danger']);
             }
             $finalViewFolderName = strtolower($viewFolderName[1])."-".strtolower($viewFolderName[2]);
             $finalViewContentName = strtolower($viewContentName[1])."-".strtolower($viewContentName[2]).'-'.'Controller';
             
             if(file_exists(base_path('app/Http/Controllers/'.$folderName.'/'.$contentName.'.php'))){
-                return json_encode(["message"=>"Controller already exist!", "type"=>"danger"]);
+                return json_encode(['message'=>'Controller already exist!', 'status'=>'danger']);
             }else{
                 //MAKE FOLDER
                 $folder = base_path('app/Http/Controllers/'.$folderName);
@@ -81,14 +82,14 @@ class ModulsController extends Controller{
                 $php = trim($php);
                 file_put_contents($path.$contentName.'.php', $php);
                 //MAKE FOLDER VIEW CONTENT
-                $makeFolderViewContent = base_path('resources/js/Pages/'.$viewFolderName[1]);
+                $makeFolderViewContent = base_path('resources/js/Pages/'.$folderName);
                 File::makeDirectory($makeFolderViewContent, $mode = 0777, true, true);
 
                 //MAKE FILE CONTROLLER
-                $pathViewController = base_path("resources/js/Pages/".$viewFolderName[1]."/");
-                $viewContent = self::viewContent($viewFolderName[1]);
+                $pathViewController = base_path("resources/js/Pages/".$folderName."/");
+                $viewContent = self::viewContent($folderName);
                 $viewContent = trim($viewContent);
-                file_put_contents($pathViewController.$viewFolderName[1].'.jsx', $viewContent);
+                file_put_contents($pathViewController.$folderName.'.jsx', $viewContent);
 
                 //CREATE MODULE
                 DB::table('adm_modules')->updateOrInsert([
@@ -127,42 +128,38 @@ class ModulsController extends Controller{
                     //CREATE MENUS PRIVILEGE
                     DB::table('adm_menus_privileges')->insert(['id_adm_menus' => $menusId, 'id_adm_privileges' => CommonHelpers::myPrivilegeId()]);
                 }
-
-                return json_encode(["message"=>"Created successfully!", "type"=>"success"]);
             }
-            
+            return json_encode(['message'=>'Created successfully!', 'status'=>'success']);
         }else{
             //CREATE MENUS
             $isExist = DB::table('adm_menuses')->where('name',$request->name)->exists();
-            if(!$isExist){
-                $menusId = DB::table('adm_menuses')->insertGetId(
-                    [
-                        'name'                => $request->name,
-                        'type'                => 'URL',
-                        'icon'                => $request->icon,
-                        'path'                => '#',
-                        'slug'                => NULL,
-                        'color'               => NULL,
-                        'parent_id'           => 0,
-                        'is_active'           => 1,
-                        'is_dashboard'        => 0,
-                        'id_adm_privileges'    => 1,
-                        'sorting'             => 0,
-                        'created_at'          => date('Y-m-d H:i:s')
-                    ]
-                );
-                //CREATE MENUS PRIVILEGE
-                DB::table('adm_menus_privileges')->insert(['id_adm_menus' => $menusId, 'id_adm_privileges' => CommonHelpers::myPrivilegeId()]);
-            }
-            return json_encode(["message"=>"Created successfully!", "type"=>"success"]);
-
+            // if(!$isExist){
+            //     $menusId = DB::table('adm_menuses')->insertGetId(
+            //         [
+            //             'name'                => $request->name,
+            //             'type'                => 'URL',
+            //             'icon'                => $request->icon,
+            //             'path'                => '#',
+            //             'slug'                => NULL,
+            //             'color'               => NULL,
+            //             'parent_id'           => 0,
+            //             'is_active'           => 1,
+            //             'is_dashboard'        => 0,
+            //             'id_adm_privileges'    => 1,
+            //             'sorting'             => 0,
+            //             'created_at'          => date('Y-m-d H:i:s')
+            //         ]
+            //     );
+            //     //CREATE MENUS PRIVILEGE
+            //     DB::table('adm_menus_privileges')->insert(['id_adm_menus' => $menusId, 'id_adm_privileges' => CommonHelpers::myPrivilegeId()]);
+            // }
+            return json_encode(['message'=>'Created successfully!', 'status'=>'success']);
         }
-
     }
 
     public function controllerContent($controllerName, $finalViewFileName,$finalViewFolderName,$finalViewContentName){
         return '<?php
-                    namespace App\Http\Controllers\NameOfFolder;
+                   namespace App\Http\Controllers\\' . $finalViewFileName . ';
                     use App\Helpers\CommonHelpers;
                     use App\Http\Controllers\Controller;
                     use Illuminate\Http\Request;
@@ -172,11 +169,11 @@ class ModulsController extends Controller{
                     use Inertia\Inertia;
                     use Inertia\Response;
                     use DB;
-                class '.$controllerName.' extends Controller{
-                    public function getIndex(){
-                        return Inertia("'.$finalViewFolderName.'/'.$finalViewContentName.'");
+                    class '.$controllerName.' extends Controller{
+                        public function getIndex(){
+                            return Inertia("'.$finalViewFileName.'/'.$finalViewFileName.'");
+                        }
                     }
-                }
                 ?>';
     }
 
@@ -186,7 +183,7 @@ class ModulsController extends Controller{
         import React, { useState } from "react";
         const '.$name.' = () => {
           return(
-            <></>
+            <><div>This is module area</div></>
            );
         };
         export default '.$name.';

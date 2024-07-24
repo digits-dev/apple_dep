@@ -58,18 +58,16 @@ const AddPrivileges = ({ moduleses, row }) => {
     }, []);
 
     useEffect(()=>{
-        modules.map(item => {
-            setSelectAll((prevState) => ({
-                ...prevState,
-                is_visible: item.roles?.is_visible,
-                is_create: item.roles?.is_create,
-                is_read: item.roles?.is_read,
-                is_edit: item.roles?.is_edit,
-                is_delete: item.roles?.is_delete,
-                is_void: item.roles?.is_void,
-                is_override: item.roles?.is_override
-            }));
-        });
+        setSelectAll((prevState) => ({
+            ...prevState,
+            is_visible: modules.every(item => item.roles?.is_visible == 1) ? 1 : 0,
+            is_create: modules.every(item => item.roles?.is_create == 1) ? 1 : 0,
+            is_read: modules.every(item => item.roles?.is_read == 1) ? 1 : 0,
+            is_edit: modules.every(item => item.roles?.is_edit == 1) ? 1 : 0,
+            is_delete: modules.every(item => item.roles?.is_delete == 1) ? 1 : 0,
+            is_void: modules.every(item => item.roles?.is_void == 1) ? 1 : 0,
+            is_override: modules.every(item => item.roles?.is_override == 1) ? 1 : 0
+        }));
     },[modules]);
     
     const handleSelectAll = (e, permission) => {
