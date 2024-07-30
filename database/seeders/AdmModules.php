@@ -245,11 +245,11 @@ class AdmModules extends Seeder
             [
 
                 'created_at' => date('Y-m-d H:i:s'),
-                'name' => 'ERP Pull Error',
-                'icon' => 'fa fa-list',
-                'path' => 'erp_pull_erp',
-                'table_name' => 'pull_erp_erros',
-                'controller' => 'PullErrors\PullErrorsController',
+                'name' => 'DEP Company',
+                'icon' => 'fa-solid fa-suitcase',
+                'path' => 'dep_companies',
+                'table_name' => 'dep_companies',
+                'controller' => 'DepCompany\DepCompanyController',
                 'is_protected' => 0,
                 'is_active' => 1,
             ]

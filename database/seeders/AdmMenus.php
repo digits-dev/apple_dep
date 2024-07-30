@@ -151,7 +151,7 @@ class AdmMenus extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
-                'sorting'           => 3
+                'sorting'           => 6
             ]
         );
 
@@ -228,7 +228,26 @@ class AdmMenus extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_adm_privileges' => 1,
-                'sorting'           => 1
+                'sorting'           => 7
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
+                'name'              => 'DEP Company',
+            ],
+            [
+                'name'              => 'DEP Company',
+                'type'              => 'Route',
+                'path'              => 'DepCompany\DepCompanyControllerGetIndex',
+                'slug'              => 'dep_company',
+                'color'             => NULL,
+                'icon'              => 'fa-solid fa-suitcase',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 8
             ]
         );
     }
