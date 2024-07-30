@@ -28,7 +28,8 @@ import axios from "axios";
 const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     queryParams = queryParams || {};
     const { auth } = usePage().props;
-    const accessPrivileges = auth.access.isCreate || auth.access.isVoid || auth.access.isOverride;
+    const accessPrivileges =
+        auth.access.isCreate || auth.access.isVoid || auth.access.isOverride;
     const [loading, setLoading] = useState(false);
     const [showEditActionModal, setShowEditActionModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
@@ -44,10 +45,11 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         }, 5);
     }, []);
 
+    const [loadSpinner, setLoadSpinner] = useState(false);
 
     const [updateFormValues, setUpdateFormValues] = useState({
         sales_order_no: "",
-    customer_name: "",
+        customer_name: "",
         order_ref_no: "",
         order_date: "",
     });
@@ -62,31 +64,32 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
             iconColor: "#000000",
             reverseButtons: true,
         }).then(async (result) => {
-            if (result.isConfirmed) {  
-                setLoading(true);              
-            try {
-                const response = await axios.post(`/list_of_orders/${orderId}/cancel`);
+            if (result.isConfirmed) {
+                setLoading(true);
+                try {
+                    const response = await axios.post(
+                        `/list_of_orders/${orderId}/cancel`
+                    );
 
-                if (response.data.status === "success") {
-                    handleToast(response.data.message, "success");
-                } else {
-                    handleToast(response.data.message, "error");
+                    if (response.data.status === "success") {
+                        handleToast(response.data.message, "success");
+                    } else {
+                        handleToast(response.data.message, "error");
+                    }
+
+                    router.reload({ only: ["orders"] });
+                } catch (error) {
+                    handleToast(
+                        "Something went wrong, please try again later.",
+                        "Error"
+                    );
+                } finally {
+                    setLoading(false);
+                    handleCloseEditModal();
                 }
-        
-                router.reload({ only: ["orders"] });
-
-            } catch (error) {
-                handleToast(
-                    "Something went wrong, please try again later.",
-                    "Error"
-                );
-            } finally {
-                setLoading(false);
-                handleCloseEditModal();
-            }
             }
         });
-    }
+    };
 
     const handleOverrideModal = () => {
         setShowOverrideModal(!showOverrideModal);
@@ -100,9 +103,36 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         setShowEditActionModal(true);
     };
 
+    const voidOrders = async (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to void this order?",
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#000000",
+            icon: "question",
+            iconColor: "#000000",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setLoadSpinner(true);
+                handleCloseEditModal();
+                try {
+                    const response = await axios.post(`/list_of_orders/void`, {
+                        id: orderId,
+                    });
+                    console.log(response.data.message);
+                    handleToast(response.data.message, response.data.status);
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    setLoadSpinner(false);
+                }
+            }
+        });
+    };
+
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
-
 
     const ListofOrdersEditActions = () => {
         return (
@@ -148,6 +178,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 href="#"
+                                onClick={voidOrders}
                             >
                                 Void Order
                             </Link>
@@ -196,223 +227,228 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="List of Orders" />
-                <ContentPanel>
-                    <TopPanel>
-                        <TableSearch queryParams={queryParams} />
-                        <PerPage queryParams={queryParams} />
-                        <Filters onSubmit={handleFilterSubmit}>
-                            <InputComponent
-                                name="sales_order_no"
-                                value={filters.sales_order_no}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                name="customer_name"
-                                value={filters.customer_name}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                name="order_ref_no"
-                                value={filters.order_ref_no}
-                                onChange={handleFilter}
-                            />
-                            <Select
-                                name="dep_order"
-                                options={[
-                                    { name: "Yes", id: 1 },
-                                    { name: "No", id: 0 },
-                                ]}
-                                onChange={handleFilter}
-                            />
-                            <Select
-                                name="enrollment_status"
-                                options={enrollmentStatuses}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                type="date"
-                                name="order_date"
-                                value={filters.order_date}
-                                onChange={handleFilter}
-                            />
-                        </Filters>
-                        <Export
-                            path={`/list-of-orders-export${window.location.search}`}
-                            handleToast={handleToast}
+            <Modal show={loadSpinner} modalLoading></Modal>
+            <ContentPanel>
+                <TopPanel>
+                    <TableSearch queryParams={queryParams} />
+                    <PerPage queryParams={queryParams} />
+                    <Filters onSubmit={handleFilterSubmit}>
+                        <InputComponent
+                            name="sales_order_no"
+                            value={filters.sales_order_no}
+                            onChange={handleFilter}
                         />
-                    </TopPanel>
-
-                    <TableContainer>
-                        <Thead>
-                            <Row>
-                                <TableHeader
-                                    name="sales_order_no"
-                                    queryParams={queryParams}
-                                    width="md"
-                                    sticky="left"
-                                    justify="center"
-                                >
-                                    Sales Order #
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="customer_name"
-                                    queryParams={queryParams}
-                                    width="md"
-                                >
-                                    Customer Name
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="order_ref_no"
-                                    queryParams={queryParams}
-                                    width="md"
-                                >
-                                    Order Ref #
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="dep_order"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                >
-                                    DEP Order
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="enrollment_status"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                    width="lg"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="order_date"
-                                    queryParams={queryParams}
-                                >
-                                    Order Date
-                                </TableHeader>
-
-                                <TableHeader
-                                    sortable={false}
-                                    width="auto"
-                                    sticky="right"
-                                >
-                                    Action
-                                </TableHeader>
-                            </Row>
-                        </Thead>
-
-                        <Tbody data={orders.data}>
-                            {orders &&
-                                orders.data.map((item, index) => (
-                                    <Row key={item.sales_order_no + index}>
-                                        <RowData
-                                            isLoading={loading}
-                                            center
-                                            sticky="left"
-                                        >
-                                            {item.sales_order_no}
-                                        </RowData>
-
-                                        <RowData isLoading={loading}>
-                                            {item?.customer?.customer_name}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.order_ref_no}
-                                        </RowData>
-                                        <RowData isLoading={loading} center>
-                                            {item.dep_order ? "Yes" : "No"}
-                                        </RowData>
-
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item?.status?.color}
-                                            center
-                                        >
-                                            {item?.status?.enrollment_status}
-                                        </RowStatus>
-
-                                        <RowData isLoading={loading}>
-                                            {item.order_date}
-                                        </RowData>
-
-                                        <RowData
-                                            isLoading={loading}
-                                            sticky="right"
-                                            center
-                                        >
-                                            <RowActions>
-                                                <RowAction
-                                                    href={
-                                                        orders.path +
-                                                        `/${item.id}`
-                                                    }
-                                                    action="view"
-                                                    size="md"
-                                                />
-
-                                                {accessPrivileges  && item.enrollment_status != 9 && 
-                                                <RowAction
-                                                    type="button"
-                                                    onClick={() => {
-                                                        handleOpenEditModal();
-                                                        setOrderPath(
-                                                            orders.path
-                                                        );
-                                                        setOrderId(item.id);
-                                                        setIsVoidable(
-                                                            item.isVoidable
-                                                        );
-                                                        setUpdateFormValues({
-                                                            order_id: item.id,
-                                                            sales_order_no:
-                                                                item.sales_order_no,
-                                                            customer_name:
-                                                                item.customer_name,
-                                                            order_ref_no:
-                                                                item.order_ref_no,
-                                                            order_date:
-                                                                item.order_date,
-                                                        });
-                                                    }}
-                                                    action="edit"
-                                                    size="md"
-                                                />}
-
-                                                
-                                            </RowActions>
-                                        </RowData>
-                                    </Row>
-                                ))}
-                        </Tbody>
-                    </TableContainer>
-
-                    <Pagination paginate={orders} />
-                </ContentPanel>
-                <Modal
-                    show={showEditActionModal}
-                    onClose={handleCloseEditModal}
-                    title="Edit Actions"
-                >
-                    <ListofOrdersEditActions />
-                </Modal>
-                <Modal
-                    show={showOverrideModal}
-                    onClose={handleOverrideModal}
-                    title="Override Order"
-                >
-                    <OverrideOrderForm
-                        handleShow={() => {
-                            handleOverrideModal();
-                            handleToast("Order Override Successful", "success");
-                        }}
-                        updateFormValues={updateFormValues}
-                        action="edit"
+                        <InputComponent
+                            name="customer_name"
+                            value={filters.customer_name}
+                            onChange={handleFilter}
+                        />
+                        <InputComponent
+                            name="order_ref_no"
+                            value={filters.order_ref_no}
+                            onChange={handleFilter}
+                        />
+                        <Select
+                            name="dep_order"
+                            options={[
+                                { name: "Yes", id: 1 },
+                                { name: "No", id: 0 },
+                            ]}
+                            onChange={handleFilter}
+                        />
+                        <Select
+                            name="enrollment_status"
+                            options={enrollmentStatuses}
+                            onChange={handleFilter}
+                        />
+                        <InputComponent
+                            type="date"
+                            name="order_date"
+                            value={filters.order_date}
+                            onChange={handleFilter}
+                        />
+                    </Filters>
+                    <Export
+                        path={`/list-of-orders-export${window.location.search}`}
+                        handleToast={handleToast}
                     />
-                </Modal>
+                </TopPanel>
+
+                <TableContainer>
+                    <Thead>
+                        <Row>
+                            <TableHeader
+                                name="sales_order_no"
+                                queryParams={queryParams}
+                                width="md"
+                                sticky="left"
+                                justify="center"
+                            >
+                                Sales Order #
+                            </TableHeader>
+
+                            <TableHeader
+                                name="customer_name"
+                                queryParams={queryParams}
+                                width="md"
+                            >
+                                Customer Name
+                            </TableHeader>
+
+                            <TableHeader
+                                name="order_ref_no"
+                                queryParams={queryParams}
+                                width="md"
+                            >
+                                Order Ref #
+                            </TableHeader>
+
+                            <TableHeader
+                                name="dep_order"
+                                queryParams={queryParams}
+                                justify="center"
+                            >
+                                DEP Order
+                            </TableHeader>
+
+                            <TableHeader
+                                name="enrollment_status"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
+
+                            <TableHeader
+                                name="order_date"
+                                queryParams={queryParams}
+                            >
+                                Order Date
+                            </TableHeader>
+
+                            <TableHeader
+                                sortable={false}
+                                width="auto"
+                                sticky="right"
+                            >
+                                Action
+                            </TableHeader>
+                        </Row>
+                    </Thead>
+
+                    <Tbody data={orders.data}>
+                        {orders &&
+                            orders.data.map((item, index) => (
+                                <Row key={item.sales_order_no + index}>
+                                    <RowData
+                                        isLoading={loading}
+                                        center
+                                        sticky="left"
+                                    >
+                                        {item.sales_order_no}
+                                    </RowData>
+
+                                    <RowData isLoading={loading}>
+                                        {item?.customer?.customer_name}
+                                    </RowData>
+                                    <RowData isLoading={loading}>
+                                        {item.order_ref_no}
+                                    </RowData>
+                                    <RowData isLoading={loading} center>
+                                        {item.dep_order ? "Yes" : "No"}
+                                    </RowData>
+
+                                    <RowStatus
+                                        isLoading={loading}
+                                        color={item?.status?.color}
+                                        center
+                                    >
+                                        {item?.status?.enrollment_status}
+                                    </RowStatus>
+
+                                    <RowData isLoading={loading}>
+                                        {item.order_date}
+                                    </RowData>
+
+                                    <RowData
+                                        isLoading={loading}
+                                        sticky="right"
+                                        center
+                                    >
+                                        <RowActions>
+                                            <RowAction
+                                                href={
+                                                    orders.path + `/${item.id}`
+                                                }
+                                                action="view"
+                                                size="md"
+                                            />
+
+                                            {accessPrivileges &&
+                                                ![8, 9].includes(
+                                                    item.enrollment_status
+                                                ) && (
+                                                    <RowAction
+                                                        type="button"
+                                                        onClick={() => {
+                                                            handleOpenEditModal();
+                                                            setOrderPath(
+                                                                orders.path
+                                                            );
+                                                            setOrderId(item.id);
+                                                            setIsVoidable(
+                                                                item.isVoidable
+                                                            );
+                                                            setUpdateFormValues(
+                                                                {
+                                                                    order_id:
+                                                                        item.id,
+                                                                    sales_order_no:
+                                                                        item.sales_order_no,
+                                                                    customer_name:
+                                                                        item.customer_name,
+                                                                    order_ref_no:
+                                                                        item.order_ref_no,
+                                                                    order_date:
+                                                                        item.order_date,
+                                                                }
+                                                            );
+                                                        }}
+                                                        action="edit"
+                                                        size="md"
+                                                    />
+                                                )}
+                                        </RowActions>
+                                    </RowData>
+                                </Row>
+                            ))}
+                    </Tbody>
+                </TableContainer>
+
+                <Pagination paginate={orders} />
+            </ContentPanel>
+            <Modal
+                show={showEditActionModal}
+                onClose={handleCloseEditModal}
+                title="Edit Actions"
+            >
+                <ListofOrdersEditActions />
+            </Modal>
+            <Modal
+                show={showOverrideModal}
+                onClose={handleOverrideModal}
+                title="Override Order"
+            >
+                <OverrideOrderForm
+                    handleShow={() => {
+                        handleOverrideModal();
+                        handleToast("Order Override Successful", "success");
+                    }}
+                    updateFormValues={updateFormValues}
+                    action="edit"
+                />
+            </Modal>
         </>
     );
 };

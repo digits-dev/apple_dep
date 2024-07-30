@@ -121,6 +121,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
     Route::post('/list_of_orders/bulk-return', [ListOfOrdersController::class, 'bulkReturnDevices']);
     Route::post('/list_of_orders/{order}/cancel', [ListOfOrdersController::class, 'cancelOrder']);
+    Route::post('/list_of_orders/void', [ListOfOrdersController::class, 'void']);
+
 
     //DEP DEVICES
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);

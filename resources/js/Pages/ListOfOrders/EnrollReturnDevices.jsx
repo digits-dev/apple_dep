@@ -47,7 +47,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [orderId, setOrderId] = useState(null);
-    const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+    const [enrollmentStatus, setEnrollmentStatus] = useState();
     const [enrollmentExist, setEnrollmentExist] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -158,14 +158,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.status
                                     );
                                     router.reload({ only: ["orderLines"] });
-
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
                                     router.reload({ only: ["orderLines"] });
-
                                 }
                             } else {
                                 handleToast(
@@ -203,14 +201,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                         response.data.status
                                     );
                                     router.reload({ only: ["orderLines"] });
-
                                 } else {
                                     handleToast(
                                         response.data.message,
                                         response.data.status
                                     );
                                     router.reload({ only: ["orderLines"] });
-
                                 }
                             } else {
                                 handleToast(
@@ -332,121 +328,122 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     return (
         <>
             <Head title="Enroll/Return Devices" />
-                <Modal show={loading} modalLoading />
-                <ContentPanel>
-                    <div className="flex justify-between items-start text-gray-800 mb-8">
-                        <div className="flex gap-10">
-                            <div className="font-bold">
-                                <p>Customer:</p>
-                                <p>Sales Order #:</p>
-                                <p>Order Ref #:</p>
-                                <p>Order Date:</p>
-                            </div>
-                            <div className="font-medium">
-                                <p>{order.customer_name}</p>
-                                <p>{order.sales_order_no}</p>
-                                <p>{order.order_ref_no}</p>
-                                <p>{order.order_date}</p>
-                            </div>
+            <Modal show={loading} modalLoading />
+            <ContentPanel>
+                <div className="flex justify-between items-start text-gray-800 mb-8">
+                    <div className="flex gap-10">
+                        <div className="font-bold">
+                            <p>Customer:</p>
+                            <p>Sales Order #:</p>
+                            <p>Order Ref #:</p>
+                            <p>Order Date:</p>
                         </div>
-
-                        <Link href="/list_of_orders" as="button">
-                            <span className="bg-primary text-white rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 hover:opacity-80">
-                                Back
-                            </span>
-                        </Link>
+                        <div className="font-medium">
+                            <p>{order.customer_name}</p>
+                            <p>{order.sales_order_no}</p>
+                            <p>{order.order_ref_no}</p>
+                            <p>{order.order_date}</p>
+                        </div>
                     </div>
 
-                    <TopPanel>
-                        <BulkActions
-                            actions={bulkActions}
-                            onActionSelected={handleActionSelected}
-                        />
-                    </TopPanel>
+                    <Link href="/list_of_orders" as="button">
+                        <span className="bg-primary text-white rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 hover:opacity-80">
+                            Back
+                        </span>
+                    </Link>
+                </div>
 
-                    <TableContainer>
-                        <Thead>
-                            <Row>
-                                <TableHeader
-                                    width="sm"
-                                    sortable={false}
-                                    justify="center"
-                                >
+                <TopPanel>
+                    <BulkActions
+                        actions={bulkActions}
+                        onActionSelected={handleActionSelected}
+                    />
+                </TopPanel>
+
+                <TableContainer>
+                    <Thead>
+                        <Row>
+                            <TableHeader
+                                width="sm"
+                                sortable={false}
+                                justify="center"
+                            >
+                                <Checkbox
+                                    type="checkbox"
+                                    name="selectAll"
+                                    id="selectAll"
+                                    handleClick={handleSelectAll}
+                                    isChecked={selectAll}
+                                />
+                            </TableHeader>
+                            <TableHeader
+                                name="digits_code"
+                                queryParams={queryParams}
+                            >
+                                Item Code
+                            </TableHeader>
+                            <TableHeader
+                                name="item_description"
+                                queryParams={queryParams}
+                            >
+                                Item Description
+                            </TableHeader>
+                            <TableHeader
+                                name="serial_number"
+                                queryParams={queryParams}
+                            >
+                                Serial Number
+                            </TableHeader>
+                            <TableHeader
+                                name="dep_company_id"
+                                width="lg"
+                                queryParams={queryParams}
+                            >
+                                DEP Company
+                            </TableHeader>
+                            <TableHeader
+                                name="enrollment_status_id"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
+                            <TableHeader sortable={false} justify="center">
+                                Action
+                            </TableHeader>
+                        </Row>
+                    </Thead>
+
+                    <Tbody data={orderLines}>
+                        {orderLines?.map((order, index) => (
+                            <Row key={order.serial_number}>
+                                <RowData center>
                                     <Checkbox
                                         type="checkbox"
-                                        name="selectAll"
-                                        id="selectAll"
-                                        handleClick={handleSelectAll}
-                                        isChecked={selectAll}
+                                        id={order.id}
+                                        handleClick={() =>
+                                            handleCheckboxChange(order.id)
+                                        }
+                                        isChecked={selectedItems.includes(
+                                            order.id
+                                        )}
                                     />
-                                </TableHeader>
-                                <TableHeader
-                                    name="digits_code"
-                                    queryParams={queryParams}
-                                >
-                                    Item Code
-                                </TableHeader>
-                                <TableHeader
-                                    name="item_description"
-                                    queryParams={queryParams}
-                                >
-                                    Item Description
-                                </TableHeader>
-                                <TableHeader
-                                    name="serial_number"
-                                    queryParams={queryParams}
-                                >
-                                    Serial Number
-                                </TableHeader>
-                                <TableHeader
-                                    name="dep_company_id"
-                                    width="lg"
-                                    queryParams={queryParams}
-                                >
-                                    DEP Company
-                                </TableHeader>
-                                <TableHeader
-                                    name="enrollment_status_id"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                    width="lg"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
-                                <TableHeader sortable={false} justify="center">
-                                    Action
-                                </TableHeader>
-                            </Row>
-                        </Thead>
+                                </RowData>
+                                <RowData>{order.digits_code}</RowData>
+                                <RowData>{order.item_description}</RowData>
+                                <RowData>{order.serial_number}</RowData>
+                                <RowData>{order.dep_company_id}</RowData>
 
-                        <Tbody data={orderLines}>
-                            {orderLines?.map((order, index) => (
-                                <Row key={order.serial_number}>
-                                    <RowData center>
-                                        <Checkbox
-                                            type="checkbox"
-                                            id={order.id}
-                                            handleClick={() =>
-                                                handleCheckboxChange(order.id)
-                                            }
-                                            isChecked={selectedItems.includes(
-                                                order.id
-                                            )}
-                                        />
-                                    </RowData>
-                                    <RowData>{order.digits_code}</RowData>
-                                    <RowData>{order.item_description}</RowData>
-                                    <RowData>{order.serial_number}</RowData>
-                                    <RowData>{order.dep_company_id}</RowData>
-
-                                    <RowStatus
-                                        isLoading={loading}
-                                        color={order?.status?.color}
-                                        center
-                                    >
-                                        {order?.status?.enrollment_status}
-                                    </RowStatus>
-                                    <RowData center>
+                                <RowStatus
+                                    isLoading={loading}
+                                    color={order?.status?.color}
+                                    center
+                                >
+                                    {order?.status?.enrollment_status}
+                                </RowStatus>
+                                <RowData center>
+                                    {order?.status?.id != 8 && (
                                         <RowAction
                                             action="add"
                                             type="button"
@@ -461,19 +458,16 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                                 // );
                                             }}
                                         />
-                                    </RowData>
-                                </Row>
-                            ))}
-                        </Tbody>
-                    </TableContainer>
-                </ContentPanel>
-                <Modal
-                    show={showModal}
-                    onClose={handleCloseModal}
-                    title="Actions"
-                >
-                    <EnrollReturnDeviceActions />
-                </Modal>
+                                    )}
+                                </RowData>
+                            </Row>
+                        ))}
+                    </Tbody>
+                </TableContainer>
+            </ContentPanel>
+            <Modal show={showModal} onClose={handleCloseModal} title="Actions">
+                <EnrollReturnDeviceActions />
+            </Modal>
         </>
     );
 };

@@ -36,7 +36,7 @@ class ListOfOrdersController extends Controller
         'Returned' => 5,
         'Return Error' => 6,
         'Partially Enrolled' => 7,
-        'Voided' => 9,
+        'Voided' => 8,
         'Canceled' => 9,
     ];
 
@@ -879,5 +879,140 @@ class ListOfOrdersController extends Controller
         return response()->json($data);
     }
 
+
+    public function void(Request $request)
+    {
+        if(!CommonHelpers::isCreate()) {
+            return Inertia::render('Errors/RestrictionPage');
+        }
+
+        $id = $request->input('id');
+
+        $enrolledIds = OrderLines::where('order_id', $id)
+                ->whereIn('enrollment_status_id', [3, 6])
+                ->pluck('id')->toArray();
+
+        // $pendingIds = OrderLines::where('order_id', $id)
+        //         ->whereNotIn('enrollment_status_id',[3, 6] )
+        //         ->pluck('id')->toArray();
+
+        $enrolledDevices = OrderLines::whereIn('list_of_order_lines.id', $enrolledIds)
+                ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                ->get();
+        
+        $header_data = $enrolledDevices->first();
+
+        $devicePayload = [];
+
+        foreach ($enrolledDevices as $key => $orderData) {
+            $devicePayload[$key] = [
+                'deviceId' => $orderData->sales_order_no,
+                'assetTag' => $orderData->serial_number,
+            ];
+        }
+
+        $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+
+        $deliveryPayload = [
+            'deliveryNumber' => $header_data->dr_number,
+            'shipDate' => $formattedDate,
+            'devices' => $devicePayload,
+        ];
+
+        $orderPayload = [
+            'orderNumber' => $header_data->sales_order_no,
+            'orderDate' => $formattedDate,
+            'orderType' => 'RE',
+            'customerId' => $header_data->customer_name,
+            'poNumber' => $header_data->order_ref_no,
+            'deliveries' => [$deliveryPayload],
+        ];
+
+        $payload = [
+            'requestContext' => [
+                'shipTo' => config('services.apple_api.ship_to'),
+                'timeZone' => config('services.apple_api.timezone'),
+                'langCode' => config('services.apple_api.langCode'),
+            ],
+            'transactionId' => 'TXN_' . uniqid(),
+            'depResellerId' => config('services.apple_api.ship_to'),
+            'orders' => [$orderPayload],
+        ];
+
+        $response = $this->appleService->unenrollDevices($payload);
+
+        if (isset($response['enrollDevicesResponse'])) {
+            $transaction_id = $response['deviceEnrollmentTransactionId'];
+            $dep_status = self::dep_status['Success'];
+            $status_message = $response['enrollDevicesResponse']['statusMessage'];
+
+            OrderLines::where('order_id', $header_data->order_id)->update(['enrollment_status_id' => self::enrollment_status['Voided']]);
+
+        } else {
+            $transaction_id = $response['transactionId'];
+            $dep_status = self::dep_status['GRX-50025'];
+            $status_message = $response['errorMessage'];
+
+            OrderLines::where('id', $header_data->order_id)->update(['enrollment_status_id' => self::enrollment_status['Return Error']]);
+
+        }
+
+
+        // for enrolled devices
+        foreach ($enrolledDevices as $deviceData) {
+            $enrollment = EnrollmentList::query()
+            ->where('sales_order_no', $header_data->sales_order_no)
+            ->where('serial_number', $deviceData->serial_number)
+            ->first();
+
+            if($enrollment){
+                $enrollment->fill([
+                    'transaction_id' => $transaction_id,
+                    'dep_status' => $dep_status,
+                    'enrollment_status' => self::enrollment_status['Voided'],
+                    'status_message' => $status_message,
+                ]);
+
+                $enrollment->save();
+            }
+        }
+
+          // Logs
+          $orderId = $header_data->order_id;
+          $encodedPayload = json_encode($payload);
+          $encodedResponse = json_encode($response);
+  
+          JsonRequest::insert([
+              'order_id' => $orderId,
+              'order_lines_id' => implode(',', $enrolledIds),
+              'data' => $encodedPayload,
+              'created_at' => now(),
+          ]);
+  
+          JsonResponse::insert([
+              'order_id' => $orderId,
+              'order_lines_id' => implode(',', $enrolledIds),
+              'data' => $encodedResponse,
+              'created_at' => now(),
+          ]);
+  
+          TransactionLog::insert([
+              'order_type' => 'RE',
+              'order_id' => $orderId,
+              'order_lines_id' => implode(',', $enrolledIds),
+              'dep_transaction_id' => $transaction_id,
+              'dep_status' => $dep_status,
+              'created_at' => now(),
+          ]);
+
+        Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Voided']]);
+        
+        $data = [
+            'message' => 'Voided Successfully!',
+            'status' => 'success'
+        ];
+
+        return response()->json($data);
+    }
   
 }

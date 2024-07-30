@@ -155,152 +155,156 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
     return (
         <>
             <Head title="DEP Devices" />
-                <Modal show={processing} modalLoading />  
-                <ContentPanel>
-                    <TopPanel>
-                        <TableSearch queryParams={queryParams} />
-                        <PerPage queryParams={queryParams} />
-                        <Filters onSubmit={handleFilterSubmit}>
-                            <InputComponent
-                                name="digits_code"
-                                displayName="Item Code"
-                                value={filters.digits_code}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                name="item_description"
-                                value={filters.item_description}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                name="serial_number"
-                                value={filters.serial_number}
-                                onChange={handleFilter}
-                            />
-                            <InputComponent
-                                name="customer_name"
-                                value={filters.customer_name}
-                                onChange={handleFilter}
-                            />
-                            <Select
-                                name="enrollment_status_id"
-                                displayName="Enrollment Status"
-                                options={enrollmentStatuses}
-                                onChange={handleFilter}
-                            />
-                        </Filters>
-                        <Export
-                            path={`/dep-devices-export${window.location.search}`}
-                            handleToast={handleToast}
+            <Modal show={processing} modalLoading />
+            <ContentPanel>
+                <TopPanel>
+                    <TableSearch queryParams={queryParams} />
+                    <PerPage queryParams={queryParams} />
+                    <Filters onSubmit={handleFilterSubmit}>
+                        <InputComponent
+                            name="digits_code"
+                            displayName="Item Code"
+                            value={filters.digits_code}
+                            onChange={handleFilter}
                         />
-                    </TopPanel>
+                        <InputComponent
+                            name="item_description"
+                            value={filters.item_description}
+                            onChange={handleFilter}
+                        />
+                        <InputComponent
+                            name="serial_number"
+                            value={filters.serial_number}
+                            onChange={handleFilter}
+                        />
+                        <InputComponent
+                            name="customer_name"
+                            value={filters.customer_name}
+                            onChange={handleFilter}
+                        />
+                        <Select
+                            name="enrollment_status_id"
+                            displayName="Enrollment Status"
+                            options={enrollmentStatuses}
+                            onChange={handleFilter}
+                        />
+                    </Filters>
+                    <Export
+                        path={`/dep-devices-export${window.location.search}`}
+                        handleToast={handleToast}
+                    />
+                </TopPanel>
 
-                    <TableContainer>
-                        <Thead>
-                            <Row>
-                                <TableHeader
-                                    name="digits_code"
-                                    queryParams={queryParams}
-                                    width="md"
-                                    justify="center"
-                                >
-                                    Item Code
-                                </TableHeader>
+                <TableContainer>
+                    <Thead>
+                        <Row>
+                            <TableHeader
+                                name="digits_code"
+                                queryParams={queryParams}
+                                width="md"
+                                justify="center"
+                            >
+                                Item Code
+                            </TableHeader>
 
-                                <TableHeader
-                                    name="item_description"
-                                    queryParams={queryParams}
-                                    width="lg"
-                                >
-                                    Item Description
-                                </TableHeader>
+                            <TableHeader
+                                name="item_description"
+                                queryParams={queryParams}
+                                width="lg"
+                            >
+                                Item Description
+                            </TableHeader>
 
-                                <TableHeader
-                                    name="serial_number"
-                                    queryParams={queryParams}
-                                    width="lg"
-                                    justify="center"
-                                >
-                                    Serial Number
-                                </TableHeader>
+                            <TableHeader
+                                name="serial_number"
+                                queryParams={queryParams}
+                                width="lg"
+                                justify="center"
+                            >
+                                Serial Number
+                            </TableHeader>
 
+                            <TableHeader
+                                name="customer_name"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Customer Name
+                            </TableHeader>
+                            <TableHeader
+                                name="enrollment_status_id"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
+                            {auth.access.isCreate && (
                                 <TableHeader
-                                    name="customer_name"
-                                    queryParams={queryParams}
+                                    sortable={false}
                                     justify="center"
-                                    width="lg"
+                                    sticky="right"
+                                    width="sm"
                                 >
-                                    Customer Name
-                                </TableHeader>
-                                <TableHeader
-                                    name="enrollment_status_id"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                    width="lg"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
-                                {auth.access.isCreate &&
-                                <TableHeader sortable={false} justify="center" sticky="right" width="sm">
                                     Action
-                                </TableHeader>}
-                            </Row>
-                        </Thead>
-                        <Tbody data={devices.data}>
-                            {devices &&
-                                devices.data.map((item, index) => (
-                                    <Row key={item.serial_number + index}>
-                                        <RowData isLoading={loading} center>
-                                            {item.digits_code}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.item_description}
-                                        </RowData>
-                                        <RowData isLoading={loading} center>
-                                            {item.serial_number}
-                                        </RowData>
-                                        <RowData isLoading={loading} center>
-                                            {item?.customer?.customer_name}
-                                        </RowData>
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item.color}
-                                            center
-                                        >
-                                            {item.enrollment_status}
-                                        </RowStatus>
+                                </TableHeader>
+                            )}
+                        </Row>
+                    </Thead>
+                    <Tbody data={devices.data}>
+                        {devices &&
+                            devices.data.map((item, index) => (
+                                <Row key={item.serial_number + index}>
+                                    <RowData isLoading={loading} center>
+                                        {item.digits_code}
+                                    </RowData>
+                                    <RowData isLoading={loading}>
+                                        {item.item_description}
+                                    </RowData>
+                                    <RowData isLoading={loading} center>
+                                        {item.serial_number}
+                                    </RowData>
+                                    <RowData isLoading={loading} center>
+                                        {item?.customer?.customer_name}
+                                    </RowData>
+                                    <RowStatus
+                                        isLoading={loading}
+                                        color={item.color}
+                                        center
+                                    >
+                                        {item.enrollment_status}
+                                    </RowStatus>
 
-                                        {auth.access.isCreate && 
+                                    {auth.access.isCreate && (
                                         <RowData center sticky="right">
-                                            {item.enrollment_status_id != 9 && (
+                                            {![8, 9].includes(
+                                                item.enrollment_status_id
+                                            ) && (
                                                 <RowAction
-                                                action="add"
-                                                type="button"
-                                                onClick={() => {
-                                                    handleOpenModal();
-                                                    setOrderId(item.id);
-                                                    setEnrollmentStatus(
-                                                        item.enrollment_status_id
-                                                    );
-                                                }}
+                                                    action="add"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleOpenModal();
+                                                        setOrderId(item.id);
+                                                        setEnrollmentStatus(
+                                                            item.enrollment_status_id
+                                                        );
+                                                    }}
                                                 />
                                             )}
-                                        </RowData>}
-                                        
-                                    </Row>
-                                ))}
-                        </Tbody>
-                    </TableContainer>
+                                        </RowData>
+                                    )}
+                                </Row>
+                            ))}
+                    </Tbody>
+                </TableContainer>
 
-                    <Pagination paginate={devices} />
-                </ContentPanel>
-                <Modal
-                    show={showModal}
-                    onClose={handleCloseModal}
-                    title="Actions"
-                >
-                    <EnrollReturnDeviceActions />
-                </Modal>
+                <Pagination paginate={devices} />
+            </ContentPanel>
+            <Modal show={showModal} onClose={handleCloseModal} title="Actions">
+                <EnrollReturnDeviceActions />
+            </Modal>
         </>
     );
 };
