@@ -15,7 +15,7 @@ class DepDevice extends Model
         'digits_code',
         'item_description',
         'serial_number',
-        'customer_name',
+        'customer_id',
         'enrollment_status_id'
     ];
 
@@ -27,8 +27,8 @@ class DepDevice extends Model
 
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
-                    if ($field === 'customer_name') {
-                        $query->orWhere('orders.customer_name', 'LIKE', "%$search%");
+                    if ($field === 'customer_id') {
+                        $query->orWhere('orders.customer_id', 'LIKE', "%$search%");
                     } else if ($field === 'enrollment_status_id') {
                         $query->orWhereHas('eStatus', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
@@ -45,8 +45,8 @@ class DepDevice extends Model
                 if ($request->filled($field)) {
                     $value = $request->input($field);
 
-                    if ($field === 'customer_name') {
-                        $query->where('orders.customer_name', 'LIKE', "%$value%");
+                    if ($field === 'customer_id') {
+                        $query->where('orders.customer_id', 'LIKE', "%$value%");
                     } else if ($field === 'enrollment_status_id') {
                         $query->where('list_of_order_lines.' . $field, '=', $value);
                     } else {
@@ -65,14 +65,14 @@ class DepDevice extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_name', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     public function scopeGetData($query)
     {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
             ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
-            ->select('list_of_order_lines.*', 'orders.customer_name', 'es.enrollment_status', 'es.color');
+            ->select('list_of_order_lines.*', 'orders.customer_id', 'es.enrollment_status', 'es.color');
     }
 
 }

@@ -227,7 +227,7 @@ class PullErpController extends Controller
                 $headerId = Order::create(
                     [
                         'sales_order_no'    => $insert_data->order_number,
-                        'customer_name'     => $customer->id,
+                        'customer_id'       => $customer->id ?? '',
                         'order_ref_no'      => $insert_data->cust_po_number,
                         'dr_number'         => $insert_data->dr,
                         'dep_order'         => 0,
@@ -256,7 +256,7 @@ class PullErpController extends Controller
                 OrderLines::create(
                 [
                     'order_id'          => $insertLines->header_id,
-                    'dep_company_id'    => $dep_company->id,
+                    'dep_company_id'    => $dep_company->id ?? '',
                     'digits_code'       => $insertLines->ordered_item,
                     'item_description'  => $insertLines->description,
                     'brand'             => $insertLines->brand,

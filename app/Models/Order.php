@@ -14,7 +14,7 @@ class Order extends Model
 
     protected $filterable = [
         'sales_order_no',
-        'customer_name',
+        'customer_id',
         'order_ref_no',
         'dep_order',
         'enrollment_status',
@@ -72,7 +72,7 @@ class Order extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_name', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
 
