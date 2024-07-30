@@ -85,6 +85,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
                 confirmButtonColor: "#000000",
+                reverseButtons: true,
                 icon: "question",
                 iconColor: "#000000",
             }).then(async (result) => {

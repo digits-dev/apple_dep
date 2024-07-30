@@ -123,6 +123,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
                 confirmButtonColor: "#000000",
+                reverseButtons: true,
                 icon: "question",
                 iconColor: "#000000",
             }).then(async (result) => {
@@ -243,6 +244,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                 confirmButtonText: "Confirm",
                 confirmButtonColor: "#000000",
                 icon: "question",
+                reverseButtons: true,
                 iconColor: "#000000",
             }).then(async (result) => {
                 if (result.isConfirmed) {
