@@ -36,6 +36,8 @@ class ListOfOrdersController extends Controller
         'Returned' => 5,
         'Return Error' => 6,
         'Partially Enrolled' => 7,
+        'Voided' => 9,
+        'Canceled' => 9,
     ];
 
     private const dep_status = [
@@ -99,6 +101,7 @@ class ListOfOrdersController extends Controller
         foreach ($orders as $order) {
             $order->isVoidable = $this->checkIfVoidable($order->id);
         }
+
 
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
@@ -686,6 +689,7 @@ class ListOfOrdersController extends Controller
         }
         
     }
+
     public function bulkReturnDevices(Request $request)
     {
         if(!CommonHelpers::isCreate()) {
@@ -849,6 +853,30 @@ class ListOfOrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
         
+    }
+
+    public function cancelOrder(Order $order){
+
+        $orderId = $order->id;
+
+        $orderLines = OrderLines::where('order_id', $orderId)->get();
+
+        // UPDATING EACH LINES
+        foreach($orderLines as $orderLine){
+            $orderLine->enrollment_status_id = self::enrollment_status['Canceled'];
+            $orderLine->save();
+        }
+
+        // UPDATE HEADER
+        $order->enrollment_status = self::enrollment_status['Canceled'];
+        $order->save();
+
+        $data = [
+            'message' => 'Cancel Order Success.',
+            'status' => 'success',
+        ];
+
+        return response()->json($data);
     }
 
   

@@ -397,6 +397,13 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     Serial Number
                                 </TableHeader>
                                 <TableHeader
+                                    name="dep_company_id"
+                                    width="lg"
+                                    queryParams={queryParams}
+                                >
+                                    DEP Company
+                                </TableHeader>
+                                <TableHeader
                                     name="enrollment_status_id"
                                     queryParams={queryParams}
                                     justify="center"
@@ -428,6 +435,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                     <RowData>{order.digits_code}</RowData>
                                     <RowData>{order.item_description}</RowData>
                                     <RowData>{order.serial_number}</RowData>
+                                    <RowData>{order.dep_company_id}</RowData>
 
                                     <RowStatus
                                         isLoading={loading}

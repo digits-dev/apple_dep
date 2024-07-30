@@ -50,6 +50,24 @@ class EnrollmentStatusSeeder extends Seeder
                 'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
+            [
+                'enrollment_status' => 'Partially Enrolled',
+                'status' => 1,
+                'color' => '#41c7e1',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Voided',
+                'status' => 1,
+                'color' => '#7081ff',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Cancelled',
+                'status' => 1,
+                'color' => '#d33636',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         foreach ($data as $item) {

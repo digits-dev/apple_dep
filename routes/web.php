@@ -120,6 +120,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/return', [ListOfOrdersController::class, 'unEnrollDevices']);
     Route::post('/list_of_orders/bulk-enroll', [ListOfOrdersController::class, 'bulkEnrollDevices']);
     Route::post('/list_of_orders/bulk-return', [ListOfOrdersController::class, 'bulkReturnDevices']);
+    Route::post('/list_of_orders/{order}/cancel', [ListOfOrdersController::class, 'cancelOrder']);
 
     //DEP DEVICES
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);

@@ -22,6 +22,8 @@ import Modal from "../../Components/Modal/Modal";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import OverrideOrderForm from "./OverrideOrderForm";
+import { useNavbarContext } from "../../Context/NavbarContext";
+import axios from "axios";
 
 const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     queryParams = queryParams || {};
@@ -32,15 +34,59 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
     const { handleToast } = useToast();
+    const { setTitle } = useNavbarContext();
     const [isVoidable, setIsVoidable] = useState(false);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("List of Orders");
+        }, 5);
+    }, []);
+
+
     const [updateFormValues, setUpdateFormValues] = useState({
         sales_order_no: "",
-        customer_name: "",
+    customer_name: "",
         order_ref_no: "",
         order_date: "",
     });
+
+    const handleCancel = () => {
+        Swal.fire({
+            title: `<p class="font-nunito-sans text-3xl" >Cancel Order?</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#000000",
+            icon: "question",
+            iconColor: "#000000",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {  
+                setLoading(true);              
+            try {
+                const response = await axios.post(`/list_of_orders/${orderId}/cancel`);
+
+                if (response.data.status === "success") {
+                    handleToast(response.data.message, "success");
+                } else {
+                    handleToast(response.data.message, "error");
+                }
+        
+                router.reload({ only: ["orders"] });
+
+            } catch (error) {
+                handleToast(
+                    "Something went wrong, please try again later.",
+                    "Error"
+                );
+            } finally {
+                setLoading(false);
+                handleCloseEditModal();
+            }
+            }
+        });
+    }
 
     const handleOverrideModal = () => {
         setShowOverrideModal(!showOverrideModal);
@@ -82,6 +128,18 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                 }}
                             >
                                 Override Order
+                            </button>
+                        ) : (
+                            ""
+                        )}
+                        {!isVoidable ? (
+                            <button
+                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                                onClick={() => {
+                                    handleCancel();
+                                }}
+                            >
+                                Cancel Order
                             </button>
                         ) : (
                             ""
@@ -296,7 +354,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                                     size="md"
                                                 />
 
-                                                {accessPrivileges  &&  
+                                                {accessPrivileges  && item.enrollment_status != 9 && 
                                                 <RowAction
                                                     type="button"
                                                     onClick={() => {

@@ -75,8 +75,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
         router.get(`/enrollment_list?${queryString}`);
     };
 
-
-
     return (
         <>
             <Head title="Enrollment List" />
@@ -212,6 +210,14 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                 </TableHeader>
 
                                 <TableHeader
+                                    name="transaction_id"
+                                    queryParams={queryParams}
+                                    width="xl"
+                                >
+                                    DEP Company
+                                </TableHeader>
+
+                                <TableHeader
                                     name="dep_status"
                                     queryParams={queryParams}
                                     justify="center"
@@ -309,6 +315,9 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item.transaction_id}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.dep_company_id}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}

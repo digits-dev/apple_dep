@@ -270,9 +270,10 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                             {item.enrollment_status}
                                         </RowStatus>
 
-                                        {auth.access.isCreate &&
+                                        {auth.access.isCreate && 
                                         <RowData center sticky="right">
-                                            <RowAction
+                                            {item.enrollment_status_id != 9 && (
+                                                <RowAction
                                                 action="add"
                                                 type="button"
                                                 onClick={() => {
@@ -282,7 +283,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                                         item.enrollment_status_id
                                                     );
                                                 }}
-                                            />
+                                                />
+                                            )}
                                         </RowData>}
                                         
                                     </Row>
