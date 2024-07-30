@@ -177,11 +177,23 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                         <Thead>
                             <Row>
                                 <TableHeader
-                                    name="sales_order_no"
+                                    name="dep_status"
                                     queryParams={queryParams}
                                     justify="center"
-                                    sticky="left"
-                                    
+                                >
+                                    DEP Status
+                                </TableHeader>
+                                <TableHeader
+                                    name="enrollment_status"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                    justify="center"
+                                >
+                                    Enrollment Status
+                                </TableHeader>
+                                <TableHeader
+                                    name="sales_order_no"
+                                    queryParams={queryParams}
                                 >
                                     Sales Order #
                                 </TableHeader>
@@ -218,14 +230,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="dep_status"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                >
-                                    DEP Status
-                                </TableHeader>
-
-                                <TableHeader
                                     name="status_message"
                                     queryParams={queryParams}
                                     justify="center"
@@ -234,14 +238,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                     Status Message
                                 </TableHeader>
 
-                                <TableHeader
-                                    name="enrollment_status"
-                                    queryParams={queryParams}
-                                    width="lg"
-                                    justify="center"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
+                
 
                                 <TableHeader
                                     name="created_at"
@@ -300,10 +297,24 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                             {enrollmentLists &&
                                 enrollmentLists.data.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item?.d_status?.color}
+                                            center
+                                        >
+                                            {item?.d_status?.dep_status}
+                                        </RowStatus>
+
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item?.e_status?.color}
+                                            center
+                                        >
+                                            {item?.e_status?.enrollment_status}
+                                        </RowStatus>
+
                                         <RowData
                                             isLoading={loading}
-                                            center
-                                            sticky="left"
                                         >
                                             {item.sales_order_no}
                                         </RowData>
@@ -319,24 +330,11 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                         <RowData isLoading={loading}>
                                             {item.dep_company_id}
                                         </RowData>
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item?.d_status?.color}
-                                            center
-                                        >
-                                            {item?.d_status?.dep_status}
-                                        </RowStatus>
-
+                                       
                                         <RowData isLoading={loading} center>
                                             {item.status_message}
                                         </RowData>
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item?.e_status?.color}
-                                            center
-                                        >
-                                            {item?.e_status?.enrollment_status}
-                                        </RowStatus>
+                                        
 
                                         <RowData isLoading={loading} >
                                             {item.created_at}

@@ -198,6 +198,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                 <TableContainer>
                     <Thead>
                         <Row>
+                                <TableHeader
+                                    name="enrollment_status_id"
+                                    queryParams={queryParams}
+                                    justify="center"
+                                    width="lg"
+                                >
+                                    Enrollment Status
+                                </TableHeader>
                             <TableHeader
                                 name="digits_code"
                                 queryParams={queryParams}
@@ -224,60 +232,45 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                 Serial Number
                             </TableHeader>
 
-                            <TableHeader
-                                name="customer_name"
-                                queryParams={queryParams}
-                                justify="center"
-                                width="lg"
-                            >
-                                Customer Name
-                            </TableHeader>
-                            <TableHeader
-                                name="enrollment_status_id"
-                                queryParams={queryParams}
-                                justify="center"
-                                width="lg"
-                            >
-                                Enrollment Status
-                            </TableHeader>
-                            {auth.access.isCreate && (
                                 <TableHeader
-                                    sortable={false}
-                                    justify="center"
-                                    sticky="right"
-                                    width="sm"
+                                    name="customer_name"
+                                    queryParams={queryParams}
+                                    width="lg"
                                 >
-                                    Action
+                                    Customer Name
                                 </TableHeader>
-                            )}
-                        </Row>
-                    </Thead>
-                    <Tbody data={devices.data}>
-                        {devices &&
-                            devices.data.map((item, index) => (
-                                <Row key={item.serial_number + index}>
-                                    <RowData isLoading={loading} center>
-                                        {item.digits_code}
-                                    </RowData>
-                                    <RowData isLoading={loading}>
-                                        {item.item_description}
-                                    </RowData>
-                                    <RowData isLoading={loading} center>
-                                        {item.serial_number}
-                                    </RowData>
-                                    <RowData isLoading={loading} center>
-                                        {item?.customer?.customer_name}
-                                    </RowData>
-                                    <RowStatus
-                                        isLoading={loading}
-                                        color={item.color}
-                                        center
-                                    >
-                                        {item.enrollment_status}
-                                    </RowStatus>
-
-                                    {auth.access.isCreate && (
-                                        <RowData center sticky="right">
+                                
+                                {auth.access.isCreate &&
+                                <TableHeader sortable={false} justify="center" sticky="right" width="sm">
+                                    Action
+                                </TableHeader>}
+                            </Row>
+                        </Thead>
+                        <Tbody data={devices.data}>
+                            {devices &&
+                                devices.data.map((item, index) => (
+                                    <Row key={item.serial_number + index}>
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item.color}
+                                            center
+                                        >
+                                            {item.enrollment_status}
+                                        </RowStatus>
+                                        <RowData isLoading={loading} center>
+                                            {item.digits_code}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.item_description}
+                                        </RowData>
+                                        <RowData isLoading={loading} center>
+                                            {item.serial_number}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item?.customer?.customer_name}
+                                        </RowData>
+                                        {auth.access.isCreate && (
+                                            <RowData center sticky="right">
                                             {![8, 9].includes(
                                                 item.enrollment_status_id
                                             ) && (
@@ -294,7 +287,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                                 />
                                             )}
                                         </RowData>
-                                    )}
+                                        )}
                                 </Row>
                             ))}
                     </Tbody>

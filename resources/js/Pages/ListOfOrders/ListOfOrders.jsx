@@ -274,18 +274,24 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                     />
                 </TopPanel>
 
-                <TableContainer>
-                    <Thead>
-                        <Row>
+                    <TableContainer>
+                        <Thead>
+                            <Row>
                             <TableHeader
-                                name="sales_order_no"
-                                queryParams={queryParams}
-                                width="md"
-                                sticky="left"
-                                justify="center"
-                            >
-                                Sales Order #
-                            </TableHeader>
+                                    name="enrollment_status"
+                                    queryParams={queryParams}
+                                    justify="center"
+                                    width="lg"
+                                >
+                                    Enrollment Status
+                                </TableHeader>
+                                <TableHeader
+                                    name="sales_order_no"
+                                    queryParams={queryParams}
+                                    width="md"
+                                >
+                                    Sales Order #
+                                </TableHeader>
 
                             <TableHeader
                                 name="customer_name"
@@ -311,14 +317,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                 DEP Order
                             </TableHeader>
 
-                            <TableHeader
-                                name="enrollment_status"
-                                queryParams={queryParams}
-                                justify="center"
-                                width="lg"
-                            >
-                                Enrollment Status
-                            </TableHeader>
+                                
 
                             <TableHeader
                                 name="order_date"
@@ -337,17 +336,22 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         </Row>
                     </Thead>
 
-                    <Tbody data={orders.data}>
-                        {orders &&
-                            orders.data.map((item, index) => (
-                                <Row key={item.sales_order_no + index}>
-                                    <RowData
-                                        isLoading={loading}
-                                        center
-                                        sticky="left"
-                                    >
-                                        {item.sales_order_no}
-                                    </RowData>
+                        <Tbody data={orders.data}>
+                            {orders &&
+                                orders.data.map((item, index) => (
+                                    <Row key={item.sales_order_no + index}> 
+                                        <RowStatus
+                                            isLoading={loading}
+                                            color={item?.status?.color}
+                                            center
+                                        >
+                                            {item?.status?.enrollment_status}
+                                        </RowStatus>
+                                        <RowData
+                                            isLoading={loading}
+                                        >
+                                            {item.sales_order_no}
+                                        </RowData>
 
                                     <RowData isLoading={loading}>
                                         {item?.customer?.customer_name}
@@ -359,13 +363,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                         {item.dep_order ? "Yes" : "No"}
                                     </RowData>
 
-                                    <RowStatus
-                                        isLoading={loading}
-                                        color={item?.status?.color}
-                                        center
-                                    >
-                                        {item?.status?.enrollment_status}
-                                    </RowStatus>
 
                                     <RowData isLoading={loading}>
                                         {item.order_date}

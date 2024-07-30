@@ -8,6 +8,7 @@ import RowData from "./RowData";
 import axios from "axios";
 import Tbody from "../../Components/Table/Tbody";
 import TableButton from "../../Components/Table/Buttons/TableButton";
+import moment from "moment";
 const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
     console.log(tabs);
     const [activeTab, setActiveTab] = useState(tabs[0].id);
@@ -372,7 +373,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                     {json.dep_status_name}
                                                 </RowData>
                                                 <RowData center>
-                                                    {json.created_at}
+                                                    {moment(json.created_at).format("YYYY-MM-DD HH:mm:ss")}
                                                 </RowData>
                                             </Row>
                                         ))}
