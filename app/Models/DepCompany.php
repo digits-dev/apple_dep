@@ -72,7 +72,7 @@ class DepCompany extends Model
 
         return $query;
     }
-    
+
     public function customers()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');

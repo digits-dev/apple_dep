@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import { NavbarContext } from "../../Context/NavbarContext";
 import { useContext } from "react";
@@ -11,6 +11,7 @@ import TableHeader from "../../Components/Table/TableHeader";
 import RowData from "../../Components/Table/RowData";
 import { useEffect } from "react";
 import RowAction from "../../Components/Table/RowAction";
+import RowActions from "../../Components/Table/RowActions";
 import Modal from "../../Components/Modal/Modal";
 import Checkbox from "../../Components/Checkbox/Checkbox";
 import BulkActions from "../../Components/Table/Buttons/BulkActions";
@@ -20,6 +21,7 @@ import LoadingIcon from "../../Components/Table/Icons/LoadingIcon";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import ReactSelect from "../../Components/Forms/ReactSelect";
 
 const EnrollmentStatus = Object.freeze({
     PENDING: 1,
@@ -41,7 +43,7 @@ const allowedToReturn = [
     EnrollmentStatus.RETURN_ERROR,
 ];
 
-const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
+const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
     const [showModal, setShowModal] = useState(false);
@@ -51,6 +53,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
     const [enrollmentExist, setEnrollmentExist] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
+    const [depCompanyId, setDepCompanyId] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -64,6 +68,10 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
 
     const handleOpenModal = () => {
         setShowModal(true);
+    };
+
+    const handleShowEdit = () => {
+        setShowEdit(!showEdit);
     };
 
     const handleCheckboxChange = (itemId) => {
@@ -229,6 +237,54 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
         }
     };
 
+    const EditForm = ({ handleShow}) => {
+        const { handleToast } = useToast();
+        const { data, setData, processing, reset, put, errors,  } = useForm({
+            dep_company_id: depCompanyId,
+        });
+    
+        const handleSubmit = (e) => {
+            e.preventDefault();
+    
+            put(`/list_of_orders/${orderId}/update-dep-company`, {
+                onSuccess: (data)=>{
+                    const { status, message } = data.props.auth.sessions;
+                    handleShow();
+                    reset();
+                    handleToast(message, status);
+                }
+            });
+        
+        }
+    
+        return (
+            <>
+            <form className='space-y-4' onSubmit={handleSubmit}>
+    
+                <ReactSelect
+                    placeholder="Select Dep Company"
+                    name="dep_company_id" 
+                    displayName="Dep Company Name" 
+                    options={depCompanies} 
+                    value={depCompanies.find(depCompany => depCompany.value == data.dep_company_id)} 
+                    onChange={e => setData('dep_company_id', e.value)}
+                />
+    
+                {errors.dep_company_id && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.dep_company_id}</em></span>}
+    
+                <button
+                    type="submit"
+                    className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                    disabled={processing}
+                >
+                    { processing ? "Updating..." : "Update" }
+                </button>
+            </form>
+       
+            </>
+        )
+    }
+
     const EnrollReturnDeviceActions = () => {
         const handleSwal = (e, action) => {
             e.preventDefault();
@@ -385,6 +441,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             <TableHeader
                                 name="item_description"
                                 queryParams={queryParams}
+                                width="lg"
                             >
                                 Item Description
                             </TableHeader>
@@ -409,7 +466,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                             >
                                 Enrollment Status
                             </TableHeader>
-                            <TableHeader sortable={false} justify="center">
+                            <TableHeader 
+                                sortable={false} 
+                                justify="center" 
+                                sticky="right"
+                                width="sm"
+                            >
                                 Action
                             </TableHeader>
                         </Row>
@@ -442,31 +504,49 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 >
                                     {order?.status?.enrollment_status}
                                 </RowStatus>
-                                <RowData center>
-                                    {order?.status?.id != 8 && (
-                                        <RowAction
-                                            action="add"
-                                            type="button"
-                                            onClick={() => {
-                                                handleOpenModal();
-                                                setOrderId(order.id);
-                                                setEnrollmentStatus(
-                                                    order.enrollment_status_id
-                                                );
-                                                // setEnrollmentExist(
-                                                //     order.enrollment_exist
-                                                // );
-                                            }}
-                                        />
-                                    )}
+                                <RowData center sticky="right">
+                                    <RowActions>
+                                        {order?.status?.id != 8 && (
+                                            <RowAction
+                                                action="add"
+                                                type="button"
+                                                onClick={() => {
+                                                    handleOpenModal();
+                                                    setOrderId(order.id);
+                                                    setEnrollmentStatus(
+                                                        order.enrollment_status_id
+                                                    );
+                                                }}
+                                            />
+                                        )}
+
+                                            <RowAction
+                                                action="edit"
+                                                type="button"
+                                                onClick={() => {
+                                                    handleShowEdit();
+                                                    setOrderId(order.id);
+                                                    setDepCompanyId(order.dep_company_id);
+                                                }}
+                                            />
+                                    </RowActions>
                                 </RowData>
                             </Row>
                         ))}
                     </Tbody>
                 </TableContainer>
             </ContentPanel>
+
             <Modal show={showModal} onClose={handleCloseModal} title="Actions">
                 <EnrollReturnDeviceActions />
+            </Modal>
+
+            <Modal
+                show={showEdit}
+                onClose={handleShowEdit}
+                title="Edit Dep Company"
+            >
+                <EditForm handleShow={handleShowEdit}/>
             </Modal>
         </>
     );

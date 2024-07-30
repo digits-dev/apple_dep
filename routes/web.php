@@ -125,6 +125,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/bulk-return', [ListOfOrdersController::class, 'bulkReturnDevices']);
     Route::post('/list_of_orders/{order}/cancel', [ListOfOrdersController::class, 'cancelOrder']);
     Route::post('/list_of_orders/void', [ListOfOrdersController::class, 'void']);
+    Route::put('/list_of_orders/{order}/update-dep-company', [ListOfOrdersController::class, 'updateDepCompany']);
 
 
     //DEP DEVICES

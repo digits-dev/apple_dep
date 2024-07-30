@@ -5,6 +5,7 @@ use App\Helpers\CommonHelpers;
 use App\Exports\OrdersExport;
 use App\Exports\TransactionExport;
 use App\Http\Controllers\Controller;
+use App\Models\DepCompany;
 use App\Models\EnrollmentStatus;
 use App\Models\Order;
 use App\Models\OrderLines;
@@ -137,8 +138,42 @@ class ListOfOrdersController extends Controller
         ->get();
 
         $data['queryParams'] = request()->query();
+
+        $orderHeader = Order::where('id', $order->id)->select('customer_id')->first();
+
+        $data['depCompanies'] = DepCompany::where('customer_id', $orderHeader->customer_id)
+        ->select('id as value', 'dep_company_name as label')
+        ->get();
+
         
         return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
+    }
+
+    public function updateDepCompany(Request $request, OrderLines $order){
+        
+        if(!CommonHelpers::isUpdate()) {
+
+            $data = [
+                'message' => "You don't have permission to update.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+
+   
+        $request->validate([
+            'dep_company_id' => "required",
+        ]);
+
+        $order->update(['dep_company_id' => $request->input('dep_company_id')]);
+        
+        $data = [
+            'message' => "Successfully Updated.", 
+            'status' => 'success'
+        ];
+
+        return back()->with($data);
     }
 
     public function exportText($logType,$orderId)
