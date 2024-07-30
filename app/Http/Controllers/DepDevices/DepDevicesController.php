@@ -47,7 +47,7 @@ class DepDevicesController extends Controller
 
     public function getAllData()
     {
-        $query = DepDevice::getData();
+        $query = DepDevice::getData()->with('customer');
 
         $filter = $query->searchAndFilter(request());
 

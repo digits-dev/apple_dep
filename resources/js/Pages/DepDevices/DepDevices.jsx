@@ -260,7 +260,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                             {item.serial_number}
                                         </RowData>
                                         <RowData isLoading={loading} center>
-                                            {item.customer_name}
+                                            {item?.customer?.customer_name}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}

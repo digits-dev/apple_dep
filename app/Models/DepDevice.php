@@ -63,6 +63,11 @@ class DepDevice extends Model
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_name', 'id');
+    }
+
     public function scopeGetData($query)
     {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')

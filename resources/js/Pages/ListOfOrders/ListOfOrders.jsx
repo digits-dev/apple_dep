@@ -260,7 +260,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                         </RowData>
 
                                         <RowData isLoading={loading}>
-                                            {item.customer_name}
+                                            {item?.customer?.customer_name}
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item.order_ref_no}

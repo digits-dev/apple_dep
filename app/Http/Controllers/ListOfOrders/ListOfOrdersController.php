@@ -54,7 +54,7 @@ class ListOfOrdersController extends Controller
     
     public function getAllData()
     {
-        $query = Order::query()->with('status');
+        $query = Order::query()->with(['status','customer']);
 
         $filter = $query->searchAndFilter(request());
 

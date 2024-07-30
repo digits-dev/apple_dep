@@ -70,6 +70,11 @@ class Order extends Model
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status', 'id');
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_name', 'id');
+    }
+
 
     public function scopeGetOrdersFromErp()
     {
