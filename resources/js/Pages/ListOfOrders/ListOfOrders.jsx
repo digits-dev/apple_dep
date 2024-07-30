@@ -66,6 +66,8 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setLoading(true);
+                handleCloseEditModal();
+                setLoadSpinner(true);
                 try {
                     const response = await axios.post(
                         `/list_of_orders/${orderId}/cancel`
@@ -85,7 +87,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                     );
                 } finally {
                     setLoading(false);
-                    handleCloseEditModal();
+                    setLoadSpinner(false);
                 }
             }
         });
