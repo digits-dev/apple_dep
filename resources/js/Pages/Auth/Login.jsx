@@ -189,7 +189,7 @@ const LoginPage = () => {
                                 className="bg-black w-full text-white font-nunito-sans p-[12px] font-bold rounded-[10px] mt-5 hover:opacity-70"
                             >
                                 {loading ? (
-                                    <div className="spinner"></div>
+                                    "Please Wait..."
                                 ) : (
                                     "Login"
                                 )}
