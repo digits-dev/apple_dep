@@ -132,7 +132,7 @@ class ListOfOrdersController extends Controller
 
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
-        ->with('status')
+        ->with(['status','depCompanies'])
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
 

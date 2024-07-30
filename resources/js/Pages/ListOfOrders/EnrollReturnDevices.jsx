@@ -433,7 +433,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams }) => {
                                 <RowData>{order.digits_code}</RowData>
                                 <RowData>{order.item_description}</RowData>
                                 <RowData>{order.serial_number}</RowData>
-                                <RowData>{order.dep_company_id}</RowData>
+                                <RowData>{order.dep_companies.dep_company_name}</RowData>
 
                                 <RowStatus
                                     isLoading={loading}

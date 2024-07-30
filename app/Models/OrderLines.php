@@ -16,6 +16,10 @@ class OrderLines extends Model
     public function status(){
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');
     }
+
+    public function depCompanies() {
+        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
+    }
     
     public function scopeGetOrderLines()
     {
