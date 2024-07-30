@@ -179,7 +179,6 @@ const AddPrivileges = ({ moduleses, row }) => {
     function handleInputChange(e) {
         const key =  e.name ? e.name : e.target.name;
         const value = e.value ? e.value : e.target.value;
-        console.log(key,value)
         setForms((forms) => ({
             ...forms,
             [key]: value,

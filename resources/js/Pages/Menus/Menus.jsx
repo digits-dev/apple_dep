@@ -112,7 +112,6 @@ const MenusIndex = ({
     };
 
     const handleSaveMenu = async (menus, isActive) => {
-        // console.log(menus);
         try {
             const response = await axios.post("/menu_management/add", {
                 menus: JSON.stringify(menus),

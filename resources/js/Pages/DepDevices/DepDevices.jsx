@@ -110,7 +110,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                         id: orderId,
                     });
                 }
-                console.log(response);
                 if (response.data.status == "success") {
                     handleToast(response.data.message, response.data.status);
 

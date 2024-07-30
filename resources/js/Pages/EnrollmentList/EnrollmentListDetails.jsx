@@ -24,7 +24,6 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
     }, []);
 
     useEffect(() => {
-        console.log(enrollmentList);
     }, [enrollmentList]);
 
     const handleSubmit = async (e) => {
@@ -45,7 +44,6 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             setLoading(false);
         }
     };
-    console.log(data);
 
     return (
         <>

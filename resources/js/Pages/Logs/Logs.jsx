@@ -20,8 +20,6 @@ const Logs = ({ logs, queryParams }) => {
     const { setTitle } = useNavbarContext();
     const [loading, setLoading] = useState(false);
 
-    console.log(logs);
-
     useEffect(() => {
         setTimeout(() => {
             setTitle("Log User Access");
