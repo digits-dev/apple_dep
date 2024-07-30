@@ -1,5 +1,6 @@
 <?php
 use App\Helpers\CommonHelpers;
+use App\Http\Controllers\DepCompany\DepCompanyController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Test\TestController;
@@ -112,6 +113,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/export-json/{log_type}/{order_id}', [ListOfOrdersController::class, 'exportText'])->name('export-json');
     Route::get('/export-transaction/{order_id}', [ListOfOrdersController::class, 'exportTransaction'])->name('export-transaction');
     Route::get('/pull-errors', [PullErrorsController::class, 'export']);
+    Route::get('/dep-company-export', [DepCompanyController::class, 'export']);
+
 
     //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
@@ -137,12 +140,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actions-import', [ActionController::class, 'import']);
     Route::post('/dep-status-import', [DepStatusController::class, 'import']);
     Route::post('/enrollment-status-import', [EnrollmentStatusController::class, 'import']);
+    Route::post('/dep-company-import', [DepCompanyController::class, 'import']);
 
     //IMPORTS TEMPLATE
     Route::get('/customers-import-template', [CustomerController::class, 'downloadTemplate']);
     Route::get('/actions-import-template', [ActionController::class, 'downloadTemplate']);
     Route::get('/dep-status-import-template', [DepStatusController::class, 'downloadTemplate']);
     Route::get('/enrollment-status-import-template', [EnrollmentStatusController::class, 'downloadTemplate']);
+    Route::get('/dep-company-import-template', [DepCompanyController::class, 'downloadTemplate']);
 
     //SUBMASTERS
     Route::post('/item_master_create', [ItemMasterController::class, 'addItemMaster']);
@@ -156,7 +161,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/actions/bulkupdate', [ActionController::class, 'bulkUpdate']);
     Route::put('/actions/{action}', [ActionController::class, 'update']);
 
-
     Route::post('/dep_statuses', [DepStatusController::class, 'store']);
     Route::put('/dep_statuses/bulkupdate', [DepStatusController::class, 'bulkUpdate']);
     Route::put('/dep_statuses/{dep_status}', [DepStatusController::class, 'update']);
@@ -164,6 +168,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/enrollment_statuses', [EnrollmentStatusController::class, 'store']);
     Route::put('/enrollment_statuses/bulkupdate', [EnrollmentStatusController::class, 'bulkUpdate']);
     Route::put('/enrollment_statuses/{enrollment_status}', [EnrollmentStatusController::class, 'update']);
+
+    Route::post('/dep-companies', [DepCompanyController::class, 'store']);
+    Route::put('/dep-companies/bulkupdate', [DepCompanyController::class, 'bulkUpdate']);
+    Route::put('/dep-companies/{depCompany}', [DepCompanyController::class, 'update']);
 
 });
 

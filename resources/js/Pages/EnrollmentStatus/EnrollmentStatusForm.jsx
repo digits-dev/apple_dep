@@ -2,8 +2,11 @@ import { useForm } from '@inertiajs/react';
 import React from 'react'
 import InputComponent from '../../Components/Forms/Input';
 import Select from '../../Components/Forms/Select';
+import { useToast } from '../../Context/ToastContext';
 
 const EnrollmentStatusForm = ({action, handleShow, updateFormValues}) => {
+    const { handleToast } = useToast();
+
     const { data, setData, processing, reset, post, put, errors } = useForm({
         enrollment_status: updateFormValues?.currentValue || '',
         status: updateFormValues?.status,

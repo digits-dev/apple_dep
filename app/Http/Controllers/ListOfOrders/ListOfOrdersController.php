@@ -352,14 +352,20 @@ class ListOfOrdersController extends Controller
 
             // Count order lines with enrollment status 3 or completed
             $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
-                ->where('enrollment_status_id', 3)
+                ->where('enrollment_status_id', self::enrollment_status['Enrollment Success'])
                 ->count();
 
             // Check if all order lines have status 3 and update the enrollment status of the order
             if ($enrollmentStatusSuccess === $totalOrderLines) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => self::enrollment_status['Enrollment Success'],
+                    'dep_order' => 1
+                ]);
             }else if ($enrollmentStatusSuccess > 0) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => self::enrollment_status['Partially Enrolled'],
+                    'dep_order' => 1
+                ]);
             }
 
             $data = [
@@ -510,10 +516,12 @@ class ListOfOrdersController extends Controller
             
              // Check if all order lines have status 5 and update the enrollment status of the order
             if ($enrollmentStatusReturned === $totalOrderLines) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
-            } else if ($enrollmentStatusReturned > 0) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => self::enrollment_status['Pending'],
+                    'dep_order' => 0
+                ]);
             }
+            
 
             // For successful response
             $data = [
@@ -700,9 +708,15 @@ class ListOfOrdersController extends Controller
                     ->count();
 
                 if ($enrollmentStatusSuccess === $totalOrderLines) {
-                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
+                    Order::where('id', $orderId)->update([
+                        'enrollment_status' => self::enrollment_status['Enrollment Success'],
+                        'dep_order' => 1,
+                    ]);
                 }else if ($enrollmentStatusSuccess > 0) {
-                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+                    Order::where('id', $orderId)->update([
+                        'enrollment_status' => self::enrollment_status['Partially Enrolled'],
+                        'dep_order' => 1,
+                    ]);
                 }
                 
                 $data = [
@@ -876,10 +890,11 @@ class ListOfOrdersController extends Controller
                     ->count();
 
                 if ($enrollmentStatusReturned === $totalOrderLines) {
-                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
-                } else if ($enrollmentStatusReturned > 0) {
-                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
-                }
+                    Order::where('id', $orderId)->update([
+                        'enrollment_status' => self::enrollment_status['Pending'],
+                        'dep_order' => 0,
+                    ]);
+                } 
                 
                 $data = [
                     'message' => $enrollment_status == self::enrollment_status['Returned' ] ? 'Unenroll Devices Successfully!' : 'Unenroll Devices Failed!',
