@@ -215,7 +215,7 @@ class ListOfOrdersController extends Controller
            
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
-
+            $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
             if(!$item_master){
                 $data = [
                     'message' => 'Item Master not found!',
@@ -247,7 +247,7 @@ class ListOfOrdersController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'OR',
-                'customerId' => $header_data['dep_company_id'],
+                'customerId' => $dep_company->dep_company_name,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -410,7 +410,7 @@ class ListOfOrdersController extends Controller
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
-
+            $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
             if(!$item_master){
                 $data = [
                     'message' => 'Item Master not found!',
@@ -441,7 +441,7 @@ class ListOfOrdersController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'RE',
-                'customerId' => $header_data['dep_company_id'],
+                'customerId' => $dep_company->dep_company_name,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -610,12 +610,12 @@ class ListOfOrdersController extends Controller
                     'shipDate' => $formattedDate,
                     'devices' => $devicePayload,
                 ];
-        
+                $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
                 $orderPayload = [
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
                     'orderType' => 'OR',
-                    'customerId' => $header_data->dep_company_id,
+                    'customerId' => $dep_company->dep_company_name,
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
@@ -788,12 +788,12 @@ class ListOfOrdersController extends Controller
                     'shipDate' => $formattedDate,
                     'devices' => $devicePayload,
                 ];
-        
+                $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
                 $orderPayload = [
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
                     'orderType' => 'RE',
-                    'customerId' => $header_data->dep_company_id,
+                    'customerId' => $dep_company->dep_company_name,
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
@@ -966,8 +966,18 @@ class ListOfOrdersController extends Controller
         $devicePayload = [];
 
         foreach ($enrolledDevices as $key => $orderData) {
+            $item_master = DB::table('item_master')->where('digits_code',$orderData->digits_code)->first();
+
+            if(!$item_master){
+                $data = [
+                    'message' => 'Item Master not found!',
+                    'status' => 'error' 
+                ];
+    
+                return response()->json($data);
+            }
             $devicePayload[$key] = [
-                'deviceId' => $orderData->sales_order_no,
+                'deviceId' => $item_master->upc_code_up_1,
                 'assetTag' => $orderData->serial_number,
             ];
         }
@@ -979,12 +989,12 @@ class ListOfOrdersController extends Controller
             'shipDate' => $formattedDate,
             'devices' => $devicePayload,
         ];
-
+        $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
         $orderPayload = [
             'orderNumber' => $header_data->sales_order_no,
             'orderDate' => $formattedDate,
             'orderType' => 'RE',
-            'customerId' => $header_data->customer_name,
+            'customerId' => $dep_company->dep_company_name,
             'poNumber' => $header_data->order_ref_no,
             'deliveries' => [$deliveryPayload],
         ];
