@@ -32,6 +32,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
     const { handleToast } = useToast();
+    const [isVoidable, setIsVoidable] = useState(false);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
     const [updateFormValues, setUpdateFormValues] = useState({
@@ -72,7 +73,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         ) : (
                             ""
                         )}
-                        {auth.access.isVoid ? (
+                        {auth.access.isOverride ? (
                             <button
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 onClick={() => {
@@ -85,7 +86,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         ) : (
                             ""
                         )}
-                        {auth.access.isOverride ? (
+                        {isVoidable ? (
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 href="#"
@@ -304,6 +305,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                                             orders.path
                                                         );
                                                         setOrderId(item.id);
+                                                        setIsVoidable(
+                                                            item.isVoidable
+                                                        );
                                                         setUpdateFormValues({
                                                             order_id: item.id,
                                                             sales_order_no:

@@ -35,6 +35,7 @@ class ListOfOrdersController extends Controller
         'Completed' => 4,
         'Returned' => 5,
         'Return Error' => 6,
+        'Partially Enrolled' => 7,
     ];
 
     private const dep_status = [
@@ -58,7 +59,6 @@ class ListOfOrdersController extends Controller
         $filter = $query->searchAndFilter(request());
 
         $result = $filter->orderBy($this->sortBy, $this->sortDir);
-
         return $result;
     }
     
@@ -72,6 +72,17 @@ class ListOfOrdersController extends Controller
         return Excel::download(new OrdersExport($data), $filename . '.xlsx');
     }
 
+    public function checkIfVoidable($id) {
+
+        $enrollmentStatusSuccess = OrderLines::where('order_id', $id)
+            ->where('enrollment_status_id', self::enrollment_status['Enrollment Success'])
+            ->count();
+
+        $isVoidable = $enrollmentStatusSuccess > 0 ? true : false;    
+            
+        return $isVoidable;
+    }
+
     public function getIndex(Request $request)
     {
 
@@ -81,10 +92,15 @@ class ListOfOrdersController extends Controller
 
         $data = [];
 
-        $data['orders'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $orders = self::getAllData()->paginate($this->perPage)->withQueryString();
 
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
 
+        foreach ($orders as $order) {
+            $order->isVoidable = $this->checkIfVoidable($order->id);
+        }
+
+        $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
 
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
@@ -324,8 +340,10 @@ class ListOfOrdersController extends Controller
                 ->count();
 
             // Check if all order lines have status 3 and update the enrollment status of the order
-            if ($enrollmentStatusSuccess === $totalOrderLines && $totalOrderLines > 0) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Completed']]);
+            if ($enrollmentStatusSuccess === $totalOrderLines) {
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
+            }else if ($enrollmentStatusSuccess > 0) {
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
             }
 
             $data = [
@@ -455,8 +473,21 @@ class ListOfOrdersController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             
-            Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending' ]]);
+             // Count total number of order lines
+             $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+             // Count order lines with enrollment status 3 or completed
+             $enrollmentStatusReturned = OrderLines::where('order_id', $orderId)
+                 ->where('enrollment_status_id', 5)
+                 ->count();
             
+             // Check if all order lines have status 5 and update the enrollment status of the order
+            if ($enrollmentStatusReturned === $totalOrderLines) {
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
+            } else if ($enrollmentStatusReturned > 0) {
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+            }
+
             // For successful response
             $data = [
                 'message' => $enrollment_status == 5 ? 'Unenrollment Success!' : 'Unenrollment Error!',
@@ -632,6 +663,8 @@ class ListOfOrdersController extends Controller
 
                 if ($enrollmentStatusSuccess === $totalOrderLines) {
                     Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Enrollment Success']]);
+                }else if ($enrollmentStatusSuccess > 0) {
+                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
                 }
                 
                 $data = [
@@ -785,8 +818,19 @@ class ListOfOrdersController extends Controller
                     'created_at' => now(),
                 ]);
 
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
-        
+                $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+                // Count order lines with enrollment status 3 or completed
+                $enrollmentStatusReturned = OrderLines::where('order_id', $orderId)
+                    ->where('enrollment_status_id', 5)
+                    ->count();
+
+                if ($enrollmentStatusReturned === $totalOrderLines) {
+                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
+                } else if ($enrollmentStatusReturned > 0) {
+                    Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+                }
+                
                 $data = [
                     'message' => $enrollment_status == self::enrollment_status['Returned' ] ? 'Unenroll Devices Successfully!' : 'Unenroll Devices Failed!',
                     'status' => $enrollment_status == self::enrollment_status['Returned' ] ? 'success' : 'error',
