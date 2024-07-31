@@ -131,6 +131,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                     name="order_number"
                                     queryParams={queryParams}
                                     justify="center"
+                                    sticky="left"
                                 >
                                     Sales Order #
                                 </TableHeader>
@@ -138,6 +139,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 <TableHeader
                                     name="customer_name"
                                     queryParams={queryParams}
+                                    width="lg"
                                 >
                                     Customer Name
                                 </TableHeader>
@@ -223,8 +225,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
                                 <TableHeader
                                    name="created_at"
-                                    sortable={false}
-                                    width="auto"
+                                    width="lg"
                                 >
                                     Pulled Date
                                 </TableHeader>
@@ -246,7 +247,8 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                         <RowData
                                             isLoading={loading}
                                             center
-                                        >
+                                            sticky="left"
+                                    >
                                             {item.order_number}
                                         </RowData>
                                         <RowData isLoading={loading}>
@@ -282,7 +284,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                         <RowData isLoading={loading} center>
                                             {item.errors_message}
                                         </RowData>
-                                        <RowData isLoading={loading} center>
+                                        <RowData isLoading={loading}>
                                             {item.created_at}
                                         </RowData>
                                         <RowData

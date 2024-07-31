@@ -59,7 +59,7 @@ class EnrollmentStatusSeeder extends Seeder
             [
                 'enrollment_status' => 'Voided',
                 'status' => 1,
-                'color' => '#d33636',
+                'color' => '#f57b47',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
@@ -71,7 +71,7 @@ class EnrollmentStatusSeeder extends Seeder
             [
                 'enrollment_status' => 'Void Error',
                 'status' => 1,
-                'color' => '#7081ff',
+                'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
