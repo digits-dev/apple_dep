@@ -359,6 +359,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                 DEP Company
                             </TableHeader>
 
+                            <TableHeader
+                                name="customer"
+                                queryParams={queryParams}
+                                width="lg"
+                            >
+                                Customer Name
+                            </TableHeader>
+
                             {auth.access.isCreate && (
                                 <TableHeader
                                     sortable={false}
@@ -393,6 +401,9 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                     </RowData>
                                     <RowData isLoading={loading}>
                                         {item?.dep_company?.dep_company_name}
+                                    </RowData>
+                                    <RowData isLoading={loading}>
+                                        {item?.customer?.customer_name}
                                     </RowData>
                                     {auth.access.isCreate && (
                                         <RowData center sticky="right">

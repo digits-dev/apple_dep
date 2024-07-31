@@ -27,6 +27,7 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
                     "Item Description",
                     "Serial Number",
                     "DEP Company",
+                    "Customer Name",
                     "Enrollment Status"
                 ];
 
@@ -40,6 +41,7 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
                     $item->item_description,
                     $item->serial_number,
                     $item->depCompany->dep_company_name ,
+                    $item->customer->customer_name ,
                     $item->eStatus->enrollment_status,
                 ];
        

@@ -64,14 +64,14 @@ class DepDevice extends Model
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');
     }
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
-    }
-
     public function depCompany()
     {
         return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
+    }
+
+    public function customer() {
+
+        return $this->hasOneThrough(Customer::class, Order::class, 'id', 'id', 'order_id', 'customer_id');
     }
 
     public function scopeGetData($query)
