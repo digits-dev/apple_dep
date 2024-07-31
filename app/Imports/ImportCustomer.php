@@ -14,14 +14,14 @@ class ImportCustomer implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVa
     public function model(array $row)
     {
 
-        $exists = DB::table('customers')->where('customer_name', $row['customer_name'])->first();
+        $exists = DB::table('customers')->where('customer_name', trim($row['customer_name']))->first();
 
         if($exists) {
             return null;
         }
 
         return new Customer([
-            'customer_name' => $row['customer_name'],
+            'customer_name' => trim($row['customer_name']),
         ]);
 
     }

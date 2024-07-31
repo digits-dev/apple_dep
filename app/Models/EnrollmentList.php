@@ -20,6 +20,7 @@ class EnrollmentList extends Model
 
     protected $fillable = [
         'sales_order_no',
+        'dep_company_id',
         'item_code',
         'serial_number',
         'transaction_id',

@@ -283,7 +283,7 @@ class ListOfOrdersController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'OR',
-                'customerId' => $dep_company->dep_company_name,
+                'customerId' => (string)$dep_company->id,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -320,6 +320,7 @@ class ListOfOrdersController extends Controller
             // Data to be inserted in the enrollment list
             $insertData = [ 
                 'order_lines_id' => $id,
+                'dep_company_id' => $dep_company->id,
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
@@ -354,6 +355,7 @@ class ListOfOrdersController extends Controller
             } else {
                 // If the device exists, update the data
                 $enrollmentQuery->update([
+                    'dep_company_id' => $dep_company->id,
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
@@ -477,7 +479,7 @@ class ListOfOrdersController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'RE',
-                'customerId' => $dep_company->dep_company_name,
+                'customerId' => (string)$dep_company->id,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -651,7 +653,7 @@ class ListOfOrdersController extends Controller
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
                     'orderType' => 'OR',
-                    'customerId' => $dep_company->dep_company_name,
+                    'customerId' => (string)$dep_company->id,
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
@@ -696,6 +698,7 @@ class ListOfOrdersController extends Controller
                         ],
                         [
                             'order_lines_id'    => $deviceData->order_line_id,
+                            'dep_company_id'    => $dep_company->id,
                             'sales_order_no'    => $header_data->sales_order_no,
                             'item_code'         => $header_data->digits_code,
                             'serial_number'     => $deviceData->serial_number,
@@ -829,7 +832,7 @@ class ListOfOrdersController extends Controller
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
                     'orderType' => 'RE',
-                    'customerId' => $dep_company->dep_company_name,
+                    'customerId' => (string)$dep_company->id,
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
@@ -976,9 +979,6 @@ class ListOfOrdersController extends Controller
         return response()->json($data);
     }
 
-
-    
-
     public function void(Request $request)
     {
         if(!CommonHelpers::isCreate()) {
@@ -1029,7 +1029,7 @@ class ListOfOrdersController extends Controller
             'orderNumber' => $header_data->sales_order_no,
             'orderDate' => $formattedDate,
             'orderType' => 'RE',
-            'customerId' => $dep_company->dep_company_name,
+            'customerId' => (string)$dep_company->id,
             'poNumber' => $header_data->order_ref_no,
             'deliveries' => [$deliveryPayload],
         ];

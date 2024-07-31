@@ -118,161 +118,172 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     </div>
                     <div className="font-nunito-sans">
                         {data &&
-                            data?.orders?.map((order, orderIndex) => (
-                                <div key={orderIndex}>
-                                    <div className="font-nunito-sans font-extrabold text-lg mb-1">
-                                        Order Details
+                            data?.orders?.length > 0 ? (
+                                data?.orders?.map((order, orderIndex) => (
+                                    <div key={orderIndex}>
+                                        <div className="font-nunito-sans font-extrabold text-lg mb-1">
+                                            Order Details
+                                        </div>
+                                        <div className="font-nunito-sans">
+                                            <span className="font-bold">
+                                                Order Number:
+                                            </span>{" "}
+                                            {order.orderNumber}
+                                        </div>
+                                        <div>
+                                            <span className="font-bold">
+                                                Order Post Status:
+                                            </span>{" "}
+                                            <span
+                                                className={`${
+                                                    order.orderPostStatus ==
+                                                    "COMPLETE"
+                                                        ? "text-green-500"
+                                                        : "text-red-500"
+                                                } font-extrabold`}
+                                            >
+                                                {order.orderPostStatus}
+                                            </span>
+                                        </div>
+                                        {order.deliveries &&
+                                        order.deliveries.length > 0 ? (
+                                            <div className="mt-2">
+                                                {order.deliveries.map(
+                                                    (delivery, deliveryIndex) => (
+                                                        <div key={deliveryIndex}>
+                                                            <div className="font-nunito-sans font-extrabold text-lg">
+                                                                Delivery Details
+                                                            </div>
+                                                            <div className="font-nunito-sans">
+                                                                <span className="font-bold">
+                                                                    Delivery Number:
+                                                                </span>{" "}
+                                                                {
+                                                                    delivery.deliveryNumber
+                                                                }
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-bold">
+                                                                    Delivery Post
+                                                                    Status:
+                                                                </span>{" "}
+                                                                <span
+                                                                    className={`${
+                                                                        delivery.deliveryPostStatus ==
+                                                                        "COMPLETE"
+                                                                            ? "text-green-500"
+                                                                            : "text-red-500"
+                                                                    } font-extrabold`}
+                                                                >
+                                                                    {
+                                                                        delivery.deliveryPostStatus
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-nunito-sans font-extrabold text-lg my-2">
+                                                                    Devices
+                                                                </div>
+                                                                <TableContainer
+                                                                    autoHeight
+                                                                >
+                                                                    <Thead>
+                                                                        <Row>
+                                                                            <TableHeader
+                                                                                width="md"
+                                                                                justify="center"
+                                                                                sortable={
+                                                                                    false
+                                                                                }
+                                                                            >
+                                                                                Order
+                                                                            </TableHeader>
+                                                                            <TableHeader
+                                                                                width="md"
+                                                                                justify="center"
+                                                                                sortable={
+                                                                                    false
+                                                                                }
+                                                                            >
+                                                                                Device
+                                                                                Id
+                                                                            </TableHeader>
+                                                                            <TableHeader
+                                                                                width="md"
+                                                                                justify="center"
+                                                                                sortable={
+                                                                                    false
+                                                                                }
+                                                                            >
+                                                                                Post
+                                                                                Status
+                                                                            </TableHeader>
+                                                                        </Row>
+                                                                    </Thead>
+
+                                                                    <Tbody
+                                                                        data={
+                                                                            delivery.devices
+                                                                        }
+                                                                    >
+                                                                        {delivery.devices.map(
+                                                                            (
+                                                                                device,
+                                                                                deviceIndex
+                                                                            ) => (
+                                                                                <Row>
+                                                                                    <RowData
+                                                                                        center
+                                                                                    >
+                                                                                        {deviceIndex +
+                                                                                            1}
+                                                                                    </RowData>
+                                                                                    <RowData
+                                                                                        center
+                                                                                    >
+                                                                                        {
+                                                                                            device.deviceId
+                                                                                        }
+                                                                                    </RowData>
+                                                                                    <RowData
+                                                                                        center
+                                                                                    >
+                                                                                        {
+                                                                                            device.devicePostStatus
+                                                                                        }
+                                                                                    </RowData>
+                                                                                </Row>
+                                                                            )
+                                                                        )}
+                                                                    </Tbody>
+                                                                </TableContainer>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <div className="font-nunito-sans mb-1">
+                                                    <span className="font-bold">
+                                                        Order Post Status Message:
+                                                    </span>{" "}
+                                                    {order.orderPostStatusMessage}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="font-nunito-sans">
-                                        <span className="font-bold">
-                                            Order Number:
-                                        </span>{" "}
-                                        {order.orderNumber}
-                                    </div>
-                                    <div>
-                                        <span className="font-bold">
-                                            Order Post Status:
-                                        </span>{" "}
-                                        <span
-                                            className={`${
-                                                order.orderPostStatus ==
-                                                "COMPLETE"
-                                                    ? "text-green-500"
-                                                    : "text-red-500"
-                                            } font-extrabold`}
-                                        >
-                                            {order.orderPostStatus}
+                                ))
+                            ) : (
+                                <div>
+                                    <div className="font-nunito-sans mb-1">
+                                        <span className="font-bold text-red-500">
+                                            Please wait transaction still processing...
                                         </span>
                                     </div>
-                                    {order.deliveries &&
-                                    order.deliveries.length > 0 ? (
-                                        <div className="mt-2">
-                                            {order.deliveries.map(
-                                                (delivery, deliveryIndex) => (
-                                                    <div key={deliveryIndex}>
-                                                        <div className="font-nunito-sans font-extrabold text-lg">
-                                                            Delivery Details
-                                                        </div>
-                                                        <div className="font-nunito-sans">
-                                                            <span className="font-bold">
-                                                                Delivery Number:
-                                                            </span>{" "}
-                                                            {
-                                                                delivery.deliveryNumber
-                                                            }
-                                                        </div>
-                                                        <div>
-                                                            <span className="font-bold">
-                                                                Delivery Post
-                                                                Status:
-                                                            </span>{" "}
-                                                            <span
-                                                                className={`${
-                                                                    delivery.deliveryPostStatus ==
-                                                                    "COMPLETE"
-                                                                        ? "text-green-500"
-                                                                        : "text-red-500"
-                                                                } font-extrabold`}
-                                                            >
-                                                                {
-                                                                    delivery.deliveryPostStatus
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-nunito-sans font-extrabold text-lg my-2">
-                                                                Devices
-                                                            </div>
-                                                            <TableContainer
-                                                                autoHeight
-                                                            >
-                                                                <Thead>
-                                                                    <Row>
-                                                                        <TableHeader
-                                                                            width="md"
-                                                                            justify="center"
-                                                                            sortable={
-                                                                                false
-                                                                            }
-                                                                        >
-                                                                            Order
-                                                                        </TableHeader>
-                                                                        <TableHeader
-                                                                            width="md"
-                                                                            justify="center"
-                                                                            sortable={
-                                                                                false
-                                                                            }
-                                                                        >
-                                                                            Device
-                                                                            Id
-                                                                        </TableHeader>
-                                                                        <TableHeader
-                                                                            width="md"
-                                                                            justify="center"
-                                                                            sortable={
-                                                                                false
-                                                                            }
-                                                                        >
-                                                                            Post
-                                                                            Status
-                                                                        </TableHeader>
-                                                                    </Row>
-                                                                </Thead>
-
-                                                                <Tbody
-                                                                    data={
-                                                                        delivery.devices
-                                                                    }
-                                                                >
-                                                                    {delivery.devices.map(
-                                                                        (
-                                                                            device,
-                                                                            deviceIndex
-                                                                        ) => (
-                                                                            <Row>
-                                                                                <RowData
-                                                                                    center
-                                                                                >
-                                                                                    {deviceIndex +
-                                                                                        1}
-                                                                                </RowData>
-                                                                                <RowData
-                                                                                    center
-                                                                                >
-                                                                                    {
-                                                                                        device.deviceId
-                                                                                    }
-                                                                                </RowData>
-                                                                                <RowData
-                                                                                    center
-                                                                                >
-                                                                                    {
-                                                                                        device.devicePostStatus
-                                                                                    }
-                                                                                </RowData>
-                                                                            </Row>
-                                                                        )
-                                                                    )}
-                                                                </Tbody>
-                                                            </TableContainer>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <div className="font-nunito-sans mb-1">
-                                                <span className="font-bold">
-                                                    Order Post Status Message:
-                                                </span>{" "}
-                                                {order.orderPostStatusMessage}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
-                            ))}
+                            )
+                        }
                     </div>
                 </ContentPanel>
             )}

@@ -17,7 +17,7 @@ use App\Models\EnrollmentList;
 use App\Models\JsonRequest;
 use App\Models\JsonResponse;
 use App\Models\TransactionLog;
-
+use DB;
 class DepDevicesController extends Controller
 {
     protected $appleService;
@@ -111,13 +111,24 @@ class DepDevicesController extends Controller
             ];
             
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+            //UPC CODE
+            $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
+            $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+            if(!$item_master){
+                $data = [
+                    'message' => 'Item Master not found!',
+                    'status' => 'error' 
+                ];
+    
+                return response()->json($data);
+            }
             // Check if multiple orders are provided
             $deliveryPayload = [];
             $devicePayload = [];
             
            
             $devicePayload[] = [
-                'deviceId' => $header_data['sales_order_no'],
+                'deviceId' => $item_master->upc_code_up_1,
                 'assetTag' => $header_data['serial_number'],
             ];
                 
@@ -133,7 +144,7 @@ class DepDevicesController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'OR',
-                'customerId' => $header_data['customer_name'],
+                'customerId' => (string)$dep_company->id,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -170,6 +181,7 @@ class DepDevicesController extends Controller
             // Data to be inserted in the enrollment list
             $insertData = [ 
                 'order_lines_id' => $id,
+                'dep_company_id' => $dep_company->id,
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
@@ -204,6 +216,7 @@ class DepDevicesController extends Controller
             } else {
                 // If the device exists, update the data
                 $enrollmentQuery->update([
+                    'dep_company_id' => $dep_company->id,
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
