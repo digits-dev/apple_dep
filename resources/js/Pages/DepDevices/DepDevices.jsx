@@ -27,7 +27,6 @@ import Select from "../../Components/Forms/Select";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 
-
 const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
@@ -80,24 +79,29 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
 
     const handleClodeEditModal = () => {
         setShowEditModal(false);
-    }
+    };
 
     const handleOpenEditModal = (depCompanyId) => {
         setShowEditModal(true);
         setDefaultDepCompanyId(depCompanyId);
-    }
+    };
 
     const handleOpenModal = () => {
         setShowModal(true);
     };
 
-    const EditDeviceAction = ({id}) => {
+    const EditDeviceAction = ({ id }) => {
         const [selectedOption, setSelectedOption] = useState(null);
 
         useEffect(() => {
             if (id) {
-                const defaultOption = options.find(option => option.id === id);
-                setSelectedOption({ value: defaultOption.id, label: defaultOption.dep_company_name });
+                const defaultOption = options.find(
+                    (option) => option.id === id
+                );
+                setSelectedOption({
+                    value: defaultOption.id,
+                    label: defaultOption.dep_company_name,
+                });
             }
         }, [id, options]);
 
@@ -125,23 +129,19 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                 let response;
                 response = await axios.post(`/dep_devices/update-device`, {
                     depCompanyId: selectedOption.value,
-                    orderId: orderId
+                    orderId: orderId,
                 });
-
 
                 if (response.data.status == "success") {
                     handleToast(response.data.message, response.data.status);
 
                     router.reload({ only: ["devices"] });
                 } else {
-
                     router.reload({ only: ["devices"] });
                     handleToast(response.data.message, "Error");
                 }
-
             } catch (error) {
-
-                console.log(error)
+                console.log(error);
                 handleToast(
                     "Something went wrong, please try again later.",
                     "Error"
@@ -156,25 +156,27 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
             setSelectedOption(selectedOption);
         };
 
-        return ( 
+        return (
             <div className="gap-y-3 py-2 text-black font-nunito-sans font-bold">
                 <ReactSelect
                     placeholder={loading ? "Loading..." : "Select an option"}
-                    name="dep_company" 
+                    name="dep_company"
                     value={selectedOption}
-                    options={options.map(opt => ({ value: opt.id, label: opt.dep_company_name }))}
+                    options={options.map((opt) => ({
+                        value: opt.id,
+                        label: opt.dep_company_name,
+                    }))}
                     onChange={handleSelectChange}
                 />
                 <button
                     className="bg-black w-full text-white font-nunito-sans py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
                     onClick={(e) => handleSwal(e)}
                 >
-                    {processing ? 'Updating...' : 'Save Changes'}
+                    {processing ? "Updating..." : "Save Changes"}
                 </button>
-                    
             </div>
         );
-    }
+    };
 
     const EnrollReturnDeviceActions = () => {
         const handleSwal = (e, action) => {
@@ -334,52 +336,55 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                                 Serial Number
                             </TableHeader>
 
+                            <TableHeader
+                                name="dep_company_id"
+                                queryParams={queryParams}
+                                width="lg"
+                            >
+                                DEP Company
+                            </TableHeader>
+
+                            {auth.access.isCreate && (
                                 <TableHeader
-                                    name="dep_company_id"
-                                    queryParams={queryParams}
-                                    width="lg"
+                                    sortable={false}
+                                    justify="center"
+                                    sticky="right"
+                                    width="sm"
                                 >
-                                    DEP Company
-                                </TableHeader>
-                                
-                                {auth.access.isCreate &&
-                                <TableHeader sortable={false} justify="center" sticky="right" width="sm">
                                     Action
-                                </TableHeader>}
-                            </Row>
-                        </Thead>
-                        <Tbody data={devices.data}>
-                            {devices &&
-                                devices.data.map((item, index) => (
-                                    <Row key={item.serial_number + index}>
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item.color}
-                                            center
-                                        >
-                                            {item.enrollment_status}
-                                        </RowStatus>
-                                        <RowData isLoading={loading} center>
-                                            {item.digits_code}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item.item_description}
-                                        </RowData>
-                                        <RowData isLoading={loading} center>
-                                            {item.serial_number}
-                                        </RowData>
-                                        <RowData isLoading={loading}>
-                                            {item?.dep_company?.dep_company_name
-                                            }
-                                        </RowData>
-                                        {auth.access.isCreate && (
-                                            <RowData center sticky="right">
-                                            {![8, 9].includes(
-                                                item.enrollment_status_id
-                                            ) && (
-
-                                                <RowActions>
-
+                                </TableHeader>
+                            )}
+                        </Row>
+                    </Thead>
+                    <Tbody data={devices.data}>
+                        {devices &&
+                            devices.data.map((item, index) => (
+                                <Row key={item.serial_number + index}>
+                                    <RowStatus
+                                        isLoading={loading}
+                                        color={item.color}
+                                        center
+                                    >
+                                        {item.enrollment_status}
+                                    </RowStatus>
+                                    <RowData isLoading={loading} center>
+                                        {item.digits_code}
+                                    </RowData>
+                                    <RowData isLoading={loading}>
+                                        {item.item_description}
+                                    </RowData>
+                                    <RowData isLoading={loading} center>
+                                        {item.serial_number}
+                                    </RowData>
+                                    <RowData isLoading={loading}>
+                                        {item?.dep_company?.dep_company_name}
+                                    </RowData>
+                                    {auth.access.isCreate && (
+                                        <RowData center sticky="right">
+                                            <RowActions>
+                                                {![8, 9, 10].includes(
+                                                    item.enrollment_status_id
+                                                ) && (
                                                     <RowAction
                                                         action="add"
                                                         type="button"
@@ -391,23 +396,31 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                                                             );
                                                         }}
                                                     />
-                                                    <RowAction
-                                                        action="edit"
-                                                        type="button"
-                                                        onClick={() => {
-                                                            handleOpenEditModal(item.dep_company_id);
-                                                            setOrderId(item.id);
-                                                            setDevOrderId(item.order_id)
-                                                            setDefaultDepCompanyId(item.dep_company_id); 
-                                                        }}
-                                                        disabled={item.enrollment_status !== "Pending"}
-                                                    />
+                                                )}
 
-                                                </RowActions>
-
-                                            )}
+                                                <RowAction
+                                                    action="edit"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleOpenEditModal(
+                                                            item.dep_company_id
+                                                        );
+                                                        setOrderId(item.id);
+                                                        setDevOrderId(
+                                                            item.order_id
+                                                        );
+                                                        setDefaultDepCompanyId(
+                                                            item.dep_company_id
+                                                        );
+                                                    }}
+                                                    disabled={
+                                                        item.enrollment_status !==
+                                                        "Pending"
+                                                    }
+                                                />
+                                            </RowActions>
                                         </RowData>
-                                        )}
+                                    )}
                                 </Row>
                             ))}
                     </Tbody>
@@ -418,7 +431,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
             <Modal show={showModal} onClose={handleCloseModal} title="Actions">
                 <EnrollReturnDeviceActions />
             </Modal>
-            <Modal show={showEditModal} onClose={handleClodeEditModal} title="Edit">
+            <Modal
+                show={showEditModal}
+                onClose={handleClodeEditModal}
+                title="Edit"
+            >
                 <EditDeviceAction id={depCompanyId} />
             </Modal>
         </>

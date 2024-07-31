@@ -124,6 +124,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                     });
                     console.log(response.data.message);
                     handleToast(response.data.message, response.data.status);
+                    router.reload({ only: ["orders"] });
                 } catch (error) {
                     console.log(error);
                 } finally {
@@ -141,7 +142,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
                 {accessPrivileges ? (
                     <>
-                        {auth.access.isCreate ? (
+                        {auth.access.isCreate &&
+                        orders.enrollment_status == 10 &&
+                        isVoidable ? (
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 href={orderPath + `/${orderId}/enroll-return`}
@@ -279,24 +282,24 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                     />
                 </TopPanel>
 
-                    <TableContainer>
-                        <Thead>
-                            <Row>
+                <TableContainer>
+                    <Thead>
+                        <Row>
                             <TableHeader
-                                    name="enrollment_status"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                    width="lg"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
-                                <TableHeader
-                                    name="sales_order_no"
-                                    queryParams={queryParams}
-                                    width="md"
-                                >
-                                    Sales Order #
-                                </TableHeader>
+                                name="enrollment_status"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
+                            <TableHeader
+                                name="sales_order_no"
+                                queryParams={queryParams}
+                                width="md"
+                            >
+                                Sales Order #
+                            </TableHeader>
 
                             <TableHeader
                                 name="customer_id"
@@ -322,8 +325,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                 DEP Order
                             </TableHeader>
 
-                                
-
                             <TableHeader
                                 name="order_date"
                                 queryParams={queryParams}
@@ -341,22 +342,20 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                         </Row>
                     </Thead>
 
-                        <Tbody data={orders.data}>
-                            {orders &&
-                                orders.data.map((item, index) => (
-                                    <Row key={item.sales_order_no + index}> 
-                                        <RowStatus
-                                            isLoading={loading}
-                                            color={item?.status?.color}
-                                            center
-                                        >
-                                            {item?.status?.enrollment_status}
-                                        </RowStatus>
-                                        <RowData
-                                            isLoading={loading}
-                                        >
-                                            {item.sales_order_no}
-                                        </RowData>
+                    <Tbody data={orders.data}>
+                        {orders &&
+                            orders.data.map((item, index) => (
+                                <Row key={item.sales_order_no + index}>
+                                    <RowStatus
+                                        isLoading={loading}
+                                        color={item?.status?.color}
+                                        center
+                                    >
+                                        {item?.status?.enrollment_status}
+                                    </RowStatus>
+                                    <RowData isLoading={loading}>
+                                        {item.sales_order_no}
+                                    </RowData>
 
                                     <RowData isLoading={loading}>
                                         {item?.customer?.customer_name}
@@ -367,7 +366,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                     <RowData isLoading={loading} center>
                                         {item.dep_order ? "Yes" : "No"}
                                     </RowData>
-
 
                                     <RowData isLoading={loading}>
                                         {item.order_date}

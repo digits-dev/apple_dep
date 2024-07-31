@@ -39,6 +39,7 @@ class ListOfOrdersController extends Controller
         'Partially Enrolled' => 7,
         'Voided' => 8,
         'Canceled' => 9,
+        'Void Error' => 10,
     ];
 
     private const dep_status = [
@@ -78,7 +79,7 @@ class ListOfOrdersController extends Controller
     public function checkIfVoidable($id) {
 
         $enrollmentStatusSuccess = OrderLines::where('order_id', $id)
-            ->where('enrollment_status_id', self::enrollment_status['Enrollment Success'])
+            ->whereIn('enrollment_status_id', [self::enrollment_status['Enrollment Success'], self::enrollment_status['Void Error']])
             ->count();
 
         $isVoidable = $enrollmentStatusSuccess > 0 ? true : false;    
@@ -645,7 +646,7 @@ class ListOfOrdersController extends Controller
                     'shipDate' => $formattedDate,
                     'devices' => $devicePayload,
                 ];
-                $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+                $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
                 $orderPayload = [
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
@@ -823,7 +824,7 @@ class ListOfOrdersController extends Controller
                     'shipDate' => $formattedDate,
                     'devices' => $devicePayload,
                 ];
-                $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+                $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
                 $orderPayload = [
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
@@ -976,6 +977,8 @@ class ListOfOrdersController extends Controller
     }
 
 
+    
+
     public function void(Request $request)
     {
         if(!CommonHelpers::isCreate()) {
@@ -984,20 +987,17 @@ class ListOfOrdersController extends Controller
 
         $id = $request->input('id');
 
-        $enrolledIds = OrderLines::where('order_id', $id)
-                ->whereIn('enrollment_status_id', [3, 6])
+        $enrollmentIds = OrderLines::where('order_id', $id)
+                ->whereIn('enrollment_status_id', [3, 6, 10])
                 ->pluck('id')->toArray();
 
-        // $pendingIds = OrderLines::where('order_id', $id)
-        //         ->whereNotIn('enrollment_status_id',[3, 6] )
-        //         ->pluck('id')->toArray();
-
-        $enrolledDevices = OrderLines::whereIn('list_of_order_lines.id', $enrolledIds)
+        $enrolledDevices = OrderLines::whereIn('list_of_order_lines.id', $enrollmentIds)
+                ->leftJoin('enrollment_lists', 'list_of_order_lines.id', 'enrollment_lists.order_lines_id')
                 ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                ->whereIn('enrollment_lists.dep_status', [1, 2])
                 ->get();
-        
-        $header_data = $enrolledDevices->first();
 
+        $header_data = $enrolledDevices->first();
         $devicePayload = [];
 
         foreach ($enrolledDevices as $key => $orderData) {
@@ -1018,13 +1018,13 @@ class ListOfOrdersController extends Controller
         }
 
         $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
-
+  
         $deliveryPayload = [
             'deliveryNumber' => $header_data->dr_number,
             'shipDate' => $formattedDate,
             'devices' => $devicePayload,
         ];
-        $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+        $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
         $orderPayload = [
             'orderNumber' => $header_data->sales_order_no,
             'orderDate' => $formattedDate,
@@ -1051,6 +1051,7 @@ class ListOfOrdersController extends Controller
             $transaction_id = $response['deviceEnrollmentTransactionId'];
             $dep_status = self::dep_status['Success'];
             $status_message = $response['enrollDevicesResponse']['statusMessage'];
+            $enrollment_status = self::enrollment_status['Voided'];
 
             OrderLines::where('order_id', $header_data->order_id)->update(['enrollment_status_id' => self::enrollment_status['Voided']]);
 
@@ -1058,13 +1059,13 @@ class ListOfOrdersController extends Controller
             $transaction_id = $response['transactionId'];
             $dep_status = self::dep_status['GRX-50025'];
             $status_message = $response['errorMessage'];
+            $enrollment_status = self::enrollment_status['Void Error'];
 
-            OrderLines::where('id', $header_data->order_id)->update(['enrollment_status_id' => self::enrollment_status['Return Error']]);
+            OrderLines::where('order_id', $header_data->order_id)->update(['enrollment_status_id' => self::enrollment_status['Void Error']]);
 
         }
 
-
-        // for enrolled devices
+        // for enrolled/Returned devices
         foreach ($enrolledDevices as $deviceData) {
             $enrollment = EnrollmentList::query()
             ->where('sales_order_no', $header_data->sales_order_no)
@@ -1075,29 +1076,32 @@ class ListOfOrdersController extends Controller
                 $enrollment->fill([
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
-                    'enrollment_status' => self::enrollment_status['Voided'],
+                    'enrollment_status' => $enrollment_status,
                     'status_message' => $status_message,
                 ]);
 
                 $enrollment->save();
             }
+            
         }
 
           // Logs
           $orderId = $header_data->order_id;
           $encodedPayload = json_encode($payload);
           $encodedResponse = json_encode($response);
+          $ids = $enrolledDevices->pluck('order_lines_id')->toArray();
+
   
           JsonRequest::insert([
               'order_id' => $orderId,
-              'order_lines_id' => implode(',', $enrolledIds),
+              'order_lines_id' => implode(',', $ids),
               'data' => $encodedPayload,
               'created_at' => now(),
           ]);
   
           JsonResponse::insert([
               'order_id' => $orderId,
-              'order_lines_id' => implode(',', $enrolledIds),
+              'order_lines_id' => implode(',', $ids),
               'data' => $encodedResponse,
               'created_at' => now(),
           ]);
@@ -1105,17 +1109,17 @@ class ListOfOrdersController extends Controller
           TransactionLog::insert([
               'order_type' => 'RE',
               'order_id' => $orderId,
-              'order_lines_id' => implode(',', $enrolledIds),
+              'order_lines_id' => implode(',', $ids),
               'dep_transaction_id' => $transaction_id,
               'dep_status' => $dep_status,
               'created_at' => now(),
           ]);
 
-        Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Voided']]);
+        Order::where('id', $orderId)->update(['enrollment_status' => $enrollment_status]);
         
         $data = [
-            'message' => 'Voided Successfully!',
-            'status' => 'success'
+            'message' => $enrollment_status == self::enrollment_status['Voided'] ? 'Voided Successfully!' : 'Void Error!',
+            'status' => $enrollment_status == self::enrollment_status['Voided'] ? 'success' : 'error',
         ];
 
         return response()->json($data);
