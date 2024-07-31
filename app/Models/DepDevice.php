@@ -18,6 +18,7 @@ class DepDevice extends Model
         'dep_company_id',
         'enrollment_status_id',
         'dep_company_id',
+        'customer_id'
     ];
 
     public function scopeSearchAndFilter($query, $request)
@@ -36,6 +37,10 @@ class DepDevice extends Model
                         $query->orWhereHas('eStatus', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
                         });
+                    } else if ($field === 'customer_id') {
+                        $query->orWhereHas('customer', function ($query) use ($search) {
+                            $query->where('customer_name', 'LIKE', "%$search%");
+                        });
                     } else {
                         $query->orWhere('list_of_order_lines.' . $field, 'LIKE', "%$search%");
                     }
@@ -50,6 +55,10 @@ class DepDevice extends Model
 
                     if (in_array($field, ['dep_company_id', 'enrollment_status_id'])) {
                         $query->where('list_of_order_lines.' . $field, '=', $value);
+                    }  else if ($field === 'customer_id') {
+                        $query->whereHas('customer', function ($query) use ($value) {
+                            $query->where('customers.id', $value);
+                        });
                     } else {
                         $query->where('list_of_order_lines.' . $field, 'LIKE', "%$value%");
                     }

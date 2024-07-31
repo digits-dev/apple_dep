@@ -28,7 +28,7 @@ import ReactSelect from "../../Components/Forms/ReactSelect";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 
 
-const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies }) => {
+const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers }) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
@@ -57,6 +57,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         serial_number: "",
         dep_company_id: "",
         enrollment_status_id: "",
+        customer_id: "",
     });
 
     const handleFilter = (e, attrName) => {
@@ -307,6 +308,17 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             options={enrollmentStatuses}
                             onChange={handleFilter}
                         />
+                        <ReactSelect
+                            placeholder="Select Customer Name" 
+                            menuPlacement="top"
+                            name="customer_id" 
+                            displayName="Customer Name"
+                            options={customers} 
+                            value={customers.find(customer => customer.value === filters.customer_id)} 
+                            onChange={(e) => handleFilter(e,'customer_id')}  
+                        />
+
+
                     </Filters>
                     <Export
                         path={`/dep-devices-export${window.location.search}`}

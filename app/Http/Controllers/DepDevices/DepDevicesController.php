@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DepDevices;
 use App\Helpers\CommonHelpers;
 use App\Exports\DevicesExport;
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\DepCompany;
 use App\Models\DepDevice;
 use App\Models\EnrollmentStatus;
@@ -85,7 +86,7 @@ class DepDevicesController extends Controller
         $data['queryParams'] = request()->query();
         $data['options'] = DepCompany::get();
         $data['depCompanies'] = DepCompany::select('id as value', 'dep_company_name as label')->get();
-
+        $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
         
         return Inertia::render('DepDevices/DepDevices', $data);
     }
