@@ -142,9 +142,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
                 {accessPrivileges ? (
                     <>
-                        {auth.access.isCreate &&
-                        orders.enrollment_status == 10 &&
-                        isVoidable ? (
+                        {auth.access.isCreate ? (
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 href={orderPath + `/${orderId}/enroll-return`}
