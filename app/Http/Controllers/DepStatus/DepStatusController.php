@@ -31,19 +31,11 @@ class DepStatusController extends Controller
             return Inertia::render('Errors/RestrictionPage');
         }
 
-        $query = DepStatus::query();
+        $data = [];
+        $data['dep_statuses'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $data['queryParams'] = request()->query();
 
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('dep_status', 'LIKE', "%$search%");
-        });
-
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
-
-
-        $dep_statuses = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-
-
-        return Inertia::render('DepStatus/DepStatus', [ 'dep_statuses' => $dep_statuses, 'queryParams' => request()->query()]);
+        return Inertia::render('DepStatus/DepStatus', $data);
     }
 
     public function store(Request $request){
@@ -134,20 +126,24 @@ class DepStatusController extends Controller
     {
 
         $filename            = "DEP Status - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $result = self::getAllData();
 
         return Excel::download(new DepStatusExport($result), $filename . '.xlsx');
     }
 
+  
     public function getAllData()
     {
-        $query = DepStatus::select([
-            'id', 
-            'dep_status', 
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date")
-        ]);
 
-        return $query;
+        $query = DepStatus::query();
+
+        $search =   $query->when(request('search'), function ($query, $search) {
+            $query->where('dep_status', 'LIKE', "%$search%");
+        });
+       
+        $result =  $search->orderBy($this->sortBy, $this->sortDir);
+
+        return $result;
     }
 
     public function import(Request $request)

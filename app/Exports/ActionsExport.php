@@ -25,7 +25,8 @@ class ActionsExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
         $headers = [
                     "Action ID",
                     "Action Name",
-                    "Record Creation Date",
+                    "Created Date",
+                    "Status"
                 ];
 
         return $headers;
@@ -36,7 +37,8 @@ class ActionsExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
        $actions = [
                     $item->id,
                     $item->action_name,
-                    $item->created_date,
+                    $item->created_at,
+                    $item->status ? "Active" : "Inactive"
                 ];
        
         return $actions;

@@ -10,4 +10,8 @@ class Action extends Model
     use HasFactory;
 
     protected $fillable = ['action_name', 'status'];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d'
+    ];
 }

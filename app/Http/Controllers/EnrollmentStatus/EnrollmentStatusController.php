@@ -30,18 +30,11 @@ class EnrollmentStatusController extends Controller
             return Inertia::render('Errors/RestrictionPage');
         }
 
-        $query = EnrollmentStatus::query();
+        $data = [];
+        $data['enrollment_status'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $data['queryParams'] = request()->query();
 
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('enrollment_status', 'LIKE', "%$search%");
-        });
-
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
-
-
-        $enrollmentStatus = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-
-        return Inertia::render('EnrollmentStatus/EnrollmentStatus', [ 'enrollment_status' => $enrollmentStatus, 'queryParams' => request()->query()]);
+        return Inertia::render('EnrollmentStatus/EnrollmentStatus', $data);
     }
 
     
@@ -135,20 +128,24 @@ class EnrollmentStatusController extends Controller
     {
 
         $filename            = "Enrollment Status - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $result = self::getAllData();
 
         return Excel::download(new EnrollmentStatusExport($result), $filename . '.xlsx');
     }
 
+
     public function getAllData()
     {
-        $query = EnrollmentStatus::select([
-            'id', 
-            'enrollment_status', 
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date")
-        ]);
 
-        return $query;
+        $query = EnrollmentStatus::query();
+
+        $search =   $query->when(request('search'), function ($query, $search) {
+            $query->where('enrollment_status', 'LIKE', "%$search%");
+        });
+       
+        $result =  $search->orderBy($this->sortBy, $this->sortDir);
+
+        return $result;
     }
 
     public function import(Request $request)

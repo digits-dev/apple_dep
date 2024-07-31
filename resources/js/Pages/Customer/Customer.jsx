@@ -184,10 +184,10 @@ const Customer = ({ customers, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="created_at"
                                     queryParams={queryParams}
                                 >
-                                    Record Creation Date
+                                    Created Date
                                 </TableHeader>
 
                                 <TableHeader
@@ -226,7 +226,7 @@ const Customer = ({ customers, queryParams }) => {
                                         {item.id}
                                     </RowData>
                                     <RowData isLoading={loading}>{item.customer_name}</RowData>
-                                    <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowData isLoading={loading} >{item.created_at}</RowData>
                                     <RowStatus
                                             isLoading={loading}
                                             systemStatus={item.status ? "active" : "inactive"}

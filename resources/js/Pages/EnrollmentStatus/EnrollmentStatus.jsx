@@ -186,7 +186,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                 name="created_date"
                                 queryParams={queryParams}
                             >
-                                Record Creation Date
+                                Created Date
                             </TableHeader>
 
                             <TableHeader
@@ -231,7 +231,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                     >
                                            {item.enrollment_status}
                                     </RowStatus>
-                                    <RowData isLoading={loading} >{item.created_date}</RowData>
+                                    <RowData isLoading={loading} >{item.created_at}</RowData>
                                     <RowStatus
                                             isLoading={loading}
                                             systemStatus={item.status ? "active" : "inactive"}

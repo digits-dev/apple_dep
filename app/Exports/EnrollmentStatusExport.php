@@ -24,7 +24,8 @@ class EnrollmentStatusExport implements FromQuery, WithHeadings, WithMapping, Sh
         $headers = [
                     "Enrollment Status ID",
                     "Enrollment Status",
-                    "Record Creation Date",
+                    "Created Date",
+                    "Status"
                 ];
 
         return $headers;
@@ -35,7 +36,8 @@ class EnrollmentStatusExport implements FromQuery, WithHeadings, WithMapping, Sh
        $actions = [
                     $item->id,
                     $item->enrollment_status,
-                    $item->created_date,
+                    $item->created_at,
+                    $item->status ? "Active" : "Inactive"
                 ];
        
         return $actions;

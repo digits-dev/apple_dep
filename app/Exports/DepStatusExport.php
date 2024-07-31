@@ -24,7 +24,8 @@ class DepStatusExport implements FromQuery, WithHeadings, WithMapping, ShouldAut
         $headers = [
                     "DEP Status ID",
                     "DEP Status",
-                    "Record Creation Date",
+                    "Created Date",
+                    "Status"
                 ];
 
         return $headers;
@@ -35,7 +36,8 @@ class DepStatusExport implements FromQuery, WithHeadings, WithMapping, ShouldAut
        $actions = [
                     $item->id,
                     $item->dep_status,
-                    $item->created_date,
+                    $item->created_at,
+                    $item->status ? 'Active' : "Inactive"
                 ];
        
         return $actions;

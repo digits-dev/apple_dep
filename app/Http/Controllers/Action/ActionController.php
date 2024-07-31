@@ -32,18 +32,8 @@ class ActionController extends Controller
             return Inertia::render('Errors/RestrictionPage');
         }
 
-        $data = [];
-        $query = Action::query();
-
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('action_name', 'LIKE', "%$search%");
-        });
-
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
-
-        $data['actions'] = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
+        $data['actions'] = self::getAllData()->paginate($this->perPage)->withQueryString();
         $data['queryParams'] = request()->query();
-
 
         return Inertia::render('Action/Action', $data);
     }
@@ -125,20 +115,23 @@ class ActionController extends Controller
     {
 
         $filename            = "Actions - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $result = self::getAllData();
 
         return Excel::download(new ActionsExport($result), $filename . '.xlsx');
     }
 
     public function getAllData()
     {
-        $query = Action::select([
-            'id', 
-            'action_name', 
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date")
-        ]);
 
-        return $query;
+        $query = Action::query();
+
+        $search =  $query->when(request('search'), function ($query, $search) {
+            $query->where('action_name', 'LIKE', "%$search%");
+        });
+       
+        $result =  $search->orderBy($this->sortBy, $this->sortDir);
+
+        return $result;
     }
 
     public function import(Request $request)

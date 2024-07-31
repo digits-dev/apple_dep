@@ -208,10 +208,10 @@ const Action = ({ actions, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="created_at"
                                     queryParams={queryParams}
                                 >
-                                    Record Creation Date
+                                    Created Date
                                 </TableHeader>
 
                                 <TableHeader
@@ -260,7 +260,7 @@ const Action = ({ actions, queryParams }) => {
                                             {item.action_name}
                                         </RowData>
                                         <RowData isLoading={loading}>
-                                            {item.created_date}
+                                            {item.created_at}
                                         </RowData>
                                         <RowStatus
                                             isLoading={loading}

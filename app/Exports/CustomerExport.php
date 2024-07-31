@@ -24,7 +24,8 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
         $headers = [
                     "Customer ID",
                     "Customer Name",
-                    "Record Creation Date",
+                    "Created Date",
+                    "Status"
                 ];
 
         return $headers;
@@ -35,7 +36,8 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
        $customers = [
                     $item->id,
                     $item->customer_name,
-                    $item->created_date,
+                    $item->created_at,
+                    $item->status ? "Active" : "Inactive"
                 ];
        
         return $customers;

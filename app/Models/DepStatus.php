@@ -10,4 +10,8 @@ class DepStatus extends Model
     use HasFactory;
 
     protected $fillable = ['dep_status', 'status', 'color'];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d'
+    ];
 }

@@ -30,19 +30,12 @@ class CustomerController extends Controller
         if(!CommonHelpers::isView()) {
             return Inertia::render('Errors/RestrictionPage');
         }
-        
-        $query = Customer::query();
 
-        $query->when(request('search'), function ($query, $search) {
-            $query->where('customer_name', 'LIKE', "%$search%");
-        });
+        $data = [];
+        $data['customers'] = self::getAllData()->paginate($this->perPage)->withQueryString();
+        $data['queryParams'] = request()->query();
 
-        $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
-
-
-        $customers = $query->orderBy($this->sortBy, $this->sortDir)->paginate($this->perPage)->withQueryString();
-
-        return Inertia::render('Customer/Customer', [ 'customers' => $customers, 'queryParams' => request()->query()]);
+        return Inertia::render('Customer/Customer', $data);
     }
 
     public function store(Request $request){
@@ -136,13 +129,16 @@ class CustomerController extends Controller
 
     public function getAllData()
     {
-        $query = Customer::select([
-            'id', 
-            'customer_name', 
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date")
-        ]);
 
-        return $query;
+        $query = Customer::query();
+
+        $search =  $query->when(request('search'), function ($query, $search) {
+            $query->where('customer_name', 'LIKE', "%$search%");
+        });
+       
+        $result =  $search->orderBy($this->sortBy, $this->sortDir);
+
+        return $result;
     }
 
     public function import(Request $request)

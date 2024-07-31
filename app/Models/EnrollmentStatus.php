@@ -10,4 +10,8 @@ class EnrollmentStatus extends Model
     use HasFactory;
     
     protected $fillable = ['enrollment_status', 'status', 'color'];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d'
+    ];
 }

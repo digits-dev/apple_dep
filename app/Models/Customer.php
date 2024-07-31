@@ -10,4 +10,8 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = ['customer_name', 'status'];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d'
+    ];
 }
