@@ -33,6 +33,10 @@ class Order extends Model
                         $query->orWhereHas('status', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
                         });
+                    } else if ($field === 'customer_id') {
+                        $query->orWhereHas('customer', function ($query) use ($search) {
+                            $query->where('customer_name', 'LIKE', "%$search%");
+                        });
                     } else if ($field === 'order_date') {
                         $query->orWhereDate($field, $search);
                     } else {
@@ -50,6 +54,10 @@ class Order extends Model
                     if (in_array($field, [ 'dep_order', 'enrollment_status' ])) {
                         $query->where($field, '=', $value);
 
+                    } else if ($field === 'customer_id') {
+                        $query->orWhereHas('customer', function ($query) use ($value) {
+                            $query->where('customer_name', 'LIKE', "%$value%");
+                        });
                     } else if ($field === 'order_date') {
                         $query->whereDate($field, $value);
 
@@ -64,6 +72,7 @@ class Order extends Model
 
         return $query;
     }
+
 
     public function status()
     {

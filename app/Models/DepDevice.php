@@ -15,7 +15,7 @@ class DepDevice extends Model
         'digits_code',
         'item_description',
         'serial_number',
-        'customer_id',
+        'dep_company_id',
         'enrollment_status_id',
         'dep_company_id',
     ];
@@ -28,8 +28,10 @@ class DepDevice extends Model
 
             $query->where(function ($query) use ($search) {
                 foreach ($this->filterable as $field) {
-                    if ($field === 'customer_id') {
-                        $query->orWhere('orders.customer_id', 'LIKE', "%$search%");
+                    if ($field === 'dep_company_id') {
+                        $query->orWhereHas('depCompany', function ($query) use ($search) {
+                            $query->where('dep_company_name', 'LIKE', "%$search%");
+                        });
                     } else if ($field === 'enrollment_status_id') {
                         $query->orWhereHas('eStatus', function ($query) use ($search) {
                             $query->where('enrollment_status', 'LIKE', "%$search%");
@@ -46,8 +48,10 @@ class DepDevice extends Model
                 if ($request->filled($field)) {
                     $value = $request->input($field);
 
-                    if ($field === 'customer_id') {
-                        $query->where('orders.customer_id', 'LIKE', "%$value%");
+                    if ($field === 'dep_company_id') {
+                        $query->orWhereHas('depCompany', function ($query) use ($value) {
+                            $query->where('dep_company_name', 'LIKE', "%$value%");
+                        });
                     } else if ($field === 'enrollment_status_id') {
                         $query->where('list_of_order_lines.' . $field, '=', $value);
                     } else {

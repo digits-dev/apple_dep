@@ -4,6 +4,7 @@ namespace App\Http\Controllers\EnrollmentList;
 use App\Helpers\CommonHelpers;
 use App\Exports\EnrollmentListExport;
 use App\Http\Controllers\Controller;
+use App\Models\DepCompany;
 use App\Models\DepStatus;
 use App\Models\EnrollmentList;
 use App\Models\EnrollmentStatus;
@@ -67,7 +68,7 @@ class EnrollmentListController extends Controller
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['depStatuses'] = DepStatus::select('id', 'dep_status as name')->get();
         $data['users'] = User::select('id as value', 'name as label')->get();
-
+        $data['depCompanies'] = DepCompany::select('id as value', 'dep_company_name as label')->get();
         $data['queryParams'] = request()->query();
 
         if(!CommonHelpers::isView()) {

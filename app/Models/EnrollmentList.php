@@ -23,6 +23,7 @@ class EnrollmentList extends Model
         'item_code',
         'serial_number',
         'transaction_id',
+        'dep_company_id',
         'dep_status',
         'status_message',
         'enrollment_status',
@@ -76,6 +77,11 @@ class EnrollmentList extends Model
                             $query->where('enrollment_status', 'LIKE', "%$search%");
                         });
 
+                    } elseif ($field === 'dep_company_id') {
+                        $query->orWhereHas('depCompany', function ($query) use ($search) {
+                            $query->where('dep_company_name', 'LIKE', "%$search%");
+                        });
+
                     } else {
                         $query->orWhere($field, 'LIKE', "%$search%");
                     }
@@ -91,7 +97,7 @@ class EnrollmentList extends Model
                     if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
                         $query->whereDate('created_at', $value);
 
-                    } elseif (in_array($field, [ 'created_by', 'updated_by', 'returned_by' ])) {
+                    } elseif (in_array($field, ['dep_status', 'enrollment_status', 'created_by', 'updated_by', 'returned_by', 'dep_company_id' ])) {
                         $query->where($field, '=', $value);
 
                     } else {

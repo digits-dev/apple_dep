@@ -23,7 +23,7 @@ import ReactSelect from "../../Components/Forms/ReactSelect";
 import { useNavbarContext } from "../../Context/NavbarContext";
 
 
-const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses, users }) => {
+const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses, users, depCompanies }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
 
@@ -45,6 +45,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
         item_code: '',
         serial_number: '',
         transaction_id: '',
+        dep_company_id: '',
         dep_status: '',
         status_message: '',
         enrollment_status: '',
@@ -112,6 +113,16 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                 value={filters.transaction_id}
                                 onChange={handleFilter}
                             />
+
+                            <ReactSelect 
+                                placeholder="Select DEP Company" 
+                                name="dep_company_id" 
+                                displayName="Dep Company"
+                                options={depCompanies} 
+                                value={depCompanies.find(depCompany => depCompany.value === filters.dep_company_id)} 
+                                onChange={(e) => handleFilter(e,'dep_company_id')}  
+                            />
+
                             <Select
                                 name="dep_status"
                                 options={depStatuses}

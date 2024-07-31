@@ -279,6 +279,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                             onChange={handleFilter}
                         />
                         <InputComponent
+                            displayName="DEP Company"
                             name="dep_company_id"
                             value={filters.dep_company_id}
                             onChange={handleFilter}
@@ -299,14 +300,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                 <TableContainer>
                     <Thead>
                         <Row>
-                                <TableHeader
-                                    name="enrollment_status_id"
-                                    queryParams={queryParams}
-                                    justify="center"
-                                    width="lg"
-                                >
-                                    Enrollment Status
-                                </TableHeader>
+                            <TableHeader
+                                name="enrollment_status_id"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
                             <TableHeader
                                 name="digits_code"
                                 queryParams={queryParams}
