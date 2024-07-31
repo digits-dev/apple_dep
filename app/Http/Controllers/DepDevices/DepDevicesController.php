@@ -48,13 +48,12 @@ class DepDevicesController extends Controller
 
     public function getAllData()
     {
-        $query = DepDevice::getData()->with('customer');
+        $query = DepDevice::getData()->with('customer', 'depCompany');
 
         $filter = $query->searchAndFilter(request());
 
         $result = $filter->orderBy($this->sortBy, $this->sortDir);
         
-
         return $result;
     }
     
@@ -80,6 +79,7 @@ class DepDevicesController extends Controller
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['queryParams'] = request()->query();
         $data['options'] = DepCompany::get();
+        
         return Inertia::render('DepDevices/DepDevices', $data);
     }
 
