@@ -39,7 +39,7 @@ class DevicesExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
                     $item->digits_code,
                     $item->item_description,
                     $item->serial_number,
-                    $item->customer_name ,
+                    $item->customer->customer_name ,
                     $item->eStatus->enrollment_status,
                 ];
        

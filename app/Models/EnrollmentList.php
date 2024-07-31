@@ -128,4 +128,8 @@ class EnrollmentList extends Model
         return $this->belongsTo(User::class, 'returned_by', 'id');
     }
 
+    public function depCompany(){
+        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
+    }
+
 }

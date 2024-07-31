@@ -37,7 +37,7 @@ class OrdersExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSi
 
        $orders = [
                     $item->sales_order_no,
-                    $item->customer_name,
+                    $item->customer->customer_name,
                     $item->order_ref_no,
                     $item->dep_order ? "Yes" : "No",
                     $item->status->enrollment_status,

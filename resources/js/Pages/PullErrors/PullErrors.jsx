@@ -85,7 +85,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                             />
                              <InputComponent
                                 name="item_code"
-                                value={filters.customer_name}
+                                value={filters.digits_code}
                                 onChange={handleFilter}
                             />
                              <InputComponent
@@ -124,14 +124,14 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="item_code"
+                                    name="customer_name"
                                     queryParams={queryParams}
                                 >
                                     Customer Name
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="serial_number"
+                                    name="line_number"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
@@ -139,7 +139,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="transaction_id"
+                                    name="order_ref_no"
                                     queryParams={queryParams}
                                     width="xl"
                                 >
@@ -147,7 +147,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="dep_status"
+                                    name="dr_number"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
@@ -155,7 +155,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="status_message"
+                                    name="digits_code"
                                     queryParams={queryParams}
                                     justify="center"
                                     width="lg"
@@ -164,7 +164,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="digits_code"
+                                    name="item_description"
                                     queryParams={queryParams}
                                     width="lg"
                                     justify="center"
@@ -173,14 +173,14 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="brand"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
                                     Brand
                                 </TableHeader>
                                 <TableHeader
-                                    name="created_date"
+                                    name="wh_category"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
@@ -188,7 +188,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="shipped_quantity"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
@@ -196,14 +196,14 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="created_date"
+                                    name="confirm_date"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
                                     Confirm Date
                                 </TableHeader>
                                 <TableHeader
-                                    name="created_date"
+                                    name="errors_message"
                                     queryParams={queryParams}
                                     justify="center"
                                 >
@@ -222,7 +222,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                         <Tbody data={PullErrors.data}>
                             {PullErrors &&
                                 PullErrors.data.map((item, index) => (
-                                    <Row key={item.order_number + index}>
+                                    <Row key={item.id}>
                                         <RowData
                                             isLoading={loading}
                                             center

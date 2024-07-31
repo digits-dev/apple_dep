@@ -113,6 +113,7 @@ class ListOfOrdersController extends Controller
 
     public function show(Order $order)
     {
+        $order = $order->with('customer')->first();
         $orderLines = OrderLines::where('order_id', $order->id)->get();
         $jsonSubmitted = JsonRequest::where('order_id', $order->id)->get();
         $jsonReceived= JsonResponse::where('order_id', $order->id)->get();
@@ -129,8 +130,7 @@ class ListOfOrdersController extends Controller
         }
        
         $data = [];
-        $data ['order'] = $order;
-
+        $data ['order'] = $order->with('customer')->first();
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
         ->with(['status','depCompanies'])

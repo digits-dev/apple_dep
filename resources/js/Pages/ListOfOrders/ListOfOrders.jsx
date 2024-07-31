@@ -49,7 +49,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
 
     const [updateFormValues, setUpdateFormValues] = useState({
         sales_order_no: "",
-        customer_name: "",
+        customer_id: "",
         order_ref_no: "",
         order_date: "",
     });
@@ -204,7 +204,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
 
     const [filters, setFilters] = useState({
         sales_order_no: "",
-        customer_name: "",
+        customer_id: "",
         order_ref_no: "",
         dep_order: "",
         enrollment_status: "",
@@ -226,6 +226,8 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         router.get(`/list_of_orders?${queryString}`);
     };
 
+    console.log(orders);
+
     return (
         <>
             <Head title="List of Orders" />
@@ -241,8 +243,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                             onChange={handleFilter}
                         />
                         <InputComponent
-                            name="customer_name"
-                            value={filters.customer_name}
+                            displayName="Customer Name"
+                            name="customer_id"
+                            value={filters.customer_id}
                             onChange={handleFilter}
                         />
                         <InputComponent
@@ -296,7 +299,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                 </TableHeader>
 
                             <TableHeader
-                                name="customer_name"
+                                name="customer_id"
                                 queryParams={queryParams}
                                 width="md"
                             >
@@ -405,8 +408,8 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                                                                         item.id,
                                                                     sales_order_no:
                                                                         item.sales_order_no,
-                                                                    customer_name:
-                                                                        item.customer_name,
+                                                                    customer_id:
+                                                                        item.customer_id,
                                                                     order_ref_no:
                                                                         item.order_ref_no,
                                                                     order_date:

@@ -328,7 +328,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                             {item.transaction_id}
                                         </RowData>
                                         <RowData isLoading={loading}>
-                                            {item.dep_company_id}
+                                            {item?.dep_company?.name}
                                         </RowData>
                                        
                                         <RowData isLoading={loading} center>

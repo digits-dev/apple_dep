@@ -395,7 +395,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                             <p>Order Date:</p>
                         </div>
                         <div className="font-medium">
-                            <p>{order.customer_name}</p>
+                            <p>{order.customer.customer_name}</p>
                             <p>{order.sales_order_no}</p>
                             <p>{order.order_ref_no}</p>
                             <p>{order.order_date}</p>

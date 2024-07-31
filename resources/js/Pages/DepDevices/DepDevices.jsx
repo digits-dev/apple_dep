@@ -55,7 +55,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
         digits_code: "",
         item_description: "",
         serial_number: "",
-        customer_name: "",
+        dep_company_id: "",
         enrollment_status_id: "",
     });
 
@@ -279,8 +279,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                             onChange={handleFilter}
                         />
                         <InputComponent
-                            name="customer_name"
-                            value={filters.customer_name}
+                            name="dep_company_id"
+                            value={filters.dep_company_id}
                             onChange={handleFilter}
                         />
                         <Select
