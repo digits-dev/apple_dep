@@ -23,6 +23,7 @@ import { useNavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import TableButton from "../../Components/Table/Buttons/TableButton";
+import Import from "../../Components/Table/Buttons/Import"
 
 const Customer = ({ customers, queryParams }) => {
     const { auth } = usePage().props;
@@ -136,13 +137,17 @@ const Customer = ({ customers, queryParams }) => {
                     />}
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                        {/* <TableButton onClick={handleShowCreate}>
-                        Add Customer
-                    </TableButton> */}
-                        {/* <Import
+                    {auth.sessions.admin_is_superadmin == 1 &&
+                        <TableButton onClick={handleShowCreate}>
+                            Add Customer
+                        </TableButton>
+                    }
+                    {auth.sessions.admin_is_superadmin == 1 && 
+                        <Import
                             importPath="/customers-import"
                             templatePath="/customers-import-template"
-                        /> */}
+                        />
+                    }
                     <Export path="/customers-export" />
                     </TopPanel>
 

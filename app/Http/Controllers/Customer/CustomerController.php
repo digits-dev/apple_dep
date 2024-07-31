@@ -20,8 +20,8 @@ class CustomerController extends Controller
     private $perPage;
 
     public function __construct(){
-        $this->sortBy = request()->get('sortBy', 'created_at');
-        $this->sortDir = request()->get('sortDir', 'desc');
+        $this->sortBy = request()->get('sortBy', 'id');
+        $this->sortDir = request()->get('sortDir', 'asc');
         $this->perPage = request()->get('perPage', 10);
     }
 
