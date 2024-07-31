@@ -334,11 +334,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                             </TableHeader>
 
                                 <TableHeader
-                                    name="customer_name"
+                                    name="dep_company_id"
                                     queryParams={queryParams}
                                     width="lg"
                                 >
-                                    Customer Name
+                                    DEP Company
                                 </TableHeader>
                                 
                                 {auth.access.isCreate &&
@@ -368,7 +368,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                                             {item.serial_number}
                                         </RowData>
                                         <RowData isLoading={loading}>
-                                            {item?.customer?.customer_name}
+                                            {item?.dep_company?.dep_company_name
+                                            }
                                         </RowData>
                                         {auth.access.isCreate && (
                                             <RowData center sticky="right">
