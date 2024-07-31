@@ -173,7 +173,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                         ) : (
                             ""
                         )}
-                        {!isVoidable ? (
+                        {[1].includes(enrollmentStatus) && (
                             <button
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 onClick={() => {
@@ -182,8 +182,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                             >
                                 Cancel Order
                             </button>
-                        ) : (
-                            ""
                         )}
                         {isVoidable ? (
                             <Link
