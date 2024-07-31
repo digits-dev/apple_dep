@@ -16,7 +16,8 @@ class DepDevice extends Model
         'item_description',
         'serial_number',
         'customer_id',
-        'enrollment_status_id'
+        'enrollment_status_id',
+        'dep_company_id',
     ];
 
     public function scopeSearchAndFilter($query, $request)
@@ -73,6 +74,18 @@ class DepDevice extends Model
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
             ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
             ->select('list_of_order_lines.*', 'orders.customer_id', 'es.enrollment_status', 'es.color');
+    }
+
+    public static function updateDepCompany($depCompanyId, $orderId)
+    {
+        $order = self::find($orderId);
+
+        if (!$order) {
+            return false;
+        }
+
+        $order->dep_company_id = $depCompanyId;
+        return $order->save();
     }
 
 }

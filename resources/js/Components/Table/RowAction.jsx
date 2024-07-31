@@ -4,7 +4,7 @@ import EyeIcon from "./Icons/EyeIcon";
 import AddIcon from "./Icons/AddIcon";
 import EditIcon from "./Icons/EditIcon";
 
-const RowAction = ({ action, size, href, onClick, type = 'link'}) => {
+const RowAction = ({ action, size, href, onClick, disabled = false, type = 'link'}) => {
 	const iconSize = {
 		sm: "h-4 w-4",
 		md: "h-5 w-5",
@@ -20,7 +20,7 @@ const RowAction = ({ action, size, href, onClick, type = 'link'}) => {
 	return (
 	<>
 		{type == 'button' ? 	
-			<button className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full " onClick={onClick}>
+			<button className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full " onClick={onClick} disabled={disabled}>
 				{icon}
 			</button> 
 		: 
@@ -28,6 +28,9 @@ const RowAction = ({ action, size, href, onClick, type = 'link'}) => {
 			className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full"
 			as="button"
 			href={href}
+			onClick={(e) => {
+				if (disabled) e.preventDefault(); 	
+			}}
 		>
 			{icon}
 		</Link>}

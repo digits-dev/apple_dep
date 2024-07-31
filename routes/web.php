@@ -35,7 +35,9 @@ use App\Http\Controllers\PullErrors\PullErrorsController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/php-info', function(){
+    return phpinfo();
+});
 //query from beach
 Route::get('/query', [PullErpController::class, 'getListOfOrdersFromErpv1']);
 Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
@@ -131,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
     //DEP DEVICES
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);
     Route::post('/dep_devices/return', [DepDevicesController::class, 'unEnrollDevices']);
+    Route::post('/dep_devices/update-device', [DepDevicesController::class, 'updateDepCompany']);
 
     //ENROLLMENT LIST
     Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);

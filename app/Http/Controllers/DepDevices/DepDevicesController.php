@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DepDevices;
 use App\Helpers\CommonHelpers;
 use App\Exports\DevicesExport;
 use App\Http\Controllers\Controller;
+use App\Models\DepCompany;
 use App\Models\DepDevice;
 use App\Models\EnrollmentStatus;
 use Illuminate\Http\Request;
@@ -52,6 +53,7 @@ class DepDevicesController extends Controller
         $filter = $query->searchAndFilter(request());
 
         $result = $filter->orderBy($this->sortBy, $this->sortDir);
+        
 
         return $result;
     }
@@ -77,7 +79,7 @@ class DepDevicesController extends Controller
         $data['devices'] = self::getAllData()->paginate($this->perPage)->withQueryString();
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['queryParams'] = request()->query();
-
+        $data['options'] = DepCompany::get();
         return Inertia::render('DepDevices/DepDevices', $data);
     }
 
@@ -385,6 +387,50 @@ class DepDevicesController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function updateDepCompany(Request $request)
+    {
+        $validatedData = $request->validate([
+            'depCompanyId' => 'required|integer|exists:dep_companies,id',
+            'orderId' => 'required|integer|exists:list_of_order_lines,id',
+        ]);
+        
+        $updated = DepDevice::updateDepCompany($validatedData['depCompanyId'], $validatedData['orderId']);
+
+        if ($updated) {
+
+            $data = [
+                'message' =>'DEP Company updated successfully.',
+                'status' => 'success'
+            ];
+
+            return response()->json($data, 200);
+        } else {
+            return response()->json(['message' => 'Something went wrong!'], 404);
+        }
+    }
+
+    public function getDepCompany($orderId)
+    {
+        $customerId = Order::where('id', $orderId)->value('customer_name');
+
+        if (!$customerId) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $options = DepCompany::where('customer_id', $customerId)->get();
+
+        $formattedOptions = $options->map(function ($option) {
+            return [
+                'value' => $option->id,
+                'label' => $option->dep_company_name
+            ];
+        });
+
+
+        return response()->json($formattedOptions);
+    }
+
 
 
 }

@@ -11,6 +11,7 @@ import RowData from "../../Components/Table/RowData";
 import Row from "../../Components/Table/Row";
 import Export from "../../Components/Table/Buttons/Export";
 import RowAction from "../../Components/Table/RowAction";
+import RowActions from "../../Components/Table/RowActions";
 import Filters from "../../Components/Table/Buttons/Filters";
 import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
@@ -23,17 +24,23 @@ import axios from "axios";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import RowStatus from "../../Components/Table/RowStatus";
 import Select from "../../Components/Forms/Select";
+import ReactSelect from "../../Components/Forms/ReactSelect";
+import DropdownSelect from "../../Components/Dropdown/Dropdown";
 
-const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
+
+const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [orderId, setOrderId] = useState(null);
+    const [orderDeviceId, setDevOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const { setTitle } = useNavbarContext();
     const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [depCompanyId, setDefaultDepCompanyId] = useState(null);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -71,9 +78,103 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
         setShowModal(false);
     };
 
+    const handleClodeEditModal = () => {
+        setShowEditModal(false);
+    }
+
+    const handleOpenEditModal = (depCompanyId) => {
+        setShowEditModal(true);
+        setDefaultDepCompanyId(depCompanyId);
+    }
+
     const handleOpenModal = () => {
         setShowModal(true);
     };
+
+    const EditDeviceAction = ({id}) => {
+        const [selectedOption, setSelectedOption] = useState(null);
+
+        useEffect(() => {
+            if (id) {
+                const defaultOption = options.find(option => option.id === id);
+                setSelectedOption({ value: defaultOption.id, label: defaultOption.dep_company_name });
+            }
+        }, [id, options]);
+
+        const handleSwal = (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to edit this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                iconColor: "#000000",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    EditDevice();
+                }
+            });
+        };
+
+        const EditDevice = async () => {
+            setShowEditModal(false);
+            setProcessing(true);
+
+            try {
+                let response;
+                response = await axios.post(`/dep_devices/update-device`, {
+                    depCompanyId: selectedOption.value,
+                    orderId: orderId
+                });
+
+
+                if (response.data.status == "success") {
+                    handleToast(response.data.message, response.data.status);
+
+                    router.reload({ only: ["devices"] });
+                } else {
+
+                    router.reload({ only: ["devices"] });
+                    handleToast(response.data.message, "Error");
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                handleToast(
+                    "Something went wrong, please try again later.",
+                    "Error"
+                );
+            } finally {
+                setProcessing(false);
+                setShowEditModal(false);
+            }
+        };
+
+        const handleSelectChange = (selectedOption) => {
+            setSelectedOption(selectedOption);
+        };
+
+        return ( 
+            <div className="gap-y-3 py-2 text-black font-nunito-sans font-bold">
+                <ReactSelect
+                    placeholder={loading ? "Loading..." : "Select an option"}
+                    name="dep_company" 
+                    value={selectedOption}
+                    options={options.map(opt => ({ value: opt.id, label: opt.dep_company_name }))}
+                    onChange={handleSelectChange}
+                />
+                <button
+                    className="bg-black w-full text-white font-nunito-sans py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                    onClick={(e) => handleSwal(e)}
+                >
+                    {processing ? 'Updating...' : 'Save Changes'}
+                </button>
+                    
+            </div>
+        );
+    }
 
     const EnrollReturnDeviceActions = () => {
         const handleSwal = (e, action) => {
@@ -274,17 +375,34 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
                                             {![8, 9].includes(
                                                 item.enrollment_status_id
                                             ) && (
-                                                <RowAction
-                                                    action="add"
-                                                    type="button"
-                                                    onClick={() => {
-                                                        handleOpenModal();
-                                                        setOrderId(item.id);
-                                                        setEnrollmentStatus(
-                                                            item.enrollment_status_id
-                                                        );
-                                                    }}
-                                                />
+
+                                                <RowActions>
+
+                                                    <RowAction
+                                                        action="add"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            handleOpenModal();
+                                                            setOrderId(item.id);
+                                                            setEnrollmentStatus(
+                                                                item.enrollment_status_id
+                                                            );
+                                                        }}
+                                                    />
+                                                    <RowAction
+                                                        action="edit"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            handleOpenEditModal(item.dep_company_id);
+                                                            setOrderId(item.id);
+                                                            setDevOrderId(item.order_id)
+                                                            setDefaultDepCompanyId(item.dep_company_id); 
+                                                        }}
+                                                        disabled={item.enrollment_status !== "Pending"}
+                                                    />
+
+                                                </RowActions>
+
                                             )}
                                         </RowData>
                                         )}
@@ -297,6 +415,9 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses }) => {
             </ContentPanel>
             <Modal show={showModal} onClose={handleCloseModal} title="Actions">
                 <EnrollReturnDeviceActions />
+            </Modal>
+            <Modal show={showEditModal} onClose={handleClodeEditModal} title="Edit">
+                <EditDeviceAction id={depCompanyId} />
             </Modal>
         </>
     );
