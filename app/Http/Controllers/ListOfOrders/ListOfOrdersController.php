@@ -560,6 +560,10 @@ class ListOfOrdersController extends Controller
                     'enrollment_status' => self::enrollment_status['Pending'],
                     'dep_order' => 0
                 ]);
+            }else{
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => self::enrollment_status['Partially Enrolled']
+                ]);
             }
             
 
@@ -702,7 +706,7 @@ class ListOfOrdersController extends Controller
                             'order_lines_id'    => $deviceData->order_line_id,
                             'dep_company_id'    => $dep_company->id,
                             'sales_order_no'    => $header_data->sales_order_no,
-                            'item_code'         => $header_data->digits_code,
+                            'item_code'         => $deviceData->digits_code,
                             'serial_number'     => $deviceData->serial_number,
                             'transaction_id'    => $transaction_id,
                             'dep_status'        => $dep_status,

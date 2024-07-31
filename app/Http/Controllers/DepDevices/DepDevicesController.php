@@ -32,6 +32,10 @@ class DepDevicesController extends Controller
         'Completed' => 4,
         'Returned' => 5,
         'Return Error' => 6,
+        'Partially Enrolled' => 7,
+        'Voided' => 8,
+        'Canceled' => 9,
+        'Void Error' => 10,
     ];
 
     private const dep_status = [
@@ -301,13 +305,24 @@ class DepDevicesController extends Controller
             ];
             
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+             //UPC CODE
+             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
+             $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+             if(!$item_master){
+                 $data = [
+                     'message' => 'Item Master not found!',
+                     'status' => 'error' 
+                 ];
+     
+                 return response()->json($data);
+             }
             // Check if multiple orders are provided
             $deliveryPayload = [];
             $devicePayload = [];
             
            
             $devicePayload[] = [
-                'deviceId' => $header_data['sales_order_no'],
+                'deviceId' => $item_master->upc_code_up_1,
                 'assetTag' => $header_data['serial_number'],
             ];
                 
@@ -323,7 +338,7 @@ class DepDevicesController extends Controller
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
                 'orderType' => 'RE',
-                'customerId' => $header_data['customer_name'],
+                'customerId' => (string)$dep_company->id,
                 'poNumber' => $header_data['order_ref_no'],
                 'deliveries' => [
                     $deliveryPayload
@@ -387,9 +402,20 @@ class DepDevicesController extends Controller
                 'dep_status' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
-            
-            Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending' ]]);
-            
+
+            // Count total number of order lines
+            $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+            // Count order lines with enrollment status 3 or completed
+            $enrollmentStatusReturned = OrderLines::where('order_id', $orderId)
+                ->where('enrollment_status_id', 5)
+                ->count();
+
+            if ($enrollmentStatusReturned === $totalOrderLines) {
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
+            }else{
+                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+            }
             // For successful response
             $data = [
                 'message' => $enrollment_status == 5 ? 'Unenrollment Success!' : 'Unenrollment Error!',
