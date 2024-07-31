@@ -51,14 +51,10 @@ class Order extends Model
                 if ($request->filled($field)) {
                     $value = $request->input($field);
 
-                    if (in_array($field, [ 'dep_order', 'enrollment_status' ])) {
+                    if (in_array($field, [ 'dep_order', 'enrollment_status', 'customer_id' ])) {
                         $query->where($field, '=', $value);
 
-                    } else if ($field === 'customer_id') {
-                        $query->orWhereHas('customer', function ($query) use ($value) {
-                            $query->where('customer_name', 'LIKE', "%$value%");
-                        });
-                    } else if ($field === 'order_date') {
+                    }  else if ($field === 'order_date') {
                         $query->whereDate($field, $value);
 
                     } else {

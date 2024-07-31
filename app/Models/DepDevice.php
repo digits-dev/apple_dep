@@ -48,11 +48,7 @@ class DepDevice extends Model
                 if ($request->filled($field)) {
                     $value = $request->input($field);
 
-                    if ($field === 'dep_company_id') {
-                        $query->orWhereHas('depCompany', function ($query) use ($value) {
-                            $query->where('dep_company_name', 'LIKE', "%$value%");
-                        });
-                    } else if ($field === 'enrollment_status_id') {
+                    if (in_array($field, ['dep_company_id', 'enrollment_status_id'])) {
                         $query->where('list_of_order_lines.' . $field, '=', $value);
                     } else {
                         $query->where('list_of_order_lines.' . $field, 'LIKE', "%$value%");

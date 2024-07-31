@@ -160,7 +160,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                     queryParams={queryParams}
                                     justify="center"
                                 >
-                                   Dr
+                                   DR Number
                                 </TableHeader>
 
                                 <TableHeader

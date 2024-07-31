@@ -79,6 +79,8 @@ class DepDevicesController extends Controller
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['queryParams'] = request()->query();
         $data['options'] = DepCompany::get();
+        $data['depCompanies'] = DepCompany::select('id as value', 'dep_company_name as label')->get();
+
         
         return Inertia::render('DepDevices/DepDevices', $data);
     }

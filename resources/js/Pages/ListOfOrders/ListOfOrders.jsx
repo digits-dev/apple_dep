@@ -24,8 +24,9 @@ import { useToast } from "../../Context/ToastContext";
 import OverrideOrderForm from "./OverrideOrderForm";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import axios from "axios";
+import ReactSelect from "../../Components/Forms/ReactSelect";
 
-const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
+const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) => {
     queryParams = queryParams || {};
     const { auth } = usePage().props;
     const accessPrivileges =
@@ -212,13 +213,27 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
         order_date: "",
     });
 
-    const handleFilter = (e) => {
-        const { name, value } = e.target;
-        setFilters((filters) => ({
+
+    const handleFilter = (e, attrName) => {
+        if(attrName) {
+            const { value } = e;
+
+            setFilters(filters => ({
+                ...filters,
+                [attrName]: value,
+            }));
+          
+        }else{
+            const { name, value } = e.target;
+
+            setFilters(filters => ({
             ...filters,
             [name]: value,
-        }));
-    };
+            }));
+        }
+       
+    }
+    
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
@@ -243,11 +258,13 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses }) => {
                             value={filters.sales_order_no}
                             onChange={handleFilter}
                         />
-                        <InputComponent
+                        <ReactSelect 
+                            placeholder="Select Customer Name" 
+                            name="customer_id" 
                             displayName="Customer Name"
-                            name="customer_id"
-                            value={filters.customer_id}
-                            onChange={handleFilter}
+                            options={customers} 
+                            value={customers.find(customer => customer.value === filters.customer_id)} 
+                            onChange={(e) => handleFilter(e,'customer_id')}  
                         />
                         <InputComponent
                             name="order_ref_no"

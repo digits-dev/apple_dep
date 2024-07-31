@@ -5,6 +5,7 @@ use App\Helpers\CommonHelpers;
 use App\Exports\OrdersExport;
 use App\Exports\TransactionExport;
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\DepCompany;
 use App\Models\EnrollmentStatus;
 use App\Models\Order;
@@ -107,6 +108,7 @@ class ListOfOrdersController extends Controller
 
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
+        $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
 
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 

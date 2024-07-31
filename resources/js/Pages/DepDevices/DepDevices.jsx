@@ -27,7 +27,8 @@ import Select from "../../Components/Forms/Select";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 
-const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
+
+const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies }) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
@@ -58,13 +59,25 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
         enrollment_status_id: "",
     });
 
-    const handleFilter = (e) => {
-        const { name, value } = e.target;
-        setFilters((filters) => ({
+    const handleFilter = (e, attrName) => {
+        if(attrName) {
+            const { value } = e;
+
+            setFilters(filters => ({
+                ...filters,
+                [attrName]: value,
+            }));
+          
+        }else{
+            const { name, value } = e.target;
+
+            setFilters(filters => ({
             ...filters,
             [name]: value,
-        }));
-    };
+            }));
+        }
+       
+    }
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
@@ -280,11 +293,13 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options }) => {
                             value={filters.serial_number}
                             onChange={handleFilter}
                         />
-                        <InputComponent
-                            displayName="DEP Company"
-                            name="dep_company_id"
-                            value={filters.dep_company_id}
-                            onChange={handleFilter}
+                        <ReactSelect
+                            placeholder="Select DEP Company" 
+                            name="dep_company_id" 
+                            displayName="Dep Company"
+                            options={depCompanies} 
+                            value={depCompanies.find(depCompany => depCompany.value === filters.dep_company_id)} 
+                            onChange={(e) => handleFilter(e,'dep_company_id')}  
                         />
                         <Select
                             name="enrollment_status_id"
