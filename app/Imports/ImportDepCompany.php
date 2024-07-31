@@ -30,7 +30,7 @@ class ImportDepCompany implements ToModel, SkipsEmptyRows, WithHeadingRow,  With
         } else {
             return new DepCompany([
                 'customer_id' => $customer->id,
-                'dep_company_name' => $row['dep_company_name'],
+                'dep_company_name' => trim($row['dep_company_name']),
             ]);
         }
     }

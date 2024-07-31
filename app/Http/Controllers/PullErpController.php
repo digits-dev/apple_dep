@@ -223,7 +223,7 @@ class PullErpController extends Controller
 					->where('order_ref_no', $insert_data->cust_po_number)
 					->exists();
             if(!$isExist){
-                $customer = DB::table('customers')->where('customer_name',$insert_data->customer_name)->first();
+                $customer = DB::table('customers')->where('customer_name',trim($insert_data->customer_name))->first();
                 $headerId = Order::create(
                     [
                         'sales_order_no'    => $insert_data->order_number,
@@ -251,7 +251,7 @@ class PullErpController extends Controller
             }
             
             foreach($insertData as $key => $insertLines){
-                $customer    = DB::table('customers')->where('customer_name',$insertLines->customer_name)->first();
+                $customer    = DB::table('customers')->where('customer_name',trim($insertLines->customer_name))->first();
                 $dep_company = DB::table('dep_companies')->where('customer_id',$customer->id)->first();
                 OrderLines::create(
                 [
