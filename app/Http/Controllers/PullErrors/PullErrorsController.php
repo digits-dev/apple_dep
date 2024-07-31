@@ -2,6 +2,7 @@
     namespace App\Http\Controllers\PullErrors;
     use App\Helpers\CommonHelpers;
     use App\Http\Controllers\Controller;
+    use App\Models\PullErpErrors;
     use Illuminate\Http\Request;
     use Illuminate\Http\RedirectResponse;
     use Illuminate\Support\Facades\Auth;
@@ -9,7 +10,6 @@
     use Inertia\Inertia;
     use Inertia\Response;
     use DB;
-    use App\Models\PullErpErros;
     use Maatwebsite\Excel\Facades\Excel;
     use App\Exports\PullErpErrorsExport;
 
@@ -28,7 +28,7 @@
 
         public function getAllData()
         {
-            $query = PullErpErros::query();
+            $query = PullErpErrors::query();
             $query->select('*', DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as created_date"));
             $filter = $query->searchAndFilter(request());
             $result = $filter->orderBy($this->sortBy, $this->sortDir);
@@ -51,5 +51,12 @@
             $data = self::getAllData();
             return Excel::download(new PullErpErrorsExport($data), $filename . '.xlsx');
         }
+
+        public function show(PullErpErrors $pullError){
+
+          $data = [];
+          $data['pullError'] = $pullError;
+
+          return Inertia::render('PullErrors/PullErrorDetails', $data);
+        }
     }
-?>

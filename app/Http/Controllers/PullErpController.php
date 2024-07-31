@@ -6,7 +6,7 @@ use App\Exports\OrdersExport;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderLines;
-use App\Models\PullErpErros;
+use App\Models\PullErpErrors;
 use App\Models\User;
 use App\Models\EnrollmentList;
 use App\Models\JsonRequest;
@@ -271,7 +271,7 @@ class PullErpController extends Controller
 
     public function savePullErpErrors($params){
         foreach($params as $key => $insert){
-            $isExist = PullErpErros::where('order_number', $insert->order_number)
+            $isExist = PullErpErrors::where('order_number', $insert->order_number)
             ->where('order_ref_no', $insert->cust_po_number)
             ->where('digits_code', $insert->ordered_item)
             ->where('serial1', $insert->serial1)
@@ -286,7 +286,7 @@ class PullErpController extends Controller
             ->where('serial10', $insert->serial10)
             ->exists();
             if(!$isExist){
-                PullErpErros::create(
+                PullErpErrors::create(
                     [
                         'order_number'      => $insert->order_number,
                         'customer_name'     => $insert->customer_name,

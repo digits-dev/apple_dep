@@ -117,6 +117,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pull-errors', [PullErrorsController::class, 'export']);
     Route::get('/dep-company-export', [DepCompanyController::class, 'export']);
 
+    //ERP PULL ERROR
+    Route::get('/pull_errors/{pullError}', [PullErrorsController::class, 'show']);
+
+
 
     //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);

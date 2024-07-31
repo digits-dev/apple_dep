@@ -292,8 +292,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                         >
                                           <RowAction
                                               href={
-                                                  PullErrors.path +
-                                                  `/${item.id}`
+                                                  `/pull_errors/${item.id}`
                                               }
                                               action="view"
                                               size="md"
