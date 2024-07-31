@@ -143,22 +143,53 @@ class CustomerController extends Controller
 
     public function import(Request $request)
     {   
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to import.", 
+                'status' => 'error'
+            ];
+
+            return back()->with($data);
+        }
+        
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
-    
+
         try {
             $importFile = $request->file('file');
 
             Excel::import(new ImportCustomer, $importFile);
+
+            $data = [
+                'message' => "Import Success", 
+                'status' => 'success'
+            ];
     
-            return to_route('/customer');
+            return  back()->with($data);
+
+    
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             // Handle validation errors during import
-            return back()->with('error', 'Validation error: ' . $e->getMessage());
+
+            $data = [
+                'message' => "Import Failed, Please check template file.", 
+                'status' => 'error',
+                'error', 'Validation error: ' .  $e->getMessage()
+            ];
+    
+            return  back()->with($data);
         } catch (\Exception $e) {
             // Handle other errors
-            return back()->with('error', 'Error: ' . $e->getMessage());
+
+            $data = [
+                    'message' => "Something went wrong, Please try again later.", 
+                    'status' => 'error',
+                    'error', 'Error: ' .  $e->getMessage()
+                ];
+        
+            return  back()->with($data);
         }
       
     }

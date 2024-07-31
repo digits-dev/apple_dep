@@ -169,7 +169,7 @@ class DepStatusController extends Controller
             Excel::import(new ImportDepStatus, $importFile);
 
             $data = [
-                'message' => "Import Successful.", 
+                'message' => "Import Success", 
                 'status' => 'success'
             ];
     

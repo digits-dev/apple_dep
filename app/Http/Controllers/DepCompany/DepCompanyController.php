@@ -171,7 +171,7 @@ class DepCompanyController extends Controller{
             Excel::import(new ImportDepCompany, $importFile);
     
             $data = [
-                'message' => "Import Successful.", 
+                'message' => "Import Success", 
                 'status' => 'success'
             ];
     

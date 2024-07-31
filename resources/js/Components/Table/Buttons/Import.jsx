@@ -3,12 +3,14 @@ import TableButton from './TableButton'
 import { useState } from 'react'
 import { router, useForm } from '@inertiajs/react'
 import { useToast } from '../../../Context/ToastContext'
+import Modal from '../../Modal/Modal'
 
 const Import = ({importPath, templatePath, }) => {
 
-  const {handleToast} =useToast();
+  const {handleToast} = useToast();
 
   const [show, setShow] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const { data, setData, post, progress, errors, reset, clearErrors  } = useForm({
     file: null,
@@ -16,19 +18,31 @@ const Import = ({importPath, templatePath, }) => {
 
   const submit = (e) => {
     e.preventDefault()
+
     post(importPath, {
-      forceFormData: true,  
+      forceFormData: true,
+      onStart: () => {
+        setProcessing(true);
+        setShow(false);
+      },
       onSuccess: (data) => {
-        const { status, message } = data.props.auth.sessions;
+        const { status, message } = data?.props?.auth?.sessions;
         handleShow();
-        reset();
         handleToast(message, status);
+        reset();
       },
       onError: (data) => {
-        const { status, message } = data.props.auth.sessions;
-        handleShow();
-        reset();
-        handleToast(message, status);
+        setShow(true);
+
+        if(data?.props?.auth?.sessions){
+          const { status, message } = data?.props?.auth?.sessions;
+          handleShow();
+          handleToast(message, status);
+          reset();
+        }
+      },
+      onFinish: () => {
+        setProcessing(false);
       }
     });
   }
@@ -40,6 +54,7 @@ const Import = ({importPath, templatePath, }) => {
   return (
     <>
     <TableButton onClick={handleShow}>Import</TableButton>
+    <Modal show={processing} modalLoading/>
     {show && 
     <div  className='fixed inset-0 z-[51] font-nunito-sans'>
       {/* modal backdrop  */}

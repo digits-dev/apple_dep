@@ -156,7 +156,7 @@ class ActionController extends Controller
             Excel::import(new ImportActions, $importFile);
     
             $data = [
-                'message' => "Import Successful.", 
+                'message' => "Import Success", 
                 'status' => 'success'
             ];
     

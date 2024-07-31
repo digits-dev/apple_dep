@@ -171,7 +171,7 @@ class EnrollmentStatusController extends Controller
     
             
             $data = [
-                'message' => "Import Successful.", 
+                'message' => "Import Success", 
                 'status' => 'success'
             ];
     
@@ -180,7 +180,7 @@ class EnrollmentStatusController extends Controller
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
              // Handle validation errors during import
 
-             $data = [
+            $data = [
                 'message' => "Import Failed, Please check template file.", 
                 'status' => 'error',
                 'error', 'Validation error: ' .  $e->getMessage()
