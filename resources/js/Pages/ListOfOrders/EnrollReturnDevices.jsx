@@ -531,7 +531,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                                     setOrderId(order.id);
                                                     setDepCompanyId(order.dep_company_id);
                                                 }}
-                                                disabled={order.status.enrollment_status !== "Pending"}
+                                                disabled={!["Pending", "Returned"].includes(order.status.enrollment_status)}
                                                 tooltipContent="Edit"
                                             />
                                     </RowActions>

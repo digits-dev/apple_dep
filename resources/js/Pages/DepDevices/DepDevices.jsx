@@ -430,7 +430,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                             setDevOrderId(item.order_id)
                                                             setDefaultDepCompanyId(item.dep_company_id); 
                                                         }}
-                                                        disabled={item.enrollment_status !== "Pending"}
+                                                        disabled={!["Pending", "Returned"].includes(item.enrollment_status)}
                                                         tooltipContent="Edit"
                                                     />
 
