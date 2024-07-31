@@ -242,6 +242,7 @@ const Customer = ({ customers, queryParams }) => {
                                             onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentValue:item.customer_name, status:item.status});}}
                                             action="edit"
                                             size="md"
+                                            tooltipContent="Edit"
                                         />
                                     </RowData>}
                                 </Row>

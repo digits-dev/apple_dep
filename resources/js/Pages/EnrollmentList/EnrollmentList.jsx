@@ -392,6 +392,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                                 }
                                                 action="view"
                                                 size="md"
+                                                tooltipContent="View"
                                             />
                                         </RowData>
                                     </Row>

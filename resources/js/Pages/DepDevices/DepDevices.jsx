@@ -396,10 +396,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                     </RowData>
                                     {auth.access.isCreate && (
                                         <RowData center sticky="right">
-                                            <RowActions>
-                                                {![8, 9, 10].includes(
-                                                    item.enrollment_status_id
-                                                ) && (
+                                            {![8, 9, 10].includes(item.enrollment_status_id) && (
+                                                <RowActions>
                                                     <RowAction
                                                         action="add"
                                                         type="button"
@@ -410,32 +408,27 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                                 item.enrollment_status_id
                                                             );
                                                         }}
+                                                        tooltipContent={`${item.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
                                                     />
-                                                )}
+                                                    <RowAction
+                                                        action="edit"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            handleOpenEditModal(item.dep_company_id);
+                                                            setOrderId(item.id);
+                                                            setDevOrderId(item.order_id)
+                                                            setDefaultDepCompanyId(item.dep_company_id); 
+                                                        }}
+                                                        disabled={item.enrollment_status !== "Pending"}
+                                                        tooltipContent="Edit"
+                                                    />
 
-                                                <RowAction
-                                                    action="edit"
-                                                    type="button"
-                                                    onClick={() => {
-                                                        handleOpenEditModal(
-                                                            item.dep_company_id
-                                                        );
-                                                        setOrderId(item.id);
-                                                        setDevOrderId(
-                                                            item.order_id
-                                                        );
-                                                        setDefaultDepCompanyId(
-                                                            item.dep_company_id
-                                                        );
-                                                    }}
-                                                    disabled={
-                                                        item.enrollment_status !==
-                                                        "Pending"
-                                                    }
-                                                />
-                                            </RowActions>
+                                                </RowActions>
+                                            )}       
                                         </RowData>
                                     )}
+                                        
+                                    
                                 </Row>
                             ))}
                     </Tbody>

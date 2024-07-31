@@ -99,6 +99,7 @@ const Privileges = ({ privileges, queryParams }) => {
                                                 as="button"
                                                 action="edit"
                                                 href={`edit-privileges/${item.id}`}
+                                                tooltipContent="Edit"
                                             ></RowAction>
                                         </RowData>
                                     </Row>

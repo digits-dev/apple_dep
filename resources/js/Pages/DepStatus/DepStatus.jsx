@@ -294,6 +294,7 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                                 }}
                                                 action="edit"
                                                 size="md"
+                                                tooltipContent="Edit"
                                             />
                                         </RowData>}
                                     </Row>

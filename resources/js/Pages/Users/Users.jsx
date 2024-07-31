@@ -541,6 +541,7 @@ const Users = ({ users, options, queryParams }) => {
                                                     type="button"
                                                     action="edit"
                                                     size="md"
+                                                    tooltipContent="Edit"
                                                     onClick={() =>
                                                         handleEdit(user)
                                                     }

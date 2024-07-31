@@ -3,8 +3,10 @@ import React from "react";
 import EyeIcon from "./Icons/EyeIcon";
 import AddIcon from "./Icons/AddIcon";
 import EditIcon from "./Icons/EditIcon";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
-const RowAction = ({ action, size, href, onClick, disabled = false, type = 'link'}) => {
+const RowAction = ({ action, size, href, onClick, disabled = false, type = 'link', tooltipContent }) => {
 	const iconSize = {
 		sm: "h-4 w-4",
 		md: "h-5 w-5",
@@ -17,13 +19,17 @@ const RowAction = ({ action, size, href, onClick, disabled = false, type = 'link
 		edit: <EditIcon classes={iconSize} />,
 	}[action];
 
-	return (
-	<>
-		{type == 'button' ? 	
-			<button className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full " onClick={onClick} disabled={disabled}>
-				{icon}
-			</button> 
-		: 
+	const button = (
+		<button
+			className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full"
+			onClick={onClick}
+			disabled={disabled}
+		>
+			{icon}
+		</button>
+	);
+
+	const link = (
 		<Link
 			className="relative active:scale-105 transition-all hover:before:-top-1/4 hover:before:-left-1/4 hover:before:content-[''] hover:before:block hover:before:absolute hover:before:bg-black/10 hover:before:h-[150%] hover:before:w-[150%] hover:before:rounded-full"
 			as="button"
@@ -33,8 +39,19 @@ const RowAction = ({ action, size, href, onClick, disabled = false, type = 'link
 			}}
 		>
 			{icon}
-		</Link>}
-	</>
+		</Link>
+	);
+
+	return (
+		<>
+			{tooltipContent ? (
+				<Tippy content={<span dangerouslySetInnerHTML={{ __html: tooltipContent }} />} allowHTML={true}>
+					{type === 'button' ? button : link}
+				</Tippy>
+			) : (
+				type === 'button' ? button : link
+			)}
+		</>
 	);
 };
 

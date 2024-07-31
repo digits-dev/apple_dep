@@ -283,6 +283,7 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                               }
                                               action="view"
                                               size="md"
+                                              tooltipContent="View"
                                           />
                                        </RowData>
                                     </Row>

@@ -90,9 +90,13 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                     setLoading(false);
                     setLoadSpinner(false);
                 }
+
+                
             }
         });
     };
+
+   
 
     const handleOverrideModal = () => {
         setShowOverrideModal(!showOverrideModal);
@@ -115,6 +119,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
             confirmButtonColor: "#000000",
             icon: "question",
             iconColor: "#000000",
+            reverseButtons: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setLoadSpinner(true);
@@ -137,6 +142,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+
 
     const ListofOrdersEditActions = () => {
         return (
@@ -398,6 +404,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                                                 }
                                                 action="view"
                                                 size="md"
+                                                tooltipContent="View"
                                             />
 
                                             {accessPrivileges &&
@@ -432,6 +439,17 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                                                         }}
                                                         action="edit"
                                                         size="md"
+                                                        tooltipContent=
+                                                        {`
+                                                            <p>
+                                                            Enroll/Return Devices 
+                                                            </br> Override Order 
+                                                            </br> Void Order 
+                                                            </br> Cancel Order 
+                                                                
+                                                            </p>
+                                                        `
+                                                        }
                                                     />
                                                 )}
                                         </RowActions>

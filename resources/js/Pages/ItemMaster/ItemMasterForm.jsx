@@ -47,19 +47,24 @@ function ItemMasterForm({ action, handleShow, setUpdateFormValues }) {
             <form onSubmit={handleSubmit}>
                 <div className="flex space-x-4">
                     <div className="space-y-3 flex-1 mb-3">
-                        <InputComponent
-                            name="Digits Code"
-                            value={data.digits_code}
-                            onChange={(e) =>
-                                setData("digits_code", e.target.value)
-                            }
-                        />
-                        {errors.digits_code && (
-                            <span className="text-red-400 font-base">
-                                <em>{errors.digits_code}</em>
-                            </span>
-                        )}
-
+                        {action != "edit" && 
+                            <>
+                                <InputComponent
+                                    name="Digits Code"
+                                    value={data.digits_code}
+                                    onChange={(e) =>
+                                        setData("digits_code", e.target.value)
+                                    }
+                                />
+                                {errors.digits_code && (
+                                    <span className="text-red-400 font-base">
+                                        <em>{errors.digits_code}</em>
+                                    </span>
+                                )}
+                            </>
+                           
+                        }
+                        
                         <InputComponent
                             name="UPC Code Up"
                             value={data.upc_code_up_1}
@@ -111,21 +116,43 @@ function ItemMasterForm({ action, handleShow, setUpdateFormValues }) {
                                 <em>{errors.upc_code_up_4}</em>
                             </span>
                         )}
+                        {action == "edit" && 
+                                <>
+                                    <InputComponent
+                                        name="UPC Code Up 5"
+                                        value={data.upc_code_up_5}
+                                        onChange={(e) =>
+                                            setData("upc_code_up_5", e.target.value)
+                                        }
+                                    />
+                                    {errors.upc_code_up_5 && (
+                                        <span className="text-red-400 font-base">
+                                            <em>{errors.upc_code_up_5}</em>
+                                        </span>
+                                    )}
+                                </>
+                            
+                        }
                     </div>
                     <div className="space-y-3 flex-1">
-                        <InputComponent
-                            name="UPC Code Up 5"
-                            value={data.upc_code_up_5}
-                            onChange={(e) =>
-                                setData("upc_code_up_5", e.target.value)
-                            }
-                        />
-                        {errors.upc_code_up_5 && (
-                            <span className="text-red-400 font-base">
-                                <em>{errors.upc_code_up_5}</em>
-                            </span>
-                        )}
-
+                        {action != "edit" && 
+                                <>
+                                    <InputComponent
+                                        name="UPC Code Up 5"
+                                        value={data.upc_code_up_5}
+                                        onChange={(e) =>
+                                            setData("upc_code_up_5", e.target.value)
+                                        }
+                                    />
+                                    {errors.upc_code_up_5 && (
+                                        <span className="text-red-400 font-base">
+                                            <em>{errors.upc_code_up_5}</em>
+                                        </span>
+                                    )}
+                                </>
+                            
+                        }
+                        
                         <InputComponent
                             name="WH Category"
                             value={data.wh_category}

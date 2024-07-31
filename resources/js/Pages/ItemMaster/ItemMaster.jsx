@@ -253,6 +253,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                                                 }}
                                                 action="edit"
                                                 size="md"
+                                                tooltipContent="Edit"
                                             />
                                         </RowData> }
                                     </Row>

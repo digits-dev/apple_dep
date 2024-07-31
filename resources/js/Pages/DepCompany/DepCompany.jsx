@@ -339,6 +339,7 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                                                 }}
                                                 action="edit"
                                                 size="md"
+                                                tooltipContent="Edit"
                                             />
                                         </RowData>}
                                     </Row>

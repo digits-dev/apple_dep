@@ -291,6 +291,7 @@ const Action = ({ actions, queryParams }) => {
                                                 }}
                                                 action="edit"
                                                 size="md"
+                                                tooltipContent="Edit"
                                             />
                                         </RowData>}
                                     </Row>

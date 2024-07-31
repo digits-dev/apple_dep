@@ -506,7 +506,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 </RowStatus>
                                 <RowData center sticky="right">
                                     <RowActions>
-                                        {order?.status?.id != 8 && (
+                                        {![8, 9].includes(order?.status?.id) && 
+                                        (
                                             <RowAction
                                                 action="add"
                                                 type="button"
@@ -517,6 +518,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                                         order.enrollment_status_id
                                                     );
                                                 }}
+                                                tooltipContent={`${order.status.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
                                             />
                                         )}
 
@@ -528,6 +530,8 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                                     setOrderId(order.id);
                                                     setDepCompanyId(order.dep_company_id);
                                                 }}
+                                                disabled={order.status.enrollment_status !== "Pending"}
+                                                tooltipContent="Edit"
                                             />
                                     </RowActions>
                                 </RowData>

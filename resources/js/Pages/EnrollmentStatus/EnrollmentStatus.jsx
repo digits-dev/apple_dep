@@ -254,6 +254,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                                                 });}}
                                             action="edit"
                                             size="md"
+                                            tooltipContent="Edit"
                                         />
                                     </RowData>}
                             </Row>
