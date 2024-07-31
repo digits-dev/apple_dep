@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class PullErpErros extends Model
 {
     use HasFactory;
+    public $timestamps = false;
+
+    protected $casts = [
+        'created_at'    => 'datetime:Y-m-d H:i:s',
+        'updated_at'    => 'datetime:Y-m-d H:i:s'
+    ];
+    
     protected $table = 'pull_erp_erros';
     protected $fillable = ['order_number', 
                            'customer_name',

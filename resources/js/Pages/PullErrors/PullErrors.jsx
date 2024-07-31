@@ -219,12 +219,20 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                     Errors
                                 </TableHeader>
                                 <TableHeader
+                                   name="created_at"
+                                    sortable={false}
+                                    width="auto"
+                                >
+                                    Pulled Date
+                                </TableHeader>
+                                <TableHeader
                                     sortable={false}
                                     width="auto"
                                     sticky="right"
                                 >
                                     Action
                                 </TableHeader>
+                            
                             </Row>
                         </Thead>
 
@@ -270,6 +278,9 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                                         </RowData>
                                         <RowData isLoading={loading} center>
                                             {item.errors_message}
+                                        </RowData>
+                                        <RowData isLoading={loading} center>
+                                            {item.created_at}
                                         </RowData>
                                         <RowData
                                             isLoading={loading}

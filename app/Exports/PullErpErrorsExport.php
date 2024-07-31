@@ -45,7 +45,7 @@ class PullErpErrorsExport implements  FromQuery, WithHeadings, WithMapping, Shou
                     "Serial9",
                     "Serial10",
                     "Error",
-                    "Created_at"
+                    "Pulled Date"
                 ];
 
         return $headers;
