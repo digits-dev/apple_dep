@@ -990,7 +990,7 @@ class ListOfOrdersController extends Controller
         $id = $request->input('id');
 
         $enrollmentIds = OrderLines::where('order_id', $id)
-                ->whereIn('enrollment_status_id', [3, 6, 10])
+                ->whereIn('enrollment_status_id', [3, 5, 6, 10])
                 ->pluck('id')->toArray();
 
         $enrolledDevices = OrderLines::whereIn('list_of_order_lines.id', $enrollmentIds)
