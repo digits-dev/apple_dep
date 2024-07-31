@@ -38,6 +38,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     const { handleToast } = useToast();
     const { setTitle } = useNavbarContext();
     const [isVoidable, setIsVoidable] = useState(false);
+    const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
     useEffect(() => {
@@ -149,7 +150,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
             <div className="flex flex-col gap-y-3 text-white font-nunito-sans font-bold">
                 {accessPrivileges ? (
                     <>
-                        {auth.access.isCreate ? (
+                        {auth.access.isCreate && enrollmentStatus != 10 ? (
                             <Link
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 href={orderPath + `/${orderId}/enroll-return`}
@@ -421,6 +422,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                                                             setOrderId(item.id);
                                                             setIsVoidable(
                                                                 item.isVoidable
+                                                            );
+                                                            setEnrollmentStatus(
+                                                                item.enrollment_status
                                                             );
                                                             setUpdateFormValues(
                                                                 {
