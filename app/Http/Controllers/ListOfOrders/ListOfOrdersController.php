@@ -220,8 +220,6 @@ class ListOfOrdersController extends Controller
         return Excel::download(new TransactionExport($orderId), $filename . '.xlsx');
     }
     
-
-
     public function enrollDevices(Request $request)
     {
 
@@ -269,7 +267,7 @@ class ListOfOrdersController extends Controller
             
            
             $devicePayload[] = [
-                'deviceId' => $item_master->upc_code_up_1,
+                'deviceId' => $header_data['serial_number'],
                 'assetTag' => $header_data['serial_number'],
             ];
                 
@@ -465,7 +463,7 @@ class ListOfOrdersController extends Controller
             
            
             $devicePayload[] = [
-                'deviceId' => $item_master->upc_code_up_1,
+                'deviceId' => $header_data['serial_number'],
                 'assetTag' => $header_data['serial_number'],
             ];
                 
@@ -642,7 +640,7 @@ class ListOfOrdersController extends Controller
                     }
 
                     $devicePayload[$key] = [
-                        'deviceId' => $item_master->upc_code_up_1,
+                        'deviceId' => $orderData->serial_number,
                         'assetTag' => $orderData->serial_number,
                     ];
                 }
@@ -821,7 +819,7 @@ class ListOfOrdersController extends Controller
                     }
 
                     $devicePayload[$key] = [
-                        'deviceId' => $item_master->upc_code_up_1,
+                        'deviceId' => $orderData->serial_number,
                         'assetTag' => $orderData->serial_number,
                     ];
                 }
@@ -1018,7 +1016,7 @@ class ListOfOrdersController extends Controller
                 return response()->json($data);
             }
             $devicePayload[$key] = [
-                'deviceId' => $item_master->upc_code_up_1,
+                'deviceId' => $orderData->serial_number,
                 'assetTag' => $orderData->serial_number,
             ];
         }

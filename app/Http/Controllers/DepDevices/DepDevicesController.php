@@ -134,7 +134,7 @@ class DepDevicesController extends Controller
             
            
             $devicePayload[] = [
-                'deviceId' => $item_master->upc_code_up_1,
+                'deviceId' => $header_data['serial_number'],
                 'assetTag' => $header_data['serial_number'],
             ];
                 
@@ -322,7 +322,7 @@ class DepDevicesController extends Controller
             
            
             $devicePayload[] = [
-                'deviceId' => $item_master->upc_code_up_1,
+                'deviceId' => $header_data['serial_number'],
                 'assetTag' => $header_data['serial_number'],
             ];
                 
