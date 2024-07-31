@@ -433,6 +433,14 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 />
                             </TableHeader>
                             <TableHeader
+                                name="enrollment_status_id"
+                                queryParams={queryParams}
+                                justify="center"
+                                width="lg"
+                            >
+                                Enrollment Status
+                            </TableHeader>
+                            <TableHeader
                                 name="digits_code"
                                 queryParams={queryParams}
                             >
@@ -457,14 +465,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 queryParams={queryParams}
                             >
                                 DEP Company
-                            </TableHeader>
-                            <TableHeader
-                                name="enrollment_status_id"
-                                queryParams={queryParams}
-                                justify="center"
-                                width="lg"
-                            >
-                                Enrollment Status
                             </TableHeader>
                             <TableHeader 
                                 sortable={false} 
@@ -492,11 +492,6 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                         )}
                                     />
                                 </RowData>
-                                <RowData>{order.digits_code}</RowData>
-                                <RowData>{order.item_description}</RowData>
-                                <RowData>{order.serial_number}</RowData>
-                                <RowData>{order.dep_companies.dep_company_name}</RowData>
-
                                 <RowStatus
                                     isLoading={loading}
                                     color={order?.status?.color}
@@ -504,6 +499,12 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 >
                                     {order?.status?.enrollment_status}
                                 </RowStatus>
+                                <RowData>{order.digits_code}</RowData>
+                                <RowData>{order.item_description}</RowData>
+                                <RowData>{order.serial_number}</RowData>
+                                <RowData>{order.dep_companies.dep_company_name}</RowData>
+
+                                
                                 <RowData center sticky="right">
                                     <RowActions>
                                         {![8, 9].includes(order?.status?.id) && 
