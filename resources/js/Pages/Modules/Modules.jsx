@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import TopPanel from "../../Components/Table/TopPanel";
@@ -17,6 +17,7 @@ import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
 import ModulForm from "./ModulForm";
 import Tbody from "../../Components/Table/Tbody";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const Modules = ({ modules, queryParams }) => {
     queryParams = queryParams || {};
@@ -24,6 +25,15 @@ const Modules = ({ modules, queryParams }) => {
     router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Module Generator");
+        }, 5);
+    }, []);
+
 
     // CREATE MODULES
     const handleCreate = () => {

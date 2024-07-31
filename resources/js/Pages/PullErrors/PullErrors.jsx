@@ -15,10 +15,11 @@ import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const PullErrors = ({ PullErrors, queryParams }) => {
     queryParams = queryParams || {};
@@ -29,6 +30,14 @@ const PullErrors = ({ PullErrors, queryParams }) => {
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
+    
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("ERP Pull Error");
+        }, 5);
+    }, []);
 
     const [filters, setFilters] = useState({
       order_number: '', 

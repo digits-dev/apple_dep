@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppContent from "../../Layouts/layout/AppContent";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import TopPanel from "../../Components/Table/TopPanel";
@@ -14,12 +14,21 @@ import RowActions from "../../Components/Table/RowActions";
 import RowAction from "../../Components/Table/RowAction";
 import Pagination from "../../Components/Table/Pagination";
 import Tbody from "../../Components/Table/Tbody";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const Privileges = ({ privileges, queryParams }) => {
     queryParams = queryParams || {};
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Privileges");
+        }, 5);
+    }, []);
 
     return (
         <>

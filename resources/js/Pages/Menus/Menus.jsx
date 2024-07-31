@@ -5,6 +5,7 @@ import ContentPanel from "../../Components/Table/ContentPanel";
 import axios from "axios";
 import { useToast } from "../../Context/ToastContext";
 import RowAction from "../../Components/Table/RowAction";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 const MenusIndex = ({
     menu_active,
@@ -255,6 +256,15 @@ const MenusIndex = ({
             container.scrollBy({ top: scrollSpeed, behavior: 'smooth' });
         }
     };
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Menu Management");
+        }, 5);
+    }, []);
+
 
     return (
         <div ref={scrollContainerRef} onWheel={handleWheel}>

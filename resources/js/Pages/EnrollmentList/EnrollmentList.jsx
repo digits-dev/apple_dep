@@ -15,11 +15,12 @@ import Thead from "../../Components/Table/Thead";
 import TableContainer from "../../Components/Table/TableContainer";
 import InputComponent from "../../Components/Forms/Input";
 import Select from "../../Components/Forms/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import ReactSelect from "../../Components/Forms/ReactSelect";
+import { useNavbarContext } from "../../Context/NavbarContext";
 
 
 const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depStatuses, users }) => {
@@ -27,6 +28,14 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
     const { handleToast } = useToast();
 
     const [loading, setLoading] = useState(false);
+
+    const { setTitle } = useNavbarContext();
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Enrollment List");
+        }, 5);
+    }, []);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
