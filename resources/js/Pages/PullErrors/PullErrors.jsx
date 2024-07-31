@@ -46,21 +46,8 @@ const PullErrors = ({ PullErrors, queryParams }) => {
       dr_number: '', 
       digits_code: '', 
       item_description: '', 
-      brand: '', 
-      wh_category: '', 
       confirm_date: '', 
-      shipped_quantity: '', 
-      serial1: '', 
-      serial2: '', 
-      serial3: '', 
-      serial4: '', 
-      serial5: '', 
-      serial6: '', 
-      serial7: '', 
-      serial8: '', 
-      serial9: '', 
-      serial10: '', 
-      errors_message: ''
+      serial_number: '',
     });
 
     const handleFilter = (e) => {
@@ -88,30 +75,46 @@ const PullErrors = ({ PullErrors, queryParams }) => {
                         <PerPage queryParams={queryParams} />
                         <Filters onSubmit={handleFilterSubmit}>
                             <InputComponent
+                                displayName="Sales Order #"
                                 name="order_number"
                                 value={filters.order_number}
                                 onChange={handleFilter}
                             />
                              <InputComponent
-                                name="item_code"
+                                name="customer_name"
+                                value={filters.customer_name}
+                                onChange={handleFilter}
+                            />
+                             <InputComponent
+                                displayName="Order Ref Number"
+                                name="order_ref_no"
+                                value={filters.order_ref_no}
+                                onChange={handleFilter}
+                            />
+                             <InputComponent
+                                name="dr_number"
+                                value={filters.dr_number}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="digits_code"
                                 value={filters.digits_code}
                                 onChange={handleFilter}
                             />
                              <InputComponent
-                                name="serial_number"
-                                value={filters.serial_number}
+                                name="item_description"
+                                value={filters.item_description}
                                 onChange={handleFilter}
                             />
-                             <InputComponent
-                                name="transaction_id"
-                                value={filters.transaction_id}
-                                onChange={handleFilter}
-                            />
-    
                             <InputComponent
                                 type="date"
-                                name="created_date"
-                                value={filters.created_date}
+                                name="confirm_date"
+                                value={filters.confirm_date}
+                                onChange={handleFilter}
+                            />
+                            <InputComponent
+                                name="serial_number"
+                                value={filters.serial_number}
                                 onChange={handleFilter}
                             />
                         </Filters>
