@@ -177,6 +177,13 @@ const Customer = ({ customers, queryParams }) => {
                                 </TableHeader>
 
                                 <TableHeader
+                                    name="party_number"
+                                    queryParams={queryParams}
+                                >
+                                    Party Number
+                                </TableHeader>
+
+                                <TableHeader
                                     name="customer_name"
                                     queryParams={queryParams}
                                 >
@@ -224,6 +231,9 @@ const Customer = ({ customers, queryParams }) => {
 
                                     <RowData isLoading={loading} >
                                         {item.id}
+                                    </RowData>
+                                    <RowData isLoading={loading} >
+                                        {item.party_number}
                                     </RowData>
                                     <RowData isLoading={loading}>{item.customer_name}</RowData>
                                     <RowData isLoading={loading} >{item.created_at}</RowData>
