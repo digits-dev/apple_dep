@@ -122,7 +122,7 @@ class CustomerController extends Controller
     {
 
         $filename            = "Customers - " . date ('Y-m-d H:i:s');
-        $result = self::getAllData()->orderBy($this->sortBy, $this->sortDir);
+        $result = self::getAllData();
 
         return Excel::download(new CustomerExport($result), $filename . '.xlsx');
     }
@@ -132,9 +132,7 @@ class CustomerController extends Controller
 
         $query = Customer::query();
 
-        $search =  $query->when(request('search'), function ($query, $search) {
-            $query->where('customer_name', 'LIKE', "%$search%");
-        });
+        $search = $query->search(request());
        
         $result =  $search->orderBy($this->sortBy, $this->sortDir);
 

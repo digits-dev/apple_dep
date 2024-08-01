@@ -127,8 +127,6 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
         }
     };
 
-    console.log(depCompanies);
-
     const bulkActions = [
         {
             label: (
@@ -176,7 +174,10 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                             />
                         </>}
                        
-                        <Export path="/dep-company-export" />
+                        <Export
+                            path={`/dep-company-export${window.location.search}`}
+                            handleToast={handleToast}
+                        />
                     </TopPanel>
 
                     <TableContainer>
@@ -207,7 +208,7 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="customer_id"
+                                    name="customer"
                                     queryParams={queryParams}
                                     width="lg"
 
@@ -268,8 +269,8 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
 
                         <Tbody data={depCompanies.data}>
                             {depCompanies &&
-                                depCompanies.data.map((item) => (
-                                    <Row key={item.id}>
+                                depCompanies.data.map((item, index) => (
+                                    <Row key={item.id + 'id' + index}>
                                         {auth.access.isUpdate && 
                                         <RowData center sticky="left">
                                             <Checkbox

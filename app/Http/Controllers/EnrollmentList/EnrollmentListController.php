@@ -44,7 +44,10 @@ class EnrollmentListController extends Controller
 
         $filter = $query->searchAndFilter(request());
 
-        $result = $filter->orderBy($this->sortBy, $this->sortDir);
+        $result = $filter->sort([
+            'sortBy' => $this->sortBy,
+            'sortDir' => $this->sortDir,
+        ]);
 
         return $result;
     }

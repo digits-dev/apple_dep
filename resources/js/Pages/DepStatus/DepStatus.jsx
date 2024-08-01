@@ -170,7 +170,12 @@ const DepStatus = ({ dep_statuses, queryParams }) => {
                                 templatePath="/dep-status-import-template"
                             />
                         </>}
-                        <Export path="/dep-status-export" />
+                        
+                        <Export 
+                            path={`/dep-status-export${window.location.search}`}
+                            handleToast={handleToast}
+                        />
+                     
                     </TopPanel>
 
                     <TableContainer>

@@ -242,7 +242,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                 </TableHeader>
 
                                 <TableHeader
-                                    name="transaction_id"
+                                    name="dep_companies"
                                     queryParams={queryParams}
                                     width="xl"
                                 >
@@ -258,7 +258,6 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
                                     Status Message
                                 </TableHeader>
 
-                
 
                                 <TableHeader
                                     name="created_at"

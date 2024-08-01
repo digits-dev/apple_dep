@@ -172,7 +172,11 @@ const Action = ({ actions, queryParams }) => {
                             />
                         </>}
                        
-                        <Export path="/actions-export" />
+                        <Export 
+                            path={`/actions-export${window.location.search}`}
+                            handleToast={handleToast}
+                        />
+
                     </TopPanel>
 
                     <TableContainer>

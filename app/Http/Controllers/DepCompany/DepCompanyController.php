@@ -144,7 +144,10 @@ class DepCompanyController extends Controller{
 
         $search = $query->search(request());
 
-        $result = $search->orderBy($this->sortBy, $this->sortDir);
+        $result = $search->sort([
+            'sortBy' => $this->sortBy,
+            'sortDir' => $this->sortDir,
+        ]);
 
         return $result;
     }

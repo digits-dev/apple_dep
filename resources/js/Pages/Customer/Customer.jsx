@@ -148,7 +148,12 @@ const Customer = ({ customers, queryParams }) => {
                             templatePath="/customers-import-template"
                         />
                     }
-                    <Export path="/customers-export" />
+                    
+                    <Export 
+                        path={`/customers-export${window.location.search}`}
+                        handleToast={handleToast} 
+                    />
+                
                     </TopPanel>
 
                     <TableContainer>

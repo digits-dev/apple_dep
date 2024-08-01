@@ -147,7 +147,11 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                         </TableButton>
                         <Import importPath="/enrollment-status-import" templatePath="/enrollment-status-import-template"/>
                     </>}
-                    <Export  path="/enrollment-status-export"/>
+
+                    <Export 
+                        path={`/enrollment-status-export${window.location.search}`}
+                        handleToast={handleToast}
+                    />
                 </TopPanel>
 
                 <TableContainer>
@@ -183,7 +187,7 @@ const EnrollmentStatus = ({ enrollment_status, queryParams }) => {
                             </TableHeader>
 
                             <TableHeader
-                                name="created_date"
+                                name="created_at"
                                 queryParams={queryParams}
                             >
                                 Created Date

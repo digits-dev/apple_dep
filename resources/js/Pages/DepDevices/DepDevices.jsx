@@ -364,7 +364,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             </TableHeader>
 
                             <TableHeader
-                                name="dep_company_id"
+                                name="dep_company"
                                 queryParams={queryParams}
                                 width="lg"
                             >

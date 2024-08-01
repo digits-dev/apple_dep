@@ -68,6 +68,23 @@ class DepDevice extends Model
 
         return $query;
     }
+
+    public function scopeSort($query, array $request) {
+
+        if($request['sortBy'] == 'customer'){
+            $query->leftJoin('customers', 'customers.id', 'orders.customer_id')
+                    ->orderBy('customers.customer_name', $request['sortDir']);
+        } else if ($request['sortBy'] == 'dep_company'){
+            $query->leftJoin('dep_companies', 'dep_companies.id', 'list_of_order_lines.dep_company_id')
+                ->orderBy('dep_companies.dep_company_name', $request['sortDir']);
+        } else {
+            $query->orderBy($request['sortBy'],  $request['sortDir']);
+        }
+
+        return $query;
+
+    }
+
     public function eStatus()
     {
         return $this->belongsTo(EnrollmentStatus::class, 'enrollment_status_id', 'id');

@@ -73,6 +73,22 @@ class DepCompany extends Model
         return $query;
     }
 
+
+    public function scopeSort($query, array $request) {
+
+        if($request['sortBy'] == 'customer'){
+            $query->leftJoin('customers', 'customers.id', 'dep_companies.customer_id')
+                    ->orderBy('customers.customer_name', $request['sortDir']);
+        } else if (in_array($request['sortBy'], ['created_by', 'updated_by'])){
+            $query->leftJoin('users', 'users.id', "dep_companies.{$request['sortBy']}")
+                ->orderBy('users.name', $request['sortDir']);
+        } else {
+            $query->orderBy($request['sortBy'],  $request['sortDir']);
+        }
+
+        return $query;
+    }
+
     public function customers()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');

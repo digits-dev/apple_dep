@@ -59,7 +59,7 @@ class EnrollmentList extends Model
             $query->where(function ($query) use ($search) {
                 foreach ($this->fillable as $field) {
                     if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
-                        $query->orWhereDate($field, $search);
+                        $query->orWhereDate("enrollment_lists.$field", $search);
 
                     } elseif (in_array($field, [ 'created_by', 'updated_by', 'returned_by' ])) {
                         $relation = Str::camel($field);
@@ -106,6 +106,21 @@ class EnrollmentList extends Model
                     }
                 }
             }
+        }
+
+        return $query;
+    }
+
+    public function scopeSort($query, array $request){
+
+        if (in_array($request['sortBy'], ['created_by', 'updated_by', 'returned_by'])) {
+            $query->leftJoin('users', "enrollment_lists.{$request['sortBy']}", '=', 'users.id')
+                    ->orderBy('users.name', $request['sortDir']);
+        } else if ($request['sortBy'] == 'dep_companies') {
+            $query->leftJoin('dep_companies', 'dep_companies.id', 'enrollment_lists.dep_company_id')
+                    ->orderBy('dep_companies.dep_company_name', $request['sortDir']);
+        } else {
+            $query->orderBy($request['sortBy'], $request['sortDir']);
         }
 
         return $query;

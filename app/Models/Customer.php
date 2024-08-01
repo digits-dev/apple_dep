@@ -19,4 +19,15 @@ class Customer extends Model
     protected $casts = [
         'created_at' => 'datetime:Y-m-d'
     ];
+
+    public function scopeSearch($query, $request){
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where('customer_name', 'LIKE', "%$search%");
+        }
+    
+        return $query;
+    }
 }
