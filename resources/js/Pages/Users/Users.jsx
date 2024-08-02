@@ -25,6 +25,7 @@ import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import { NavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
+import { Inertia } from "@inertiajs/inertia";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
@@ -164,7 +165,10 @@ const Users = ({ users, options, queryParams }) => {
                     if (response.data.type == "success") {
                         handleToast(response.data.message, response.data.type);
                         setShowCreateModal(false);
-                        router.reload({ only: ["users"] });
+                        // router.reload({ only: ["users"] });
+                        Inertia.reload({
+                            preserveState: true, // This will reset the component state
+                        });
                     } else {
                         setErrorMessage(response.data.message);
                     }
