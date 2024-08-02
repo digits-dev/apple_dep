@@ -37,12 +37,11 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
         $users = DB::table("users")->where("email", $credentials['email'])->first();
-        $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
         if(!$users){
             $error = 'The provided credentials do not match our records!';
             return redirect('login')->withErrors(['message' => $error]);
         }
-
+        $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
         if(!$session_details['priv']){
             $error = 'No privilege set! Please contact Administrator!';
             return redirect('login')->withErrors(['message' => $error]);
