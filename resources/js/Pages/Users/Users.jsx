@@ -30,8 +30,8 @@ import { Inertia } from "@inertiajs/inertia";
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
-    router.on("start", () => setLoading(true));
-    router.on("finish", () => setLoading(false));
+    // router.on("start", () => setLoading(true));
+    // router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -98,7 +98,10 @@ const Users = ({ users, options, queryParams }) => {
                                 response.data.message,
                                 response.data.status
                             );
-                            router.reload({ only: ["users"] });
+                            // router.reload({ only: ["users"] });
+                            Inertia.reload({
+                                preserveState: true, // This will reset the component state
+                            });
                             setIsCheck([]);
                             setIsCheckAll(false);
                         }
@@ -311,7 +314,10 @@ const Users = ({ users, options, queryParams }) => {
                 if (response.data.type === "success") {
                     handleToast(response.data.message, response.data.type);
                     setShowEditModal(false);
-                    router.reload({ only: ["users"] });
+                    // router.reload({ only: ["users"] });
+                    Inertia.reload({
+                        preserveState: true, // This will reset the component state
+                    });
                 } else {
                     handleToast(response.data.message, response.data.type);
                 }
