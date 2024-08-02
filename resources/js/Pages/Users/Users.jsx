@@ -424,7 +424,7 @@ const Users = ({ users, options, queryParams }) => {
                             actions={bulkActions}
                             onActionSelected={handleActionClick}
                         />
-                        {/* <TableSearch queryParams={queryParams} /> */}
+                        <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
                         {/* <Import /> */}
                         <Filters />
