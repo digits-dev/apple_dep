@@ -99,9 +99,9 @@ const Users = ({ users, options, queryParams }) => {
                                 response.data.status
                             );
                             // router.reload({ only: ["users"] });
-                            Inertia.reload({
-                                preserveState: true, // This will reset the component state
-                            });
+                            // Inertia.visit({
+                            //     preserveState: true, // This will reset the component state
+                            // });
                             setIsCheck([]);
                             setIsCheckAll(false);
                         }
@@ -169,9 +169,9 @@ const Users = ({ users, options, queryParams }) => {
                         handleToast(response.data.message, response.data.type);
                         setShowCreateModal(false);
                         // router.reload({ only: ["users"] });
-                        Inertia.reload({
-                            preserveState: true, // This will reset the component state
-                        });
+                        // Inertia.visit(window.location.href,{
+                        //     preserveState: true, // This will reset the component state
+                        // });
                     } else {
                         setErrorMessage(response.data.message);
                     }
@@ -315,9 +315,9 @@ const Users = ({ users, options, queryParams }) => {
                     handleToast(response.data.message, response.data.type);
                     setShowEditModal(false);
                     // router.reload({ only: ["users"] });
-                    Inertia.reload({
-                        preserveState: true, // This will reset the component state
-                    });
+                    // Inertia.visit(window.location.href,{
+                    //     preserveState: true, // This will reset the component state
+                    // });
                 } else {
                     handleToast(response.data.message, response.data.type);
                 }
