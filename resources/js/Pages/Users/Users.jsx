@@ -25,13 +25,12 @@ import BulkActions from "../../Components/Table/Buttons/BulkActions";
 import { NavbarContext } from "../../Context/NavbarContext";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
-import { Inertia } from "@inertiajs/inertia";
 
 const Users = ({ users, options, queryParams }) => {
     queryParams = queryParams || {};
     const { handleToast } = useToast();
-    // router.on("start", () => setLoading(true));
-    // router.on("finish", () => setLoading(false));
+    router.on("start", () => setLoading(true));
+    router.on("finish", () => setLoading(false));
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -98,10 +97,7 @@ const Users = ({ users, options, queryParams }) => {
                                 response.data.message,
                                 response.data.status
                             );
-                            // router.reload({ only: ["users"] });
-                            // Inertia.visit({
-                            //     preserveState: true, // This will reset the component state
-                            // });
+                            router.reload({ only: ["users"] });
                             setIsCheck([]);
                             setIsCheckAll(false);
                         }
@@ -168,10 +164,7 @@ const Users = ({ users, options, queryParams }) => {
                     if (response.data.type == "success") {
                         handleToast(response.data.message, response.data.type);
                         setShowCreateModal(false);
-                        // router.reload({ only: ["users"] });
-                        // Inertia.visit(window.location.href,{
-                        //     preserveState: true, // This will reset the component state
-                        // });
+                        router.reload({ only: ["users"] });
                     } else {
                         setErrorMessage(response.data.message);
                     }
@@ -314,10 +307,7 @@ const Users = ({ users, options, queryParams }) => {
                 if (response.data.type === "success") {
                     handleToast(response.data.message, response.data.type);
                     setShowEditModal(false);
-                    // router.reload({ only: ["users"] });
-                    // Inertia.visit(window.location.href,{
-                    //     preserveState: true, // This will reset the component state
-                    // });
+                    router.reload({ only: ["users"] });
                 } else {
                     handleToast(response.data.message, response.data.type);
                 }
@@ -434,7 +424,7 @@ const Users = ({ users, options, queryParams }) => {
                             actions={bulkActions}
                             onActionSelected={handleActionClick}
                         />
-                        <TableSearch queryParams={queryParams} />
+                        {/* <TableSearch queryParams={queryParams} /> */}
                         <PerPage queryParams={queryParams} />
                         {/* <Import /> */}
                         <Filters />
