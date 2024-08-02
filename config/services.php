@@ -45,5 +45,8 @@ return [
         'langCode' => env('LANGCODE','en')      
     ],
 
-
+    'item_master' => [
+        'url' => env('ITEM_MASTER_URL'),
+        'key' => env('ITEM_MASTER_KEY')
+    ]
 ];

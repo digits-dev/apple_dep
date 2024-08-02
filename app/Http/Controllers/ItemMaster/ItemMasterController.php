@@ -150,6 +150,81 @@ class ItemMasterController extends Controller
         return back()->with($data);
     }
 
-    
+    public function getItemMasterDataApi(Request $request) {
+        $secretKey = config('services.item_master.key');
+        $url = config('services.item_master.url');
+        
+        $uniqueString = time(); 
+        // $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+   
+        // if($userAgent == '' || is_null($userAgent)){
+        //     $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+        // }
+        // Check if running from command line (CLI)
+        if (php_sapi_name() == 'cli') {
+            $userAgent = 'Scheduled Task';
+        } else {
+            $userAgent = $request->header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36');
+        }
+        $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+        $xAuthorizationTime = $uniqueString;
+        $vars = [
+            "your_param"=>1
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_POST, FALSE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+        curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+
+        $headers = [
+        'X-Authorization-Token: ' . $xAuthorizationToken,
+        'X-Authorization-Time: ' . $xAuthorizationTime,
+        'User-Agent: '.$userAgent
+        ];
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $server_output = curl_exec ($ch);
+        curl_close ($ch);
+
+        $response = json_decode($server_output, true);
+  
+        $data = [];
+        if(!empty($response["data"])) {
+            foreach ($response["data"] as $key => $value) {
+                DB::beginTransaction();
+                try {
+                    ItemMaster::updateOrInsert([
+                        'digits_code'         => $value['digits_code'] 
+                    ],
+                    [
+                        'digits_code'             => $value['digits_code'],
+                        'upc_code_up_1'           => $value['upc_code'],
+                        'upc_code_up_2'           => $value['upc_code2'],
+                        'upc_code_up_3'           => $value['upc_code3'],
+                        'upc_code_up_4'           => $value['upc_code4'],
+                        'upc_code_up_5'           => $value['upc_code5'],
+                        'supplier_item_code'      => $value['supplier_item_code'],
+                        'item_description'        => $value['item_description'],
+                        'brand_description'       => $value['brand_description'],
+                        'created_at'              => date('Y-m-d H:i:s')
+                    ]);
+                    DB::commit();
+                } catch (\Exception $e) {
+                    \Log::debug($e);
+                    DB::rollback();
+                }
+                
+            }
+        }
+        \Log::info('Item Create: executed! items');
+    }
   
 }

@@ -42,6 +42,8 @@ Route::get('/php-info', function(){
 Route::get('/query', [PullErpController::class, 'getListOfOrdersFromErpv1']);
 Route::get('/enroll', [ListOfOrdersController::class, 'enrollDevices']);
 
+Route::get('/get-item-master', [ItemMasterController::class, 'getItemMasterDataApi']);
+
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
 

@@ -10,10 +10,11 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
         $schedule->command('inspire')->hourly();
-        $schedule->call('\App\Http\Controllers\PullErpController@getListOfOrdersFromErpv1')->everyMinute();
+        $schedule->call('\App\Http\Controllers\PullErpController@getListOfOrdersFromErpv1')->dailyAt('04:00');
+        $schedule->call('\App\Http\Controllers\ItemMaster\ItemMasterController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
         $schedule->command('mysql:backup')->daily()->at('06:00');
     }
 
