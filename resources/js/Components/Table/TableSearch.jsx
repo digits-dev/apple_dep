@@ -6,20 +6,22 @@ const TableSearch = ({ queryParams }) => {
 	const [searchValue, setSearchValue] = useState(queryParams?.search || "");
 	const path = window.location.pathname;
 
+	const debouncedSearch = debounce((searchValue, path, queryParams)=> {
+		router.get(path, { ...queryParams, search: searchValue, page: 1 }, { preserveState: true, replace: true });
+	}, 500);
+
 	useEffect(() => {
-		if (searchValue !== "") {
-			const debouncedSearch = debounce(() => {
-				router.get(path, { ...queryParams, search: searchValue, page: 1 }, { preserveState: true, replace: true });
-			}, 500);
 
-			debouncedSearch();
-
-			return () => debouncedSearch.cancel();
+		if (searchValue != "") {
+			debouncedSearch(searchValue, path, queryParams);
 		} else {
-			const { search, page, ...params } = queryParams;
-			router.get(path, { ...params }, { preserveState: true });
+			router.get(path, {}, {preserveState:true});
 		}
+
+		return () => debouncedSearch.cancel();
+
 	}, [searchValue]);
+
 	return (
 		<search className="font-nunito-sans w-full max-w-[400px]">
 			<input
