@@ -104,7 +104,8 @@ class DepDevice extends Model
     {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
             ->leftJoin('enrollment_statuses as es', 'es.id', 'list_of_order_lines.enrollment_status_id')
-            ->select('list_of_order_lines.*', 'orders.customer_id', 'es.enrollment_status', 'es.color');
+            ->select('list_of_order_lines.*', 'orders.customer_id', 'es.enrollment_status', 'es.color')
+            ->whereNotIn('enrollment_status_id', [8,9]);
     }
 
     public static function updateDepCompany($depCompanyId, $orderId)
