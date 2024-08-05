@@ -395,7 +395,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                             <p>Order Date:</p>
                         </div>
                         <div className="font-medium">
-                            <p>{order.customer.customer_name}</p>
+                            <p>{order?.customer?.customer_name}</p>
                             <p>{order.sales_order_no}</p>
                             <p>{order.order_ref_no}</p>
                             <p>{order.order_date}</p>
@@ -502,7 +502,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 <RowData>{order.digits_code}</RowData>
                                 <RowData>{order.item_description}</RowData>
                                 <RowData>{order.serial_number}</RowData>
-                                <RowData>{order.dep_companies.dep_company_name}</RowData>
+                                <RowData>{order?.dep_companies?.dep_company_name}</RowData>
 
                                 
                                 <RowData center sticky="right">
