@@ -41,6 +41,8 @@ class ListOfOrdersController extends Controller
         'Voided' => 8,
         'Canceled' => 9,
         'Void Error' => 10,
+        'Override' => 11,
+        'Override Error' => 12,
     ];
 
     private const dep_status = [
@@ -1129,4 +1131,125 @@ class ListOfOrdersController extends Controller
         return response()->json($data);
     }
   
+    public function overrideOrder(Request $request, OrderLines $orderLine)
+    {
+        if(!CommonHelpers::isOverride()) {
+
+            $data = [
+                'message' => "You don't have permission to override.", 
+                'status' => 'error'
+            ];
+    
+            return back()->with($data);
+        }
+      
+        try {
+            $id = $orderLine->id;
+            $depCompanyId = $request->input('dep_company_id');
+
+            $payload = [
+                'requestContext' => [
+                    'shipTo' => config('services.apple_api.ship_to'),
+                    'timeZone' => config('services.apple_api.timezone'),
+                    'langCode' => config('services.apple_api.langCode'),
+                ],
+                'transactionId' => 'TXN_' . uniqid(),  
+                'depResellerId' => config('services.apple_api.ship_to'),
+                'orders' => [],  
+            ];
+            
+            $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+           
+            //UPC CODE
+            $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
+
+            if(!$item_master){
+                $data = [
+                    'message' => 'Item Master not found!',
+                    'status' => 'error' 
+                ];
+    
+                return response()->json($data);
+            }
+          
+            // Check if multiple orders are provided
+            $deliveryPayload = [];
+            $devicePayload = [];
+            
+           
+            $devicePayload[] = [
+                'deviceId' => $header_data['serial_number'],
+                'assetTag' => $header_data['serial_number'],
+            ];
+                
+            $timestamp = strtotime($header_data['order_date']);
+            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
+
+            $deliveryPayload = [
+                'deliveryNumber' => $header_data['dr_number'],
+                'shipDate' => $formattedDate,
+                'devices' => $devicePayload,
+            ];
+
+            $orderPayload = [
+                'orderNumber' => $header_data['sales_order_no'],
+                'orderDate' => $formattedDate,
+                'orderType' => 'OV',
+                'customerId' => (string)$depCompanyId,
+                'poNumber' => $header_data['order_ref_no'],
+                'deliveries' => [
+                    $deliveryPayload
+                ],
+            ];
+            $payload['orders'][] = $orderPayload;
+
+            // Call the service method to override device
+            $response = $this->appleService->overrideOrder($payload);
+
+            // For successful response
+            if (isset($response['enrollDevicesResponse'])) {
+                $transaction_id = $response['deviceEnrollmentTransactionId'];
+                $dep_status = self::dep_status['Success'];
+                $enrollment_status = self::enrollment_status['Override'];
+                $orderLine->update(['dep_company_id' => $depCompanyId]);
+            }
+
+            // For error response
+            else {
+                $transaction_id = $response['transactionId'];
+                $dep_status = self::dep_status['GRX-50025'];
+                $enrollment_status = self::enrollment_status['Override Error'];
+            }
+            
+            // Update the enrollment status of the order line
+            $orderLine->update(['enrollment_status_id' => $enrollment_status]);
+            
+            // insert the request and response data to the database
+            $orderId = $header_data['order_id'];
+            $encodedPayload = json_encode($payload);
+            $encodedResponse = json_encode($response);
+            
+            JsonRequest::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            
+            TransactionLog::insert([
+                'order_type' => 'OV',
+                'order_id' => $orderId,
+                'order_lines_id' => $id,
+                'dep_transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $data = [
+                'message' => $enrollment_status == self::enrollment_status['Override'] ? 'Override Success!' : 'Override Error!',
+                'status' => $enrollment_status == self::enrollment_status['Override'] ? 'success' : 'error'
+            ];
+    
+            return back()->with($data);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

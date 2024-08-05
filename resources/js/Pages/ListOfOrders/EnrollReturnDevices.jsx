@@ -30,6 +30,12 @@ const EnrollmentStatus = Object.freeze({
     COMPLETED: 4,
     RETURNED: 5,
     RETURN_ERROR: 6,
+    PARTIALLY_ENROLLED: 7,
+    VOIDED: 8,
+    CANCELLED: 9,
+    VOID_ERROR: 10,
+    OVERRIDE: 11,
+    OVERRIDE_ERROR: 12,
 });
 
 const allowedToEnroll = [
@@ -41,6 +47,12 @@ const allowedToEnroll = [
 const allowedToReturn = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
     EnrollmentStatus.RETURN_ERROR,
+    EnrollmentStatus.OVERRIDE
+];
+
+const allowedToOverride = [
+    EnrollmentStatus.ENROLLMENT_SUCCESS,
+    EnrollmentStatus.OVERRIDE_ERROR,
 ];
 
 const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) => {
@@ -54,6 +66,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const [showOverride, setShowOverride] = useState(false);
     const [depCompanyId, setDepCompanyId] = useState(null);
 
     useEffect(() => {
@@ -72,6 +85,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
 
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
+    };
+    const handleShowOverride = () => {
+        setShowOverride(!showOverride);
     };
 
     const handleCheckboxChange = (itemId) => {
@@ -237,24 +253,62 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
         }
     };
 
-    const EditForm = ({ handleShow}) => {
+    const EditForm = ({ handleShow, action}) => {
         const { handleToast } = useToast();
-        const { data, setData, processing, reset, put, errors,  } = useForm({
+        const isEdit = action == 'edit'; 
+        const { data, setData, processing, reset, put, post, errors} = useForm({
             dep_company_id: depCompanyId,
         });
+
     
         const handleSubmit = (e) => {
             e.preventDefault();
-    
-            put(`/list_of_orders/${orderId}/update-dep-company`, {
-                onSuccess: (data)=>{
-                    const { status, message } = data.props.auth.sessions;
+
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${
+                    action == "edit" ? "Edit" : "Override"
+                } this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                reverseButtons: true,
+                iconColor: "#000000",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setLoading(true);
                     handleShow();
-                    reset();
-                    handleToast(message, status);
+                        
+                    if(isEdit) {
+                        put(`/list_of_orders/${orderId}/update-dep-company`, {
+                            onSuccess: (data)=>{
+                                const { status, message } = data.props.auth.sessions;
+                                handleToast(message, status);
+                            }, onError: (data)=>{
+                                const { status, message } = data.props.auth.sessions;
+                                handleToast(message, status);
+                            }, onFinish: () => {
+                                setLoading(false);
+                                reset();
+                            }
+                        });
+                    } else {
+                        post(`/list_of_orders/${orderId}/override`, {
+                            onSuccess: (data)=>{
+                                const { status, message } = data.props.auth.sessions;
+                                handleToast(message, status);
+                            }, onError: (data)=>{
+                                const { status, message } = data.props.auth.sessions;
+                                handleToast(message, status);
+                            }, onFinish: () => {
+                                setLoading(false);
+                                reset();
+                            }
+                        });
+                    }
+                 
                 }
             });
-        
         }
     
         return (
@@ -277,7 +331,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                     className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
                     disabled={processing}
                 >
-                    { processing ? "Updating..." : "Update" }
+                    {processing ? "Updating..." : (isEdit ? "Update" : "Override")}
                 </button>
             </form>
        
@@ -342,7 +396,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
                 <>
-                    {![3, 6].includes(enrollmentStatus) && (
+                    { allowedToEnroll.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
                             onClick={(e) => handleSwal(e, "enroll")}
@@ -351,7 +405,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                         </button>
                     )}
 
-                    {![1, 2, 5].includes(enrollmentStatus) && (
+                    { allowedToReturn.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={(e) => handleSwal(e, "return")}
@@ -359,23 +413,18 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                             Return Device
                         </button>
                     )}
-                    {/* {(enrollmentExist == 0 ||
-                        (enrollmentExist == 1 && enrollmentStatus == 5)) && (
+
+                    { allowedToOverride.includes(enrollmentStatus) && (
                         <button
-                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
-                            onClick={(e) => handleSwal(e, "enroll")}
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                            onClick={() => {
+                                handleCloseModal();
+                                handleShowOverride();
+                            }}
                         >
-                            Enroll Device
+                            Override Order
                         </button>
                     )}
-
-                    <button
-                        className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
-                        disabled={[1, 5].includes(enrollmentStatus)}
-                        onClick={(e) => handleSwal(e, "return")}
-                    >
-                        Return Device
-                    </button> */}
                 </>
             </div>
         );
@@ -507,21 +556,27 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 
                                 <RowData center sticky="right">
                                     <RowActions>
-                                        {![8, 9].includes(order?.status?.id) && 
-                                        (
-                                            <RowAction
-                                                action="add"
-                                                type="button"
-                                                onClick={() => {
-                                                    handleOpenModal();
-                                                    setOrderId(order.id);
-                                                    setEnrollmentStatus(
-                                                        order.enrollment_status_id
-                                                    );
-                                                }}
-                                                tooltipContent={`${order.status.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
-                                            />
-                                        )}
+                                            {![EnrollmentStatus['VOIDED'], 
+                                            EnrollmentStatus['CANCELLED']].includes(order?.status?.id) && 
+                                            (
+                                                <RowAction
+                                                    action="add"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleOpenModal();
+                                                        setOrderId(order.id);
+                                                        setDepCompanyId(order.dep_company_id);
+                                                        setEnrollmentStatus(
+                                                            order.enrollment_status_id
+                                                        );
+                                                    }}
+                                                    tooltipContent={`
+                                                        ${allowedToEnroll.includes(order.enrollment_status_id) ? "<p>Enroll Device</p>" : ''}
+                                                        ${allowedToReturn.includes(order.enrollment_status_id) ? "<p>Return Device</p>" : ''}
+                                                        ${allowedToOverride.includes(order.enrollment_status_id) ? "<p></p>Override Device</p>" : ''}
+                                                    `}
+                                                />
+                                            )}
 
                                             <RowAction
                                                 action="edit"
@@ -531,7 +586,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                                     setOrderId(order.id);
                                                     setDepCompanyId(order.dep_company_id);
                                                 }}
-                                                disabled={!["Pending", "Returned"].includes(order.status.enrollment_status)}
+                                                disabled={!["Pending", "Returned"].includes(order?.status?.enrollment_status)}
                                                 tooltipContent="Edit"
                                             />
                                     </RowActions>
@@ -551,7 +606,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                 onClose={handleShowEdit}
                 title="Edit Dep Company"
             >
-                <EditForm handleShow={handleShowEdit}/>
+                <EditForm handleShow={handleShowEdit} action="edit"/>
+            </Modal>
+
+            <Modal
+                show={showOverride}
+                onClose={handleShowOverride}
+                title="Override Order"
+            >
+                <EditForm handleShow={handleShowOverride} action="override"/>
             </Modal>
         </>
     );
