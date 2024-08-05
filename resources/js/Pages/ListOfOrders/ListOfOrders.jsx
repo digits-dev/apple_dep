@@ -228,7 +228,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
         router.get(`/list_of_orders?${queryString}`);
     };
 
-    console.log(orders);
 
     return (
         <>

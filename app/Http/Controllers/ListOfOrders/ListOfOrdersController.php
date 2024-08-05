@@ -118,14 +118,15 @@ class ListOfOrdersController extends Controller
 
     public function show(Order $order)
     {
-        $order = $order->with('customer')->first();
-        $orderLines = OrderLines::where('order_id', $order->id)->get();
-        $jsonSubmitted = JsonRequest::where('order_id', $order->id)->get();
-        $jsonReceived= JsonResponse::where('order_id', $order->id)->get();
-        $transactionLogs = TransactionLog::join('dep_statuses', 'dep_statuses.id', '=', 'transaction_logs.dep_status')
+        $data = [];
+        $data['order'] = $order->with('customer')->where('id', $order->id)->first();
+        $data['orderLines'] = OrderLines::where('order_id', $order->id)->get();
+        $data['jsonSubmitted'] = JsonRequest::where('order_id', $order->id)->orderBy('created_at', 'desc')->get();
+        $data['jsonReceived'] = JsonResponse::where('order_id', $order->id)->orderBy('created_at', 'desc')->get();
+        $data['transactionLogs'] = TransactionLog::join('dep_statuses', 'dep_statuses.id', '=', 'transaction_logs.dep_status')
         ->select('transaction_logs.*', 'dep_statuses.dep_status as dep_status_name')
-        ->where('transaction_logs.order_id', $order->id)->get();
-        return Inertia::render('ListOfOrders/OrderDetails', compact('order', 'orderLines', 'jsonSubmitted', 'jsonReceived', 'transactionLogs'));
+        ->where('transaction_logs.order_id', $order->id)->orderBy('created_at', 'desc')->get();
+        return Inertia::render('ListOfOrders/OrderDetails', $data);
     }
 
     public function showEnrollReturn(Order $order){

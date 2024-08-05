@@ -10,7 +10,6 @@ import Tbody from "../../Components/Table/Tbody";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import moment from "moment";
 const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
-    console.log(tabs);
     const [activeTab, setActiveTab] = useState(tabs[0].id);
     const [isOpen, setIsOpen] = useState(false);
     const [modalData, setModalData] = useState();

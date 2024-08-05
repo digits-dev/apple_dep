@@ -34,6 +34,7 @@ const OrderDetails = ({
         { id: 3, label: "Transaction Logs"},
     ];
 
+
     return (
         <>
             <Head title="Order Details" />
@@ -47,15 +48,15 @@ const OrderDetails = ({
                                 <p>Order Date:</p>
                             </div>
                             <div className="font-medium">
-                                <p>{order.customer.customer_name}</p>
+                                <p>{order?.customer?.customer_name}</p>
                                 <p>{order.sales_order_no}</p>
                                 <p>{order.order_ref_no}</p>
                                 <p>{order.order_date}</p>
                             </div>
                         </div>
 
-                        <Link href="/list_of_orders" as="button">
-                            <TableButton>Back</TableButton>
+                        <Link href="/list_of_orders" as="button" className="bg-primary text-white overflow-hidden  rounded-lg font-nunito-sans text-sm border border-secondary px-5 py-2 hover:opacity-80">
+                            Back
                         </Link>
                     </div>
 
