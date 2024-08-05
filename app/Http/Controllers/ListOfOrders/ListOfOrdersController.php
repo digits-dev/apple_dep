@@ -66,6 +66,7 @@ class ListOfOrdersController extends Controller
         $filter = $query->searchAndFilter(request());
 
         $result = $filter->orderBy($this->sortBy, $this->sortDir);
+
         return $result;
     }
     
@@ -137,11 +138,23 @@ class ListOfOrdersController extends Controller
        
         $data = [];
         $data ['order'] = $order->with('customer')->first();
+        
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
         ->with(['status','depCompanies'])
         ->orderBy($this->sortBy, $this->sortDir)
         ->get();
+
+        //get all duplicate serials with different SO
+        $duplicates = OrderLines::query()
+        ->select('serial_number')
+        ->groupBy('serial_number')
+        ->havingRaw('COUNT(DISTINCT order_id) > 1')
+        ->pluck('serial_number');
+
+        $data['duplicateSerials'] = $data['orderLines']->filter(function ($orderLine) use ($duplicates) {
+            return $duplicates->contains($orderLine->serial_number);
+        })->pluck('serial_number');
 
         $data['queryParams'] = request()->query();
 
@@ -150,7 +163,6 @@ class ListOfOrdersController extends Controller
         $data['depCompanies'] = DepCompany::where('customer_id', $orderHeader->customer_id)
         ->select('id as value', 'dep_company_name as label')
         ->get();
-
         
         return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }

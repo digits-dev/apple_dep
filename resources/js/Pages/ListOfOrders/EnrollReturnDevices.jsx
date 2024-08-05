@@ -22,6 +22,7 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import ReactSelect from "../../Components/Forms/ReactSelect";
+import DuplicateIcon from "../../Components/Table/Icons/DuplicateIcon";
 
 const EnrollmentStatus = Object.freeze({
     PENDING: 1,
@@ -55,7 +56,7 @@ const allowedToOverride = [
     EnrollmentStatus.OVERRIDE_ERROR,
 ];
 
-const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) => {
+const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, duplicateSerials }) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
     const [showModal, setShowModal] = useState(false);
@@ -508,6 +509,17 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                             >
                                 Serial Number
                             </TableHeader>
+
+                           
+
+                            {duplicateSerials.length != 0 && 
+                            <TableHeader
+                                width="small"
+                                sortable={false}
+                            >
+                                &nbsp;
+                            </TableHeader>}
+
                             <TableHeader
                                 name="dep_company_id"
                                 width="lg"
@@ -515,6 +527,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                             >
                                 DEP Company
                             </TableHeader>
+
                             <TableHeader 
                                 sortable={false} 
                                 justify="center" 
@@ -551,9 +564,14 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies }) =
                                 <RowData>{order.digits_code}</RowData>
                                 <RowData>{order.item_description}</RowData>
                                 <RowData>{order.serial_number}</RowData>
+
+                                {duplicateSerials.length != 0 && 
+                                <RowData>
+                                    {duplicateSerials.includes(order.serial_number) && <DuplicateIcon/>}
+                                </RowData>}
+                           
                                 <RowData>{order?.dep_companies?.dep_company_name}</RowData>
 
-                                
                                 <RowData center sticky="right">
                                     <RowActions>
                                             {![EnrollmentStatus['VOIDED'], 
