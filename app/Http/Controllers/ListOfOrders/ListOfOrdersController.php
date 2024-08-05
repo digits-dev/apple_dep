@@ -568,16 +568,16 @@ class ListOfOrdersController extends Controller
                  ->count();
             
              // Check if all order lines have status 5 and update the enrollment status of the order
-            if ($enrollmentStatusReturned === $totalOrderLines) {
-                Order::where('id', $orderId)->update([
-                    'enrollment_status' => self::enrollment_status['Pending'],
-                    'dep_order' => 0
-                ]);
-            }else{
-                Order::where('id', $orderId)->update([
-                    'enrollment_status' => self::enrollment_status['Partially Enrolled']
-                ]);
-            }
+            // if ($enrollmentStatusReturned === $totalOrderLines) {
+            //     Order::where('id', $orderId)->update([
+            //         'enrollment_status' => self::enrollment_status['Pending'],
+            //         'dep_order' => 0
+            //     ]);
+            // }else{
+            //     Order::where('id', $orderId)->update([
+            //         'enrollment_status' => self::enrollment_status['Partially Enrolled']
+            //     ]);
+            // }
             
 
             // For successful response
@@ -947,12 +947,12 @@ class ListOfOrdersController extends Controller
                     ->where('enrollment_status_id', 5)
                     ->count();
 
-                if ($enrollmentStatusReturned === $totalOrderLines) {
-                    Order::where('id', $orderId)->update([
-                        'enrollment_status' => self::enrollment_status['Pending'],
-                        'dep_order' => 0,
-                    ]);
-                } 
+                // if ($enrollmentStatusReturned === $totalOrderLines) {
+                //     Order::where('id', $orderId)->update([
+                //         'enrollment_status' => self::enrollment_status['Pending'],
+                //         'dep_order' => 0,
+                //     ]);
+                // } 
                 
                 $data = [
                     'message' => $enrollment_status == self::enrollment_status['Returned' ] ? 'Unenroll Devices Successfully!' : 'Unenroll Devices Failed!',
@@ -1038,19 +1038,19 @@ class ListOfOrdersController extends Controller
 
         $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
   
-        $deliveryPayload = [
-            'deliveryNumber' => $header_data->dr_number,
-            'shipDate' => $formattedDate,
-            'devices' => $devicePayload,
-        ];
+        // $deliveryPayload = [
+        //     'deliveryNumber' => $header_data->dr_number,
+        //     'shipDate' => $formattedDate,
+        //     'devices' => $devicePayload,
+        // ];
         $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
         $orderPayload = [
             'orderNumber' => $header_data->sales_order_no,
             'orderDate' => $formattedDate,
-            'orderType' => 'RE',
+            'orderType' => 'VD',
             'customerId' => (string)$dep_company->id,
             'poNumber' => $header_data->order_ref_no,
-            'deliveries' => [$deliveryPayload],
+            // 'deliveries' => [$deliveryPayload],
         ];
 
         $payload = [
@@ -1126,7 +1126,7 @@ class ListOfOrdersController extends Controller
           ]);
   
           TransactionLog::insert([
-              'order_type' => 'RE',
+              'order_type' => 'VD',
               'order_id' => $orderId,
               'order_lines_id' => implode(',', $ids),
               'dep_transaction_id' => $transaction_id,
