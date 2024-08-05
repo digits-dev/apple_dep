@@ -73,6 +73,18 @@ class EnrollmentStatusSeeder extends Seeder
                 'status' => 1,
                 'color' => 'darkred',
                 'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Override',
+                'status' => 1,
+                'color' => '#2e2929',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'enrollment_status' => 'Override Error',
+                'status' => 1,
+                'color' => '#2e2929',
+                'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
 

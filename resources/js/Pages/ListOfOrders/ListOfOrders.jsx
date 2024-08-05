@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
-import OverrideOrderForm from "./OverrideOrderForm";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import axios from "axios";
 import ReactSelect from "../../Components/Forms/ReactSelect";
@@ -30,7 +29,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     queryParams = queryParams || {};
     const { auth } = usePage().props;
     const accessPrivileges =
-        auth.access.isCreate || auth.access.isVoid || auth.access.isOverride;
+        auth.access.isCreate || auth.access.isVoid ;
     const [loading, setLoading] = useState(false);
     const [showEditActionModal, setShowEditActionModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
@@ -39,7 +38,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     const { setTitle } = useNavbarContext();
     const [isVoidable, setIsVoidable] = useState(false);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
-    const [showOverrideModal, setShowOverrideModal] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
@@ -98,11 +96,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     };
 
    
-
-    const handleOverrideModal = () => {
-        setShowOverrideModal(!showOverrideModal);
-    };
-
     const handleCloseEditModal = () => {
         setShowEditActionModal(false);
     };
@@ -160,19 +153,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                         ) : (
                             ""
                         )}
-                        {auth.access.isOverride ? (
-                            <button
-                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
-                                onClick={() => {
-                                    handleOverrideModal();
-                                    handleCloseEditModal();
-                                }}
-                            >
-                                Override Order
-                            </button>
-                        ) : (
-                            ""
-                        )}
+                   
                         {[1].includes(enrollmentStatus) && (
                             <button
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
@@ -445,7 +426,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                                                         {`
                                                             <p>
                                                             Enroll/Return Devices 
-                                                            </br> Override Order 
                                                             </br> Void Order 
                                                             </br> Cancel Order 
                                                                 
@@ -469,20 +449,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                 title="Edit Actions"
             >
                 <ListofOrdersEditActions />
-            </Modal>
-            <Modal
-                show={showOverrideModal}
-                onClose={handleOverrideModal}
-                title="Override Order"
-            >
-                <OverrideOrderForm
-                    handleShow={() => {
-                        handleOverrideModal();
-                        handleToast("Order Override Successful", "success");
-                    }}
-                    updateFormValues={updateFormValues}
-                    action="edit"
-                />
             </Modal>
         </>
     );
