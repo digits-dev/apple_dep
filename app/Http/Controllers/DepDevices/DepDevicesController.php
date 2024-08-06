@@ -69,7 +69,7 @@ class DepDevicesController extends Controller
 
         return $result;
     }
-    
+
     public function export(Request $request)
     {
 
@@ -106,7 +106,14 @@ class DepDevicesController extends Controller
         $data['options'] = DepCompany::get();
         $data['depCompanies'] = DepCompany::select('id as value', 'dep_company_name as label')->get();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
-        
+
+        //get all duplicate serials with different SO
+        $data['duplicates'] = OrderLines::query()
+        ->select('serial_number')
+        ->groupBy('serial_number')
+        ->havingRaw('COUNT(DISTINCT order_id) > 1')
+        ->pluck('serial_number');
+
         return Inertia::render('DepDevices/DepDevices', $data);
     }
 

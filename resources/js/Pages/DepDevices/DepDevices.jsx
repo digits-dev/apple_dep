@@ -27,10 +27,10 @@ import Select from "../../Components/Forms/Select";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import OverrideOrderForm from "./OverrideOrderForm";
+import DuplicateIcon from "../../Components/Table/Icons/DuplicateIcon";
 
 
-
-const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers }) => {
+const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers, duplicates }) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
@@ -412,6 +412,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                 Serial Number
                             </TableHeader>
 
+                            {duplicates.length != 0 && 
+                            <TableHeader
+                                width="small"
+                                sortable={false}
+                            >
+                                &nbsp;
+                            </TableHeader>}
+
                             <TableHeader
                                 name="dep_company"
                                 queryParams={queryParams}
@@ -460,6 +468,12 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                     <RowData isLoading={loading} center>
                                         {item.serial_number}
                                     </RowData>
+                                    
+                                    {duplicates.length != 0 && 
+                                    <RowData>
+                                        {duplicates.includes(item.serial_number) && <DuplicateIcon/>}
+                                    </RowData>}
+
                                     <RowData isLoading={loading}>
                                         {item?.dep_company?.dep_company_name}
                                     </RowData>
