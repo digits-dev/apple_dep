@@ -12,11 +12,6 @@ class EnrollmentHistory extends Model
 
     public $timestamps = false;
 
-    protected $casts = [
-        'created_at'    => 'datetime:Y-m-d',
-        'updated_at'    => 'datetime:Y-m-d',
-        'returned_date' => 'datetime:Y-m-d',
-    ];
 
     protected $fillable = [
         'dep_company_id',
@@ -49,7 +44,7 @@ class EnrollmentHistory extends Model
             $query->where(function ($query) use ($search) {
                 foreach ($this->fillable as $field) {
                     if ($field === 'created_at') {
-                        $query->orWhereDate("enrollment_histories.created_at", $search);
+                        $query->orWhere("enrollment_histories.created_at", 'LIKE', "%$search%");
 
                     } elseif ($field === 'created_by') {
                         $query->orWhereHas('createdBy', function ($query) use ($search) {

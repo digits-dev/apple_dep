@@ -49,7 +49,7 @@ class EnrollmentHistoryExport implements  FromQuery, WithHeadings, WithMapping, 
                     $item->transaction_id,
                     $item->depCompany->name,
                     $item->status_message,
-                    !empty($item->created_at) ? date('Y-m-d', strtotime($item->created_at)) : null,
+                    $item->created_at,
                     $item->createdBy?->name,
                 ];
        
