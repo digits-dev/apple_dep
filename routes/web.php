@@ -1,6 +1,7 @@
 <?php
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\DepCompany\DepCompanyController;
+use App\Http\Controllers\EnrollmentHistory\EnrollmentHistoryController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Test\TestController;
@@ -118,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/export-transaction/{order_id}', [ListOfOrdersController::class, 'exportTransaction'])->name('export-transaction');
     Route::get('/pull-errors', [PullErrorsController::class, 'export']);
     Route::get('/dep-company-export', [DepCompanyController::class, 'export']);
+    Route::get('/enrollment-history-export', [EnrollmentHistoryController::class, 'export']);
 
     //ERP PULL ERROR
     Route::get('/pull_errors/{pullError}', [PullErrorsController::class, 'show']);

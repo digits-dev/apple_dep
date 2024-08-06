@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class EnrollmentList extends Model
+class EnrollmentHistory extends Model
 {
     use HasFactory;
 
@@ -19,22 +19,16 @@ class EnrollmentList extends Model
     ];
 
     protected $fillable = [
-        'sales_order_no',
         'dep_company_id',
+        'sales_order_no',
         'item_code',
         'serial_number',
         'transaction_id',
-        'dep_company_id',
         'dep_status',
         'status_message',
         'enrollment_status',
-        'order_lines_id',
-        'created_at',
         'created_by',
-        'updated_at',
-        'updated_by',
-        'returned_date',
-        'returned_by',
+        'created_at',
     ];
 
     protected static function booted()
@@ -44,10 +38,6 @@ class EnrollmentList extends Model
             $model->created_by = auth()->user()->id;
         });
 
-        static::updating(function ($model) {
-            $model->updated_at = now();
-            $model->updated_by = auth()->user()->id;
-        });
     }
 
     public function scopeSearchAndFilter($query, $request)
@@ -58,13 +48,11 @@ class EnrollmentList extends Model
 
             $query->where(function ($query) use ($search) {
                 foreach ($this->fillable as $field) {
-                    if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
-                        $query->orWhereDate("enrollment_lists.$field", $search);
+                    if ($field === 'created_at') {
+                        $query->orWhereDate("enrollment_histories.created_at", $search);
 
-                    } elseif (in_array($field, [ 'created_by', 'updated_by', 'returned_by' ])) {
-                        $relation = Str::camel($field);
-
-                        $query->orWhereHas($relation, function ($query) use ($search) {
+                    } elseif ($field === 'created_by') {
+                        $query->orWhereHas('createdBy', function ($query) use ($search) {
                             $query->where('name', 'LIKE', "%$search%");
                         });
 
@@ -95,10 +83,10 @@ class EnrollmentList extends Model
                 if ($request->filled($field)) {
                     $value = $request->input($field);
 
-                    if (in_array($field, [ 'created_at', 'updated_at', 'returned_date' ])) {
-                        $query->whereDate($field, $value);
+                    if ($field == 'created_at') {
+                        $query->whereDate('created_at', $value);
 
-                    } elseif (in_array($field, ['dep_status', 'enrollment_status', 'created_by', 'updated_by', 'returned_by', 'dep_company_id' ])) {
+                    } elseif (in_array($field, ['dep_status', 'enrollment_status', 'created_by', 'dep_company_id' ])) {
                         $query->where($field, '=', $value);
 
                     } else {
@@ -141,17 +129,8 @@ class EnrollmentList extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
-    public function updatedBy()
-    {
-        return $this->belongsTo(User::class, 'updated_by', 'id');
-    }
-    public function returnedBy()
-    {
-        return $this->belongsTo(User::class, 'returned_by', 'id');
-    }
-
+  
     public function depCompany(){
         return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
     }
-
 }

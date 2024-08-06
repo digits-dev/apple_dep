@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\DepDevices;
+use App\Models\EnrollmentHistory;
 use DB;
 use Inertia\Inertia;
 use App\Models\Order;
@@ -259,6 +260,8 @@ class DepDevicesController extends Controller
                     'updated_at' => date('Y-m-d H:i:s'),
                 ]);
             }
+
+            EnrollmentHistory::create($insertData);
             
             // Update the enrollment status of the order line
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
@@ -410,6 +413,20 @@ class DepDevicesController extends Controller
 
                 $enrollment->save();
             }
+
+            $insertToHistory = [ 
+                'order_lines_id' => $id,
+                'dep_company_id' => $dep_company->id,
+                'sales_order_no' => $header_data['sales_order_no'],
+                'item_code' => $header_data['digits_code'],
+                'serial_number' => $header_data['serial_number'],
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
 
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status ]);
 
@@ -570,7 +587,7 @@ class DepDevicesController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $enrollment_status = self::enrollment_status['Override'];
-
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
                 $depDevice = DepDevice::find($request->id);
 
                 if ($depDevice) {
@@ -581,6 +598,7 @@ class DepDevicesController extends Controller
             } else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = self::dep_status['GRX-50025'];
+                $status_message = $response['errorMessage'];
                 $enrollment_status = self::enrollment_status['Override Error'];
             }
 
@@ -588,6 +606,23 @@ class DepDevicesController extends Controller
 
             // Update the enrollment status of the order line
             DepDevice::updateEnrollmentStatusId($request->id, $enrollment_status);
+
+
+            $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
+
+            $insertToHistory = [ 
+                'order_lines_id' => $id,
+                'dep_company_id' => $header_data->dep_company_id,
+                'sales_order_no' => $header_data->sales_order_no,
+                'item_code' => $header_data->digits_code,
+                'serial_number' => $header_data->serial_number,
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
 
             // $orderLine->update(['enrollment_status_id' => $enrollment_status]);
             

@@ -187,6 +187,18 @@ class AdmModules extends Seeder
             [
 
                 'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Enrollment History',
+                'icon' => 'fa-solid fa-clock-rotate-left',
+                'path' => 'enrollment_history',
+                'table_name' => 'enrollment_histories',
+                'controller' => 'EnrollmentHistory\EnrollmentHistoryController',
+                'is_protected' => 0,
+                'is_active' => 1,
+            ],
+
+            [
+
+                'created_at' => date('Y-m-d H:i:s'),
                 'name' => 'Customer',
                 'icon' => 'fa-solid fa-user',
                 'path' => 'customer',

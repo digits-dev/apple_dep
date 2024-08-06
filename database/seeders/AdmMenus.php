@@ -119,6 +119,25 @@ class AdmMenus extends Seeder
 
         DB::table('adm_menuses')->updateOrInsert(
             [
+                'name'              => 'Enrollment History',
+            ],
+            [
+                'name'              => 'Enrollment History',
+                'type'              => 'Route',
+                'path'              => 'EnrollmentHistory\EnrollmentHistoryControllerGetIndex',
+                'slug'              => 'enrollment_history',
+                'color'             => NULL,
+                'icon'              => 'fa-solid fa-clock-rotate-left',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_adm_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('adm_menuses')->updateOrInsert(
+            [
                 'name'              => 'Customer',
             ],
             [

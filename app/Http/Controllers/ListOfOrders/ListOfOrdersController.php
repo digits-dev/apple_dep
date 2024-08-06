@@ -7,6 +7,7 @@ use App\Exports\TransactionExport;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\DepCompany;
+use App\Models\EnrollmentHistory;
 use App\Models\EnrollmentStatus;
 use App\Models\Order;
 use App\Models\OrderLines;
@@ -379,6 +380,8 @@ class ListOfOrdersController extends Controller
                     'updated_at' => date('Y-m-d H:i:s'),
                 ]);
             }
+
+            EnrollmentHistory::create($insertData);
             
             // Update the enrollment status of the order line
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status]);
@@ -538,6 +541,20 @@ class ListOfOrdersController extends Controller
 
                 $enrollment->save();
             }
+
+            $insertToHistory = [ 
+                'order_lines_id' => $id,
+                'dep_company_id' => $dep_company->id,
+                'sales_order_no' => $header_data['sales_order_no'],
+                'item_code' => $header_data['digits_code'],
+                'serial_number' => $header_data['serial_number'],
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
 
             OrderLines::where('id', $id)->update(['enrollment_status_id' => $enrollment_status ]);
 
@@ -727,6 +744,21 @@ class ListOfOrdersController extends Controller
                             'status_message'    => $status_message,
                         ],
                     );
+
+                    $insertToHistory = [ 
+                        'order_lines_id' => $deviceData->order_line_id,
+                        'dep_company_id' => $dep_company->id,
+                        'sales_order_no' =>  $header_data->sales_order_no,
+                        'item_code' => $deviceData->digits_code,
+                        'serial_number' => $deviceData->serial_number,
+                        'transaction_id' => $transaction_id,
+                        'dep_status' => $dep_status,
+                        'enrollment_status' => $enrollment_status,
+                        'status_message' => $status_message,
+                    ];
+        
+                    EnrollmentHistory::create($insertToHistory);
+
                 }
 
                 // Logs
@@ -846,7 +878,7 @@ class ListOfOrdersController extends Controller
                     'shipDate' => $formattedDate,
                     'devices' => $devicePayload,
                 ];
-                $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
+                $dep_company = DB::table('dep_companies')->where('id', $header_data->dep_company_id)->first();
                 $orderPayload = [
                     'orderNumber' => $header_data->sales_order_no,
                     'orderDate' => $formattedDate,
@@ -910,6 +942,21 @@ class ListOfOrdersController extends Controller
     
                         $enrollment->save();
                     }
+
+                    
+                    $insertToHistory = [ 
+                        'order_lines_id' => $deviceData->id,
+                        'dep_company_id' => $deviceData->dep_company_id,
+                        'sales_order_no' =>  $header_data->sales_order_no,
+                        'item_code' => $deviceData->digits_code,
+                        'serial_number' => $deviceData->serial_number,
+                        'transaction_id' => $transaction_id,
+                        'dep_status' => $dep_status,
+                        'enrollment_status' => $enrollment_status,
+                        'status_message' => $status_message,
+                    ];
+        
+                    EnrollmentHistory::create($insertToHistory);
                 }
         
                 // Logs
@@ -984,6 +1031,18 @@ class ListOfOrdersController extends Controller
         foreach($orderLines as $orderLine){
             $orderLine->enrollment_status_id = self::enrollment_status['Canceled'];
             $orderLine->save();
+
+            $insertToHistory = [ 
+                'order_lines_id' => $orderLine->id,
+                'dep_company_id' => $orderLine->dep_company_id,
+                'sales_order_no' =>  $order->sales_order_no,
+                'item_code' => $orderLine->digits_code,
+                'serial_number' => $orderLine->serial_number,
+                'dep_status' => 0,
+                'enrollment_status' => self::enrollment_status['Canceled'],
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
         }
 
         // UPDATE HEADER
@@ -1014,7 +1073,14 @@ class ListOfOrdersController extends Controller
                 ->leftJoin('enrollment_lists', 'list_of_order_lines.id', 'enrollment_lists.order_lines_id')
                 ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
                 ->whereIn('enrollment_lists.dep_status', [1, 2])
+                ->select([
+                'orders.id as order_id', 
+                'list_of_order_lines.id as line_id', 
+                'list_of_order_lines.*', 
+                'enrollment_lists.*', 
+                'orders.*', ])
                 ->get();
+
 
         $header_data = $enrolledDevices->first();
         $devicePayload = [];
@@ -1101,8 +1167,49 @@ class ListOfOrdersController extends Controller
 
                 $enrollment->save();
             }
+
+
+            $insertToHistory = [ 
+                'order_lines_id' => $deviceData->id,
+                'dep_company_id' => $deviceData->dep_company_id,
+                'sales_order_no' => $header_data->sales_order_no,
+                'item_code' => $deviceData->digits_code,
+                'serial_number' => $deviceData->serial_number,
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
             
         }
+
+    
+        //Insert other lines that are not enrolled in Enrollment History
+
+        $enrolledIds = $enrolledDevices->pluck('line_id');
+
+        $orderLines = OrderLines::where('order_id', $id)->get();
+
+        $otherLines = $orderLines->filter(function($orderLine) use ($enrolledIds) {
+            return !$enrolledIds->contains($orderLine->id);
+        });
+
+        foreach ($otherLines as $orderLine) {
+            $insertToHistory = [ 
+                'order_lines_id' => $orderLine->id,
+                'dep_company_id' => $orderLine->dep_company_id,
+                'sales_order_no' => $header_data->sales_order_no,
+                'item_code' => $orderLine->digits_code,
+                'serial_number' => $orderLine->serial_number,
+                'dep_status' => 0,
+                'enrollment_status' => $enrollment_status,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
+        }
+        
 
           // Logs
           $orderId = $header_data->order_id;
@@ -1223,6 +1330,7 @@ class ListOfOrdersController extends Controller
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
+                $status_message = $response['enrollDevicesResponse']['statusMessage'];
                 $enrollment_status = self::enrollment_status['Override'];
                 $orderLine->update(['dep_company_id' => $depCompanyId]);
             }
@@ -1231,11 +1339,26 @@ class ListOfOrdersController extends Controller
             else {
                 $transaction_id = $response['transactionId'];
                 $dep_status = self::dep_status['GRX-50025'];
+                $status_message = $response['errorMessage'];
                 $enrollment_status = self::enrollment_status['Override Error'];
             }
             
             // Update the enrollment status of the order line
             $orderLine->update(['enrollment_status_id' => $enrollment_status]);
+
+            $insertToHistory = [ 
+                'order_lines_id' => $orderLine->id,
+                'dep_company_id' => $orderLine->dep_company_id,
+                'sales_order_no' => $header_data->sales_order_no,
+                'item_code' => $orderLine->digits_code,
+                'serial_number' => $orderLine->serial_number,
+                'transaction_id' => $transaction_id,
+                'dep_status' => $dep_status,
+                'enrollment_status' => $enrollment_status,
+                'status_message' => $status_message,
+            ];
+
+            EnrollmentHistory::create($insertToHistory);
             
             // insert the request and response data to the database
             $orderId = $header_data['order_id'];
