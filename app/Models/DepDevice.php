@@ -100,6 +100,11 @@ class DepDevice extends Model
         return $this->hasOneThrough(Customer::class, Order::class, 'id', 'id', 'order_id', 'customer_id');
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
+
     public function scopeGetData($query)
     {
         return $query->leftJoin('orders', 'orders.id', '=', 'list_of_order_lines.order_id')
@@ -118,6 +123,42 @@ class DepDevice extends Model
 
         $order->dep_company_id = $depCompanyId;
         return $order->save();
+    }
+
+    public static function updateDepCompanyId($id, $newDepCompanyId)
+    {
+        $depDevice = self::find($id);
+        
+        if ($depDevice) {
+            $depDevice->dep_company_id = $newDepCompanyId;
+            return $depDevice->save();
+        }
+
+        return false;
+    }
+
+    public static function updateSerialNumber($id, $newSerialNum)
+    {
+        $depDevice = self::find($id);
+        
+        if ($depDevice) {
+            $depDevice->serial_number = $newSerialNum;
+            return $depDevice->save();
+        }
+
+        return false;
+    }
+
+    public static function updateEnrollmentStatusId($id, $newStatusId)
+    {
+        $depDevice = self::find($id);
+        
+        if ($depDevice) {
+            $depDevice->enrollment_status_id = $newStatusId;
+            return $depDevice->save();
+        }
+
+        return false;
     }
 
 }
