@@ -137,7 +137,7 @@ class ListOfOrdersController extends Controller
         }
        
         $data = [];
-        $data ['order'] = $order->with('customer')->first();
+        $data ['order'] = $order->with('customer')->where('id',$order->id)->first();
         
         $data['orderLines'] = OrderLines::query()
         ->where('order_id', $order->id)
