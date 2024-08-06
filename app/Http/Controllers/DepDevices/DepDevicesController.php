@@ -294,6 +294,11 @@ class DepDevicesController extends Controller
             // Check if all order lines have status 3 and update the enrollment status of the order
             if ($enrollmentStatusSuccess === $totalOrderLines && $totalOrderLines > 0) {
                 Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Completed']]);
+            }else if ($enrollmentStatusSuccess > 0) {
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => self::enrollment_status['Partially Enrolled'],
+                    'dep_order' => 1
+                ]);
             }
 
             $data = [
@@ -456,11 +461,11 @@ class DepDevicesController extends Controller
                 ->where('enrollment_status_id', 5)
                 ->count();
 
-            if ($enrollmentStatusReturned === $totalOrderLines) {
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
-            }else{
-                Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
-            }
+            // if ($enrollmentStatusReturned === $totalOrderLines) {
+            //     Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Pending']]);
+            // }else{
+            //     Order::where('id', $orderId)->update(['enrollment_status' => self::enrollment_status['Partially Enrolled']]);
+            // }
             // For successful response
             $data = [
                 'message' => $enrollment_status == 5 ? 'Unenrollment Success!' : 'Unenrollment Error!',
