@@ -141,6 +141,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);
     Route::post('/dep_devices/return', [DepDevicesController::class, 'unEnrollDevices']);
     Route::post('/dep_devices/update-device', [DepDevicesController::class, 'updateDepCompany']);
+    Route::post('/dep_devices/override', [DepDevicesController::class, 'overrideOrder']);
+
 
     //ENROLLMENT LIST
     Route::get('/enrollment_list/{enrollmentList}', [EnrollmentListController::class, 'EnrollmentListDetails']);
