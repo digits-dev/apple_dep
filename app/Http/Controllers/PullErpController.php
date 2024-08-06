@@ -213,6 +213,36 @@ class PullErpController extends Controller
                 $finalDataLines[] = $line;
             }
         }
+
+        //FIND SAME SERIAL IN ORDER LINES
+        $findDuplicateSerialInOrderLinesTable = [];
+        foreach ($lines as $key => $res) {
+            $isSerialExist = OrderLines::where('serial_number',$res->final_serial)->exists();
+            if ($isSerialExist) {
+                $res->errors_message = "Duplicate serial number found in Order lines";
+                $findDuplicateSerialInOrderLinesTable[] = $res;
+            }
+        }
+
+        //SAVE SAME SERIALS IN ORDERLINES
+        if($findDuplicateSerialInOrderLinesTable){
+            self::savePullErpErrors($findDuplicateSerialInOrderLinesTable);
+        }
+
+        //FIND ITEM MASTER IF EXIST
+        $isDigitsCodeExist = [];
+        foreach ($lines as $key => $res) {
+            $isSerialExist = DB::table('item_master')->where('digits_code',$res->ordered_item)->exists();
+            if ($isSerialExist) {
+                $res->errors_message = "Digits Code not found in Item Master";
+                $isDigitsCodeExist[] = $res;
+            }
+        }
+
+        //SAVE NOT FOUND ITEM MASTER
+        if($isDigitsCodeExist){
+            self::savePullErpErrors($isDigitsCodeExist);
+        } 
      
         //SAVE HEADER
         $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
@@ -316,7 +346,5 @@ class PullErpController extends Controller
            
         }
     }
-
-    
 
 }
