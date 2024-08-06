@@ -26,6 +26,8 @@ import RowStatus from "../../Components/Table/RowStatus";
 import Select from "../../Components/Forms/Select";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
+import OverrideOrderForm from "./OverrideOrderForm";
+
 
 
 const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers }) => {
@@ -41,6 +43,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [depCompanyId, setDefaultDepCompanyId] = useState(null);
+    const [showOverrideModal, setShowOverrideModal] = useState(false);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -60,24 +63,31 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         customer_id: "",
     });
 
+    const [updateFormValues, setUpdateFormValues] = useState({
+        sales_order_no: "",
+        customer_id: "",
+        order_ref_no: "",
+        order_date: "",
+    });
+
     const handleFilter = (e, attrName) => {
-        if(attrName) {
+        if (attrName) {
             const { value } = e;
 
             setFilters(filters => ({
                 ...filters,
                 [attrName]: value,
             }));
-          
-        }else{
+
+        } else {
             const { name, value } = e.target;
 
             setFilters(filters => ({
-            ...filters,
-            [name]: value,
+                ...filters,
+                [name]: value,
             }));
         }
-       
+
     }
 
     const handleFilterSubmit = (e) => {
@@ -93,6 +103,10 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
 
     const handleClodeEditModal = () => {
         setShowEditModal(false);
+    };
+
+    const handleCloseOverrideModal = () => {
+        setShowOverrideModal(false);
     };
 
     const handleOpenEditModal = (depCompanyId) => {
@@ -192,27 +206,35 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         );
     };
 
+    
+
     const EnrollReturnDeviceActions = () => {
         const handleSwal = (e, action) => {
             e.preventDefault();
-            Swal.fire({
-                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${
-                    action == "enroll" ? "Enroll" : "Return"
-                } this Device?</p>`,
-                showCancelButton: true,
-                confirmButtonText: "Confirm",
-                confirmButtonColor: "#000000",
-                reverseButtons: true,
-                icon: "question",
-                iconColor: "#000000",
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    EnrollReturnDevice(action);
-                }
-            });
+
+            if (action === "override") {
+                setShowOverrideModal(true);
+            }
+            else{
+                Swal.fire({
+                    title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${action == "enroll" ? "Enroll" : "Return"
+                        } this Device?</p>`,
+                    showCancelButton: true,
+                    confirmButtonText: "Confirm",
+                    confirmButtonColor: "#000000",
+                    reverseButtons: true,
+                    icon: "question",
+                    iconColor: "#000000",
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        EnrollReturnDevice(action);
+                    }
+                });
+            }
+            
         };
 
-        const EnrollReturnDevice = async (action) => {
+        const EnrollReturnDevice = async (action, formData) => {
             setShowModal(false);
             setProcessing(true);
 
@@ -222,7 +244,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     response = await axios.post(`/dep_devices/enroll`, {
                         id: orderId,
                     });
-                } else {
+                }
+                else {
                     response = await axios.post(`/dep_devices/return`, {
                         id: orderId,
                     });
@@ -265,10 +288,36 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             Return Device
                         </button>
                     )}
+
+                    {[3].includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                            onClick={(e) => handleSwal(e, "override")}
+                        >
+                            Override
+                        </button>
+                    )}
                 </>
             </div>
         );
     };
+
+    const handleOverrideSubmit = async (formData) => {
+        setProcessing(true);
+        try {
+            const response = await axios.post(`/dep_devices/override`, formData);
+            handleToast(response.data.message, response.data.status);
+        } catch (error) {
+            handleToast("Something went wrong, please try again later.", "Error");
+        } finally {
+            setProcessing(false);
+        }
+
+        setShowOverrideModal(false);
+        setShowModal(false);
+        setProcessing(false);
+    };
+
     return (
         <>
             <Head title="DEP Devices" />
@@ -295,12 +344,12 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             onChange={handleFilter}
                         />
                         <ReactSelect
-                            placeholder="Select DEP Company" 
-                            name="dep_company_id" 
+                            placeholder="Select DEP Company"
+                            name="dep_company_id"
                             displayName="Dep Company"
-                            options={depCompanies} 
-                            value={depCompanies.find(depCompany => depCompany.value === filters.dep_company_id)} 
-                            onChange={(e) => handleFilter(e,'dep_company_id')}  
+                            options={depCompanies}
+                            value={depCompanies.find(depCompany => depCompany.value === filters.dep_company_id)}
+                            onChange={(e) => handleFilter(e, 'dep_company_id')}
                         />
                         <Select
                             name="enrollment_status_id"
@@ -309,13 +358,13 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             onChange={handleFilter}
                         />
                         <ReactSelect
-                            placeholder="Select Customer Name" 
+                            placeholder="Select Customer Name"
                             menuPlacement="top"
-                            name="customer_id" 
+                            name="customer_id"
                             displayName="Customer Name"
-                            options={customers} 
-                            value={customers.find(customer => customer.value === filters.customer_id)} 
-                            onChange={(e) => handleFilter(e,'customer_id')}  
+                            options={customers}
+                            value={customers.find(customer => customer.value === filters.customer_id)}
+                            onChange={(e) => handleFilter(e, 'customer_id')}
                         />
 
 
@@ -430,8 +479,30 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                             setEnrollmentStatus(
                                                                 item.enrollment_status_id
                                                             );
+                                                            setUpdateFormValues(
+                                                                {
+                                                                    id:
+                                                                        item.id,
+                                                                    order_id:
+                                                                        item.order_id,
+                                                                    customer_id:
+                                                                        item.dep_company_id,
+                                                                    po_number:
+                                                                        item.order_ref_no,
+                                                                    delivery_number:
+                                                                        item.dr_number, 
+                                                                    order_date:
+                                                                        item.order_date,
+                                                                    ship_date:
+                                                                        item.order_date,
+                                                                    order_number:
+                                                                        item.sales_order_no,
+                                                                    serial_number:
+                                                                        item.serial_number,
+                                                                }
+                                                            );
                                                         }}
-                                                        tooltipContent={`${item.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
+                                                        // tooltipContent={`${item.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
                                                     />
                                                     <RowAction
                                                         action="edit"
@@ -439,19 +510,19 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                         onClick={() => {
                                                             handleOpenEditModal(item.dep_company_id);
                                                             setOrderId(item.id);
-                                                            setDevOrderId(item.order_id)
-                                                            setDefaultDepCompanyId(item.dep_company_id); 
+                                                            setDevOrderId(item.order_id);
+                                                            setDefaultDepCompanyId(item.dep_company_id);
                                                         }}
                                                         disabled={!["Pending", "Returned"].includes(item.enrollment_status)}
                                                         tooltipContent="Edit"
                                                     />
 
                                                 </RowActions>
-                                            )}       
+                                            )}
                                         </RowData>
                                     )}
-                                        
-                                    
+
+
                                 </Row>
                             ))}
                     </Tbody>
@@ -468,6 +539,18 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                 title="Edit"
             >
                 <EditDeviceAction id={depCompanyId} />
+            </Modal>
+            <Modal
+                show={showOverrideModal}
+                onClose={handleCloseOverrideModal}
+                title="Override Order"
+            >
+                <OverrideOrderForm
+                    handleShow={handleCloseOverrideModal}
+                    updateFormValues={updateFormValues}
+                    onSubmit={handleOverrideSubmit}
+                    options={options}
+                />
             </Modal>
         </>
     );
