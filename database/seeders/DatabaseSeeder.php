@@ -34,14 +34,14 @@ class DatabaseSeeder extends Seeder
         // DepStatus::factory(25)->create();
 
         // EnrollmentStatus::factory(25)->create();
-        $this->call([AdmSeeders::class]);
         $this->call([AdmModules::class]);
         $this->call([AdmMenus::class]);
-        $this->call([AdmPrivileges::class]);
-        $this->call([AdmMenuPrivileges::class]);
-        $this->call([EnrollmentStatusSeeder::class]);
-        $this->call([DepStatusSeeder::class]);
-        $this->call([AdmUsersSeeders::class]);
-        $this->call([AdmUsersStatuses::class]);
+        // $this->call([AdmSeeders::class]);
+        // $this->call([AdmPrivileges::class]);
+        // $this->call([AdmMenuPrivileges::class]);
+        // $this->call([EnrollmentStatusSeeder::class]);
+        // $this->call([DepStatusSeeder::class]);
+        // $this->call([AdmUsersSeeders::class]);
+        // $this->call([AdmUsersStatuses::class]);
     }
 }
