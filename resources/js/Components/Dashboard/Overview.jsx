@@ -6,7 +6,7 @@ const DashboardOverviewCard = ({ title, data, src, url }) => {
     return (
         <Link
             href={url}
-            className="flex p-5 w-full max-w-[170px] md:max-w-xs border rounded-lg border-gray-400 shadow-custom font-nunito-sans flex-wrap-reverse gap-y-1 justify-center"
+            className="flex p-5 w-full border rounded-lg border-gray-400 shadow-custom font-nunito-sans flex-wrap-reverse gap-y-1 justify-center"
         >
             <div className="flex flex-col justify-center flex-1 gap-y-2">
                 <p className="text-sm font-bold text-gray-600">{title}</p>
@@ -24,7 +24,7 @@ const Overview = ({ customer, orders, devices }) => {
         <>
             <ContentPanel marginBottom={2}>
                 <p className="font-extrabold font-nunito-sans mb-3">Overview</p>
-                <div className="flex flex-row gap-2 flex-wrap justify-center md:justify-start">
+                <div className="flex flex-col md:flex-row gap-2 justify-center md:justify-start">
                     <DashboardOverviewCard
                         title="Customers"
                         data={customer}

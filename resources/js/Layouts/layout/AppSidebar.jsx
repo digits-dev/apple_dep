@@ -6,6 +6,19 @@ import SidebarAccordion from "../../Components/Sidebar/SidebarAccordion";
 const AppSidebar = () => {
     const [open, setOpen] = useState(true);
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setOpen(false);
+            }else{
+                setOpen(true);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <div
             className={`${
