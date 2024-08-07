@@ -11,6 +11,7 @@ class Customer extends Model
 
     protected $fillable = [
         'party_number',
+        'customer_code',
         'customer_name',
         'status',
         'created_at',

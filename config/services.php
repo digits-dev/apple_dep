@@ -48,5 +48,10 @@ return [
     'item_master' => [
         'url' => env('ITEM_MASTER_URL'),
         'key' => env('ITEM_MASTER_KEY')
+    ],
+    
+    'customers' => [
+        'url' => env('CUSTOMERS_URL'),
+        'key' => env('CUSTOMERS_KEY')
     ]
 ];

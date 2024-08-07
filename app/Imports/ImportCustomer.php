@@ -26,6 +26,7 @@ class ImportCustomer implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVa
         return new Customer([
             'party_number' => trim($row['party_number']),
             'created_at' => $this->transformDate($row['created_at']),
+            'customer_code' => trim($row['customer_code']),
             'customer_name' => trim($row['customer_name']),
         ]);
 

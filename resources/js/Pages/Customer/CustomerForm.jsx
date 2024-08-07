@@ -8,6 +8,7 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
     const { handleToast } = useToast();
 
     const { data, setData, processing, reset, post, put, errors } = useForm({
+        customer_code: updateFormValues?.currentCusCodeValue || '',
         customer_name: updateFormValues?.currentValue || '',
         status: updateFormValues?.status,
     });
@@ -39,6 +40,8 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
     return (
         <>
         <form className='space-y-4' onSubmit={handleSubmit}>
+            <InputComponent name="customer_code" value={data.customer_code} onChange={e => setData('customer_code', e.target.value)}/>
+            {errors.customer_code && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.customer_code}</em></span>}
             <InputComponent name="customer_name" value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}/>
             {errors.customer_name && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.customer_name}</em></span>}
            

@@ -51,10 +51,14 @@ class CustomerController extends Controller
         }
 
         $request->validate([
+            'customer_code' => 'required|unique:customers,customer_code',
             'customer_name' => 'required|unique:customers,customer_name',
         ]);
         
-        Customer::create(['customer_name'=> $request->input('customer_name')]);
+        Customer::create([
+                        'customer_code'=> $request->input('customer_code'),
+                        'customer_name'=> $request->input('customer_name')
+                        ]);
 
         $data = [
             'message' => "Successfully Added Customer.", 
@@ -74,13 +78,16 @@ class CustomerController extends Controller
 
             return back()->with($data);
         }
-
         $request->validate([
             'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
             'status' => 'required',
         ]);
 
-        $customer->update(['customer_name'=> $request->input('customer_name'), 'status' => $request->input('status')]);
+        $customer->update([
+            'customer_code'=> $request->input('customer_code'), 
+            'customer_name'=> $request->input('customer_name'), 
+            'status' => $request->input('status')
+        ]);
 
         $data = [
             'message' => "Successfully Updated.", 
@@ -196,6 +203,70 @@ class CustomerController extends Controller
     {
         $filename = "Import Customer Template".".xlsx";
         return Excel::download(new ImportCustomerTemplate, $filename);
+    }
+
+    public function getCustomers(Request $request) {
+        $secretKey = config('services.customers.key');
+        $url = config('services.customers.url');
+        
+        $uniqueString = time(); 
+        if (php_sapi_name() == 'cli') {
+            $userAgent = 'Scheduled Task';
+        } else {
+            $userAgent = $request->header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36');
+        }
+        $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+        $xAuthorizationTime = $uniqueString;
+        $vars = [
+            "your_param"=>1
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_POST, FALSE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+        curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+
+        $headers = [
+        'X-Authorization-Token: ' . $xAuthorizationToken,
+        'X-Authorization-Time: ' . $xAuthorizationTime,
+        'User-Agent: '.$userAgent
+        ];
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $server_output = curl_exec ($ch);
+        curl_close ($ch);
+
+        $response = json_decode($server_output, true);
+        $data = [];
+        if(!empty($response["data"])) {
+            foreach ($response["data"] as $key => $value) {
+                DB::beginTransaction();
+                try {
+                    Customer::updateOrInsert([
+                        'customer_name'    => $value['customer_name'] 
+                    ],
+                    [
+                        'customer_code'    => $value['customer_code'],
+                        'customer_name'    => $value['customer_name'],
+                        'status'           => 1,
+                        'created_at'       => date('Y-m-d H:i:s')
+                    ]);
+                    DB::commit();
+                } catch (\Exception $e) {
+                    \Log::debug($e);
+                    DB::rollback();
+                }
+                
+            }
+        }
+        \Log::info('Customers item Create: executed! items');
     }
   
 }
