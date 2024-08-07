@@ -141,6 +141,7 @@ class Order extends Model
             and wnd.Confirm_Date between TO_DATE('2024/07/10 00:00:00','RRRR/MM/DD HH24:MI:SS') and TO_DATE('2024/07/10 23:59:59','RRRR/MM/DD HH24:MI:SS')
             and (SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CRP' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DLR' or
+                SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DIG' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CON'
                 )";
 

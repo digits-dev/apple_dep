@@ -23,6 +23,7 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
     public function headings(): array {
         $headers = [
                     "Customer ID",
+                    "Party Number",
                     "Customer Code",
                     "Customer Name",
                     "Created Date",
@@ -36,6 +37,7 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, ShouldAuto
 
        $customers = [
                     $item->id,
+                    $item->party_number,
                     $item->customer_code,
                     $item->customer_name,
                     $item->created_at,

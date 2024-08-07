@@ -56,6 +56,7 @@ class CustomerController extends Controller
         ]);
         
         Customer::create([
+                        'party_number'=> $request->input('party_number'),
                         'customer_code'=> $request->input('customer_code'),
                         'customer_name'=> $request->input('customer_name')
                         ]);
@@ -84,6 +85,7 @@ class CustomerController extends Controller
         ]);
 
         $customer->update([
+            'party_number'=> $request->input('party_number'),
             'customer_code'=> $request->input('customer_code'), 
             'customer_name'=> $request->input('customer_name'), 
             'status' => $request->input('status')

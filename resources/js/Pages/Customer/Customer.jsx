@@ -45,7 +45,7 @@ const Customer = ({ customers, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({currentCusCodeValue: '', currentValue: '', currentId:'', status: Boolean});
+    const [updateFormValues, setUpdateFormValues] = useState({party_number: '',currentCusCodeValue: '', currentValue: '', currentId:'', status: Boolean});
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -262,7 +262,7 @@ const Customer = ({ customers, queryParams }) => {
                                     <RowData isLoading={loading} center>
                                         <RowAction
                                             type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, currentCusCodeValue:item.customer_code, currentValue:item.customer_name, status:item.status});}}
+                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({party_number:item.party_number,currentId:item.id, currentCusCodeValue:item.customer_code, currentValue:item.customer_name, status:item.status});}}
                                             action="edit"
                                             size="md"
                                             tooltipContent="Edit"
