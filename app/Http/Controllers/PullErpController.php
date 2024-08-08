@@ -212,7 +212,7 @@ class PullErpController extends Controller
         //CHECK IF ORDER NUMBER AND SERIAL IS DUPLICATE
         $header = [];
         $linesIdentifier = [];
-        $uniqueHeaderData[] = $line;
+        $uniqueHeaderData = [];
         foreach($lines as $key => $line){
             //GET HEADER
             $identifier = $line->order_number . '-' . $line->cust_po_number;
