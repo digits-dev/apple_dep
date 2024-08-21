@@ -38,8 +38,7 @@ return [
         'bulk_enroll_endpoint' => env('APPLE_API_BULK_ENROLL_ENDPOINT'),
         'show_order_details_endpoint' => env('APPLE_API_SHOW_ORDER_DETAILS_ENDPOINT'),
         'check_transaction_status_endpoint' => env('APPLE_API_CHECK_TRANSACTION_STATUS_ENDPOINT'),
-        'certificate_path' => env('APPLE_API_CERTIFICATE_PATH', ''),
-        'certificate_key_path' => env('APPLE_API_CERTIFICATE_KEY_PATH', ''),
+        'certificate_key_path' => env('APPLE_API_CERTIFICATE_KEY_PATH'),
         'ship_to' => env('SHIP_TO','0000742682'),
         'timezone' => env('TIMEZONE','420'),   
         'langCode' => env('LANGCODE','en')      

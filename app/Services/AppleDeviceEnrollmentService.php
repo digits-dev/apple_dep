@@ -14,6 +14,7 @@ class AppleDeviceEnrollmentService
     protected $showOrderDetailsEndpoint;
     protected $checkTransactionStatusEndpoint;
     protected $timeout;
+    protected $sslCertPath;
 
     public function __construct()
     {
@@ -21,6 +22,7 @@ class AppleDeviceEnrollmentService
         $this->bulkEnrollEndpoint = config('services.apple_api.bulk_enroll_endpoint');
         $this->checkTransactionStatusEndpoint = config('services.apple_api.check_transaction_status_endpoint');
         $this->showOrderDetailsEndpoint = config('services.apple_api.show_order_details_endpoint');
+        $this->sslCertPath = config('services.apple_api.certificate_key_path');
         $this->timeout = 15;
     }
 
@@ -53,6 +55,9 @@ class AppleDeviceEnrollmentService
                 'Accept-Encoding' => '',
             ])
                 ->timeout($this->timeout)
+                ->withOptions([
+                    'verify' => $this->sslCertPath,
+                ])
                 ->post($url, $requestData);
 
             if ($response->successful()) {
@@ -85,6 +90,9 @@ class AppleDeviceEnrollmentService
                 'Accept-Encoding' => '',
             ])
                 ->timeout($this->timeout)
+                ->withOptions([
+                    'verify' => $this->sslCertPath,
+                ])
                 ->post($url, $payload);
     
             if ($response->successful()) {
@@ -115,6 +123,9 @@ class AppleDeviceEnrollmentService
                 'Accept-Encoding' => '',
             ])
             ->timeout($this->timeout)
+            ->withOptions([
+                'verify' => $this->sslCertPath,
+            ])
             ->post($url, $payload);
 
             if ($response->successful()) {
