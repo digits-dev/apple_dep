@@ -40,9 +40,12 @@ return [
         'check_transaction_status_endpoint' => env('APPLE_API_CHECK_TRANSACTION_STATUS_ENDPOINT'),
         'certificate_path' => env('APPLE_API_CERTIFICATE_PATH', ''),
         'certificate_key_path' => env('APPLE_API_CERTIFICATE_KEY_PATH', ''),
-        'ship_to' => env('SHIP_TO','0000742682'),
-        'timezone' => env('TIMEZONE','420'),   
-        'langCode' => env('LANGCODE','en')      
+        'ship_to' => env('APPLE_API_SHIP_TO','0000742682'),
+        'timezone' => env('APPLE_API_TIMEZONE','420'),   
+        'langCode' => env('APPLE_API_LANGCODE','en'),
+        'depResllerId' => env('APPLE_API_DEP_RESELLER_ID', '0000742682'),
+        'deviceEnrollmentTransactionId' => env('APPLE_API_DEVICE_ENROLLMENT_TRANSACTION_ID', 'e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097'),
+        'orderNumber' => env('APPLE_API_ORDER_NUMBER', 'ORDER_900123'),
     ],
 
     'item_master' => [

@@ -93,11 +93,11 @@ class EnrollmentListController extends Controller
     {
         $requestData = [
             'requestContext' => [
-                'shipTo' => '0000742682',
-                'timeZone' => '420',
-                'langCode' => 'en',
+                'shipTo' => config('services.apple_api.ship_to'),
+                'timeZone' => config('services.apple_api.timeZone'),
+                'langCode' => config('services.apple_api.langCode')
             ],
-            'depResellerId' => '0000742682',
+            'depResellerId' => config('services.apple_api.depResellerId'),
             'deviceEnrollmentTransactionId' => $transactionId
         ];
 
