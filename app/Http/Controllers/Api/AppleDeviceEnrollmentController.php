@@ -20,12 +20,12 @@ class AppleDeviceEnrollmentController extends Controller
         //$requestData = $request->all();
 
         $requestContext = [
-            'shipTo' => '0000742682', //replace
-            'timeZone' => '420',
-            'langCode' => 'en'
+            'shipTo' => config('services.apple_api.ship_to'), 
+            'timeZone' => config('services.apple_api.timezone'),
+            'langCode' => config('services.apple_api.langCode'),
         ];
-        $depResellerId = '0000742682'; //replace
-        $orderNumbers = ['ORDER_900123']; //replace
+        $depResellerId = config('services.apple_api.depResllerId');
+        $orderNumbers = [config('services.apple_api.orderNumber')]; 
 
         try {
             $response = $this->appleService->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
@@ -42,12 +42,12 @@ class AppleDeviceEnrollmentController extends Controller
 
         $requestData = [
             'requestContext' => [
-                'shipTo' => '0000742682', //replace
-                'timeZone' => '420',
-                'langCode' => 'en',
+                'shipTo' => config('services.apple_api.ship_to'), 
+                'timeZone' => config('services.apple_api.timezone'),
+                'langCode' => config('services.apple_api.langCode'),
             ],
-            'depResellerId' => '0000742682', //replace
-            'deviceEnrollmentTransactionId' => 'd6256757-a1a2-4534-8c5b-89819833ce1e_1720594456129', //replace
+            'depResellerId' => config('services.apple_api.depResllerId'),
+            'deviceEnrollmentTransactionId' => config('services.apple_api.deviceEnrollmentTransactionId'),
         ];
 
         try {
@@ -79,8 +79,8 @@ class AppleDeviceEnrollmentController extends Controller
             $payload = [
                 'requestContext' => [
                     "shipTo" => $requestData['shipTo'],
-                    "timeZone" => "420",
-                    "langCode" => "en",
+                    "timeZone" => config('services.apple_api.timeZone'),
+                    "langCode" => config('services.apple_api.langCode'),
                 ],
                 "transactionId" => 'TXN_' . uniqid(),
                 "depResellerId" => $requestData['depResellerId'],
@@ -113,8 +113,8 @@ class AppleDeviceEnrollmentController extends Controller
             $payload = [
                 'requestContext' => [
                     'shipTo' => $requestData['shipTo'],
-                    'timeZone' => '420',
-                    'langCode' => 'en',
+                    'timeZone' => config('services.apple_api.timeZone'),
+                    'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
                 'depResellerId' => $requestData['depResellerId'],

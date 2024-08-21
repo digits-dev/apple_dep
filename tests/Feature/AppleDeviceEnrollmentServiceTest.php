@@ -32,12 +32,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001123",
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900123",
@@ -82,12 +82,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001124",
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900124",
@@ -135,12 +135,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001123",
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900123",
@@ -183,12 +183,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001123",
-            "depResellerId" => "0000742682",
+            "depResellerId" =>  config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900123",
@@ -257,12 +257,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $requestData = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
-            "depResellerId" => "0000742682",
-            "deviceEnrollmentTransactionId" => "e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097"
+            "depResellerId" => config('services.apple_api.depResellerId'),
+            "deviceEnrollmentTransactionId" => config('services.apple_api.deviceEnrollmentTransactionId')
         ];
 
         $response = $this->service->checkTransactionStatus($requestData);
@@ -319,12 +319,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
 
         $requestContext = [
-            "shipTo" => "0000742682",
-            "timeZone" => "420",
-            "langCode" => "en"
+            "shipTo" => config('services.apple_api.ship_to'),
+            "timeZone" => config('services.apple_api.timeZone'),
+            "langCode" => config('services.apple_api.langCode')
         ];
-        $depResellerId = "0000742682";
-        $orderNumbers = ["ORDER_900130"];
+        $depResellerId = config('services.apple_api.depResellerId');
+        $orderNumbers = [config('services.apple_api.orderNumber')];
 
         // Calling the showOrderDetails method
         $response = $this->service->showOrderDetails($requestContext, $depResellerId, $orderNumbers);
@@ -341,12 +341,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
 
         $requestContext = [
-            "shipTo" => "0000742682",
-            "timeZone" => "420",
-            "langCode" => "en"
+            "shipTo" => config('services.apple_api.ship_to'),
+            "timeZone" => config('services.apple_api.timeZone'),
+            "langCode" => config('services.apple_api.langCode')
         ];
-        $depResellerId = "0000742682";
-        $orderNumbers = ["ORDER_900130"];
+        $depResellerId = config('services.apple_api.depResellerId');
+        $orderNumbers = [config('services.apple_api.orderNumber')];
 
         // Calling the showOrderDetails method
         $this->expectException(\Exception::class);
@@ -420,12 +420,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
 
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "", //EMPTY TRANSACTION ID
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900123",
@@ -472,12 +472,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
         // Set up the payload
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001123",
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900123",
@@ -523,12 +523,12 @@ class AppleDeviceEnrollmentServiceTest extends TestCase
     public function testVoidOrderSuccessfully(){
         $payload = [
             "requestContext" => [
-                "shipTo" => "0000742682",
-                "timeZone" => "420",
-                "langCode" => "en"
+                "shipTo" => config('services.apple_api.ship_to'),
+                "timeZone" => config('services.apple_api.timeZone'),
+                "langCode" => config('services.apple_api.langCode')
             ],
             "transactionId" => "TXN_001124",
-            "depResellerId" => "0000742682",
+            "depResellerId" => config('services.apple_api.depResellerId'),
             "orders" => [
                 [
                     "orderNumber" => "ORDER_900124",
