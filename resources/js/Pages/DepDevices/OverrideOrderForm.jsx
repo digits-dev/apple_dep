@@ -38,10 +38,10 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
         e.preventDefault();
 
         // Validate serial number
-        if (!data.serial_number) {
+        {/*if (!data.serial_number) {
             setError('serial_number', 'Serial Number is required.');
             return;
-        }
+        }*/}
 
         Swal.fire({
             title: `<p class="font-nunito-sans text-3xl">Override Order?</p>`,
@@ -70,7 +70,7 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
         <>
             <form onSubmit={handleSubmit}>
                 <div className="space-y-3 mb-10">
-                    <InputComponent
+                    {/* <InputComponent
                         name="Serial Number"
                         value={data.serial_number}
                         onChange={(e) => setData("serial_number", e.target.value)}
@@ -79,7 +79,7 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
                         <span className="text-red-400 font-base">
                             <em>{errors.serial_number}</em>
                         </span>
-                    )}
+                    )} */}
                     <ReactSelect
                         placeholder="Select an option"
                         name="dep_company"
