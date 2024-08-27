@@ -307,8 +307,10 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         try {
             const response = await axios.post(`/dep_devices/override`, formData);
             handleToast(response.data.message, response.data.status);
+            router.reload({ only: ["devices"] });
         } catch (error) {
             handleToast("Something went wrong, please try again later.", "Error");
+            router.reload({ only: ["devices"] });
         } finally {
             setProcessing(false);
         }
