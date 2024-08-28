@@ -29,6 +29,37 @@ import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import OverrideOrderForm from "./OverrideOrderForm";
 import DuplicateIcon from "../../Components/Table/Icons/DuplicateIcon";
 
+const EnrollmentStatus = Object.freeze({
+    PENDING: 1,
+    ENROLLMENT_ERROR: 2,
+    ENROLLMENT_SUCCESS: 3,
+    COMPLETED: 4,
+    RETURNED: 5,
+    RETURN_ERROR: 6,
+    PARTIALLY_ENROLLED: 7,
+    VOIDED: 8,
+    CANCELLED: 9,
+    VOID_ERROR: 10,
+    OVERRIDE: 11,
+    OVERRIDE_ERROR: 12,
+});
+
+const allowedToEnroll = [
+    EnrollmentStatus.PENDING,
+    EnrollmentStatus.ENROLLMENT_ERROR,
+    EnrollmentStatus.RETURNED,
+];
+
+const allowedToReturn = [
+    EnrollmentStatus.ENROLLMENT_SUCCESS,
+    EnrollmentStatus.RETURN_ERROR,
+    EnrollmentStatus.OVERRIDE
+];
+
+const allowedToOverride = [
+    EnrollmentStatus.ENROLLMENT_SUCCESS,
+    EnrollmentStatus.OVERRIDE_ERROR,
+];
 
 const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers, duplicates }) => {
     const { auth } = usePage().props;
@@ -271,7 +302,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
                 <>
-                    {![3, 6].includes(enrollmentStatus) && (
+                    {allowedToEnroll.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
                             onClick={(e) => handleSwal(e, "enroll")}
@@ -280,7 +311,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                         </button>
                     )}
 
-                    {![1, 2, 5].includes(enrollmentStatus) && (
+                    {allowedToReturn.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={(e) => handleSwal(e, "return")}
@@ -289,7 +320,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                         </button>
                     )}
 
-                    {[3].includes(enrollmentStatus) && (
+                    {allowedToOverride.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={(e) => handleSwal(e, "override")}

@@ -97,10 +97,10 @@ class EnrollmentHistory extends Model
     public function scopeSort($query, array $request){
 
         if (in_array($request['sortBy'], ['created_by', 'updated_by', 'returned_by'])) {
-            $query->leftJoin('users', "enrollment_lists.{$request['sortBy']}", '=', 'users.id')
+            $query->leftJoin('users', "enrollment_histories.{$request['sortBy']}", '=', 'users.id')
                     ->orderBy('users.name', $request['sortDir']);
         } else if ($request['sortBy'] == 'dep_companies') {
-            $query->leftJoin('dep_companies', 'dep_companies.id', 'enrollment_lists.dep_company_id')
+            $query->leftJoin('dep_companies', 'dep_companies.id', 'enrollment_histories.dep_company_id')
                     ->orderBy('dep_companies.dep_company_name', $request['sortDir']);
         } else {
             $query->orderBy($request['sortBy'], $request['sortDir']);
