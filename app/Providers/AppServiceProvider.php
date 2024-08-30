@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         Http::macro('withClientCertificate', function () {
             return Http::withOptions([
                 'cert' => config('services.apple_api.certificate_path'),
-                'ssl_key' => config('services.apple_api.certificate_key_path'),
+                'ssl_key' => [config('services.apple_api.certificate_key_path'), config('services.apple_api.certificate_key_pass')],
             ]);
         });
 

@@ -152,7 +152,8 @@ class DepDevicesController extends Controller
                     'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => config('services.apple_api.ship_to'),
+                'depResellerId' => config('services.apple_api.depResellerId'),
+                
                 'orders' => [],  
             ];
             
@@ -347,7 +348,7 @@ class DepDevicesController extends Controller
                     'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => config('services.apple_api.ship_to'),
+                'depResellerId' => config('services.apple_api.depResellerId'),
                 'orders' => [],  
             ];
             
@@ -561,7 +562,7 @@ class DepDevicesController extends Controller
                     'langCode' => config('services.apple_api.langCode'),
                 ],
                 'transactionId' => 'TXN_' . uniqid(),  
-                'depResellerId' => config('services.apple_api.ship_to'),
+                'depResellerId' => config('services.apple_api.depResellerId'),
                 'orders' => [],  
             ];
 
