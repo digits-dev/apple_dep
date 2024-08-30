@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
+        Http::macro('withClientCertificate', function () {
+            return Http::withOptions([
+                'cert' => config('services.apple_api.certificate_path'),
+                'ssl_key' => config('services.apple_api.certificate_key_path'),
+            ]);
+        });
+
     }
 }
