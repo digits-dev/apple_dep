@@ -14,8 +14,6 @@ class AppleDeviceEnrollmentService
     protected $showOrderDetailsEndpoint;
     protected $checkTransactionStatusEndpoint;
     protected $timeout;
-    protected $sslCertPath;
-    protected $sslCertKeyPath;
 
     public function __construct()
     {
@@ -23,8 +21,6 @@ class AppleDeviceEnrollmentService
         $this->bulkEnrollEndpoint = config('services.apple_api.bulk_enroll_endpoint');
         $this->checkTransactionStatusEndpoint = config('services.apple_api.check_transaction_status_endpoint');
         $this->showOrderDetailsEndpoint = config('services.apple_api.show_order_details_endpoint');
-        $this->sslCertPath = config('services.apple_api.certificate_path');
-        $this->sslCertKeyPath = config('services.apple_api.certificate_key_path');
         $this->timeout = 15;
     }
 
@@ -43,7 +39,8 @@ class AppleDeviceEnrollmentService
         return $this->sendRequest($payload, 'override order');
     }
 
-    public function voidOrder(array $payload){
+    public function voidOrder(array $payload)
+    {
         return $this->sendRequest($payload, 'void order');
     }
 
@@ -52,24 +49,20 @@ class AppleDeviceEnrollmentService
         $url = $this->baseUrl . $this->checkTransactionStatusEndpoint;
 
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
-                ->timeout($this->timeout)
-                ->withOptions([
-                    'cert' => $this->sslCertPath,
-                    'ssl_key' => $this->sslCertKeyPath
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
                 ])
+                ->timeout($this->timeout)
                 ->post($url, $requestData);
 
             if ($response->successful()) {
                 return $response->json();
             }
 
-
             $this->handleErrorResponse('check transaction status', $response);
-        } catch(ConnectionException $e){
+        } catch (ConnectionException $e) {
             $this->handleTimeoutException('check transaction status', $e);
         } catch (RequestException $e) {
             $this->handleRequestException('check transaction status', $e);
@@ -87,23 +80,20 @@ class AppleDeviceEnrollmentService
             'orderNumbers' => $orderNumbers,
         ];
 
-        try{
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
-                ->timeout($this->timeout)
-                ->withOptions([
-                    'cert' => $this->sslCertPath,
-                    'ssl_key' => $this->sslCertKeyPath
+        try {
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
                 ])
+                ->timeout($this->timeout)
                 ->post($url, $payload);
-    
+
             if ($response->successful()) {
                 return $response->json();
             }
             $this->handleErrorResponse('show order details', $response);
-        } catch(ConnectionException $e){
+        } catch (ConnectionException $e) {
             $this->handleTimeoutException('show order details', $e);
         } catch (RequestException $e) {
             $this->handleRequestException('show order details', $e);
@@ -122,16 +112,13 @@ class AppleDeviceEnrollmentService
         $url = $this->baseUrl . $endpoint;
 
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
-            ->timeout($this->timeout)
-            ->withOptions([
-                'cert' => $this->sslCertPath,
-                'ssl_key' => $this->sslCertKeyPath
-            ])
-            ->post($url, $payload);
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
+                ])
+                ->timeout($this->timeout)
+                ->post($url, $payload);
 
             if ($response->successful()) {
                 return $response->json();
