@@ -75,6 +75,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     const [showEditModal, setShowEditModal] = useState(false);
     const [depCompanyId, setDefaultDepCompanyId] = useState(null);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
+    const [overrideDepOptions, setOverrideDepOptions] = useState(options);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -95,10 +96,15 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     });
 
     const [updateFormValues, setUpdateFormValues] = useState({
-        sales_order_no: "",
-        customer_id: "",
-        order_ref_no: "",
-        order_date: "",
+        id:"",
+        order_id:"",
+        customer_id:"",
+        po_number:"",
+        delivery_number:"",
+        order_date:"",
+        ship_date:"",
+        order_number:"",
+        serial_number:"",
     });
 
     const handleFilter = (e, attrName) => {
@@ -240,10 +246,22 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     
 
     const EnrollReturnDeviceActions = () => {
-        const handleSwal = (e, action) => {
+        const handleSwal = async (e, action) => {
             e.preventDefault();
 
             if (action === "override") {
+                try {
+                    const response = await axios.post('/dep_devices/get_dep_companies', {
+                        order_id: updateFormValues?.order_id
+                    });
+
+                    setOverrideDepOptions(response.data);
+
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+
+                setShowModal(false);
                 setShowOverrideModal(true);
             }
             else{
@@ -596,7 +614,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     handleShow={handleCloseOverrideModal}
                     updateFormValues={updateFormValues}
                     onSubmit={handleOverrideSubmit}
-                    options={options}
+                    options={overrideDepOptions}
                 />
             </Modal>
         </>

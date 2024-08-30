@@ -118,6 +118,17 @@ class DepDevicesController extends Controller
         return Inertia::render('DepDevices/DepDevices', $data);
     }
 
+    public function getDepCompanies(Request $request){
+        $orderId = $request->input('order_id');
+        $orderHeader = Order::find($orderId);
+
+        $depCompanies = DepCompany::where('customer_id', $orderHeader->customer_id)
+            ->select('id as value', 'dep_company_name as label')
+            ->get();
+    
+        return response()->json($depCompanies);
+    }
+
     public function enrollDevices(Request $request)
     {
 

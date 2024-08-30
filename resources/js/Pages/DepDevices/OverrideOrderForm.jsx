@@ -18,19 +18,15 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
 
     const [selectedOption, setSelectedOption] = useState(null);
 
+
     useEffect(() => {
-        
-        // Ensure options are formatted correctly
-        const formattedOptions = options.map(opt => ({
-            value: opt.customer_id,
-            label: opt.dep_company_name
-        }));
-    
+
         if (updateFormValues?.customer_id) {
-            const defaultOption = formattedOptions.find(option => String(option.value) === String(updateFormValues.customer_id));
+            const defaultOption = options.find(option => option.value === updateFormValues?.customer_id);
     
             setSelectedOption(defaultOption || null);
         }
+
     }, [updateFormValues, options]);
     
 
@@ -61,7 +57,7 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
     };
 
     const handleSelectChange = (selectedOption) => {
-        console.log("Selected option:", selectedOption);
+        // console.log("Selected option:", selectedOption);
         setSelectedOption(selectedOption);
         setData('customer_id', selectedOption ? selectedOption.value : "");
     };
@@ -84,10 +80,7 @@ const OverrideOrderForm = ({ handleShow, updateFormValues, onSubmit, options }) 
                         placeholder="Select an option"
                         name="dep_company"
                         value={selectedOption}
-                        options={options.map((opt) => ({
-                            value: opt.id,
-                            label: opt.dep_company_name,
-                        }))}
+                        options={options}
                         onChange={handleSelectChange}
                     />
                 </div>
