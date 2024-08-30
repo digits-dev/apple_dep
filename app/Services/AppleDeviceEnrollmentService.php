@@ -30,7 +30,6 @@ class AppleDeviceEnrollmentService
 
     public function enrollDevices(array $payload)
     {
-        Log::info('storage cert: ' . config('services.apple_api.certificate_key_path'));
         return $this->sendRequest($payload, 'bulk enroll');
     }
 
