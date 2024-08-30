@@ -15,6 +15,7 @@ class AppleDeviceEnrollmentService
     protected $checkTransactionStatusEndpoint;
     protected $timeout;
     protected $sslCertPath;
+    protected $sslCertKeyPath;
 
     public function __construct()
     {
@@ -22,12 +23,14 @@ class AppleDeviceEnrollmentService
         $this->bulkEnrollEndpoint = config('services.apple_api.bulk_enroll_endpoint');
         $this->checkTransactionStatusEndpoint = config('services.apple_api.check_transaction_status_endpoint');
         $this->showOrderDetailsEndpoint = config('services.apple_api.show_order_details_endpoint');
-        $this->sslCertPath = config('services.apple_api.certificate_key_path');
+        $this->sslCertPath = config('services.apple_api.certificate_path');
+        $this->sslCertKeyPath = config('services.apple_api.certificate_key_path');
         $this->timeout = 15;
     }
 
     public function enrollDevices(array $payload)
     {
+        Log::info('storage cert: ' . config('services.apple_api.certificate_key_path'));
         return $this->sendRequest($payload, 'bulk enroll');
     }
 
@@ -56,7 +59,8 @@ class AppleDeviceEnrollmentService
             ])
                 ->timeout($this->timeout)
                 ->withOptions([
-                    'verify' => $this->sslCertPath,
+                    'cert' => $this->sslCertPath,
+                    'ssl_key' => $this->sslCertKeyPath
                 ])
                 ->post($url, $requestData);
 
@@ -91,7 +95,8 @@ class AppleDeviceEnrollmentService
             ])
                 ->timeout($this->timeout)
                 ->withOptions([
-                    'verify' => $this->sslCertPath,
+                    'cert' => $this->sslCertPath,
+                    'ssl_key' => $this->sslCertKeyPath
                 ])
                 ->post($url, $payload);
     
@@ -124,7 +129,8 @@ class AppleDeviceEnrollmentService
             ])
             ->timeout($this->timeout)
             ->withOptions([
-                'verify' => $this->sslCertPath,
+                'cert' => $this->sslCertPath,
+                'ssl_key' => $this->sslCertKeyPath
             ])
             ->post($url, $payload);
 
@@ -171,7 +177,4 @@ class AppleDeviceEnrollmentService
         Log::error($errorMessage);
         throw new \Exception($errorMessage);
     }
-
-    
-
 }
