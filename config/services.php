@@ -46,7 +46,9 @@ return [
         'depResellerId' => env('APPLE_API_DEP_RESELLER_ID'),
         'deviceEnrollmentTransactionId' => env('APPLE_API_DEVICE_ENROLLMENT_TRANSACTION_ID', 'e07daa6c-b3e2-4c5b-a341-4781b8e30991_1414031280097'),
         'orderNumber' => env('APPLE_API_ORDER_NUMBER', 'ORDER_900123'),
-        'certificate_key_pass' => env('CLIENT_KEY_PASS')
+        'certificate_key_pass' => env('CLIENT_KEY_PASS'),
+        'sold_to' => env('APPLE_API_SOLD_TO'),
+        'sales_org' => env('APPLE_API_SALES_ORG'),
     ],
 
     'item_master' => [
