@@ -68,14 +68,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [orderId, setOrderId] = useState(null);
-    const [orderDeviceId, setDevOrderId] = useState(null);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
     const { setTitle } = useNavbarContext();
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [depCompanyId, setDefaultDepCompanyId] = useState(null);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
-    const [overrideDepOptions, setOverrideDepOptions] = useState(options);
+    const [depOptions, setDepOptions] = useState([]);
+
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -155,20 +155,32 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         setShowModal(true);
     };
 
+    const getDepCompanyOptions = async (orderId) => {
+        try {
+            const response = await axios.post('/dep_devices/get_dep_companies', {
+                order_id: orderId
+            });
+
+            setDepOptions(response.data);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
     const EditDeviceAction = ({ id }) => {
         const [selectedOption, setSelectedOption] = useState(null);
 
         useEffect(() => {
             if (id) {
-                const defaultOption = options.find(
-                    (option) => option.id === id
-                );
-                setSelectedOption({
-                    value: defaultOption.id,
-                    label: defaultOption.dep_company_name,
-                });
+              
+                const defaultOption = depOptions.find(option => option.value === id);
+
+                setSelectedOption(defaultOption || null);
             }
+
         }, [id, options]);
+
 
         const handleSwal = (e) => {
             e.preventDefault();
@@ -227,10 +239,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     placeholder={loading ? "Loading..." : "Select an option"}
                     name="dep_company"
                     value={selectedOption}
-                    options={options.map((opt) => ({
-                        value: opt.id,
-                        label: opt.dep_company_name,
-                    }))}
+                    options={depOptions}
                     onChange={handleSelectChange}
                 />
                 <button
@@ -250,16 +259,8 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
             e.preventDefault();
 
             if (action === "override") {
-                try {
-                    const response = await axios.post('/dep_devices/get_dep_companies', {
-                        order_id: updateFormValues?.order_id
-                    });
 
-                    setOverrideDepOptions(response.data);
-
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
+                getDepCompanyOptions(updateFormValues?.order_id);
 
                 setShowModal(false);
                 setShowOverrideModal(true);
@@ -573,10 +574,9 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                         action="edit"
                                                         type="button"
                                                         onClick={() => {
+                                                            getDepCompanyOptions(item.order_id);
                                                             handleOpenEditModal(item.dep_company_id);
                                                             setOrderId(item.id);
-                                                            setDevOrderId(item.order_id);
-                                                            setDefaultDepCompanyId(item.dep_company_id);
                                                         }}
                                                         disabled={!["Pending", "Returned"].includes(item.enrollment_status)}
                                                         tooltipContent="Edit"
@@ -614,7 +614,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     handleShow={handleCloseOverrideModal}
                     updateFormValues={updateFormValues}
                     onSubmit={handleOverrideSubmit}
-                    options={overrideDepOptions}
+                    options={depOptions}
                 />
             </Modal>
         </>
