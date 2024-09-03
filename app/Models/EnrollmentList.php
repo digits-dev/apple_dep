@@ -23,6 +23,7 @@ class EnrollmentList extends Model
         'dep_company_id',
         'item_code',
         'serial_number',
+        'dep_transact_id',
         'transaction_id',
         'dep_company_id',
         'dep_status',

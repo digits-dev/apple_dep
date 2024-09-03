@@ -23,7 +23,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
 use App\Services\ApplePayloadController;
 use Illuminate\Support\Facades\Response;
-
+use Illuminate\Support\Facades\Config;
 
 class ListOfOrdersController extends Controller
 {
@@ -256,9 +256,9 @@ class ListOfOrdersController extends Controller
             $id = $request->input('id'); 
 
             $payload = $this->applePayloadController->generatePayload();
-            
+
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
-           
+        
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
             $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
@@ -300,7 +300,7 @@ class ListOfOrdersController extends Controller
                 ],
             ];
             $payload['orders'][] = $orderPayload;
-
+     
             // Call the service method to enroll devices
             $response = $this->appleService->enrollDevices($payload);
 
@@ -334,7 +334,6 @@ class ListOfOrdersController extends Controller
                 'sales_order_no'    => $header_data['sales_order_no'],
                 'item_code'         => $header_data['digits_code'],
                 'serial_number'     => $header_data['serial_number'],
-                'dep_transact_id'   => $response['transactionId'],
                 'transaction_id'    => $transaction_id,
                 'dep_status'        => $dep_status,
                 'enrollment_status' => $enrollment_status,
@@ -367,7 +366,7 @@ class ListOfOrdersController extends Controller
                 // If the device exists, update the data
                 $enrollmentQuery->update([
                     'dep_company_id' => $dep_company->id,
-                    // 'transaction_id' => $transaction_id,
+                    'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
                     'status_message' => $status_message,
@@ -446,7 +445,7 @@ class ListOfOrdersController extends Controller
 
         try {
             $id = $request->input('id'); 
-
+            
             $payload = $this->applePayloadController->generatePayload();
             
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
@@ -458,14 +457,14 @@ class ListOfOrdersController extends Controller
                     'message' => 'Item Master not found!',
                     'status' => 'error' 
                 ];
-    
+                
                 return response()->json($data);
             }
             // Check if multiple orders are provided
             $deliveryPayload = [];
             $devicePayload = [];
             
-           
+            
             $devicePayload[] = [
                 'deviceId' => $header_data['serial_number'],
                 'assetTag' => $header_data['serial_number'],
@@ -478,7 +477,7 @@ class ListOfOrdersController extends Controller
                 'shipDate' => $formattedDate,
                 'devices' => $devicePayload,
             ];
-
+            
             $orderPayload = [
                 'orderNumber' => $header_data['sales_order_no'],
                 'orderDate' => $formattedDate,
@@ -490,17 +489,17 @@ class ListOfOrdersController extends Controller
                 ],
             ];
             $payload['orders'][] = $orderPayload;
-
+            
             // Call the service method to enroll devices
             $response = $this->appleService->unenrollDevices($payload);
-
-
+            
+            
             if (isset($response['enrollDevicesResponse'])) {
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $enrollment_status = self::enrollment_status['Returned'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-            
+                
             } else {
                 $transaction_id = $response['transactionId'];
                 $enrollment_status = self::enrollment_status['Return Error'];
@@ -512,7 +511,7 @@ class ListOfOrdersController extends Controller
 
             if($enrollment){
                 $enrollment->fill([
-                    // 'transaction_id' => $transaction_id,
+                    'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
                     'status_message' => $status_message,
@@ -679,19 +678,10 @@ class ListOfOrdersController extends Controller
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
-        
-                // $payload = [
-                //     'requestContext' => [
-                //         'shipTo' => config('services.apple_api.ship_to'),
-                //         'timeZone' => config('services.apple_api.timezone'),
-                //         'langCode' => config('services.apple_api.langCode'),
-                //     ],
-                //     'transactionId' => 'TXN_' . uniqid(),
-                //     'depResellerId' => config('services.apple_api.ship_to'),
-                //     'orders' => [$orderPayload],
-                // ];
+                
+                $payload = $this->applePayloadController->generatePayload();
 
-                $payload = $this->applePayloadController->generatePayload($orderPayload);
+                $payload['orders'][] = $orderPayload;
 
                 $response = $this->appleService->enrollDevices($payload);
         
@@ -881,20 +871,9 @@ class ListOfOrdersController extends Controller
                     'poNumber' => $header_data->order_ref_no,
                     'deliveries' => [$deliveryPayload],
                 ];
-        
-                // $payload = [
-                //     'requestContext' => [
-                //         'shipTo' => config('services.apple_api.ship_to'),
-                //         'timeZone' => config('services.apple_api.timezone'),
-                //         'langCode' => config('services.apple_api.langCode'),
-                //     ],
-                //     'transactionId' => 'TXN_' . uniqid(),
-                //     'depResellerId' => config('services.apple_api.ship_to'),
-                //     'orders' => [$orderPayload],
-                // ];
 
-                $payload = $this->applePayloadController->generatePayload($orderPayload);
-
+                $payload = $this->applePayloadController->generatePayload();
+                $payload['orders'][] = $orderPayload;
                 $response = $this->appleService->unenrollDevices($payload);
 
                 if (isset($response['enrollDevicesResponse'])) {
@@ -1115,18 +1094,9 @@ class ListOfOrdersController extends Controller
             // 'deliveries' => [$deliveryPayload],
         ];
 
-        // $payload = [
-        //     'requestContext' => [
-        //         'shipTo' => config('services.apple_api.ship_to'),
-        //         'timeZone' => config('services.apple_api.timezone'),
-        //         'langCode' => config('services.apple_api.langCode'),
-        //     ],
-        //     'transactionId' => 'TXN_' . uniqid(),
-        //     'depResellerId' => config('services.apple_api.ship_to'),
-        //     'orders' => [$orderPayload],
-        // ];
-        $payload = $this->applePayloadController->generatePayload($orderPayload);
-
+    
+        $payload = $this->applePayloadController->generatePayload();
+        $payload['orders'][] = $orderPayload;
         $response = $this->appleService->unenrollDevices($payload);
 
         if (isset($response['enrollDevicesResponse'])) {

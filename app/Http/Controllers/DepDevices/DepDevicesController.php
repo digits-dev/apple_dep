@@ -148,8 +148,8 @@ class DepDevicesController extends Controller
         try {
             $id = $request->input('id'); 
 
-            $payload = $this->applePayloadController->generatePayload($orderPayload);
-            
+            $payload = $this->applePayloadController->generatePayload();
+           
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
@@ -225,7 +225,6 @@ class DepDevicesController extends Controller
                 'sales_order_no' => $header_data['sales_order_no'],
                 'item_code' => $header_data['digits_code'],
                 'serial_number' => $header_data['serial_number'],
-                'dep_transact_id'   => $response['transactionId'],
                 'transaction_id' => $transaction_id,
                 'dep_status' => $dep_status,
                 'enrollment_status' => $enrollment_status,
@@ -258,7 +257,7 @@ class DepDevicesController extends Controller
                 // If the device exists, update the data
                 $enrollmentQuery->update([
                     'dep_company_id' => $dep_company->id,
-                    // 'transaction_id' => $transaction_id,
+                    'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
                     'status_message' => $status_message,
@@ -335,7 +334,7 @@ class DepDevicesController extends Controller
         try {
             $id = $request->input('id'); 
 
-            $payload = $this->applePayloadController->generatePayload($orderPayload);
+            $payload = $this->applePayloadController->generatePayload();
             
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
              //UPC CODE
@@ -540,7 +539,7 @@ class DepDevicesController extends Controller
             $timestamp = strtotime($request->order_date);
             $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
 
-            $payload = $this->applePayloadController->generatePayload($orderPayload);
+            $payload = $this->applePayloadController->generatePayload();
 
             $orderPayload = [
                 'orderNumber' => $request->order_number, // sales_order_no from order tb
