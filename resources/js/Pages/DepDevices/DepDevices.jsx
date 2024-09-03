@@ -262,9 +262,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
 
                 getDepCompanyOptions(updateFormValues?.order_id);
 
-                setShowModal(false);
-                setShowOverrideModal(true);
+                //add delay
+                setTimeout(() => {
+                    setShowModal(false);
+                    setShowOverrideModal(true);
+                }, 150);
+     
             }
+
             else{
                 Swal.fire({
                     title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${action == "enroll" ? "Enroll" : "Return"
@@ -573,10 +578,15 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                     <RowAction
                                                         action="edit"
                                                         type="button"
+                                                    
                                                         onClick={() => {
                                                             getDepCompanyOptions(item.order_id);
-                                                            handleOpenEditModal(item.dep_company_id);
-                                                            setOrderId(item.id);
+
+                                                            setTimeout(() => {
+                                                                handleOpenEditModal(item.dep_company_id);
+                                                                setOrderId(item.id);
+                                                            }, 150);
+                                         
                                                         }}
                                                         disabled={!["Pending", "Returned"].includes(item.enrollment_status)}
                                                         tooltipContent="Edit"
