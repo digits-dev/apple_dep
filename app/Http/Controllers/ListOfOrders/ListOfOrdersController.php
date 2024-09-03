@@ -715,19 +715,13 @@ class ListOfOrdersController extends Controller
                             'dep_company_id'    => $dep_company->id,
                             'sales_order_no'    => $header_data->sales_order_no,
                             'item_code'         => $deviceData->digits_code,
+                            'transaction_id'    => $transaction_id,
                             'serial_number'     => $deviceData->serial_number,
                             'dep_status'        => $dep_status,
                             'enrollment_status' => $enrollment_status,
                             'status_message'    => $status_message,
                         ],
                     );
-
-                    // Check if the record was recently created
-                    if ($record->wasRecentlyCreated) {
-                        // Set the transaction_id for newly created records
-                        $record->transaction_id = $transaction_id;
-                        $record->save();
-                    }
 
                     $insertToHistory = [ 
                         'order_lines_id' => $deviceData->order_line_id,
@@ -902,7 +896,7 @@ class ListOfOrdersController extends Controller
 
                     if($enrollment){
                         $enrollment->fill([
-                            // 'transaction_id' => $transaction_id,
+                            'transaction_id' => $transaction_id,
                             'dep_status' => $dep_status,
                             'enrollment_status' => $enrollment_status,
                             'status_message' => $status_message,
@@ -1126,7 +1120,7 @@ class ListOfOrdersController extends Controller
 
             if($enrollment){
                 $enrollment->fill([
-                    // 'transaction_id' => $transaction_id,
+                    'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
                     'enrollment_status' => $enrollment_status,
                     'status_message' => $status_message,
