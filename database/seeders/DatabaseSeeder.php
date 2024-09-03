@@ -37,15 +37,15 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
-            AdmModules::class,
-            AdmMenus::class,
-            AdmSeeders::class,
-            AdmPrivileges::class,
-            AdmMenuPrivileges::class,
-            EnrollmentStatusSeeder::class,
-            DepStatusSeeder::class,
-            AdmUsersSeeders::class,
-            AdmUsersStatuses::class,
+            // AdmModules::class,
+            // AdmMenus::class,
+            // AdmSeeders::class,
+            // AdmPrivileges::class,
+            // AdmMenuPrivileges::class,
+            // EnrollmentStatusSeeder::class,
+            // DepStatusSeeder::class,
+            // AdmUsersSeeders::class,
+            // AdmUsersStatuses::class,
             OrderHeaderSeeder::class,
             OrderLinesSeeder::class,
 
