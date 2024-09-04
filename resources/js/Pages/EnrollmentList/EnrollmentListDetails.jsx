@@ -11,17 +11,23 @@ import Row from "../../Components/Table/Row";
 import RowData from "../../Components/Table/RowData";
 import Tbody from "../../Components/Table/Tbody";
 import moment from "moment";
+import Modal from "../../Components/Modal/Modal";
 
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
+    const [showJsonTransactionModal, setShowJsonTransactionModal] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
             setTitle("Enrollment List - Details");
         }, 5);
     }, []);
+
+    const handleJsonTransactionModal = () => {
+        setShowJsonTransactionModal(!showJsonTransactionModal);
+    }
 
     useEffect(() => {
     }, [enrollmentList]);
@@ -33,7 +39,8 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             const response = await axios.get(
                 `/enrollment_list/${enrollmentList.transaction_id}/check_status`
             );
-            setData(response.data.message.original);
+            setData(response.data?.message?.original);
+            console.log(response.data.message.original);
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.error("Validation error:", error.response.data);
@@ -82,6 +89,11 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     <Button onClick={handleSubmit} disabled={data}>
                         {loading ? "Checking..." : "Check Transaction Status"}
                     </Button>
+                    
+
+                    {data && (
+                        <Button onClick={() => {handleSubmit(); handleJsonTransactionModal(); }}>Show JSON Transaction Status</Button>
+                    )}
                 </div>
             </ContentPanel>
 
@@ -287,6 +299,15 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     </div>
                 </ContentPanel>
             )}
+            <Modal
+            title="Transaction Status JSON"
+            show={showJsonTransactionModal}
+            onClose={handleJsonTransactionModal}
+            width="4xl">
+                <pre className="py-3 px-5 text-sm overflow-auto max-h-[89vh]">
+                    {JSON.stringify(data, null, 2)}
+                </pre>
+            </Modal>
         </>
     );
 };
