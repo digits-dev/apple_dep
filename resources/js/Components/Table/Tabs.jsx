@@ -115,7 +115,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                         onClick={(e) =>
                                             handleJsonExport(
                                                 e,
-                                                "Received",
+                                                "Response",
                                                 jsonSubmitted[0].order_id
                                             )
                                         }
@@ -230,7 +230,7 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                         onClick={(e) =>
                                             handleJsonExport(
                                                 e,
-                                                "Submitted",
+                                                "Request",
                                                 jsonSubmitted[0].order_id
                                             )
                                         }
@@ -390,7 +390,11 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                     {json.dep_status_name}
                                                 </RowData>
                                                 <RowData center>
-                                                    {moment(json.created_at).format("YYYY-MM-DD HH:mm:ss")}
+                                                    {moment(
+                                                        json.created_at
+                                                    ).format(
+                                                        "YYYY-MM-DD HH:mm:ss"
+                                                    )}
                                                 </RowData>
                                             </Row>
                                         ))}
