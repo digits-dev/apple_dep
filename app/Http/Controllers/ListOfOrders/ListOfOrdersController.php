@@ -118,7 +118,7 @@ class ListOfOrdersController extends Controller
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
-        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->where('enrollment_status',7)->get();
+        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->whereIn('enrollment_status',[3,7])->get();
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
     }
