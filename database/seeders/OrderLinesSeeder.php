@@ -57,34 +57,34 @@ class OrderLinesSeeder extends Seeder
             //     "created_at" => now(), 
             //     "updated_at" => now()
             // ],
-            [
-                "id" => 4, 
-                "order_id" => 1, 
-                "dep_company_id" => 10000, 
-                "digits_code" => '90003217', 
-                "item_description" => 'IPHONE 7', 
-                "brand" => 'APPLE', 
-                "wh_category" => 'APPLE', 
-                "quantity" => '1', 
-                "serial_number" => 'C8HXFC04HG7F', 
-                "enrollment_status_id" => 1, 
-                "created_at" => now(), 
-                "updated_at" => now()
-            ],
-            [
-                "id" => 5, 
-                "order_id" => 1, 
-                "dep_company_id" => 10000, 
-                "digits_code" => '90003217', 
-                "item_description" => 'IPHONE 7', 
-                "brand" => 'APPLE', 
-                "wh_category" => 'APPLE', 
-                "quantity" => '1', 
-                "serial_number" => 'C8HXFC05HG7F', 
-                "enrollment_status_id" => 1, 
-                "created_at" => now(), 
-                "updated_at" => now()
-            ],
+            // [
+            //     "id" => 4, 
+            //     "order_id" => 1, 
+            //     "dep_company_id" => 10000, 
+            //     "digits_code" => '90003217', 
+            //     "item_description" => 'IPHONE 7', 
+            //     "brand" => 'APPLE', 
+            //     "wh_category" => 'APPLE', 
+            //     "quantity" => '1', 
+            //     "serial_number" => 'C8HXFC04HG7F', 
+            //     "enrollment_status_id" => 1, 
+            //     "created_at" => now(), 
+            //     "updated_at" => now()
+            // ],
+            // [
+            //     "id" => 5, 
+            //     "order_id" => 1, 
+            //     "dep_company_id" => 10000, 
+            //     "digits_code" => '90003217', 
+            //     "item_description" => 'IPHONE 7', 
+            //     "brand" => 'APPLE', 
+            //     "wh_category" => 'APPLE', 
+            //     "quantity" => '1', 
+            //     "serial_number" => 'C8HXFC05HG7F', 
+            //     "enrollment_status_id" => 1, 
+            //     "created_at" => now(), 
+            //     "updated_at" => now()
+            // ],
             // [
             //     "id" => 6, 
             //     "order_id" => 1, 
@@ -94,7 +94,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC22HG7F', 
+            //     "serial_number" => 'C8HXFC07HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -108,7 +108,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC23HG7F', 
+            //     "serial_number" => 'C8HXFC08HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -122,7 +122,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC24HG7F', 
+            //     "serial_number" => 'C8HXFC09HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -136,7 +136,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC25HG7F', 
+            //     "serial_number" => 'C8HXFC10HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -150,7 +150,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC26HG7F', 
+            //     "serial_number" => 'C8HXFC11HG', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -164,7 +164,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC27HG', 
+            //     "serial_number" => 'C8HXFC12HG', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -178,7 +178,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC28HG7F', 
+            //     "serial_number" => 'C8HXFC13HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -192,7 +192,7 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC29HG7F', 
+            //     "serial_number" => 'C8HXFC14HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -206,25 +206,12 @@ class OrderLinesSeeder extends Seeder
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC30HG7F', 
+            //     "serial_number" => 'C8HXFC15HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
             // ],
-            // [
-            //     "id" => 15, 
-            //     "order_id" => 2, 
-            //     "dep_company_id" => 10002, 
-            //     "digits_code" => '90003217', 
-            //     "item_description" => 'IPHONE 7', 
-            //     "brand" => 'APPLE', 
-            //     "wh_category" => 'APPLE', 
-            //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC31HG7F', 
-            //     "enrollment_status_id" => 1, 
-            //     "created_at" => now(), 
-            //     "updated_at" => now()
-            // ]
+         
         ];
         
 
