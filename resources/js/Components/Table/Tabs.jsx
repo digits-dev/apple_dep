@@ -143,6 +143,12 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 sortable={false}
                                                 justify="center"
                                             >
+                                                Order Type
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
                                                 JSON
                                             </TableHeader>
                                         </Row>
@@ -170,6 +176,9 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                     </RowData>
                                                     <RowData center>
                                                         {json.order_lines_id}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        {json.order_type}
                                                     </RowData>
                                                     <RowData center>
                                                         <button
@@ -249,6 +258,12 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                 sortable={false}
                                                 justify="center"
                                             >
+                                                Order Type
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
                                                 JSON
                                             </TableHeader>
                                         </Row>
@@ -262,6 +277,9 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                     </RowData>
                                                     <RowData center>
                                                         {json.order_lines_id}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        {json.order_type}
                                                     </RowData>
                                                     <RowData center>
                                                         <button
