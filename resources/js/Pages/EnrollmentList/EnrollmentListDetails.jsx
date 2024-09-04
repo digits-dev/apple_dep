@@ -12,11 +12,14 @@ import RowData from "../../Components/Table/RowData";
 import Tbody from "../../Components/Table/Tbody";
 import moment from "moment";
 import Modal from "../../Components/Modal/Modal";
+import TransactionJsonTabs from "../../Components/Table/TransactionJsonTabs";
 
 const EnrollmentListDetails = ({ enrollmentList }) => {
     const { setTitle } = useContext(NavbarContext);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
+    const [JsonRequest, setJsonRequest] = useState(null);
+    const [JsonResponse, setJsonResponse] = useState(null);
     const [showJsonTransactionModal, setShowJsonTransactionModal] = useState(false);
 
     useEffect(() => {
@@ -40,6 +43,8 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                 `/enrollment_list/${enrollmentList.transaction_id}/check_status`
             );
             setData(response.data?.message?.original);
+            setJsonRequest(response.data?.jsonrequest);
+            setJsonResponse(response.data?.jsonresponse);
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.error("Validation error:", error.response.data);
@@ -90,7 +95,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                     </Button>
                     
 
-                    {data && (
+                    {JsonRequest && JsonResponse && (
                         <Button onClick={() => {handleSubmit(); handleJsonTransactionModal(); }}>Show JSON Transaction Status</Button>
                     )}
                 </div>
@@ -303,9 +308,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
             show={showJsonTransactionModal}
             onClose={handleJsonTransactionModal}
             width="4xl">
-                <pre className="py-3 px-5 text-sm overflow-auto max-h-[89vh]">
-                    {JSON.stringify(data, null, 2)}
-                </pre>
+            <TransactionJsonTabs RequestData={JsonRequest?.data} ResponseData={JsonResponse?.data}/>
             </Modal>
         </>
     );

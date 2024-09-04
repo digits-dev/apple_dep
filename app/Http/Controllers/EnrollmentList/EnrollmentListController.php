@@ -8,6 +8,8 @@ use App\Models\DepCompany;
 use App\Models\DepStatus;
 use App\Models\EnrollmentList;
 use App\Models\EnrollmentStatus;
+use App\Models\TransactionStatusJsonRequest;
+use App\Models\TransactionStatusJsonResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -84,9 +86,12 @@ class EnrollmentListController extends Controller
 
     public function EnrollmentListDetails(EnrollmentList $enrollmentList)
     {
-        $enrollmentListWithRelations = $enrollmentList->load(['dStatus', 'eStatus']);
+        $data = [];
 
-        return Inertia::render('EnrollmentList/EnrollmentListDetails', [ 'enrollmentList' => $enrollmentListWithRelations ]);
+        $data['enrollmentList'] = $enrollmentList->load(['dStatus', 'eStatus']);
+       
+
+        return Inertia::render('EnrollmentList/EnrollmentListDetails', $data);
     }
 
     public function checkTransactionStatus($transactionId)
@@ -102,12 +107,26 @@ class EnrollmentListController extends Controller
         ];
 
         try {
+            
             $response = $this->appleService->checkTransactionStatus($requestData);
-            return json_encode(["message"=>response()->json($response)]);
+            
+            $encodedRequestData = json_encode($requestData);
+            $encodedResponseData = json_encode($response);
+      
+            TransactionStatusJsonRequest::updateOrInsert(['transaction_id' => $transactionId],['data' => $encodedRequestData , 'created_at' => date('Y-m-d H:i:s')]);
+            TransactionStatusJsonResponse::updateOrInsert(['transaction_id' => $transactionId],['data' => $encodedResponseData , 'created_at' => date('Y-m-d H:i:s')]);
+
+            $data = [];
+
+            $data['TransactionJsonResponse'] = TransactionStatusJsonResponse::where('transaction_id', $transactionId)->first();
+            $data['TransactionJsonRequest'] = TransactionStatusJsonRequest::where('transaction_id', $transactionId)->first();
+         
+            return json_encode(["message"=>response()->json($response), "jsonresponse" => $data['TransactionJsonResponse'] , "jsonrequest"=>$data['TransactionJsonRequest'] ]);
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
 
 }
