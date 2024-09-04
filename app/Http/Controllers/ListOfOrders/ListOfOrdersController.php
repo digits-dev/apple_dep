@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Config;
 use App\Models\TransactionStatusJsonRequest;
 use App\Models\TransactionStatusJsonResponse;
+use App\Models\SodJsonRequest;
+use App\Models\SodJsonResponse;
 
 class ListOfOrdersController extends Controller
 {
@@ -1363,13 +1365,13 @@ class ListOfOrdersController extends Controller
         $encodedResponseData = json_encode($response);
    
         foreach($request->orderNumber as $order){
-            TransactionStatusJsonRequest::updateOrInsert(['transaction_id' => $order],['data' => $encodedRequestData , 'created_at' => date('Y-m-d H:i:s')]);
-            TransactionStatusJsonResponse::updateOrInsert(['transaction_id' => $order],['data' => $encodedResponseData , 'created_at' => date('Y-m-d H:i:s')]);
+            SodJsonRequest::updateOrInsert(['transaction_id' => $order],['data' => $encodedRequestData , 'created_at' => date('Y-m-d H:i:s')]);
+            SodJsonResponse::updateOrInsert(['transaction_id' => $order],['data' => $encodedResponseData , 'created_at' => date('Y-m-d H:i:s')]);
            
             $data = [];
     
-            $data['TransactionJsonResponse'] = TransactionStatusJsonResponse::where('transaction_id', $order)->first();
-            $data['TransactionJsonRequest'] = TransactionStatusJsonRequest::where('transaction_id', $order)->first();
+            $data['TransactionJsonResponse'] = SodJsonResponse::where('transaction_id', $order)->first();
+            $data['TransactionJsonRequest'] = SodJsonRequest::where('transaction_id', $order)->first();
         }
      
         return json_encode(["message"=>response()->json($response), "jsonresponse" => $data['TransactionJsonResponse'] , "jsonrequest"=>$data['TransactionJsonRequest'] ]);
