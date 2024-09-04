@@ -41,16 +41,16 @@ const handleTabChange = (tab) => {
       </div>
 
       {/* Tab Content */}
-      <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+      <div className="mt-4 p-4 bg-gray-100 rounded-lg max-h-fit">
         {activeTab === 'TabOne' && 
-            <div className='overflow-auto max-h-[70vh]'>
+            <div className='overflow-auto max-h-[40vh]'>
                 <pre className="py-3 px-5 text-sm">
                     {JSON.stringify(JsonRequestData, null, 2)}
                 </pre>
             </div>
         }
         {activeTab === 'TabTwo' && 
-            <div className='overflow-auto max-h-[70vh]'>
+            <div className='overflow-auto max-h-[40vh]'>
                 <pre className="py-3 px-5 text-sm">
                     {JSON.stringify(JsonResponseData, null, 2)}
                 </pre>

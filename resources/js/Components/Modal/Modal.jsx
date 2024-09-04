@@ -35,7 +35,7 @@ const Modal = ({
             ) : (
                 <div className="modal-backdrop z-[100]">
                     <div
-                        className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5`}
+                        className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5  max-h-[80vh]`}
                     >
                         <div className="flex justify-between p-5 border-b-2 items-center">
                             <p className="font-nunito-sans font-extrabold text-lg">
@@ -46,7 +46,7 @@ const Modal = ({
                                 onClick={onClose}
                             ></i>
                         </div>
-                        <main className="py-3 px-5">{children}</main>
+                        <main className="py-3 px-5 ">{children}</main>
                     </div>
                 </div>
             )}
