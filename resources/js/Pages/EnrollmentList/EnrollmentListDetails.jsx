@@ -40,7 +40,6 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                 `/enrollment_list/${enrollmentList.transaction_id}/check_status`
             );
             setData(response.data?.message?.original);
-            console.log(response.data.message.original);
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 console.error("Validation error:", error.response.data);

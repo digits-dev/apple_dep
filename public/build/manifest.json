@@ -5,11 +5,7 @@
     "isEntry": true
   },
   "resources/js/app.jsx": {
-<<<<<<< HEAD
-    "file": "assets/app-BKQwcXwc.js",
-=======
-    "file": "assets/app-DuEG0ZAC.js",
->>>>>>> ebefa6db56a32f0faf48f00eff13138a7fb64d8a
+    "file": "assets/app-DUER-IE1.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
