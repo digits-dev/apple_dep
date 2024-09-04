@@ -10,6 +10,7 @@ use App\Models\EnrollmentList;
 use App\Models\EnrollmentStatus;
 use App\Models\TransactionStatusJsonRequest;
 use App\Models\TransactionStatusJsonResponse;
+use App\Models\OrderLines;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -96,6 +97,7 @@ class EnrollmentListController extends Controller
 
     public function checkTransactionStatus($transactionId)
     {
+        
         $requestData = [
             'requestContext' => [
                 'shipTo' => config('services.apple_api.ship_to'),
@@ -106,9 +108,44 @@ class EnrollmentListController extends Controller
             'deviceEnrollmentTransactionId' => $transactionId
         ];
 
+        $orderLinesId = EnrollmentList::where('transaction_id', $transactionId)
+        ->pluck('order_lines_id')
+        ->toArray();
+    
         try {
             
             $response = $this->appleService->checkTransactionStatus($requestData);
+
+            if (isset($response['statusCode'])) {
+                if ($response['statusCode'] == 'COMPLETE') {
+                    OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => 3]);
+                    EnrollmentList::where('transaction_id', $transactionId)->update(['enrollment_status' => 3]);
+                } else {
+                    $validDeviceIds = [];
+                    $invalidDeviceIds = [];
+            
+                    if (isset($response['orders'][0]['deliveries'][0]['devices'])) {
+                        foreach ($response['orders'][0]['deliveries'][0]['devices'] as $device) {
+                            if ($device['devicePostStatus'] == 'COMPLETE') {
+                                $validDeviceIds[] = $device['deviceId'];
+                            } else {
+                                $invalidDeviceIds[] = $device['deviceId'];
+                            }
+                        }
+                    }
+            
+                    if (!empty($validDeviceIds)) {
+                        OrderLines::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status_id' => 3]);
+                        EnrollmentList::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status' => 3]);
+                    }
+            
+                    if (!empty($invalidDeviceIds)) {
+                        OrderLines::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status_id' => 2]);
+                        EnrollmentList::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status' => 2]);
+                    }
+                }
+            }
+            
             
             $encodedRequestData = json_encode($requestData);
             $encodedResponseData = json_encode($response);
@@ -128,5 +165,39 @@ class EnrollmentListController extends Controller
         }
     }
     
+
+    public function updateEnrollmentStatus()
+    {
+        $onGoing = EnrollmentList::where('enrollment_status', 13)->get();
+        foreach ($onGoing as $enrollment) {
+            $requestData = [
+                'requestContext' => [
+                    'shipTo' => config('services.apple_api.ship_to'),
+                    'timeZone' => config('services.apple_api.timeZone'),
+                    'langCode' => config('services.apple_api.langCode')
+                ],
+                'depResellerId' => config('services.apple_api.depResellerId'),
+                'deviceEnrollmentTransactionId' => $enrollment->transaction_id
+            ];
+    
+            $orderLinesId = EnrollmentList::where('transaction_id', $enrollment->transaction_id)
+            ->pluck('order_lines_id')
+            ->toArray();
+        
+            try {
+                $response = $this->appleService->checkTransactionStatus($requestData);
+                if (isset($response['statusCode'])) {  
+                    if ($response['statusCode'] == 'COMPLETE') {
+                        OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => 3]);
+                        EnrollmentList::where('transaction_id', $enrollment->transaction_id)->update(['enrollment_status' => 3]);
+                    }
+                }
+                
+            } catch (\Exception $e) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
+    }
+
 
 }

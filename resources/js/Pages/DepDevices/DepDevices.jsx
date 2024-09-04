@@ -53,7 +53,7 @@ const allowedToEnroll = [
 const allowedToReturn = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
     EnrollmentStatus.RETURN_ERROR,
-    EnrollmentStatus.OVERRIDE
+    EnrollmentStatus.OVERRIDE,
 ];
 
 const allowedToOverride = [
@@ -61,7 +61,15 @@ const allowedToOverride = [
     EnrollmentStatus.OVERRIDE_ERROR,
 ];
 
-const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depCompanies, customers, duplicates }) => {
+const DepDevices = ({
+    devices,
+    queryParams,
+    enrollmentStatuses,
+    options,
+    depCompanies,
+    customers,
+    duplicates,
+}) => {
     const { auth } = usePage().props;
     queryParams = queryParams || {};
     const { handleToast } = useToast();
@@ -75,7 +83,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     const [depCompanyId, setDefaultDepCompanyId] = useState(null);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
     const [depOptions, setDepOptions] = useState([]);
-
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -96,36 +103,34 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     });
 
     const [updateFormValues, setUpdateFormValues] = useState({
-        id:"",
-        order_id:"",
-        customer_id:"",
-        po_number:"",
-        delivery_number:"",
-        order_date:"",
-        ship_date:"",
-        order_number:"",
-        serial_number:"",
+        id: "",
+        order_id: "",
+        customer_id: "",
+        po_number: "",
+        delivery_number: "",
+        order_date: "",
+        ship_date: "",
+        order_number: "",
+        serial_number: "",
     });
 
     const handleFilter = (e, attrName) => {
         if (attrName) {
             const { value } = e;
 
-            setFilters(filters => ({
+            setFilters((filters) => ({
                 ...filters,
                 [attrName]: value,
             }));
-
         } else {
             const { name, value } = e.target;
 
-            setFilters(filters => ({
+            setFilters((filters) => ({
                 ...filters,
                 [name]: value,
             }));
         }
-
-    }
+    };
 
     const handleFilterSubmit = (e) => {
         e.preventDefault();
@@ -157,30 +162,31 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
 
     const getDepCompanyOptions = async (orderId) => {
         try {
-            const response = await axios.post('/dep_devices/get_dep_companies', {
-                order_id: orderId
-            });
+            const response = await axios.post(
+                "/dep_devices/get_dep_companies",
+                {
+                    order_id: orderId,
+                }
+            );
 
             setDepOptions(response.data);
-
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching data:", error);
         }
-    }
+    };
 
     const EditDeviceAction = ({ id }) => {
         const [selectedOption, setSelectedOption] = useState(null);
 
         useEffect(() => {
             if (id) {
-              
-                const defaultOption = depOptions.find(option => option.value === id);
+                const defaultOption = depOptions.find(
+                    (option) => option.value === id
+                );
 
                 setSelectedOption(defaultOption || null);
             }
-
         }, [id, options]);
-
 
         const handleSwal = (e) => {
             e.preventDefault();
@@ -252,14 +258,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
         );
     };
 
-    
-
     const EnrollReturnDeviceActions = () => {
         const handleSwal = async (e, action) => {
             e.preventDefault();
 
             if (action === "override") {
-
                 getDepCompanyOptions(updateFormValues?.order_id);
 
                 //add delay
@@ -267,13 +270,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     setShowModal(false);
                     setShowOverrideModal(true);
                 }, 150);
-     
-            }
-
-            else{
+            } else {
                 Swal.fire({
-                    title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${action == "enroll" ? "Enroll" : "Return"
-                        } this Device?</p>`,
+                    title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to ${
+                        action == "enroll" ? "Enroll" : "Return"
+                    } this Device?</p>`,
                     showCancelButton: true,
                     confirmButtonText: "Confirm",
                     confirmButtonColor: "#000000",
@@ -286,7 +287,6 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     }
                 });
             }
-            
         };
 
         const EnrollReturnDevice = async (action, formData) => {
@@ -299,8 +299,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                     response = await axios.post(`/dep_devices/enroll`, {
                         id: orderId,
                     });
-                }
-                else {
+                } else {
                     response = await axios.post(`/dep_devices/return`, {
                         id: orderId,
                     });
@@ -360,11 +359,17 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
     const handleOverrideSubmit = async (formData) => {
         setProcessing(true);
         try {
-            const response = await axios.post(`/dep_devices/override`, formData);
+            const response = await axios.post(
+                `/dep_devices/override`,
+                formData
+            );
             handleToast(response.data.message, response.data.status);
             router.reload({ only: ["devices"] });
         } catch (error) {
-            handleToast("Something went wrong, please try again later.", "Error");
+            handleToast(
+                "Something went wrong, please try again later.",
+                "Error"
+            );
             router.reload({ only: ["devices"] });
         } finally {
             setProcessing(false);
@@ -405,8 +410,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             name="dep_company_id"
                             displayName="Dep Company"
                             options={depCompanies}
-                            value={depCompanies.find(depCompany => depCompany.value === filters.dep_company_id)}
-                            onChange={(e) => handleFilter(e, 'dep_company_id')}
+                            value={depCompanies.find(
+                                (depCompany) =>
+                                    depCompany.value === filters.dep_company_id
+                            )}
+                            onChange={(e) => handleFilter(e, "dep_company_id")}
                         />
                         <Select
                             name="enrollment_status_id"
@@ -420,11 +428,12 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                             name="customer_id"
                             displayName="Customer Name"
                             options={customers}
-                            value={customers.find(customer => customer.value === filters.customer_id)}
-                            onChange={(e) => handleFilter(e, 'customer_id')}
+                            value={customers.find(
+                                (customer) =>
+                                    customer.value === filters.customer_id
+                            )}
+                            onChange={(e) => handleFilter(e, "customer_id")}
                         />
-
-
                     </Filters>
                     <Export
                         path={`/dep-devices-export${window.location.search}`}
@@ -469,13 +478,11 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                 Serial Number
                             </TableHeader>
 
-                            {duplicates.length != 0 && 
-                            <TableHeader
-                                width="small"
-                                sortable={false}
-                            >
-                                &nbsp;
-                            </TableHeader>}
+                            {duplicates.length != 0 && (
+                                <TableHeader width="small" sortable={false}>
+                                    &nbsp;
+                                </TableHeader>
+                            )}
 
                             <TableHeader
                                 name="dep_company"
@@ -525,11 +532,14 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                     <RowData isLoading={loading} center>
                                         {item.serial_number}
                                     </RowData>
-                                    
-                                    {duplicates.length != 0 && 
-                                    <RowData>
-                                        {duplicates.includes(item.serial_number) && <DuplicateIcon/>}
-                                    </RowData>}
+
+                                    {duplicates.length != 0 && (
+                                        <RowData>
+                                            {duplicates.includes(
+                                                item.serial_number
+                                            ) && <DuplicateIcon />}
+                                        </RowData>
+                                    )}
 
                                     <RowData isLoading={loading}>
                                         {item?.dep_company?.dep_company_name}
@@ -539,11 +549,18 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                     </RowData>
                                     {auth.access.isCreate && (
                                         <RowData center sticky="right">
-                                            {![8, 9, 10].includes(item.enrollment_status_id) && (
+                                            {![8, 9, 10].includes(
+                                                item.enrollment_status_id
+                                            ) && (
                                                 <RowActions>
                                                     <RowAction
                                                         action="add"
                                                         type="button"
+                                                        disabled={[
+                                                            "Ongoing Enrollment",
+                                                        ].includes(
+                                                            item.enrollment_status
+                                                        )}
                                                         onClick={() => {
                                                             handleOpenModal();
                                                             setOrderId(item.id);
@@ -552,8 +569,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                             );
                                                             setUpdateFormValues(
                                                                 {
-                                                                    id:
-                                                                        item.id,
+                                                                    id: item.id,
                                                                     order_id:
                                                                         item.order_id,
                                                                     customer_id:
@@ -561,7 +577,7 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                                     po_number:
                                                                         item.order_ref_no,
                                                                     delivery_number:
-                                                                        item.dr_number, 
+                                                                        item.dr_number,
                                                                     order_date:
                                                                         item.order_date,
                                                                     ship_date:
@@ -578,26 +594,34 @@ const DepDevices = ({ devices, queryParams, enrollmentStatuses, options, depComp
                                                     <RowAction
                                                         action="edit"
                                                         type="button"
-                                                    
                                                         onClick={() => {
-                                                            getDepCompanyOptions(item.order_id);
+                                                            getDepCompanyOptions(
+                                                                item.order_id
+                                                            );
 
                                                             setTimeout(() => {
-                                                                handleOpenEditModal(item.dep_company_id);
-                                                                setOrderId(item.id);
+                                                                handleOpenEditModal(
+                                                                    item.dep_company_id
+                                                                );
+                                                                setOrderId(
+                                                                    item.id
+                                                                );
                                                             }, 150);
-                                         
                                                         }}
-                                                        disabled={!["Pending", "Returned"].includes(item.enrollment_status)}
+                                                        disabled={
+                                                            ![
+                                                                "Pending",
+                                                                "Returned",
+                                                            ].includes(
+                                                                item.enrollment_status
+                                                            )
+                                                        }
                                                         tooltipContent="Edit"
                                                     />
-
                                                 </RowActions>
                                             )}
                                         </RowData>
                                     )}
-
-
                                 </Row>
                             ))}
                     </Tbody>
