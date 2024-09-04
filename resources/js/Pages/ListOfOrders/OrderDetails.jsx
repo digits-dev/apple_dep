@@ -28,8 +28,8 @@ const OrderDetails = ({
     }, []);
 
     const tabs = [
-        { id: 1, label: "JSON Response Received" },
-        { id: 2, label: "JSON Request Submitted" },
+        { id: 1, label: "JSON Response" },
+        { id: 2, label: "JSON Request" },
         { id: 3, label: "Transaction Logs" },
     ];
 
