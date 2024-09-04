@@ -24,8 +24,12 @@ import { useToast } from "../../Context/ToastContext";
 import { useNavbarContext } from "../../Context/NavbarContext";
 import axios from "axios";
 import ReactSelect from "../../Components/Forms/ReactSelect";
+import Button from "../../Components/Table/Buttons/Button";
+import SelectMulti from 'react-select';
+import TableButton from "../../Components/Table/Buttons/TableButton";
+import TransactionJsonTabs from "../../Components/Table/TransactionJsonTabs";
 
-const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) => {
+const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, order_number }) => {
     queryParams = queryParams || {};
     const { auth } = usePage().props;
     const accessPrivileges =
@@ -38,7 +42,11 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     const { setTitle } = useNavbarContext();
     const [isVoidable, setIsVoidable] = useState(false);
     const [enrollmentStatus, setEnrollmentStatus] = useState(null);
-
+    const [showSodModal, setShowSodModal] = useState(false);
+    const [JsonRequest, setJsonRequest] = useState(null);
+    const [JsonResponse, setJsonResponse] = useState(null);
+    const [orderNumber, setOrderNumber] = useState([]);
+    
     useEffect(() => {
         setTimeout(() => {
             setTitle("List of Orders");
@@ -229,6 +237,59 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
     };
 
 
+    //SOD
+    const handleSodModal = () => {
+        setShowSodModal(!showSodModal);
+    }
+    const handleSodChange = (selected) => {
+        setOrderNumber(selected);
+    };
+
+    const handleSodSubmit = async (event) => {
+        event.preventDefault();  // Prevent the form from reloading the page
+        setLoading(true);   // Set loading state
+    
+        // Prepare data to be sent
+        const dataToSend = orderNumber.map(option => option.value);
+    
+        try {
+          // Example API endpoint (replace with your actual endpoint)
+          const response = await axios.post('/list_of_orders/sod', {
+            orderNumber: dataToSend
+          });
+
+          setJsonRequest(response.data?.jsonrequest);
+          setJsonResponse(response.data?.jsonresponse);
+
+        } catch (error) {
+            handleToast(error.response.data.errors, 'danger');
+        } finally {
+          setLoading(false);  // Reset loading state
+        }
+    }
+
+    const colourStyles = {
+        multiValue: (styles, { data }) => {
+          const color = data.color;
+          return {
+            ...styles,
+          };
+        },
+        multiValueLabel: (styles, { data }) => ({
+          ...styles,
+          color: data.color,
+        }),
+        multiValueRemove: (styles, { data }) => ({
+          ...styles,
+          color: data.color,
+          ':hover': {
+            backgroundColor: data.color,
+            color: 'white',
+          },
+          backgroundColor: 'black',
+          color: 'white',
+        }),
+    };
     return (
         <>
             <Head title="List of Orders" />
@@ -280,6 +341,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                         path={`/list-of-orders-export${window.location.search}`}
                         handleToast={handleToast}
                     />
+                    <Button onClick={() => {handleSodModal(); }}>Show Order Details</Button>
                 </TopPanel>
 
                 <TableContainer>
@@ -448,6 +510,34 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers }) =>
                 title="Edit Actions"
             >
                 <ListofOrdersEditActions />
+            </Modal>
+
+            <Modal
+            title="Show Order Details"
+            show={showSodModal}
+            onClose={handleSodModal}
+            width="4xl">
+                    <form onSubmit={handleSodSubmit}>
+                        <div className="w-full">
+                        <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Order Numbers</label>
+                            <SelectMulti
+                                isMulti
+                                name="order_number"
+                                className="block w-full py-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={orderNumber}
+                                onChange={handleSodChange}
+                                options={order_number}
+                                styles={colourStyles}
+                                
+                            />
+                        </div>
+                        <div className="mb-3 flex justify-between float-right">
+                        <TableButton type="submit" disabled={loading}>{loading ? "Verifying..." : "Verify"}</TableButton>
+                        </div>
+                    </form>
+                 {JsonRequest && JsonResponse && (
+                        <TransactionJsonTabs RequestData={JsonRequest?.data} ResponseData={JsonResponse?.data}/>
+                 )}
             </Modal>
         </>
     );

@@ -261,7 +261,8 @@ class PullErpController extends Controller
                         'dr_number'         => $insert_data->dr,
                         'dep_order'         => 0,
                         'enrollment_status' => 1,
-                        'order_date'        => date("Y-m-d", strtotime($insert_data->confirm_date))
+                        'ship_date'         => date("Y-m-d", strtotime($insert_data->confirm_date)),
+                        'order_date'        => date("Y-m-d", strtotime($insert_data->order_date))
                     ]
                 );
             }

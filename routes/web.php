@@ -137,7 +137,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/void', [ListOfOrdersController::class, 'void']);
     Route::put('/list_of_orders/{order}/update-dep-company', [ListOfOrdersController::class, 'updateDepCompany']);
     Route::post('/list_of_orders/{orderLine}/override', [ListOfOrdersController::class, 'overrideOrder']);
-
+    Route::post('/list_of_orders/sod', [ListOfOrdersController::class, 'orderDetails']);
 
     //DEP DEVICES
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);

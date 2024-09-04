@@ -24,6 +24,8 @@ use App\Services\AppleDeviceEnrollmentService;
 use App\Services\ApplePayloadController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Config;
+use App\Models\TransactionStatusJsonRequest;
+use App\Models\TransactionStatusJsonResponse;
 
 class ListOfOrdersController extends Controller
 {
@@ -116,7 +118,7 @@ class ListOfOrdersController extends Controller
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
-
+        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->where('enrollment_status',7)->get();
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
     }
@@ -254,7 +256,7 @@ class ListOfOrdersController extends Controller
       
         try {
             $id = $request->input('id'); 
-
+            
             $payload = $this->applePayloadController->generatePayload();
 
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
@@ -610,7 +612,7 @@ class ListOfOrdersController extends Controller
 
         try {
             $ids = $request->input('ids');
-
+            
             // Fetch unique lines
             $uniqueLines = OrderLines::whereIn('list_of_order_lines.id', $ids)
                 ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
@@ -619,7 +621,7 @@ class ListOfOrdersController extends Controller
                 ->get();
 
             $idsOfUniqueLines = [];
-
+            
             // check lines if they're already enrolled through digits code and serial number
             foreach ($uniqueLines as $orderLines) {
                 $exists = OrderLines::where('digits_code', $orderLines->digits_code)
@@ -1339,5 +1341,39 @@ class ListOfOrdersController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function orderDetails(Request $request){
+      
+        $requestData = [
+            'requestContext' => [
+                'shipTo' => config('services.apple_api.ship_to'),
+                'timeZone' => config('services.apple_api.timeZone'),
+                'langCode' => config('services.apple_api.langCode')
+            ],
+            'depResellerId' => config('services.apple_api.depResellerId'),
+            'orderNumbers'  => array_values($request->orderNumber)
+        ];
+
+        $depSellerId = config('services.apple_api.depResellerId');
+       
+        $response = $this->appleService->showOrderDetails($requestData);
+
+        $encodedRequestData = json_encode($requestData);
+        $encodedResponseData = json_encode($response);
+   
+        foreach($request->orderNumber as $order){
+            TransactionStatusJsonRequest::updateOrInsert(['transaction_id' => $order],['data' => $encodedRequestData , 'created_at' => date('Y-m-d H:i:s')]);
+            TransactionStatusJsonResponse::updateOrInsert(['transaction_id' => $order],['data' => $encodedResponseData , 'created_at' => date('Y-m-d H:i:s')]);
+           
+            $data = [];
+    
+            $data['TransactionJsonResponse'] = TransactionStatusJsonResponse::where('transaction_id', $order)->first();
+            $data['TransactionJsonRequest'] = TransactionStatusJsonRequest::where('transaction_id', $order)->first();
+        }
+     
+        return json_encode(["message"=>response()->json($response), "jsonresponse" => $data['TransactionJsonResponse'] , "jsonrequest"=>$data['TransactionJsonRequest'] ]);
+     
+        return json_encode($response);
     }
 }
