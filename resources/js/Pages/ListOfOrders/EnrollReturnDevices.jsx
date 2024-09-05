@@ -23,6 +23,7 @@ import Tbody from "../../Components/Table/Tbody";
 import { useToast } from "../../Context/ToastContext";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DuplicateIcon from "../../Components/Table/Icons/DuplicateIcon";
+import InputComponent from "../../Components/Forms/Input";
 
 const EnrollmentStatus = Object.freeze({
     PENDING: 1,
@@ -48,7 +49,7 @@ const allowedToEnroll = [
 const allowedToReturn = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
     EnrollmentStatus.RETURN_ERROR,
-    EnrollmentStatus.OVERRIDE
+    EnrollmentStatus.OVERRIDE,
 ];
 
 const allowedToOverride = [
@@ -56,7 +57,18 @@ const allowedToOverride = [
     EnrollmentStatus.OVERRIDE_ERROR,
 ];
 
-const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, duplicateSerials }) => {
+const allowedToOverrideSerial = [
+    EnrollmentStatus.ENROLLMENT_ERROR,
+    EnrollmentStatus.OVERRIDE_ERROR,
+];
+
+const EnrollReturnDevices = ({
+    order,
+    orderLines,
+    queryParams,
+    depCompanies,
+    duplicateSerials,
+}) => {
     const { setTitle } = useContext(NavbarContext);
     const { handleToast } = useToast();
     const [showModal, setShowModal] = useState(false);
@@ -68,7 +80,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
     const [selectAll, setSelectAll] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showOverride, setShowOverride] = useState(false);
+    const [showOverrideSerial, setShowOverrideSerial] = useState(false);
     const [depCompanyId, setDepCompanyId] = useState(null);
+    const [serial, setSerial] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -89,6 +103,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
     };
     const handleShowOverride = () => {
         setShowOverride(!showOverride);
+    };
+    const handleShowOverrideSerial = () => {
+        setShowOverrideSerial(!showOverrideSerial);
     };
 
     const handleCheckboxChange = (itemId) => {
@@ -254,14 +271,15 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
         }
     };
 
-    const EditForm = ({ handleShow, action}) => {
+    const EditForm = ({ handleShow, action }) => {
         const { handleToast } = useToast();
-        const isEdit = action == 'edit'; 
-        const { data, setData, processing, reset, put, post, errors} = useForm({
-            dep_company_id: depCompanyId,
-        });
+        const isEdit = action == "edit";
+        const { data, setData, processing, reset, put, post, errors } = useForm(
+            {
+                dep_company_id: depCompanyId,
+            }
+        );
 
-    
         const handleSubmit = (e) => {
             e.preventDefault();
 
@@ -279,66 +297,161 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                 if (result.isConfirmed) {
                     setLoading(true);
                     handleShow();
-                        
-                    if(isEdit) {
+
+                    if (isEdit) {
                         put(`/list_of_orders/${orderId}/update-dep-company`, {
-                            onSuccess: (data)=>{
-                                const { status, message } = data.props.auth.sessions;
+                            onSuccess: (data) => {
+                                const { status, message } =
+                                    data.props.auth.sessions;
                                 handleToast(message, status);
-                            }, onError: (data)=>{
-                                const { status, message } = data.props.auth.sessions;
+                            },
+                            onError: (data) => {
+                                const { status, message } =
+                                    data.props.auth.sessions;
                                 handleToast(message, status);
-                            }, onFinish: () => {
+                            },
+                            onFinish: () => {
                                 setLoading(false);
                                 reset();
-                            }
+                            },
                         });
                     } else {
                         post(`/list_of_orders/${orderId}/override`, {
-                            onSuccess: (data)=>{
-                                const { status, message } = data.props.auth.sessions;
+                            onSuccess: (data) => {
+                                const { status, message } =
+                                    data.props.auth.sessions;
                                 handleToast(message, status);
-                            }, onError: (data)=>{
-                                const { status, message } = data.props.auth.sessions;
+                            },
+                            onError: (data) => {
+                                const { status, message } =
+                                    data.props.auth.sessions;
                                 handleToast(message, status);
-                            }, onFinish: () => {
+                            },
+                            onFinish: () => {
                                 setLoading(false);
                                 reset();
-                            }
+                            },
                         });
                     }
-                 
                 }
             });
-        }
-    
+        };
+
         return (
             <>
-            <form className='space-y-4' onSubmit={handleSubmit}>
-    
-                <ReactSelect
-                    placeholder="Select Dep Company"
-                    name="dep_company_id" 
-                    displayName="Dep Company Name" 
-                    options={depCompanies} 
-                    value={depCompanies.find(depCompany => depCompany.value == data.dep_company_id)} 
-                    onChange={e => setData('dep_company_id', e.value)}
-                />
-    
-                {errors.dep_company_id && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.dep_company_id}</em></span>}
-    
-                <button
-                    type="submit"
-                    className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
-                    disabled={processing}
-                >
-                    {processing ? "Updating..." : (isEdit ? "Update" : "Override")}
-                </button>
-            </form>
-       
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <ReactSelect
+                        placeholder="Select Dep Company"
+                        name="dep_company_id"
+                        displayName="Dep Company Name"
+                        options={depCompanies}
+                        value={depCompanies.find(
+                            (depCompany) =>
+                                depCompany.value == data.dep_company_id
+                        )}
+                        onChange={(e) => setData("dep_company_id", e.value)}
+                    />
+
+                    {errors.dep_company_id && (
+                        <span className="mt-1 inline-block text-red-400 font-base">
+                            <em>{errors.dep_company_id}</em>
+                        </span>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                        disabled={processing}
+                    >
+                        {processing
+                            ? "Updating..."
+                            : isEdit
+                            ? "Update"
+                            : "Override"}
+                    </button>
+                </form>
             </>
-        )
-    }
+        );
+    };
+
+    const EditFormSerial = ({ handleShow, action }) => {
+        const { handleToast } = useToast();
+        const { data, setData, processing, reset, put, post, errors } = useForm(
+            {
+                serial_number: "",
+            }
+        );
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to Overide this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                reverseButtons: true,
+                iconColor: "#000000",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setLoading(true);
+                    handleShow();
+
+                    post(`/list_of_orders/${orderId}/override_serial`, {
+                        onSuccess: (data) => {
+                            const { status, message } =
+                                data.props.auth.sessions;
+                            handleToast(message, status);
+                        },
+                        onError: (data) => {
+                            const { status, message } =
+                                data.props.auth.sessions;
+                            handleToast(message, status);
+                        },
+                        onFinish: () => {
+                            setLoading(false);
+                            reset();
+                        },
+                    });
+                }
+            });
+        };
+
+        return (
+            <>
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <p className="font-bold text-gray-700 font-nunito-sans">
+                        Current Serial:
+                        <span className="font-bold text-black"> {serial}</span>
+                    </p>
+                    <InputComponent
+                        name="New Serial Number"
+                        value={data.serial_number}
+                        onChange={(e) =>
+                            setData(
+                                "serial_number",
+                                e.target.value.toUpperCase()
+                            )
+                        }
+                    />
+                    <p className="text-red-500 text-sm">
+                        Note: When you use this button, it will override the
+                        current serial and resubmit the new serial number to
+                        Apple.
+                    </p>
+
+                    <button
+                        type="submit"
+                        className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                        disabled={processing}
+                    >
+                        {processing ? "Updating..." : "Override"}
+                    </button>
+                </form>
+            </>
+        );
+    };
 
     const EnrollReturnDeviceActions = () => {
         const handleSwal = (e, action) => {
@@ -397,7 +510,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
         return (
             <div className="flex flex-col items-center gap-y-3 py-2 text-white font-nunito-sans font-bold">
                 <>
-                    { allowedToEnroll.includes(enrollmentStatus) && (
+                    {allowedToEnroll.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70 cursor-pointer"
                             onClick={(e) => handleSwal(e, "enroll")}
@@ -406,7 +519,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                         </button>
                     )}
 
-                    { allowedToReturn.includes(enrollmentStatus) && (
+                    {allowedToReturn.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={(e) => handleSwal(e, "return")}
@@ -415,7 +528,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                         </button>
                     )}
 
-                    { allowedToOverride.includes(enrollmentStatus) && (
+                    {allowedToOverride.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={() => {
@@ -424,6 +537,17 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                             }}
                         >
                             Override Order
+                        </button>
+                    )}
+                    {allowedToOverrideSerial.includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                            onClick={() => {
+                                handleCloseModal();
+                                handleShowOverrideSerial();
+                            }}
+                        >
+                            Override Serial
                         </button>
                     )}
                 </>
@@ -510,15 +634,11 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                                 Serial Number
                             </TableHeader>
 
-                           
-
-                            {duplicateSerials.length != 0 && 
-                            <TableHeader
-                                width="small"
-                                sortable={false}
-                            >
-                                &nbsp;
-                            </TableHeader>}
+                            {duplicateSerials.length != 0 && (
+                                <TableHeader width="small" sortable={false}>
+                                    &nbsp;
+                                </TableHeader>
+                            )}
 
                             <TableHeader
                                 name="dep_company_id"
@@ -528,9 +648,9 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                                 DEP Company
                             </TableHeader>
 
-                            <TableHeader 
-                                sortable={false} 
-                                justify="center" 
+                            <TableHeader
+                                sortable={false}
+                                justify="center"
                                 sticky="right"
                                 width="sm"
                             >
@@ -565,48 +685,87 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                                 <RowData>{order.item_description}</RowData>
                                 <RowData>{order.serial_number}</RowData>
 
-                                {duplicateSerials.length != 0 && 
+                                {duplicateSerials.length != 0 && (
+                                    <RowData>
+                                        {duplicateSerials.includes(
+                                            order.serial_number
+                                        ) && <DuplicateIcon />}
+                                    </RowData>
+                                )}
+
                                 <RowData>
-                                    {duplicateSerials.includes(order.serial_number) && <DuplicateIcon/>}
-                                </RowData>}
-                           
-                                <RowData>{order?.dep_companies?.dep_company_name}</RowData>
+                                    {order?.dep_companies?.dep_company_name}
+                                </RowData>
 
                                 <RowData center sticky="right">
                                     <RowActions>
-                                            {![EnrollmentStatus['VOIDED'], 
-                                            EnrollmentStatus['CANCELLED']].includes(order?.status?.id) && 
-                                            (
-                                                <RowAction
-                                                    action="add"
-                                                    type="button"
-                                                    onClick={() => {
-                                                        handleOpenModal();
-                                                        setOrderId(order.id);
-                                                        setDepCompanyId(order.dep_company_id);
-                                                        setEnrollmentStatus(
-                                                            order.enrollment_status_id
-                                                        );
-                                                    }}
-                                                    tooltipContent={`
-                                                        ${allowedToEnroll.includes(order.enrollment_status_id) ? "<p>Enroll Device</p>" : ''}
-                                                        ${allowedToReturn.includes(order.enrollment_status_id) ? "<p>Return Device</p>" : ''}
-                                                        ${allowedToOverride.includes(order.enrollment_status_id) ? "<p></p>Override Device</p>" : ''}
-                                                    `}
-                                                />
-                                            )}
-
+                                        {![
+                                            EnrollmentStatus["VOIDED"],
+                                            EnrollmentStatus["CANCELLED"],
+                                        ].includes(order?.status?.id) && (
                                             <RowAction
-                                                action="edit"
+                                                action="add"
                                                 type="button"
                                                 onClick={() => {
-                                                    handleShowEdit();
+                                                    handleOpenModal();
                                                     setOrderId(order.id);
-                                                    setDepCompanyId(order.dep_company_id);
+                                                    setDepCompanyId(
+                                                        order.dep_company_id
+                                                    );
+                                                    setEnrollmentStatus(
+                                                        order.enrollment_status_id
+                                                    );
+                                                    setSerial(
+                                                        order.serial_number
+                                                    );
                                                 }}
-                                                disabled={!["Pending", "Returned"].includes(order?.status?.enrollment_status)}
-                                                tooltipContent="Edit"
+                                                tooltipContent={`
+                                                        ${
+                                                            allowedToEnroll.includes(
+                                                                order.enrollment_status_id
+                                                            )
+                                                                ? "<p>Enroll Device</p>"
+                                                                : ""
+                                                        }
+                                                        ${
+                                                            allowedToReturn.includes(
+                                                                order.enrollment_status_id
+                                                            )
+                                                                ? "<p>Return Device</p>"
+                                                                : ""
+                                                        }
+                                                        ${
+                                                            allowedToOverride.includes(
+                                                                order.enrollment_status_id
+                                                            )
+                                                                ? "<p></p>Override Device</p>"
+                                                                : ""
+                                                        }
+                                                    `}
                                             />
+                                        )}
+
+                                        <RowAction
+                                            action="edit"
+                                            type="button"
+                                            onClick={() => {
+                                                handleShowEdit();
+                                                setOrderId(order.id);
+                                                setDepCompanyId(
+                                                    order.dep_company_id
+                                                );
+                                            }}
+                                            disabled={
+                                                ![
+                                                    "Pending",
+                                                    "Returned",
+                                                ].includes(
+                                                    order?.status
+                                                        ?.enrollment_status
+                                                )
+                                            }
+                                            tooltipContent="Edit"
+                                        />
                                     </RowActions>
                                 </RowData>
                             </Row>
@@ -624,7 +783,7 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                 onClose={handleShowEdit}
                 title="Edit Dep Company"
             >
-                <EditForm handleShow={handleShowEdit} action="edit"/>
+                <EditForm handleShow={handleShowEdit} action="edit" />
             </Modal>
 
             <Modal
@@ -632,7 +791,17 @@ const EnrollReturnDevices = ({ order, orderLines, queryParams, depCompanies, dup
                 onClose={handleShowOverride}
                 title="Override Order"
             >
-                <EditForm handleShow={handleShowOverride} action="override"/>
+                <EditForm handleShow={handleShowOverride} action="override" />
+            </Modal>
+            <Modal
+                show={showOverrideSerial}
+                onClose={handleShowOverrideSerial}
+                title="Override Serial"
+            >
+                <EditFormSerial
+                    handleShow={handleShowOverrideSerial}
+                    action="override"
+                />
             </Modal>
         </>
     );

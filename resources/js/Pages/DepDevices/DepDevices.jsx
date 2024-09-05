@@ -1,4 +1,4 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import AppContent from "../../Layouts/layout/AppContent";
 import Layout from "@/Layouts/layout/layout.jsx";
 import TableHeader from "../../Components/Table/TableHeader";
@@ -60,6 +60,10 @@ const allowedToOverride = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
     EnrollmentStatus.OVERRIDE_ERROR,
 ];
+const allowedToOverrideSerial = [
+    EnrollmentStatus.ENROLLMENT_ERROR,
+    EnrollmentStatus.OVERRIDE_ERROR,
+];
 
 const DepDevices = ({
     devices,
@@ -83,6 +87,8 @@ const DepDevices = ({
     const [depCompanyId, setDefaultDepCompanyId] = useState(null);
     const [showOverrideModal, setShowOverrideModal] = useState(false);
     const [depOptions, setDepOptions] = useState([]);
+    const [showOverrideSerial, setShowOverrideSerial] = useState(false);
+    const [serial, setSerial] = useState(null);
 
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
@@ -154,6 +160,10 @@ const DepDevices = ({
     const handleOpenEditModal = (depCompanyId) => {
         setShowEditModal(true);
         setDefaultDepCompanyId(depCompanyId);
+    };
+
+    const handleShowOverrideSerial = () => {
+        setShowOverrideSerial(!showOverrideSerial);
     };
 
     const handleOpenModal = () => {
@@ -258,6 +268,85 @@ const DepDevices = ({
         );
     };
 
+    const EditFormSerial = ({ handleShow, action }) => {
+        const { handleToast } = useToast();
+        const { data, setData, processing, reset, put, post, errors } = useForm(
+            {
+                serial_number: "",
+            }
+        );
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+
+            Swal.fire({
+                title: `<p class="font-nunito-sans text-3xl" >Are you sure you want to Overide this Device?</p>`,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                confirmButtonColor: "#000000",
+                icon: "question",
+                reverseButtons: true,
+                iconColor: "#000000",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setLoading(true);
+                    handleShow();
+
+                    post(`/list_of_orders/${orderId}/override_serial`, {
+                        onSuccess: (data) => {
+                            const { status, message } =
+                                data.props.auth.sessions;
+                            handleToast(message, status);
+                        },
+                        onError: (data) => {
+                            const { status, message } =
+                                data.props.auth.sessions;
+                            handleToast(message, status);
+                        },
+                        onFinish: () => {
+                            setLoading(false);
+                            reset();
+                        },
+                    });
+                }
+            });
+        };
+
+        return (
+            <>
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <p className="font-bold text-gray-700 font-nunito-sans">
+                        Current Serial:
+                        <span className="font-bold text-black"> {serial}</span>
+                    </p>
+                    <InputComponent
+                        name="New Serial Number"
+                        value={data.serial_number}
+                        onChange={(e) =>
+                            setData(
+                                "serial_number",
+                                e.target.value.toUpperCase()
+                            )
+                        }
+                    />
+                    <p className="text-red-500 text-sm">
+                        Note: When you use this button, it will override the
+                        current serial and resubmit the new serial number to
+                        Apple.
+                    </p>
+
+                    <button
+                        type="submit"
+                        className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                        disabled={processing}
+                    >
+                        {processing ? "Updating..." : "Override"}
+                    </button>
+                </form>
+            </>
+        );
+    };
+
     const EnrollReturnDeviceActions = () => {
         const handleSwal = async (e, action) => {
             e.preventDefault();
@@ -349,6 +438,17 @@ const DepDevices = ({
                             onClick={(e) => handleSwal(e, "override")}
                         >
                             Override
+                        </button>
+                    )}
+                    {allowedToOverrideSerial.includes(enrollmentStatus) && (
+                        <button
+                            className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
+                            onClick={() => {
+                                handleCloseModal();
+                                handleShowOverrideSerial();
+                            }}
+                        >
+                            Override Serial
                         </button>
                     )}
                 </>
@@ -564,6 +664,9 @@ const DepDevices = ({
                                                         onClick={() => {
                                                             handleOpenModal();
                                                             setOrderId(item.id);
+                                                            setSerial(
+                                                                item.serial_number
+                                                            );
                                                             setEnrollmentStatus(
                                                                 item.enrollment_status_id
                                                             );
@@ -649,6 +752,16 @@ const DepDevices = ({
                     updateFormValues={updateFormValues}
                     onSubmit={handleOverrideSubmit}
                     options={depOptions}
+                />
+            </Modal>
+            <Modal
+                show={showOverrideSerial}
+                onClose={handleShowOverrideSerial}
+                title="Override Serial"
+            >
+                <EditFormSerial
+                    handleShow={handleShowOverrideSerial}
+                    action="override"
                 />
             </Modal>
         </>

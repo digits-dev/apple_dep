@@ -14,6 +14,7 @@ class EnrollmentHistory extends Model
 
 
     protected $fillable = [
+        'order_lines_id',
         'dep_company_id',
         'sales_order_no',
         'item_code',

@@ -1439,8 +1439,8 @@ class ListOfOrdersController extends Controller
             $encodedPayload = json_encode($payload);
             $encodedResponse = json_encode($response);
             
-            JsonRequest::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedPayload , 'created_at' => date('Y-m-d H:i:s')]);
-            JsonResponse::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedResponse , 'created_at' => date('Y-m-d H:i:s')]);
+            JsonRequest::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedPayload ,  'order_type' => 'OV', 'created_at' => date('Y-m-d H:i:s')]);
+            JsonResponse::insert(['order_id' => $orderId, 'order_lines_id' => $id,'data' => $encodedResponse , 'order_type' => 'OV', 'created_at' => date('Y-m-d H:i:s')]);
             
             TransactionLog::insert([
                 'order_type' => 'OV',
