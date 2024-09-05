@@ -71,14 +71,9 @@ class AppleDeviceEnrollmentService
         }
     }
 
-    public function showOrderDetails($requestContext, $depResellerId, $orderNumbers)
+    public function showOrderDetails($requestData)
     {
         $url = $this->baseUrl . $this->showOrderDetailsEndpoint;
-        $payload = [
-            'requestContext' => $requestContext,
-            'depResellerId' => $depResellerId,
-            'orderNumbers' => $orderNumbers,
-        ];
 
         try {
             $response = Http::withClientCertificate()
@@ -87,7 +82,7 @@ class AppleDeviceEnrollmentService
                     'Accept-Encoding' => '',
                 ])
                 ->timeout($this->timeout)
-                ->post($url, $payload);
+                ->post($url, $requestData);
 
             if ($response->successful()) {
                 return $response->json();
