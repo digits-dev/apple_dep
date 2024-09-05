@@ -1568,7 +1568,6 @@ class ListOfOrdersController extends Controller
     }
 
     public function overrideHeaderLevel(Request $request){
-        dd($request->all());
         if(!CommonHelpers::isCreate()) {
             $data = [
                 'message' => "You don't have permission to enroll.", 
