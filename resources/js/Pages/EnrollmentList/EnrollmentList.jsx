@@ -314,7 +314,7 @@ const EnrollmentList = ({ enrollmentLists, queryParams, enrollmentStatuses, depS
 
                         <Tbody data={enrollmentLists.data}>
                             {enrollmentLists &&
-                                enrollmentLists.data.map((item, index) => (
+                                enrollmentLists?.data?.map((item, index) => (
                                     <Row key={item.sales_order_no + index}>
                                         <RowStatus
                                             isLoading={loading}

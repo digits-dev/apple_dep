@@ -1290,7 +1290,23 @@ class ListOfOrdersController extends Controller
                 // Update the enrollment status of the order line
                 $orderLine->update(['enrollment_status_id' => $this->enrollment_status]);
 
-                // Insert in Enrollment History
+                //Update in Enrollment List and Insert in Enrollment History
+                $enrollment = EnrollmentList::query()
+                ->where('sales_order_no', $header_data->sales_order_no)
+                ->where('serial_number', $orderLine->serial_number)
+                ->first();
+
+                if($enrollment){
+                    $enrollment->fill([
+                        'transaction_id' => $transaction_id,
+                        'dep_status' => $dep_status,
+                        'enrollment_status' => $this->enrollment_status,
+                        'status_message' => $status_message,
+                    ]);
+
+                    $enrollment->save();
+                }
+
                 $insertToHistory = [ 
                     'order_lines_id' => $orderLine->id,
                     'dep_company_id' => $orderLine->dep_company_id,
