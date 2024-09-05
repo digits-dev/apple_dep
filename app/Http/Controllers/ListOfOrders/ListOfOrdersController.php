@@ -1568,12 +1568,10 @@ class ListOfOrdersController extends Controller
 
     public function overrideHeaderLevel(Request $request){
         if(!CommonHelpers::isCreate()) {
-
             $data = [
                 'message' => "You don't have permission to enroll.", 
                 'status' => 'error'
             ];
-
             return response()->json($data);
         }
 
@@ -1581,7 +1579,7 @@ class ListOfOrdersController extends Controller
             $id = $request->order_id;
             //Update Order Ship date
             Order::where('id', $id)->update(['ship_date' => $request->ship_date]);
-
+            dd($request->all());
             // Fetch unique lines
             $uniqueLines = OrderLines::where('list_of_order_lines.order_id', $id)
             ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
@@ -1800,6 +1798,28 @@ class ListOfOrdersController extends Controller
     public function getCurrentShipdate(Request $request){
         $result = Order::where('id',$request->orderId)->pluck('ship_date');
         return response()->json($result);
+    }
+
+    public function getOrderLines(Request $request){
+        $result = OrderLines::where('list_of_order_lines.order_id', $request->orderId)
+                            ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                            ->selectRaw('MIN(list_of_order_lines.id) as id, list_of_order_lines.serial_number, list_of_order_lines.digits_code, list_of_order_lines.item_description')
+                            ->groupBy('list_of_order_lines.serial_number', 'list_of_order_lines.digits_code', 'list_of_order_lines.item_description')
+                            ->get();
+
+        $overrideDatas = [];
+        // check lines if they're already enrolled through digits code and serial number
+        foreach ($result as $orderLines) {
+            $exists = OrderLines::where('digits_code', $orderLines->digits_code)
+                ->where('serial_number', $orderLines->serial_number)
+                ->whereIn('enrollment_status_id', [EnrollmentStatus::ENROLLMENT_ERROR['id'], EnrollmentStatus::ENROLLMENT_SUCCESS['id']])
+                ->exists();
+    
+            if ($exists) {
+                $overrideDatas[] = $orderLines;
+            }
+        }
+        return response()->json($overrideDatas);
     }
 
 }

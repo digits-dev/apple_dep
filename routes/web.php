@@ -128,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
     //ORDERS
     Route::post('/orders/override', [ListOfOrdersController::class, 'overrideHeaderLevel']);
     Route::get('/orders/get-current-shipdate', [ListOfOrdersController::class, 'getCurrentShipdate']);
+    Route::get('/orders/get-order-lines', [ListOfOrdersController::class, 'getOrderLines']);
     //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/enroll-return', [ListOfOrdersController::class, 'showEnrollReturn']);

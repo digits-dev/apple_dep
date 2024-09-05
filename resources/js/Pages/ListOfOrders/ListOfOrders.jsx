@@ -572,6 +572,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
 
             {/* OV */}
             <Modal
+                width="4xl"
                 show={showOverride}
                 onClose={handleShowOverride}
                 title="Override Order"
