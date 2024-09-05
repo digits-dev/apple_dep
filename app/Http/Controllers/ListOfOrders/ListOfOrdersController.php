@@ -1574,7 +1574,6 @@ class ListOfOrdersController extends Controller
             ];
             return response()->json($data);
         }
-
         try {
             $id = $request->order_id;
             //Update Order Ship date
@@ -1795,11 +1794,21 @@ class ListOfOrdersController extends Controller
         }
     }
 
-    public function getCurrentShipdate(Request $request){
-        $result = Order::where('id',$request->orderId)->pluck('ship_date');
-        return response()->json($result);
+    public function getCurrentShipdate(Request $request)
+    {
+        $order = Order::where('id', $request->orderId)->first();
+        $lines = EnrollmentList::join('enrollment_statuses', 'enrollment_lists.enrollment_status', 'enrollment_statuses.id')
+                               ->where('enrollment_lists.sales_order_no', $order->sales_order_no)
+                               ->whereIn('enrollment_lists.enrollment_status', [2, 3])
+                               ->get();
+    
+        return response()->json([
+            'order' => $order,
+            'lines' => $lines
+        ]);
     }
-
+    
+    
     public function getOrderLines(Request $request){
         $result = OrderLines::where('list_of_order_lines.order_id', $request->orderId)
                             ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
