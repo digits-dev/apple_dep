@@ -23,6 +23,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-30', 
+                "ship_date" => '2024-08-01', 
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -35,6 +36,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -47,6 +49,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -59,6 +62,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -71,6 +75,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -83,6 +88,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -95,6 +101,7 @@ class OrderHeaderSeeder extends Seeder
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
                 "order_date" => '2024-07-31', 
+                "ship_date" => '2024-08-01',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
