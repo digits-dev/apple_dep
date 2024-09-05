@@ -1581,6 +1581,7 @@ class ListOfOrdersController extends Controller
             $el_ids = [];
             if($request->serial_numbers){
                 foreach($request->serial_numbers as $key => $val){
+
                 //Update list of orders
                     $el_ids[] = $key;
                     OrderLines::where('id', $key)
@@ -1624,7 +1625,7 @@ class ListOfOrdersController extends Controller
             ->get();
             
             $requestData = $editRequesData->merge($getOtherData);
-   
+       
             if (!empty($requestData)) {
                 // Fetch detailed order lines
                 $header_data = $requestData->first();
@@ -1693,13 +1694,12 @@ class ListOfOrdersController extends Controller
 
                     //Update/Insert in Enrollment List and Insert in Enrollment History
                     foreach ($requestData as $deviceData) {
-                        $enrollmentRecord = EnrollmentList::where('sales_order_no', $header_data->sales_order_no)
-                            ->where('serial_number', $deviceData->serial_number)
+                        $enrollmentRecord = EnrollmentList::where('id', $deviceData->el_id)
                             ->first();
 
                         if ($enrollmentRecord) {
                             $enrollmentRecord->update([
-                                'order_lines_id'    => $deviceData->order_line_id,
+                                'order_lines_id'    => $deviceData->lorid,
                                 'dep_company_id'    => $dep_company->id,
                                 'sales_order_no'    => $header_data->sales_order_no,
                                 'item_code'         => $deviceData->digits_code,
@@ -1712,7 +1712,7 @@ class ListOfOrdersController extends Controller
                         }
 
                         $insertToHistory = [ 
-                            'order_lines_id' => $deviceData->order_line_id,
+                            'order_lines_id' => $deviceData->lorid,
                             'dep_company_id' => $dep_company->id,
                             'sales_order_no' =>  $header_data->sales_order_no,
                             'item_code' => $deviceData->digits_code,
