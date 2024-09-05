@@ -35,7 +35,7 @@ const Modal = ({
             ) : (
                 <div className="modal-backdrop z-[100]">
                     <div
-                        className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5  max-h-[80vh]`}
+                        className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5  max-h-[90vh]`}
                     >
                         <div className="flex justify-between p-5 border-b-2 items-center">
                             <p className="font-nunito-sans font-extrabold text-lg">

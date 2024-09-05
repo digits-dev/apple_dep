@@ -35,8 +35,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
     useEffect(() => {
     }, [enrollmentList]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         try {
             const response = await axios.get(
@@ -247,7 +246,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                                 device,
                                                                                 deviceIndex
                                                                             ) => (
-                                                                                <Row>
+                                                                                <Row key={deliveryIndex}>
                                                                                     <RowData
                                                                                         center
                                                                                     >
