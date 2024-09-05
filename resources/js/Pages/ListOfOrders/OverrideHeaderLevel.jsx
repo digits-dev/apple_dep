@@ -4,12 +4,6 @@ import { useToast } from "../../Context/ToastContext";
 
 import axios from "axios";
 import InputComponent from "../../Components/Forms/Input";
-import TableContainer from "../../Components/Table/TableContainer";
-import Thead from "../../Components/Table/Thead";
-import Row from "../../Components/Table/Row";
-import TableHeader from "../../Components/Table/TableHeader";
-import Tbody from "../../Components/Table/Tbody";
-import RowData from "../../Components/Table/RowData";
 
 
 const OverrideHeaderLevel = ({ handleShow, action, orderId}) => {
@@ -21,7 +15,6 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId}) => {
         ship_date: '',
     });
     const [currentShipdate, setCurrentShipdate] = useState([]);
-    const [orderLines, setOrderLines] = useState([]);
 
     useEffect(() => {
         axios.get('/orders/get-current-shipdate', {
@@ -35,33 +28,14 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId}) => {
         });
     }, [orderId]);
 
-    useEffect(() => {
-        axios.get('/orders/get-order-lines', {
-            params: { orderId }  // Correctly passing orderId as a query parameter
-        })
-        .then(response => {
-            setOrderLines(response.data);
-        })
-        .catch(error => {
-            console.error('There was an error fetching the ship date!', error);
-        });
-    }, [orderId]);
 
-    // State to store the serial numbers
-    const [orderLinesState, setOrderLinesState] = useState(orderLines);
-
-    function handleChange(e, index) {
-        const {key, value } = e.target;
+    function handleChange(e) {
+        const key = e.target.name;
+        const value = e.target.value;
         setForms((forms) => ({
             ...forms,
             [key]: value,
         }));
-
-        const updatedOrderLines = orderLinesState.map((line, i) =>
-            i === index ? { ...line, serial_number: value } : line
-        );
-        // Set the updated orderLinesState
-        setOrderLinesState(updatedOrderLines);
 
         setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
     }
@@ -107,7 +81,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId}) => {
     const submitForm = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('/orders/override', {forms, serialNumbers }, {
+            const response = await axios.post('/orders/override', forms, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -153,124 +127,13 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId}) => {
                 </div>
             )}
 
-            <div>
-                <div className="font-nunito-sans font-extrabold text-lg my-2">
-                    Devices
-                </div>
-                <TableContainer
-                    autoHeight
-                >
-                    <Thead>
-                        <Row>
-                            <TableHeader
-                                width="md"
-                                justify="center"
-                                sortable={
-                                    false
-                                }
-                            >
-                                ID
-                            </TableHeader>
-                            <TableHeader
-                                width="md"
-                                justify="center"
-                                sortable={
-                                    false
-                                }
-                            >
-                                Digits Code
-                            </TableHeader>
-                            <TableHeader
-                                width="md"
-                                justify="center"
-                                sortable={
-                                    false
-                                }
-                            >
-                                Item Description
-                            </TableHeader>
-                            <TableHeader
-                                width="md"
-                                justify="center"
-                                sortable={
-                                    false
-                                }
-                            >
-                                Serial
-                            </TableHeader>
-                        </Row>
-                    </Thead>
-
-                    <Tbody>
-                        {orderLines &&
-                            orderLines?.length > 0 ? (
-                                orderLines && orderLines?.map((line, index) => (
-                                    <Row key={index + line.id}>
-                                        <RowData
-                                            center
-                                        >
-                                           <input 
-                                               type="text" 
-                                               value={line.id} 
-                                               readOnly 
-                                               className="text-center"
-                                           />
-                                        </RowData>
-                                        <RowData
-                                            center
-                                        >
-                                            {line.digits_code}
-                                        </RowData>
-                                        <RowData
-                                            center
-                                        >
-                                            {line.item_description}
-                                        </RowData>
-                                        <RowData
-                                            center
-                                        >
-                                            <input 
-                                                type="text" 
-                                                value={line.serial_number} 
-                                                name="serial_number"
-                                                onChange={(e) => handleChange(e, index)}
-                                                className="mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                                            />
-                                        </RowData>
-                                    </Row>
-                                )
-                            )
-                            ) : (
-                               
-                                <div className="flex items-center justify-center ml-[380px]">
-                                    <span className="items-center justify-center font-bold text-black-500">
-                                        Processing...
-                                    </span>
-                                </div>
-                               
-                            )
-                        }
-    
-                    </Tbody>
-                </TableContainer>
-            </div>
-            <div className="pb-2">
-                <button
-                    type="submit"
-                    onClick={() => handleShow()}
-                    className="bg-gray-300 text-black font-nunito-sans px-3 py-3 text-sm font-bold rounded-md mt-1 hover:opacity-70"
-                    disabled={loading}
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="bg-primary text-white float-right font-nunito-sans px-3 py-3 mb-5 text-sm font-bold rounded-md mt-1 hover:opacity-70"
-                    disabled={loading}
-                >
-                    {loading ? "Updating..." : "Override"}
-                </button>
-            </div>
+            <button
+                type="submit"
+                className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                disabled={loading}
+            >
+                {loading ? "Updating..." : "Override"}
+            </button>
         </form>
    
         </>
