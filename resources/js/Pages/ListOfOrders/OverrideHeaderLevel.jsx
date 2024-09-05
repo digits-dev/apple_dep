@@ -13,7 +13,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState([]);
     const [lines, setLines] = useState([]);
-    const [depCompany, setDepCompany] = useState();
+    const [depCompany, setDepCompany] = useState("");
     const [depCompanies, setDepCompanies] = useState([]);
     const [forms, setForms] = useState({
         order_id: orderId,
@@ -22,7 +22,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
         dr_number: "",
         sales_order_no: "",
         order_date: "",
-        dep_company_id: depCompany,
+        dep_company_id: "",
         serial_numbers: {},
     });
 
@@ -36,6 +36,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                 setOrder(response.data.order);
                 setLines(response.data.lines);
                 setDepCompanies(response.data.depCompanies);
+                setDepCompany(response.data.order.customer_id);
                 setForms((forms) => ({
                     ...forms,
                     ship_date: response.data.order.ship_date,
@@ -43,7 +44,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                     dr_number: response.data.order.dr_number,
                     sales_order_no: response.data.order.sales_order_no,
                     order_date: response.data.order.order_date,
-                    dep_company_id: response.data.order.dep_company_id,
+                    dep_company_id: response.data.order.customer_id,
                 }));
             })
             .catch((error) => {
@@ -64,6 +65,16 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
 
         setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
     }
+
+    function handleChangeCompany(e, prop) {
+        const key = e.label;
+        const value = e.value;
+        setForms((forms) => ({
+            ...forms,
+            [prop]: value,
+        }));
+    }
+
     function handleSerialNumberChange(e, orderLinesId) {
         const value = e.target.value.toUpperCase();
 
@@ -183,6 +194,8 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                         value={forms.order_date}
                         onChange={handleChange}
                     />
+                    {console.log(depCompanies)}
+
                     <ReactSelect
                         placeholder="Select Dep Company"
                         name="dep_company_id"
@@ -192,7 +205,11 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                             (depCompany) =>
                                 depCompany.value == forms.dep_company_id
                         )}
-                        onChange={(e) => setDepCompany(e.value)}
+                        onChange={(e) => {
+                            console.log(e);
+                            handleChangeCompany(e, "dep_company_id");
+                            console.log(depCompany);
+                        }}
                     />
                 </div>
 
