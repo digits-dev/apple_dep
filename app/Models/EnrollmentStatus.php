@@ -75,8 +75,8 @@ class EnrollmentStatus extends Model
         'value' => 'Override Error'
     ];
     
-    const ONGOING = [
+    const IN_PROGRESS = [
         'id' => 13,
-        'value' => 'Ongoing'
+        'value' => 'In Progress'
     ];
 }

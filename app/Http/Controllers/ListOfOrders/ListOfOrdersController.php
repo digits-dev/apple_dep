@@ -43,6 +43,7 @@ class ListOfOrdersController extends Controller
     ];
 
     private $enrollment_status;
+    private $depCompanyId;
 
 
     public function __construct(ApplePayloadController $applePayloadController, AppleDeviceEnrollmentService $appleService){
@@ -247,7 +248,7 @@ class ListOfOrdersController extends Controller
         try {
             $id = $request->input('id'); 
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
-            $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+            $this->depCompanyId = $header_data->dep_company_id;
         
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
@@ -263,7 +264,7 @@ class ListOfOrdersController extends Controller
   
             $payload = $this->applePayloadController->generatePayload();
 
-            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'OR');
+            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $this->depCompanyId, 'OR');
 
             $payload['orders'][] = $ordersPayload;
 
@@ -274,7 +275,7 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
             } else if(isset($response['enrollDeviceErrorResponse'])) {  
                 $transaction_id = $response['transactionId'];
@@ -313,7 +314,7 @@ class ListOfOrdersController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
 
                 //Update Order Line Status
@@ -322,7 +323,7 @@ class ListOfOrdersController extends Controller
                 // Data to be inserted in the enrollment list
                 $insertData = [ 
                     'order_lines_id'    => $id,
-                    'dep_company_id'    => $dep_company->id,
+                    'dep_company_id'    => $this->depCompanyId,
                     'sales_order_no'    => $header_data['sales_order_no'],
                     'item_code'         => $header_data['digits_code'],
                     'serial_number'     => $header_data['serial_number'],
@@ -344,7 +345,7 @@ class ListOfOrdersController extends Controller
                 } else {
                     // If the device exists, update the data
                     $enrollmentQuery->update([
-                        'dep_company_id' => $dep_company->id,
+                        'dep_company_id' => $this->depCompanyId,
                         'transaction_id' => $transaction_id,
                         'dep_status' => $dep_status,
                         'enrollment_status' => $this->enrollment_status,
@@ -366,7 +367,7 @@ class ListOfOrdersController extends Controller
 
                 // Count order lines with enrollment status 13 or ongoing
                 $enrollmentOngoing = OrderLines::where('order_id', $orderId)
-                    ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                    ->where('enrollment_status_id', EnrollmentStatus::IN_PROGRESS['id'])
                     ->count();
 
                 // Check if all order lines have status 3 and update the enrollment status of the order
@@ -382,7 +383,7 @@ class ListOfOrdersController extends Controller
                     ]);
                 } else if ($enrollmentOngoing > 0) {
                     Order::where('id', $orderId)->update([
-                        'enrollment_status' => EnrollmentStatus::ONGOING['id'],
+                        'enrollment_status' => EnrollmentStatus::IN_PROGRESS['id'],
                         'dep_order' => 1
                     ]);
                 }
@@ -396,7 +397,7 @@ class ListOfOrdersController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
@@ -433,7 +434,7 @@ class ListOfOrdersController extends Controller
         try {
             $id = $request->input('id'); 
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
-            $dep_company = DB::table('dep_companies')->where('id',$header_data['dep_company_id'])->first();
+            $this->depCompanyId = $header_data->dep_company_id;
             
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
@@ -449,7 +450,7 @@ class ListOfOrdersController extends Controller
 
             $payload = $this->applePayloadController->generatePayload();
 
-            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'RE');
+            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $this->depCompanyId, 'RE');
 
             $payload['orders'][] = $ordersPayload;
 
@@ -460,7 +461,7 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
             } else if(isset($response['enrollDeviceErrorResponse'])) {  
                 $transaction_id = $response['transactionId'];
@@ -498,7 +499,7 @@ class ListOfOrdersController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
 
                 //Update Order Line Status
@@ -528,7 +529,7 @@ class ListOfOrdersController extends Controller
                 //Insert in Enrollment History 
                 $insertToHistory = [ 
                     'order_lines_id' => $id,
-                    'dep_company_id' => $dep_company->id,
+                    'dep_company_id' => $this->depCompanyId,
                     'sales_order_no' => $header_data['sales_order_no'],
                     'item_code' => $header_data['digits_code'],
                     'serial_number' => $header_data['serial_number'],
@@ -550,7 +551,7 @@ class ListOfOrdersController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
@@ -617,7 +618,8 @@ class ListOfOrdersController extends Controller
                     ->get();
         
                 $header_data = $requestData->first();
-                $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
+                // $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
+                $this->depCompanyId = $header_data->dep_company_id;
         
                 //For devices array inside of ordersPayload
                 $devicePayload = [];
@@ -642,7 +644,7 @@ class ListOfOrdersController extends Controller
 
                 $payload = $this->applePayloadController->generatePayload();
 
-                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'OR', $devicePayload);
+                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $this->depCompanyId, 'OR', $devicePayload);
 
                 $payload['orders'][] = $ordersPayload;
 
@@ -653,7 +655,7 @@ class ListOfOrdersController extends Controller
                     $transaction_id = $response['deviceEnrollmentTransactionId'];
                     $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
 
                 } else if(isset($response['enrollDeviceErrorResponse'])) {  
@@ -669,7 +671,6 @@ class ListOfOrdersController extends Controller
                     ];
             
                     return response()->json($data);
-                  
                 }
 
                 OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => $this->enrollment_status]);
@@ -681,6 +682,7 @@ class ListOfOrdersController extends Controller
                 $encodedResponse = json_encode($response);
 
                 self::generateLogs($orderId, $idsOfUniqueLines, $encodedPayload, $encodedResponse, $transaction_id, $dep_status, 'OR');
+
 
                 //Check transaction status
                 if($this->enrollment_status !== EnrollmentStatus::ENROLLMENT_ERROR['id']) {
@@ -695,7 +697,7 @@ class ListOfOrdersController extends Controller
                     } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                         // $enrollment_status = self::enrollment_status['Error'];
                     } else {
-                        $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                        $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                     }
 
                     //Update Order Lines Status
@@ -703,7 +705,6 @@ class ListOfOrdersController extends Controller
 
                     //Update/Insert in Enrollment List and Insert in Enrollment History
                     foreach ($requestData as $deviceData) {
-
                         EnrollmentList::updateOrCreate(
                             [
                                 'sales_order_no' => $header_data->sales_order_no,
@@ -711,7 +712,7 @@ class ListOfOrdersController extends Controller
                             ],
                             [
                                 'order_lines_id'    => $deviceData->order_line_id,
-                                'dep_company_id'    => $dep_company->id,
+                                'dep_company_id'    => $this->depCompanyId,
                                 'sales_order_no'    => $header_data->sales_order_no,
                                 'item_code'         => $deviceData->digits_code,
                                 'transaction_id'    => $transaction_id,
@@ -724,7 +725,7 @@ class ListOfOrdersController extends Controller
 
                         $insertToHistory = [ 
                             'order_lines_id' => $deviceData->order_line_id,
-                            'dep_company_id' => $dep_company->id,
+                            'dep_company_id' => $this->depCompanyId,
                             'sales_order_no' =>  $header_data->sales_order_no,
                             'item_code' => $deviceData->digits_code,
                             'serial_number' => $deviceData->serial_number,
@@ -738,6 +739,7 @@ class ListOfOrdersController extends Controller
 
                     }
 
+
                     // Update order enrollment status to success if all lines are enrolled successfully
                     $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
 
@@ -746,7 +748,7 @@ class ListOfOrdersController extends Controller
                         ->count();
 
                     $enrollmentOngoing = OrderLines::where('order_id', $orderId)
-                        ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                        ->where('enrollment_status_id', EnrollmentStatus::IN_PROGRESS['id'])
                         ->count();
 
                     if ($enrollmentStatusSuccess === $totalOrderLines) {
@@ -761,7 +763,7 @@ class ListOfOrdersController extends Controller
                         ]);
                     }else if ($enrollmentOngoing > 0) {
                         Order::where('id', $orderId)->update([
-                            'enrollment_status' => EnrollmentStatus::ONGOING['id'],
+                            'enrollment_status' => EnrollmentStatus::IN_PROGRESS['id'],
                             'dep_order' => 1,
                         ]);
                     }
@@ -775,7 +777,7 @@ class ListOfOrdersController extends Controller
                     break;
 
                     case '13':
-                        $message = EnrollmentStatus::ONGOING['value'];
+                        $message = EnrollmentStatus::IN_PROGRESS['value'];
                         $status = 'success';
                     break;
 
@@ -825,7 +827,7 @@ class ListOfOrdersController extends Controller
                     ->get();
         
                 $header_data = $requestData->first();
-                $dep_company = DB::table('dep_companies')->where('id', $header_data->dep_company_id)->first();
+                $this->depCompanyId = $header_data->dep_company_id;
         
                 $devicePayload = [];
 
@@ -850,7 +852,7 @@ class ListOfOrdersController extends Controller
      
                 $payload = $this->applePayloadController->generatePayload();
 
-                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data, $dep_company, 'RE', $devicePayload);
+                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data, $this->depCompanyId, 'RE', $devicePayload);
 
                 $payload['orders'][] = $ordersPayload;
 
@@ -861,7 +863,7 @@ class ListOfOrdersController extends Controller
                     $transaction_id = $response['deviceEnrollmentTransactionId'];
                     $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
                 } else if(isset($response['enrollDeviceErrorResponse'])) {  
                     $transaction_id = $response['transactionId'];
@@ -902,7 +904,7 @@ class ListOfOrdersController extends Controller
                     } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                         // $this->enrollment_status = self::enrollment_status['Error'];
                     } else {
-                        $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                        $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                     }
 
                     //Update Order Line Status
@@ -958,7 +960,7 @@ class ListOfOrdersController extends Controller
                     break;
 
                     case '13':
-                        $message = EnrollmentStatus::ONGOING['value'];
+                        $message = EnrollmentStatus::IN_PROGRESS['value'];
                         $status = 'success';
                     break;
 
@@ -1049,11 +1051,12 @@ class ListOfOrdersController extends Controller
                 ->get();
 
         $header_data = $enrolledDevices->first();
-        $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
+        $this->depCompanyId = $header_data->dep_company_id;
+
 
         $payload = $this->applePayloadController->generatePayload();
 
-        $ordersPayload = $this->applePayloadController->generateVoidOrdersPayload($header_data, $dep_company, 'VD');
+        $ordersPayload = $this->applePayloadController->generateVoidOrdersPayload($header_data, $this->depCompanyId, 'VD');
 
         $payload['orders'][] = $ordersPayload;
 
@@ -1064,7 +1067,7 @@ class ListOfOrdersController extends Controller
             $transaction_id = $response['deviceEnrollmentTransactionId'];
             $dep_status = self::dep_status['Success'];
             $status_message = $response['enrollDevicesResponse']['statusMessage'];
-            $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+            $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
         } else if(isset($response['enrollDeviceErrorResponse'])) {  
             $transaction_id = $response['transactionId'];
@@ -1079,7 +1082,6 @@ class ListOfOrdersController extends Controller
             ];
     
             return response()->json($data);
-            
         }
 
 
@@ -1104,7 +1106,7 @@ class ListOfOrdersController extends Controller
             } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                 // $enrollment_status = self::enrollment_status['Error'];
             } else {
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
             }
 
             //Update Order Line Status
@@ -1181,7 +1183,7 @@ class ListOfOrdersController extends Controller
             break;
 
             case '13':
-                $message = EnrollmentStatus::ONGOING['value'];
+                $message = EnrollmentStatus::IN_PROGRESS['value'];
                 $status = 'success';
             break;
 
@@ -1197,7 +1199,7 @@ class ListOfOrdersController extends Controller
 
         return response()->json($data);
     }
-  
+
     public function overrideOrder(Request $request, OrderLines $orderLine)
     {
         if(!CommonHelpers::isOverride()) {
@@ -1241,7 +1243,7 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
             } else if(isset($response['enrollDeviceErrorResponse'])) {  
                 $transaction_id = $response['transactionId'];
@@ -1282,7 +1284,7 @@ class ListOfOrdersController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
             
                 // Update the enrollment status of the order line
@@ -1313,166 +1315,7 @@ class ListOfOrdersController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
-                    $status = 'success';
-                break;
-
-                default:
-                    $message = EnrollmentStatus::OVERRIDE_ERROR['value'];
-                    $status = 'error';
-            }
-        
-        $data = [
-            'message' => $message,
-            'status' => $status,
-        ];
-
-        return response()->json($data);
-    }
-  
-    public function overrideOrder(Request $request, OrderLines $orderLine)
-    {
-        if(!CommonHelpers::isOverride()) {
-
-            $data = [
-                'message' => "You don't have permission to override.", 
-                'status' => 'error'
-            ];
-    
-            return back()->with($data);
-        }
-        try {
-            $id = $orderLine->id;
-            
-            $payload = $this->applePayloadController->generatePayload();
-            
-            $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
-           
-            //UPC CODE
-            $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
-
-            if(!$item_master){
-                $data = [
-                    'message' => 'Item Master not found!',
-                    'status' => 'error' 
-                ];
-    
-                return response()->json($data);
-            }
-          
-            // Check if multiple orders are provided
-            $deliveryPayload = [];
-            $devicePayload = [];
-           
-            $devicePayload[] = [
-                'deviceId' => $request->serial_number,
-                'assetTag' => $request->serial_number,
-            ];
-                
-            $timestamp = strtotime($header_data['order_date']);
-            $formattedDate = date('Y-m-d\TH:i:s\Z', $timestamp);
-
-            $deliveryPayload = [
-                'deliveryNumber' => $header_data['dr_number'],
-                'shipDate' => $formattedDate,
-                'devices' => $devicePayload,
-            ];
-            
-            $orderPayload = [
-                'orderNumber' => $header_data['sales_order_no'],
-                'orderDate' => $formattedDate,
-                'orderType' => 'OV',
-                'customerId' => (string)$orderLine->dep_company_id,
-                'poNumber' => $header_data['order_ref_no'],
-                'deliveries' => [
-                    $deliveryPayload
-                ],
-            ];
-
-            $payload['orders'][] = $orderPayload;
-
-
-            $response = $this->appleService->overrideOrder($payload);
-
-            //Device Enrollment
-            if (isset($response['enrollDevicesResponse'])) {
-                $transaction_id = $response['deviceEnrollmentTransactionId'];
-                $dep_status = self::dep_status['Success'];
-                $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = self::enrollment_status['In progress'];
-            }
-
-            } else if(isset($response['enrollDeviceErrorResponse'])) {  
-                $transaction_id = $response['transactionId'];
-                $dep_status = self::dep_status['GRX-50025'];
-                $status_message = $response['errorMessage'];
-                $this->enrollment_status = EnrollmentStatus::OVERRIDE_ERROR['id'];
-
-            } else {
-                $data = [
-                    'message' => 'Something went wrong in enrolling the device/s.',
-                    'status' =>  'error',
-                ];
-        
-                return response()->json($data);
-                
-            }
-
-              // Logs
-              $orderId = $header_data['order_id'];
-              $encodedPayload = json_encode($payload);
-              $encodedResponse = json_encode($response);
-  
-              self::generateLogs($orderId, $id, $encodedPayload, $encodedResponse, $transaction_id, $dep_status, 'OV');
-
-
-            //Check transaction status
-            if($this->enrollment_status !== EnrollmentStatus::OVERRIDE_ERROR['id']) {
-                $apiStatus = self::checkTransactionStatus($transaction_id);
-
-                $statusCode = isset($apiStatus['statusCode']);
-
-                if($statusCode === "ERROR"){
-                    $this->enrollment_status = EnrollmentStatus::OVERRIDE_ERROR['id'];
-                } else if($statusCode === 'COMPLETE'){
-                    $this->enrollment_status = EnrollmentStatus::OVERRIDE['id'];
-                    //update status
-                    $orderLine->update(['dep_company_id' => $depCompanyId]);
-                } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
-                    // $enrollment_status = self::enrollment_status['Error'];
-                } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
-                }
-            
-            // Update the enrollment status of the order line
-            $orderLine->update(['enrollment_status_id' => $enrollment_status]);
-
-                // Insert in Enrollment History
-                $insertToHistory = [ 
-                    'order_lines_id' => $orderLine->id,
-                    'dep_company_id' => $orderLine->dep_company_id,
-                    'sales_order_no' => $header_data->sales_order_no,
-                    'item_code' => $orderLine->digits_code,
-                    'serial_number' => $orderLine->serial_number,
-                    'transaction_id' => $transaction_id,
-                    'dep_status' => $dep_status,
-                    'enrollment_status' => $this->enrollment_status,
-                    'status_message' => $status_message,
-                ];
-
-                EnrollmentHistory::create($insertToHistory);
-            
-            }
-
-            //For Toast Feedback
-            switch($this->enrollment_status){
-                case '11':
-                    $message = 'Override Success!';
-                    $status = 'success';
-                break;
-
-                case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
@@ -1482,8 +1325,8 @@ class ListOfOrdersController extends Controller
             }
         
             $data = [
-                'message' => $enrollment_status == self::enrollment_status['In progress'] ? 'Override Success!' : 'Override Error!',
-                'status' => $enrollment_status == self::enrollment_status['In progress'] ? 'success' : 'error'
+                'message' => $message,
+                'status' => $status,
             ];
     
             return back()->with($data);
@@ -1491,7 +1334,8 @@ class ListOfOrdersController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-        }
+    }
+ 
     public function overrideOrderSerial(Request $request, OrderLines $orderLine)
     {
         if(!CommonHelpers::isOverride()) {
@@ -1561,7 +1405,7 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $enrollment_status = self::enrollment_status['In progress'];
+                $enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
             }
 
             // For error response
@@ -1569,7 +1413,7 @@ class ListOfOrdersController extends Controller
                 $transaction_id = $response['transactionId'];
                 $dep_status = self::dep_status['GRX-50025'];
                 $status_message = $response['errorMessage'];
-                $enrollment_status = self::enrollment_status['Override Error'];
+                $enrollment_status = EnrollmentStatus::OVERRIDE_ERROR['id'];
             }
             
             // Update the enrollment status of the order line
@@ -1608,8 +1452,8 @@ class ListOfOrdersController extends Controller
             ]);
 
             $data = [
-                'message' => $enrollment_status == self::enrollment_status['In progress'] ? 'Override Success!' : 'Override Error!',
-                'status' => $enrollment_status == self::enrollment_status['In progress'] ? 'success' : 'error'
+                'message' => $enrollment_status == EnrollmentStatus::IN_PROGRESS['id'] ? 'Override Success!' : 'Override Error!',
+                'status' => $enrollment_status == EnrollmentStatus::IN_PROGRESS['id'] ? 'success' : 'error'
             ];
     
             return back()->with($data);

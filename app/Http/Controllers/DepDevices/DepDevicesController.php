@@ -177,7 +177,7 @@ class DepDevicesController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
             } else if(isset($response['enrollDeviceErrorResponse'])) {  
                 $transaction_id = $response['transactionId'];
@@ -216,7 +216,7 @@ class DepDevicesController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
 
                 //Update Order Line Status
@@ -289,7 +289,7 @@ class DepDevicesController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
@@ -353,7 +353,7 @@ class DepDevicesController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
             } else if(isset($response['enrollDeviceErrorResponse'])) {  
                 $transaction_id = $response['transactionId'];
@@ -391,7 +391,7 @@ class DepDevicesController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
 
                 //Update Order Line Status
@@ -443,7 +443,7 @@ class DepDevicesController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
@@ -569,7 +569,7 @@ class DepDevicesController extends Controller
                 $transaction_id = $response['deviceEnrollmentTransactionId'];
                 $dep_status = self::dep_status['Success'];
                 $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
    
 
@@ -619,7 +619,7 @@ class DepDevicesController extends Controller
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                 }
 
                 // Update the enrollment status of the order line
@@ -652,7 +652,7 @@ class DepDevicesController extends Controller
                 break;
 
                 case '13':
-                    $message = EnrollmentStatus::ONGOING['value'];
+                    $message = EnrollmentStatus::IN_PROGRESS['value'];
                     $status = 'success';
                 break;
 
