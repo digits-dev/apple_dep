@@ -432,14 +432,14 @@ const DepDevices = ({
                         </button>
                     )}
 
-                    {allowedToOverride.includes(enrollmentStatus) && (
+                    {/* {allowedToOverride.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={(e) => handleSwal(e, "override")}
                         >
                             Override
                         </button>
-                    )}
+                    )} */}
                     {/* {allowedToOverrideSerial.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
@@ -670,27 +670,27 @@ const DepDevices = ({
                                                             setEnrollmentStatus(
                                                                 item.enrollment_status_id
                                                             );
-                                                            setUpdateFormValues(
-                                                                {
-                                                                    id: item.id,
-                                                                    order_id:
-                                                                        item.order_id,
-                                                                    customer_id:
-                                                                        item.dep_company_id,
-                                                                    po_number:
-                                                                        item.order_ref_no,
-                                                                    delivery_number:
-                                                                        item.dr_number,
-                                                                    order_date:
-                                                                        item.order_date,
-                                                                    ship_date:
-                                                                        item.order_date,
-                                                                    order_number:
-                                                                        item.sales_order_no,
-                                                                    serial_number:
-                                                                        item.serial_number,
-                                                                }
-                                                            );
+                                                            // setUpdateFormValues(
+                                                            //     {
+                                                            //         id: item.id,
+                                                            //         order_id:
+                                                            //             item.order_id,
+                                                            //         customer_id:
+                                                            //             item.dep_company_id,
+                                                            //         po_number:
+                                                            //             item.order_ref_no,
+                                                            //         delivery_number:
+                                                            //             item.dr_number,
+                                                            //         order_date:
+                                                            //             item.order_date,
+                                                            //         ship_date:
+                                                            //             item.order_date,
+                                                            //         order_number:
+                                                            //             item.sales_order_no,
+                                                            //         serial_number:
+                                                            //             item.serial_number,
+                                                            //     }
+                                                            // );
                                                         }}
                                                         // tooltipContent={`${item.enrollment_status !== "Pending" ? "Return Device" : "Enroll Device"}`}
                                                     />
@@ -742,7 +742,7 @@ const DepDevices = ({
             >
                 <EditDeviceAction id={depCompanyId} />
             </Modal>
-            <Modal
+            {/* <Modal
                 show={showOverrideModal}
                 onClose={handleCloseOverrideModal}
                 title="Override Order"
@@ -753,7 +753,7 @@ const DepDevices = ({
                     onSubmit={handleOverrideSubmit}
                     options={depOptions}
                 />
-            </Modal>
+            </Modal> */}
             <Modal
                 show={showOverrideSerial}
                 onClose={handleShowOverrideSerial}
