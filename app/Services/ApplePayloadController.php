@@ -60,12 +60,13 @@ class ApplePayloadController
 
     public function generateVoidOrdersPayload($header_data, $dep_company, $orderType){
        $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+       $depCompanyId = is_object($dep_company) ? $dep_company->id : $dep_company;
    
         $orderPayload = [
             'orderNumber' => $header_data['sales_order_no'],
             'orderDate' => $formattedDate,
             'orderType' => $orderType,
-            'customerId' => (string)$dep_company->id,
+            'customerId' => (string)$depCompanyId,
             'poNumber' => $header_data['order_ref_no'],
         ];
 

@@ -163,7 +163,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                         {order.deliveries &&
                                         order.deliveries.length > 0 ? (
                                             <div className="mt-2">
-                                                {order.deliveries.map(
+                                                {order?.deliveries?.map(
                                                     (delivery, deliveryIndex) => (
                                                         <div key={deliveryIndex}>
                                                             <div className="font-nunito-sans font-extrabold text-lg">
@@ -241,7 +241,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                                                                             delivery.devices
                                                                         }
                                                                     >
-                                                                        {delivery.devices.map(
+                                                                        {delivery?.devices?.map(
                                                                             (
                                                                                 device,
                                                                                 deviceIndex

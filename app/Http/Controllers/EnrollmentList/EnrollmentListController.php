@@ -6,8 +6,11 @@ use App\Exports\EnrollmentListExport;
 use App\Http\Controllers\Controller;
 use App\Models\DepCompany;
 use App\Models\DepStatus;
+use App\Models\EnrollmentHistory;
 use App\Models\EnrollmentList;
 use App\Models\EnrollmentStatus;
+use App\Models\Order;
+use App\Models\TransactionLog;
 use App\Models\TransactionStatusJsonRequest;
 use App\Models\TransactionStatusJsonResponse;
 use App\Models\OrderLines;
@@ -111,15 +114,147 @@ class EnrollmentListController extends Controller
         $orderLinesId = EnrollmentList::where('transaction_id', $transactionId)
         ->pluck('order_lines_id')
         ->toArray();
-    
+
+        $transactionLog = TransactionLog::where('dep_transaction_id', $transactionId)->first();
+
+        $orderId = $transactionLog->order_id;
+        $orderType = $transactionLog->order_type;
+
         try {
             
             $response = $this->appleService->checkTransactionStatus($requestData);
 
             if (isset($response['statusCode'])) {
+
                 if ($response['statusCode'] == 'COMPLETE') {
-                    OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => 3]);
-                    EnrollmentList::where('transaction_id', $transactionId)->update(['enrollment_status' => 3]);
+
+                    switch($orderType){
+                        case 'OR':
+                           $enrollmentStatus = EnrollmentStatus::ENROLLMENT_SUCCESS['id'];
+
+                             // Update order enrollment status to success if all lines are enrolled successfully
+                            $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+                            $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                                ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
+                                ->count();
+
+                            if ($enrollmentStatusSuccess === $totalOrderLines) {
+                                Order::where('id', $orderId)->update([
+                                    'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
+                                    'dep_order' => 1,
+                                ]);
+                            }else if ($enrollmentStatusSuccess > 0) {
+                                Order::where('id', $orderId)->update([
+                                    'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                                    'dep_order' => 1,
+                                ]);
+                            }
+                        break;
+
+                        case 'RE':
+                            $enrollmentStatus = EnrollmentStatus::RETURNED['id'];
+                        break;
+
+                        case 'OV':
+                           $enrollmentStatus = EnrollmentStatus::OVERRIDE['id'];
+                        break;
+
+                        case 'VD':
+                           $enrollmentStatus = EnrollmentStatus::VOIDED['id'];
+
+                           $orderHeader = Order::find($orderId)->first();
+                           
+                           $orderHeader->update(['enrollment_status' => $enrollmentStatus]);
+
+                           $enrollmentIds = OrderLines::where('order_id', $orderId)
+                                   ->whereIn('enrollment_status_id', [3, 5, 6, 10, 13])
+                                   ->pluck('id')->toArray();
+
+                           $enrolledDevices = OrderLines::whereIn('list_of_order_lines.id', $enrollmentIds)
+                                   ->leftJoin('enrollment_lists', 'list_of_order_lines.id', 'enrollment_lists.order_lines_id')
+                                   ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+                                   ->whereIn('enrollment_lists.dep_status', [1, 2])
+                                   ->select([
+                                   'orders.id as order_id', 
+                                   'list_of_order_lines.id as line_id', 
+                                   'list_of_order_lines.*', 
+                                   'enrollment_lists.*', 
+                                   'orders.*', ])
+                                   ->get();
+
+                            // for enrolled/Returned devices
+                            foreach ($enrolledDevices as $deviceData) {
+
+                                $enrollment = EnrollmentList::query()
+                                ->where('sales_order_no', $orderHeader->sales_order_no)
+                                ->where('serial_number', $deviceData->serial_number)
+                                ->first();
+
+                                if($enrollment){
+                                    $enrollment->fill([
+                                        'transaction_id' => $transactionId,
+                                        'dep_status' => 1,
+                                        'enrollment_status' => $enrollmentStatus,
+                                        'status_message' => 'Transaction posted successfully in DEP',
+                                    ]);
+
+                                    $enrollment->save();
+                                }
+
+                                $insertToHistory = [ 
+                                    'order_lines_id' => $deviceData->id,
+                                    'dep_company_id' => $deviceData->dep_company_id,
+                                    'sales_order_no' => $orderHeader->sales_order_no,
+                                    'item_code' => $deviceData->digits_code,
+                                    'serial_number' => $deviceData->serial_number,
+                                    'transaction_id' => $transactionId,
+                                    'dep_status' => 1,
+                                    'enrollment_status' => $enrollmentStatus,
+                                    'status_message' => 'Transaction posted successfully in DEP',
+                                ];
+
+                                EnrollmentHistory::create($insertToHistory);
+                
+                            }
+
+                            //Insert other lines that are not enrolled in Enrollment History
+                           
+                            $enrolledIds = $enrolledDevices->pluck('line_id');
+
+                            $orderLines = OrderLines::where('order_id', $orderId)->get();
+
+                            $otherLines = $orderLines->filter(function($orderLine) use ($enrolledIds) {
+                                return !$enrolledIds->contains($orderLine->id);
+                            });
+
+                            foreach ($otherLines as $orderLine) {
+
+                                $insertToHistory = [ 
+                                    'order_lines_id' => $orderLine->id,
+                                    'dep_company_id' => $orderLine->dep_company_id,
+                                    'sales_order_no' => $orderHeader->sales_order_no,
+                                    'item_code' => $orderLine->digits_code,
+                                    'serial_number' => $orderLine->serial_number,
+                                    'dep_status' => 0,
+                                    'enrollment_status' => $enrollmentStatus,
+                                ];
+
+                                EnrollmentHistory::create($insertToHistory);
+                            }
+
+                        break;
+
+                        default:
+                            return;
+                    }
+
+                    if($orderType !== 'VD'){
+                        //update status
+                        OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => $enrollmentStatus]);
+                        EnrollmentList::where('transaction_id', $transactionId)->update(['enrollment_status' => $enrollmentStatus]);
+                    }
+               
                 } else {
                     $validDeviceIds = [];
                     $invalidDeviceIds = [];
