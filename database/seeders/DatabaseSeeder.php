@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             // AdmSeeders::class,
             // AdmPrivileges::class,
             // AdmMenuPrivileges::class,
-            // EnrollmentStatusSeeder::class,
+            EnrollmentStatusSeeder::class,
             // DepStatusSeeder::class,
             // AdmUsersSeeders::class,
             // AdmUsersStatuses::class,
