@@ -1576,7 +1576,7 @@ class ListOfOrdersController extends Controller
             ];
             return response()->json($data);
         }
-  
+
         try {
             $ids = $request->order_id;
             $el_ids = [];
@@ -1586,21 +1586,28 @@ class ListOfOrdersController extends Controller
                     $el_ids[] = $key;
                     OrderLines::where('id', $key)
                     ->update([
-                        'serial_number' => $val
+                        'serial_number' => $val,
+                        'dep_company_id' => $request->dep_company_id
                     ]);
     
                     //Update Enrollment list
                     EnrollmentList::where('order_lines_id', $key)
                     ->update([
-                        'serial_number' => $val
+                        'serial_number' => $val,
+                        'dep_company_id' => $request->dep_company_id
                     ]);
                 }
             }
-     
-            //Update Order Ship date
-            Order::where('id', $ids)->update(['ship_date' => $request->ship_date]);
-           
             $header = Order::where('id', $ids)->first();
+            //Update Order Ship date
+            Order::where('id', $ids)->update([
+                'ship_date'      => $request->ship_date ?? $header->ship_date,
+                'order_ref_no'   => $request->order_ref_no ?? $header->order_ref_no,
+                'dr_number'      => $request->dr_number ?? $header->dr_number,
+                'sales_order_no' => $request->sales_order_no ?? $header->sales_order_no,
+                'order_date'     => $request->order_date ?? $header->order_date,
+                'customer_id'    => $request->dep_company_id ?? $header->customer_id
+            ]);
          
             // Fetch data to edit
             $editRequesData = EnrollmentList::whereNotIn('enrollment_lists.order_lines_id', $el_ids)
