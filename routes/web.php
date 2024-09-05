@@ -125,7 +125,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pull_errors/{pullError}', [PullErrorsController::class, 'show']);
 
 
-
+    //ORDERS
+    Route::post('/orders/override', [ListOfOrdersController::class, 'overrideHeaderLevel']);
+    Route::get('/orders/get-current-shipdate', [ListOfOrdersController::class, 'getCurrentShipdate']);
     //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/enroll-return', [ListOfOrdersController::class, 'showEnrollReturn']);

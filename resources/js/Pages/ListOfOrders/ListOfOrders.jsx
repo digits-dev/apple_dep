@@ -28,6 +28,7 @@ import Button from "../../Components/Table/Buttons/Button";
 import SelectMulti from 'react-select';
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import TransactionJsonTabs from "../../Components/Table/TransactionJsonTabs";
+import OverrideHeaderLevel from "./OverrideHeaderLevel";
 
 const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, order_number }) => {
     queryParams = queryParams || {};
@@ -46,7 +47,8 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
     const [JsonRequest, setJsonRequest] = useState(null);
     const [JsonResponse, setJsonResponse] = useState(null);
     const [orderNumber, setOrderNumber] = useState([]);
-    
+    const [showOverride, setShowOverride] = useState(false);
+
     useEffect(() => {
         setTimeout(() => {
             setTitle("List of Orders");
@@ -61,7 +63,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
         order_ref_no: "",
         order_date: "",
     });
-
+    
     const handleCancel = () => {
         Swal.fire({
             title: `<p class="font-nunito-sans text-3xl" >Cancel Order?</p>`,
@@ -183,6 +185,17 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                         ) : (
                             ""
                         )}
+                           {[3,7,13].includes(enrollmentStatus) && (
+                            <button
+                                className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
+                                onClick={() => {
+                                    handleCloseEditModal();
+                                    handleShowOverride();
+                                }}
+                            >
+                                Override Order
+                            </button>
+                        )}
                     </>
                 ) : (
                     <div class="text-center">
@@ -290,6 +303,12 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
           color: 'white',
         }),
     };
+
+    //OV
+    const handleShowOverride = () => {
+        setShowOverride(!showOverride);
+    };
+
     return (
         <>
             <Head title="List of Orders" />
@@ -395,6 +414,13 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                             </TableHeader>
 
                             <TableHeader
+                                name="order_date"
+                                queryParams={queryParams}
+                            >
+                                Ship Date
+                            </TableHeader>
+
+                            <TableHeader
                                 sortable={false}
                                 width="auto"
                                 sticky="right"
@@ -431,6 +457,10 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
 
                                     <RowData isLoading={loading}>
                                         {item.order_date}
+                                    </RowData>
+
+                                    <RowData isLoading={loading}>
+                                        {item.ship_date}
                                     </RowData>
 
                                     <RowData
@@ -513,10 +543,10 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
             </Modal>
 
             <Modal
-            title="Show Order Details"
-            show={showSodModal}
-            onClose={handleSodModal}
-            width="4xl">
+                title="Show Order Details"
+                show={showSodModal}
+                onClose={handleSodModal}
+                width="4xl">
                     <form onSubmit={handleSodSubmit}>
                         <div className="w-full">
                         <label for="select-multiple" className="block text-sm font-medium text-gray-700"> Order Numbers</label>
@@ -538,6 +568,15 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                  {JsonRequest && JsonResponse && (
                         <TransactionJsonTabs RequestData={JsonRequest?.data} ResponseData={JsonResponse?.data}/>
                  )}
+            </Modal>
+
+            {/* OV */}
+            <Modal
+                show={showOverride}
+                onClose={handleShowOverride}
+                title="Override Order"
+            >
+                <OverrideHeaderLevel  orderId={orderId} handleShow={handleShowOverride} action="override"/>   
             </Modal>
         </>
     );

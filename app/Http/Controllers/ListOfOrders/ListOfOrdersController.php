@@ -108,7 +108,7 @@ class ListOfOrdersController extends Controller
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
-        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->whereIn('enrollment_status',[3,7])->get();
+        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->whereIn('enrollment_status',[3,7,13])->get();
 
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
@@ -1548,6 +1548,242 @@ class ListOfOrdersController extends Controller
             'dep_status' => $dep_status,
             'created_at' => now(),
         ]);
+    }
+
+    public function overrideHeaderLevel(Request $request){
+        if(!CommonHelpers::isCreate()) {
+
+            $data = [
+                'message' => "You don't have permission to enroll.", 
+                'status' => 'error'
+            ];
+
+            return response()->json($data);
+        }
+
+        try {
+            $id = $request->order_id;
+            //Update Order Ship date
+            Order::where('id', $id)->update(['ship_date' => $request->ship_date]);
+
+            // Fetch unique lines
+            $uniqueLines = OrderLines::where('list_of_order_lines.order_id', $id)
+            ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+            ->selectRaw('MIN(list_of_order_lines.id) as id, list_of_order_lines.serial_number, list_of_order_lines.digits_code')
+            ->groupBy('list_of_order_lines.serial_number', 'list_of_order_lines.digits_code')
+            ->get();
+
+            $idsOfUniqueLines = [];
+
+            // check lines if they're already enrolled through digits code and serial number
+            foreach ($uniqueLines as $orderLines) {
+                $exists = OrderLines::where('digits_code', $orderLines->digits_code)
+                    ->where('serial_number', $orderLines->serial_number)
+                    ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_ERROR['id'])
+                    ->exists();
+        
+                if ($exists) {
+                    $idsOfUniqueLines[] = $orderLines->id;
+                }
+            }
+            if (!empty($idsOfUniqueLines)) {
+                // Fetch detailed order lines
+                $requestData = OrderLines::select('list_of_order_lines.id as order_line_id', 'orders.id as order_id', 'list_of_order_lines.*', 'orders.*') 
+                    ->whereIn('list_of_order_lines.id', $idsOfUniqueLines)
+                    ->leftJoin('orders', 'list_of_order_lines.order_id', '=', 'orders.id')
+                    ->get();
+        
+                $header_data = $requestData->first();
+        
+                $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
+        
+                //For devices array inside of ordersPayload
+                $devicePayload = [];
+
+                foreach ($requestData as $key => $orderData) {
+                    $item_master = DB::table('item_master')->where('digits_code', $orderData->digits_code)->first();
+
+                    if(!$item_master){
+                        $data = [
+                            'message' => 'Item Master not found!',
+                            'status' => 'error' 
+                        ];
+            
+                        return response()->json($data);
+                    }
+
+                    $devicePayload[$key] = [
+                        'deviceId' => $orderData->serial_number,
+                        'assetTag' => $orderData->serial_number,
+                    ];
+                }
+
+                $payload = $this->applePayloadController->generatePayload();
+
+                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'OV', $devicePayload);
+
+                $payload['orders'][] = $ordersPayload;
+
+                $response = $this->appleService->enrollDevices($payload);
+
+                //Device Enrollment
+                if (isset($response['enrollDevicesResponse'])) {
+                    $transaction_id = $response['deviceEnrollmentTransactionId'];
+                    $dep_status = self::dep_status['Success'];
+                    $status_message = $response['enrollDevicesResponse']['statusMessage'];
+                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+
+
+                } else if(isset($response['enrollDeviceErrorResponse'])) {  
+                    $transaction_id = $response['transactionId'];
+                    $dep_status = self::dep_status['GRX-50025'];
+                    $status_message = $response['errorMessage'];
+                    $this->enrollment_status = EnrollmentStatus::ENROLLMENT_ERROR['id'];
+
+                } else {
+                    $data = [
+                        'message' => 'Something went wrong in enrolling the device/s.',
+                        'status' =>  'error',
+                    ];
+            
+                    return response()->json($data);
+                
+                }
+
+                OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => $this->enrollment_status]);
+
+
+                // Logs
+                $orderId = $header_data->order_id;
+                $encodedPayload = json_encode($payload);
+                $encodedResponse = json_encode($response);
+
+                self::generateLogs($orderId, $idsOfUniqueLines, $encodedPayload, $encodedResponse, $transaction_id, $dep_status, 'OR');
+
+                //Check transaction status
+                if($this->enrollment_status !== EnrollmentStatus::ENROLLMENT_ERROR['id']) {
+                    $apiStatus = self::checkTransactionStatus($transaction_id);
+
+                    $statusCode = isset($apiStatus['statusCode']);
+
+                    if($statusCode === "ERROR"){
+                        $this->enrollment_status = EnrollmentStatus::ENROLLMENT_ERROR['id'];
+                    } else if($statusCode === 'COMPLETE'){
+                        $this->enrollment_status = EnrollmentStatus::ENROLLMENT_SUCCESS['id'];
+                    } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
+                        // $enrollment_status = self::enrollment_status['Error'];
+                    } else {
+                        $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    }
+
+                    //Update Order Lines Status
+                    OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => $this->enrollment_status]);
+
+                    //Update/Insert in Enrollment List and Insert in Enrollment History
+                    foreach ($requestData as $deviceData) {
+
+                        EnrollmentList::updateOrCreate(
+                            [
+                                'sales_order_no' => $header_data->sales_order_no,
+                                'serial_number'  => $deviceData->serial_number
+                            ],
+                            [
+                                'order_lines_id'    => $deviceData->order_line_id,
+                                'dep_company_id'    => $dep_company->id,
+                                'sales_order_no'    => $header_data->sales_order_no,
+                                'item_code'         => $deviceData->digits_code,
+                                'transaction_id'    => $transaction_id,
+                                'serial_number'     => $deviceData->serial_number,
+                                'dep_status'        => $dep_status,
+                                'enrollment_status' => $this->enrollment_status,
+                                'status_message'    => $status_message,
+                            ],
+                        );
+
+                        $insertToHistory = [ 
+                            'order_lines_id' => $deviceData->order_line_id,
+                            'dep_company_id' => $dep_company->id,
+                            'sales_order_no' =>  $header_data->sales_order_no,
+                            'item_code' => $deviceData->digits_code,
+                            'serial_number' => $deviceData->serial_number,
+                            'transaction_id' => $transaction_id,
+                            'dep_status' => $dep_status,
+                            'enrollment_status' => $this->enrollment_status,
+                            'status_message' => $status_message,
+                        ];
+
+                        EnrollmentHistory::create($insertToHistory);
+
+                    }
+
+                    // Update order enrollment status to success if all lines are enrolled successfully
+                    $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+                    $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                        ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
+                        ->count();
+
+                    $enrollmentOngoing = OrderLines::where('order_id', $orderId)
+                        ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                        ->count();
+
+                    if ($enrollmentStatusSuccess === $totalOrderLines) {
+                        Order::where('id', $orderId)->update([
+                            'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
+                            'dep_order' => 1,
+                        ]);
+                    }else if ($enrollmentStatusSuccess > 0) {
+                        Order::where('id', $orderId)->update([
+                            'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                            'dep_order' => 1,
+                        ]);
+                    }else if ($enrollmentOngoing > 0) {
+                        Order::where('id', $orderId)->update([
+                            'enrollment_status' => EnrollmentStatus::ONGOING['id'],
+                            'dep_order' => 1,
+                        ]);
+                    }
+                }
+
+                //For Toast Feedback
+                switch($this->enrollment_status){
+                    case '3':
+                        $message = EnrollmentStatus::ENROLLMENT_SUCCESS['value'];
+                        $status = 'success';
+                    break;
+
+                    case '13':
+                        $message = EnrollmentStatus::ONGOING['value'];
+                        $status = 'success';
+                    break;
+
+                    default:
+                        $message = EnrollmentStatus::ENROLLMENT_ERROR['value'];
+                        $status = 'error';
+                }
+            
+                $data = [
+                    'message' => $message,
+                    'status' => $status,
+                ];
+        
+                return response()->json($data);
+            }else{
+                   $data = [
+                    'message' => 'The selected items could be duplicates and already enrolled.',
+                    'status' => 'error',
+                ];
+        
+                return response()->json($data);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getCurrentShipdate(Request $request){
+        $result = Order::where('id',$request->orderId)->pluck('ship_date');
+        return response()->json($result);
     }
 
 }

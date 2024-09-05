@@ -26,6 +26,7 @@ class ApplePayloadController
 
     public function generateOrdersPayload($header_data, $dep_company, $orderType, $devicePayload = null){
         $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+        $formattedShipDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->ship_date));
         $depCompanyId = is_object($dep_company) ? $dep_company->id : $dep_company;
         $deliveryPayload = [];
         $dPayload = [];
@@ -39,7 +40,7 @@ class ApplePayloadController
 
         $deliveryPayload = [
             'deliveryNumber' => $header_data['dr_number'],
-            'shipDate' => $formattedDate,
+            'shipDate' => $formattedShipDate,
             'devices' => $dPayload,
         ];
 

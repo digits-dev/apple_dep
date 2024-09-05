@@ -329,6 +329,7 @@ class PullErpController extends Controller
                         'wh_category'       => $insert->wh_category,
                         'shipped_quantity'  => $insert->shipped_quantity,
                         'confirm_date'      => $insert->confirm_date,
+                        'order_date'        => $insert->order_date,
                         'serial1'           => $insert->serial1,
                         'serial2'           => $insert->serial2,
                         'serial3'           => $insert->serial3,
