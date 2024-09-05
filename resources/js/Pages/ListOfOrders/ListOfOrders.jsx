@@ -483,9 +483,6 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                                                     item.enrollment_status
                                                 ) && (
                                                     <RowAction
-                                                        disabled={
-                                                            item.enrollment_status === 13 //In Progress Status
-                                                        }
                                                         type="button"
                                                         onClick={() => {
                                                             handleOpenEditModal();
