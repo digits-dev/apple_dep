@@ -1258,6 +1258,8 @@ class ListOfOrdersController extends Controller
                     $this->enrollment_status = EnrollmentStatus::OVERRIDE_ERROR['id'];
                 } else if($statusCode === 'COMPLETE'){
                     $this->enrollment_status = EnrollmentStatus::OVERRIDE['id'];
+                    //update status
+                    $orderLine->update(['dep_company_id' => $depCompanyId]);
                 } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                     // $enrollment_status = self::enrollment_status['Error'];
                 } else {
