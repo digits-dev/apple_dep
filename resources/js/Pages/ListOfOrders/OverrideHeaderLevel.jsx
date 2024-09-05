@@ -273,44 +273,6 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                                     </td>
                                 </tr>
                             ))}
-                            {lines.map((line, index) => (
-                                <tr key={index}>
-                                    <td
-                                        className={`border p-2 text-sm ${
-                                            line.enrollment_status ===
-                                            "Enrollment Success"
-                                                ? "text-green-700"
-                                                : "text-red-700"
-                                        }`}
-                                    >
-                                        {line.enrollment_status}
-                                    </td>
-                                    <td className="border p-2 text-sm text-gray-700">
-                                        {line.item_code}
-                                    </td>
-                                    <td className="border p-2 text-sm text-gray-700">
-                                        {line.serial_number}
-                                    </td>
-                                    <td className="border p-2">
-                                        <input
-                                            name={`serial_number_${line.order_lines_id}`}
-                                            type="text"
-                                            className="border rounded p-1 w-full"
-                                            onChange={(e) =>
-                                                handleSerialNumberChange(
-                                                    e,
-                                                    line.order_lines_id
-                                                )
-                                            }
-                                            value={
-                                                forms.serial_numbers[
-                                                    line.order_lines_id
-                                                ] || ""
-                                            }
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
                         </tbody>
                     </table>
                 </div>
