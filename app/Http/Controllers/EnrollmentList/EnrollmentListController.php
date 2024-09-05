@@ -463,19 +463,12 @@ class EnrollmentListController extends Controller
              EnrollmentHistory::create($insertData);
          }
 
-         // Update order enrollment status to success if all lines are override successfully
-         $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+        //Update header status
+        Order::where('id', $orderId)->update([
+            'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
+            'dep_order' => 1,
+        ]);
 
-         $enrollmentStatusOverride = OrderLines::where('order_id', $orderId)
-             ->where('enrollment_status_id', EnrollmentStatus::OVERRIDE['id'])
-             ->count();
-
-         if ($enrollmentStatusOverride === $totalOrderLines) {
-             Order::where('id', $orderId)->update([
-                 'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
-                 'dep_order' => 1,
-             ]);
-         }
     }
 
     private function processReturn( $orderLines, $transactionId, $enrollmentStatus){
