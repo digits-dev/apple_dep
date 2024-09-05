@@ -8,7 +8,7 @@ export function ToastProvider({ children }) {
 	const [messageType, setMessageType] = useState("");
 	const timeoutId = useRef(null);
 
-	const handleToast = useCallback((message, messageType, duration = 3000, ...params) => {
+	const handleToast = useCallback((message, messageType, duration = 5000, ...params) => {
 		document.getElementById("app-content").scrollIntoView(true);
 		setMessage(message);
 		setMessageType(messageType);
