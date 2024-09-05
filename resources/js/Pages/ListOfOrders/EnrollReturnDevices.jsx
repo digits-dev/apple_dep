@@ -697,7 +697,7 @@ const EnrollReturnDevices = ({
                                 <RowData>
                                     {order?.dep_companies?.dep_company_name}
                                 </RowData>
-
+                                
                                 <RowData center sticky="right">
                                     <RowActions>
                                         {![
@@ -705,6 +705,8 @@ const EnrollReturnDevices = ({
                                             EnrollmentStatus["CANCELLED"],
                                         ].includes(order?.status?.id) && (
                                             <RowAction
+                                                disabled={ order?.status
+                                                    ?.enrollment_status == "In Progress"}
                                                 action="add"
                                                 type="button"
                                                 onClick={() => {
