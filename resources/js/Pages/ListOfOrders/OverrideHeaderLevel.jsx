@@ -213,7 +213,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                     />
                 </div>
 
-                <div className="mb-4">
+                <div className="overflow-y-auto max-h-56">
                     <label className="block text-xl font-bold  mb-3">
                         Devices
                     </label>
@@ -273,13 +273,51 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                                     </td>
                                 </tr>
                             ))}
+                            {lines.map((line, index) => (
+                                <tr key={index}>
+                                    <td
+                                        className={`border p-2 text-sm ${
+                                            line.enrollment_status ===
+                                            "Enrollment Success"
+                                                ? "text-green-700"
+                                                : "text-red-700"
+                                        }`}
+                                    >
+                                        {line.enrollment_status}
+                                    </td>
+                                    <td className="border p-2 text-sm text-gray-700">
+                                        {line.item_code}
+                                    </td>
+                                    <td className="border p-2 text-sm text-gray-700">
+                                        {line.serial_number}
+                                    </td>
+                                    <td className="border p-2">
+                                        <input
+                                            name={`serial_number_${line.order_lines_id}`}
+                                            type="text"
+                                            className="border rounded p-1 w-full"
+                                            onChange={(e) =>
+                                                handleSerialNumberChange(
+                                                    e,
+                                                    line.order_lines_id
+                                                )
+                                            }
+                                            value={
+                                                forms.serial_numbers[
+                                                    line.order_lines_id
+                                                ] || ""
+                                            }
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
 
                 <button
                     type="submit"
-                    className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                    className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-2 hover:opacity-70"
                     disabled={loading}
                 >
                     {loading ? "Updating..." : "Override"}
