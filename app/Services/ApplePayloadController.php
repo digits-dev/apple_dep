@@ -23,4 +23,51 @@ class ApplePayloadController
 
         return $payload;
     }
+
+    public function generateOrdersPayload($header_data, $dep_company, $orderType, $devicePayload = null){
+        $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+        $depCompanyId = is_object($dep_company) ? $dep_company->id : $dep_company;
+        $deliveryPayload = [];
+        $dPayload = [];
+
+        $dPayload = $devicePayload ?? [
+            [
+            'deviceId' => $header_data['serial_number'],
+            'assetTag' => $header_data['serial_number'],
+            ]
+        ];
+
+        $deliveryPayload = [
+            'deliveryNumber' => $header_data['dr_number'],
+            'shipDate' => $formattedDate,
+            'devices' => $dPayload,
+        ];
+
+        $orderPayload = [
+            'orderNumber' => $header_data['sales_order_no'],
+            'orderDate' => $formattedDate,
+            'orderType' => $orderType,
+            'customerId' => (string)$depCompanyId,
+            'poNumber' => $header_data['order_ref_no'],
+            'deliveries' => [
+                $deliveryPayload
+            ],
+        ];
+
+        return $orderPayload;
+    }
+
+    public function generateVoidOrdersPayload($header_data, $dep_company, $orderType){
+       $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
+   
+        $orderPayload = [
+            'orderNumber' => $header_data['sales_order_no'],
+            'orderDate' => $formattedDate,
+            'orderType' => $orderType,
+            'customerId' => (string)$dep_company->id,
+            'poNumber' => $header_data['order_ref_no'],
+        ];
+
+        return $orderPayload;
+    }
 }
