@@ -15,6 +15,7 @@ class OrderHeaderSeeder extends Seeder
     {
         $data = [
             [
+                "id" => 1,
                 "sales_order_no" => '80000000021', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10001', 
@@ -26,6 +27,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 2,
                 "sales_order_no" => '80000000022', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10002', 
@@ -37,6 +39,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 3,
                 "sales_order_no" => '80000000023', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10003', 
@@ -48,6 +51,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 4,
                 "sales_order_no" => '80000000024', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10004', 
@@ -59,6 +63,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 5,
                 "sales_order_no" => '80000000025', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10005', 
@@ -70,6 +75,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 6,
                 "sales_order_no" => '80000000026', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10006', 
@@ -81,6 +87,7 @@ class OrderHeaderSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
+                "id" => 7,
                 "sales_order_no" => '80000000027', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10007', 
