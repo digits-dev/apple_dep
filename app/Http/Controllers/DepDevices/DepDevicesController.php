@@ -703,6 +703,7 @@ class DepDevicesController extends Controller
         }
         
         JsonRequest::insert([
+            'order_type' => $orderType,
             'order_id' => $orderId,
             'order_lines_id' => $idsString,
             'data' => $payload,
@@ -710,6 +711,7 @@ class DepDevicesController extends Controller
         ]);
 
         JsonResponse::insert([
+            'order_type' => $orderType,
             'order_id' => $orderId,
             'order_lines_id' => $idsString,
             'data' => $response,

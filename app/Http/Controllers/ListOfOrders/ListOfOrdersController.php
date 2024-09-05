@@ -1375,6 +1375,7 @@ class ListOfOrdersController extends Controller
         }
         
         JsonRequest::insert([
+            'order_type' => $orderType,
             'order_id' => $orderId,
             'order_lines_id' => $idsString,
             'data' => $payload,
@@ -1382,6 +1383,7 @@ class ListOfOrdersController extends Controller
         ]);
 
         JsonResponse::insert([
+            'order_type' => $orderType,
             'order_id' => $orderId,
             'order_lines_id' => $idsString,
             'data' => $response,
