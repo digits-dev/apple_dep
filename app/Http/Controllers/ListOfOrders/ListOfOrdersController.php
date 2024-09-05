@@ -1354,6 +1354,7 @@ class ListOfOrdersController extends Controller
  
     public function overrideOrderSerial(Request $request, OrderLines $orderLine)
     {
+        dd($request->all());
         if(!CommonHelpers::isOverride()) {
 
             $data = [
@@ -1791,10 +1792,12 @@ class ListOfOrdersController extends Controller
                                ->where('enrollment_lists.sales_order_no', $order->sales_order_no)
                                ->whereIn('enrollment_lists.enrollment_status', [2, 3])
                                ->get();
+        $depCompanies = DepCompany::select('id as value', 'dep_company_name as label')->get();
     
         return response()->json([
             'order' => $order,
-            'lines' => $lines
+            'lines' => $lines,
+            'depCompanies' => $depCompanies
         ]);
     }
     

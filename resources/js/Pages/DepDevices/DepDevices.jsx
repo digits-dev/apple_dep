@@ -440,7 +440,7 @@ const DepDevices = ({
                             Override
                         </button>
                     )}
-                    {allowedToOverrideSerial.includes(enrollmentStatus) && (
+                    {/* {allowedToOverrideSerial.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={() => {
@@ -450,7 +450,7 @@ const DepDevices = ({
                         >
                             Override Serial
                         </button>
-                    )}
+                    )} */}
                 </>
             </div>
         );

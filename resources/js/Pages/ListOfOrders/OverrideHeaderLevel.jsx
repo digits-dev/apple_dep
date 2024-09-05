@@ -1,22 +1,30 @@
 import { Head, Link, router, usePage, useForm } from "@inertiajs/react";
 import React, { useEffect, useState, useContext } from "react";
+import ReactSelect from "../../Components/Forms/ReactSelect";
 import { useToast } from "../../Context/ToastContext";
 
 import axios from "axios";
 import InputComponent from "../../Components/Forms/Input";
+import { set } from "lodash";
 
 const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
     const { handleToast } = useToast();
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [order, setOrder] = useState([]);
+    const [lines, setLines] = useState([]);
+    const [depCompany, setDepCompany] = useState();
+    const [depCompanies, setDepCompanies] = useState([]);
     const [forms, setForms] = useState({
         order_id: orderId,
         ship_date: "",
+        order_ref_no: "",
+        dr_number: "",
+        sales_order_no: "",
+        order_date: "",
+        dep_company_id: depCompany,
         serial_numbers: {},
     });
-
-    const [order, setOrder] = useState([]);
-    const [lines, setLines] = useState([]);
 
     useEffect(() => {
         axios
@@ -24,9 +32,19 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                 params: { orderId }, // Correctly passing orderId as a query parameter
             })
             .then((response) => {
-                console.log(response.data.order);
+                console.log(response.data.depCompanies);
                 setOrder(response.data.order);
                 setLines(response.data.lines);
+                setDepCompanies(response.data.depCompanies);
+                setForms((forms) => ({
+                    ...forms,
+                    ship_date: response.data.order.ship_date,
+                    order_ref_no: response.data.order.order_ref_no,
+                    dr_number: response.data.order.dr_number,
+                    sales_order_no: response.data.order.sales_order_no,
+                    order_date: response.data.order.order_date,
+                    dep_company_id: response.data.order.dep_company_id,
+                }));
             })
             .catch((error) => {
                 console.error(
@@ -60,11 +78,11 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
         setErrors((prevErrors) => ({ ...prevErrors, serial_numbers: "" }));
     }
 
-    const validate = () => {
-        const newErrors = {};
-        if (!forms.ship_date) newErrors.ship_date = "Ship date required";
-        return newErrors;
-    };
+    // const validate = () => {
+    //     const newErrors = {};
+    //     if (!forms.ship_date) newErrors.ship_date = "Ship date required";
+    //     return newErrors;
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -73,12 +91,12 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
         const confirmed = await showConfirmationDialog(confirmationMessage);
 
         if (confirmed) {
-            const newErrors = validate();
+            // const newErrors = validate();
 
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
-                return;
-            }
+            // if (Object.keys(newErrors).length > 0) {
+            //     setErrors(newErrors);
+            //     return;
+            // }
 
             await submitForm();
         }
@@ -122,35 +140,64 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
 
     return (
         <>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="">
-                    <label className="block text-sm font-bold text-gray-700 font-nunito-sans">
-                        {" "}
-                        Current Ship date
-                    </label>
-                    <input
+            <form
+                className="flex flex-col h-full justify-between gap-5"
+                onSubmit={handleSubmit}
+            >
+                <label className="block text-xl font-bold">Order Details</label>
+                <div className="grid gap-4 grid-cols-2">
+                    <InputComponent
+                        name="sales_order_no"
+                        displayName="Sales Order Number"
+                        value={forms.sales_order_no}
+                        onChange={handleChange}
+                    />
+                    <InputComponent
+                        name="dr_number"
+                        displayName="Delivery Number"
+                        value={forms.dr_number}
+                        onChange={handleChange}
+                    />
+                    <InputComponent
+                        name="order_ref_no"
+                        displayName="Order Ref Number"
+                        value={forms.order_ref_no}
+                        onChange={handleChange}
+                    />
+                    <InputComponent
                         name="ship_date"
-                        type="text"
-                        value={order.ship_date}
-                        disabled
-                        class="mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-200 dark:border-gray-300 dark:placeholder-gray-500 dark:text-gray-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        type="date"
+                        displayName="New Ship date"
+                        value={forms.ship_date}
+                        onChange={handleChange}
+                    />
+                    {/* {errors.ship_date && (
+                        <div className="font-nunito-sans font-bold text-red-600">
+                            {errors.ship_date}
+                        </div>
+                    )} */}
+                    <InputComponent
+                        name="order_date"
+                        type="date"
+                        displayName="Order Date"
+                        value={forms.order_date}
+                        onChange={handleChange}
+                    />
+                    <ReactSelect
+                        placeholder="Select Dep Company"
+                        name="dep_company_id"
+                        displayName="Dep Company Name"
+                        options={depCompanies}
+                        value={depCompanies.find(
+                            (depCompany) =>
+                                depCompany.value == forms.dep_company_id
+                        )}
+                        onChange={(e) => setDepCompany(e.value)}
                     />
                 </div>
-                <InputComponent
-                    name="ship_date"
-                    type="datetime-local"
-                    displayName="New Ship date"
-                    value={forms.ship_date}
-                    onChange={handleChange}
-                />
-                {errors.ship_date && (
-                    <div className="font-nunito-sans font-bold text-red-600">
-                        {errors.ship_date}
-                    </div>
-                )}
 
                 <div className="mb-4">
-                    <label className="block text-sm font-bold text-gray-700">
+                    <label className="block text-xl font-bold  mb-3">
                         Devices
                     </label>
                     <table className="min-w-full border-collapse">
