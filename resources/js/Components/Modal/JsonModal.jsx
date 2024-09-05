@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 
 const JsonModal = ({ show, onClose, children, title, modalData }) => {
-    console.log(children);
     if (!show) {
         return null;
     }
@@ -43,8 +42,9 @@ const JsonModal = ({ show, onClose, children, title, modalData }) => {
                         onClick={onClose}
                     ></i>
                 </div>
-                <div className='flex justify-end py-2 px-5'>
-                  <button onClick={handleCopied} className='bg-gray-500 self-end px-3 py-2 rounded-lg font-nunito-sans text-xs font-medium text-white'>{isCopied ? 'Copied!' : 'Copy to Clipboard'}</button>
+                <div className='flex justify-end cursor-pointer pr-5 pt-5' onClick={handleCopied}>
+                  <img src='/images/others/copy-icon.png' className='w-5 h-auto'/>
+                  <p className='text-gray-500 font-nunito-sans font-semibold text-sm ml-2'>{isCopied ? 'Copied!' : 'Copy'}</p>
                 </div>
                 <pre ref={JsonRef} className="py-3 px-5 text-sm overflow-auto max-h-[70vh] ">
                     {JSON.stringify(parsedData, null, 2)}

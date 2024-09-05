@@ -65,8 +65,9 @@ const handleTabChange = (tab) => {
       <div className="mt-4 p-4 bg-gray-100 rounded-lg max-h-fit">
         {activeTab === 'TabOne' && 
             <div className='overflow-auto max-h-[40vh]'>
-                <div className='flex justify-end'>
-                  <button onClick={handleCopied} className='bg-gray-500 self-end px-5 py-2 rounded-lg font-nunito-sans text-xs font-medium text-white'>{isCopied ? 'Copied!' : 'Copy to Clipboard'}</button>
+                <div className='flex justify-end cursor-pointer pr-2' onClick={handleCopied}>
+                  <img src='/images/others/copy-icon.png' className='w-5 h-auto'/>
+                  <p className='text-gray-500 font-nunito-sans font-semibold text-sm ml-2'>{isCopied ? 'Copied!' : 'Copy'}</p>
                 </div>
                 <pre ref={requestRef} className="py-3 px-5 text-sm">
                     {JSON.stringify(JsonRequestData, null, 2)}
@@ -75,8 +76,9 @@ const handleTabChange = (tab) => {
         }
         {activeTab === 'TabTwo' && 
             <div className='overflow-auto h-full max-h-[40vh]'>
-                <div className='flex justify-end'>
-                  <button onClick={handleCopied} className='bg-gray-500 self-end px-5 py-2 rounded-lg font-nunito-sans text-xs font-medium text-white'>{isCopied ? 'Copied!' : 'Copy to Clipboard'}</button>
+                <div className='flex justify-end cursor-pointer pr-2' onClick={handleCopied}>
+                  <img src='/images/others/copy-icon.png' className='w-5 h-auto'/>
+                  <p className='text-gray-500 font-nunito-sans font-semibold text-sm ml-2'>{isCopied ? 'Copied!' : 'Copy'}</p>
                 </div>
                 <pre ref={responseRef} className="py-3 px-5 text-sm">
                     {JSON.stringify(JsonResponseData, null, 2)}
