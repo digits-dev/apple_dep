@@ -49,10 +49,11 @@ class AppleDeviceEnrollmentService
         $url = $this->baseUrl . $this->checkTransactionStatusEndpoint;
 
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
+                ])
                 ->timeout($this->timeout)
                 ->post($url, $requestData);
 
@@ -70,16 +71,23 @@ class AppleDeviceEnrollmentService
         }
     }
 
-    public function showOrderDetails($requestData)
+    public function showOrderDetails($requestContext, $depResellerId, $orderNumbers)
     {
         $url = $this->baseUrl . $this->showOrderDetailsEndpoint;
+        $payload = [
+            'requestContext' => $requestContext,
+            'depResellerId' => $depResellerId,
+            'orderNumbers' => $orderNumbers,
+        ];
+
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
-            ->timeout($this->timeout)
-            ->post($url, $requestData);
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
+                ])
+                ->timeout($this->timeout)
+                ->post($url, $payload);
 
             if ($response->successful()) {
                 return $response->json();
@@ -94,33 +102,6 @@ class AppleDeviceEnrollmentService
         }
     }
 
-    //PRODUCTION
-    // public function showOrderDetails($requestData)
-    // {
-    //     $url = $this->baseUrl . $this->showOrderDetailsEndpoint;
-
-    //     try {
-    //         $response = Http::withClientCertificate()
-    //             ->withHeaders([
-    //                 'Content-Type' => 'application/json',
-    //                 'Accept-Encoding' => '',
-    //             ])
-    //             ->timeout($this->timeout)
-    //             ->post($url, $requestData);
-
-    //         if ($response->successful()) {
-    //             return $response->json();
-    //         }
-    //         $this->handleErrorResponse('show order details', $response);
-    //     } catch (ConnectionException $e) {
-    //         $this->handleTimeoutException('show order details', $e);
-    //     } catch (RequestException $e) {
-    //         $this->handleRequestException('show order details', $e);
-    //     } catch (\Exception $e) {
-    //         $this->handleGeneralException('show order details', $e);
-    //     }
-    // }
-
     private function sendRequest(array $payload, string $action)
     {
         return $this->sendPostRequest($this->bulkEnrollEndpoint, $payload, $action);
@@ -131,12 +112,13 @@ class AppleDeviceEnrollmentService
         $url = $this->baseUrl . $endpoint;
 
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept-Encoding' => '',
-            ])
-            ->timeout($this->timeout)
-            ->post($url, $payload);
+            $response = Http::withClientCertificate()
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept-Encoding' => '',
+                ])
+                ->timeout($this->timeout)
+                ->post($url, $payload);
 
             if ($response->successful()) {
                 return $response->json();
@@ -180,5 +162,5 @@ class AppleDeviceEnrollmentService
         $errorMessage = "General exception during $action: " . $e->getMessage();
         Log::error($errorMessage);
         throw new \Exception($errorMessage);
-}
+    }
 }
