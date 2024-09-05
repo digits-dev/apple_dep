@@ -364,15 +364,25 @@ class ListOfOrdersController extends Controller
                     ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
                     ->count();
 
+                // Count order lines with enrollment status 13 or ongoing
+                $enrollmentOngoing = OrderLines::where('order_id', $orderId)
+                    ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                    ->count();
+
                 // Check if all order lines have status 3 and update the enrollment status of the order
                 if ($enrollmentStatusSuccess === $totalOrderLines) {
                     Order::where('id', $orderId)->update([
                         'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
                         'dep_order' => 1
                     ]);
-                }else if ($enrollmentStatusSuccess > 0) {
+                } else if ($enrollmentStatusSuccess > 0) {
                     Order::where('id', $orderId)->update([
                         'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                        'dep_order' => 1
+                    ]);
+                } else if ($enrollmentOngoing > 0) {
+                    Order::where('id', $orderId)->update([
+                        'enrollment_status' => EnrollmentStatus::ONGOING['id'],
                         'dep_order' => 1
                     ]);
                 }
@@ -735,6 +745,10 @@ class ListOfOrdersController extends Controller
                         ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
                         ->count();
 
+                    $enrollmentOngoing = OrderLines::where('order_id', $orderId)
+                        ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                        ->count();
+
                     if ($enrollmentStatusSuccess === $totalOrderLines) {
                         Order::where('id', $orderId)->update([
                             'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
@@ -743,6 +757,11 @@ class ListOfOrdersController extends Controller
                     }else if ($enrollmentStatusSuccess > 0) {
                         Order::where('id', $orderId)->update([
                             'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                            'dep_order' => 1,
+                        ]);
+                    }else if ($enrollmentOngoing > 0) {
+                        Order::where('id', $orderId)->update([
+                            'enrollment_status' => EnrollmentStatus::ONGOING['id'],
                             'dep_order' => 1,
                         ]);
                     }
