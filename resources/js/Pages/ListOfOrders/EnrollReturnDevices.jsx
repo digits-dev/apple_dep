@@ -54,6 +54,7 @@ const allowedToReturn = [
 
 const allowedToOverride = [
     EnrollmentStatus.ENROLLMENT_SUCCESS,
+    EnrollmentStatus.ENROLLMENT_ERROR,
     EnrollmentStatus.OVERRIDE_ERROR,
 ];
 
