@@ -1574,57 +1574,58 @@ class ListOfOrdersController extends Controller
             ];
             return response()->json($data);
         }
+  
         try {
-            $id = $request->order_id;
-            //Update Order Ship date
-            Order::where('id', $id)->update(['ship_date' => $request->ship_date]);
-            dd($request->all());
-            // Fetch unique lines
-            $uniqueLines = OrderLines::where('list_of_order_lines.order_id', $id)
-            ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
-            ->selectRaw('MIN(list_of_order_lines.id) as id, list_of_order_lines.serial_number, list_of_order_lines.digits_code')
-            ->groupBy('list_of_order_lines.serial_number', 'list_of_order_lines.digits_code')
-            ->get();
-
-            $idsOfUniqueLines = [];
-
-            // check lines if they're already enrolled through digits code and serial number
-            foreach ($uniqueLines as $orderLines) {
-                $exists = OrderLines::where('digits_code', $orderLines->digits_code)
-                    ->where('serial_number', $orderLines->serial_number)
-                    ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_ERROR['id'])
-                    ->exists();
-        
-                if ($exists) {
-                    $idsOfUniqueLines[] = $orderLines->id;
+            $ids = $request->order_id;
+            $el_ids = [];
+            if($request->serial_numbers){
+                foreach($request->serial_numbers as $key => $val){
+                //Update list of orders
+                    $el_ids[] = $key;
+                    OrderLines::where('id', $key)
+                    ->update([
+                        'serial_number' => $val
+                    ]);
+    
+                    //Update Enrollment list
+                    EnrollmentList::where('order_lines_id', $key)
+                    ->update([
+                        'serial_number' => $val
+                    ]);
                 }
             }
-            if (!empty($idsOfUniqueLines)) {
+     
+            //Update Order Ship date
+            Order::where('id', $ids)->update(['ship_date' => $request->ship_date]);
+           
+            $header = Order::where('id', $ids)->first();
+         
+            // Fetch data to edit
+            $editRequesData = EnrollmentList::whereNotIn('enrollment_lists.order_lines_id', $el_ids)
+            ->where('enrollment_lists.sales_order_no', $header->sales_order_no)
+            ->leftJoin('list_of_order_lines', 'enrollment_lists.order_lines_id', 'list_of_order_lines.id')
+            ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+            ->select('orders.*','orders.id as order_id','enrollment_lists.id as el_id','enrollment_lists.*','list_of_order_lines.id as lorid','enrollment_lists.item_code as digits_code')
+            ->get();
+            // Fetch other data
+            $getOtherData = EnrollmentList::whereIn('enrollment_lists.order_lines_id', $el_ids)
+            ->where('enrollment_lists.sales_order_no', $header->sales_order_no)
+            ->leftJoin('list_of_order_lines', 'enrollment_lists.order_lines_id', 'list_of_order_lines.id')
+            ->leftJoin('orders', 'list_of_order_lines.order_id', 'orders.id')
+            ->select('orders.*','orders.id as order_id','enrollment_lists.id as el_id','enrollment_lists.*','list_of_order_lines.id as lorid','enrollment_lists.item_code as digits_code')
+            ->get();
+            
+            $requestData = $editRequesData->merge($getOtherData);
+   
+            if (!empty($requestData)) {
                 // Fetch detailed order lines
-                $requestData = OrderLines::select('list_of_order_lines.id as order_line_id', 'orders.id as order_id', 'list_of_order_lines.*', 'orders.*') 
-                    ->whereIn('list_of_order_lines.id', $idsOfUniqueLines)
-                    ->leftJoin('orders', 'list_of_order_lines.order_id', '=', 'orders.id')
-                    ->get();
-        
                 $header_data = $requestData->first();
-        
                 $dep_company = DB::table('dep_companies')->where('id',$header_data->dep_company_id)->first();
-        
                 //For devices array inside of ordersPayload
                 $devicePayload = [];
-
+                $allIds = [];
                 foreach ($requestData as $key => $orderData) {
-                    $item_master = DB::table('item_master')->where('digits_code', $orderData->digits_code)->first();
-
-                    if(!$item_master){
-                        $data = [
-                            'message' => 'Item Master not found!',
-                            'status' => 'error' 
-                        ];
-            
-                        return response()->json($data);
-                    }
-
+                    $allIds[] = $orderData->lorid;
                     $devicePayload[$key] = [
                         'deviceId' => $orderData->serial_number,
                         'assetTag' => $orderData->serial_number,
@@ -1632,11 +1633,8 @@ class ListOfOrdersController extends Controller
                 }
 
                 $payload = $this->applePayloadController->generatePayload();
-
                 $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'OV', $devicePayload);
-
                 $payload['orders'][] = $ordersPayload;
-
                 $response = $this->appleService->enrollDevices($payload);
 
                 //Device Enrollment
@@ -1644,7 +1642,7 @@ class ListOfOrdersController extends Controller
                     $transaction_id = $response['deviceEnrollmentTransactionId'];
                     $dep_status = self::dep_status['Success'];
                     $status_message = $response['enrollDevicesResponse']['statusMessage'];
-                    $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                    $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
 
 
                 } else if(isset($response['enrollDeviceErrorResponse'])) {  
@@ -1658,27 +1656,23 @@ class ListOfOrdersController extends Controller
                         'message' => 'Something went wrong in enrolling the device/s.',
                         'status' =>  'error',
                     ];
-            
                     return response()->json($data);
-                
                 }
-
-                OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => $this->enrollment_status]);
-
+            
+                OrderLines::whereIn('id', $allIds)->update(['enrollment_status_id' => $this->enrollment_status]);
+                
 
                 // Logs
                 $orderId = $header_data->order_id;
                 $encodedPayload = json_encode($payload);
                 $encodedResponse = json_encode($response);
 
-                self::generateLogs($orderId, $idsOfUniqueLines, $encodedPayload, $encodedResponse, $transaction_id, $dep_status, 'OR');
+                self::generateLogs($orderId, $allIds, $encodedPayload, $encodedResponse, $transaction_id, $dep_status, 'OV');
 
                 //Check transaction status
                 if($this->enrollment_status !== EnrollmentStatus::ENROLLMENT_ERROR['id']) {
                     $apiStatus = self::checkTransactionStatus($transaction_id);
-
                     $statusCode = isset($apiStatus['statusCode']);
-
                     if($statusCode === "ERROR"){
                         $this->enrollment_status = EnrollmentStatus::ENROLLMENT_ERROR['id'];
                     } else if($statusCode === 'COMPLETE'){
@@ -1686,21 +1680,17 @@ class ListOfOrdersController extends Controller
                     } else if ($statusCode === 'COMPLETE_WITH_ERRORS'){
                         // $enrollment_status = self::enrollment_status['Error'];
                     } else {
-                        $this->enrollment_status = EnrollmentStatus::ONGOING['id'];
+                        $this->enrollment_status = EnrollmentStatus::IN_PROGRESS['id'];
                     }
-
-                    //Update Order Lines Status
-                    OrderLines::whereIn('id', $idsOfUniqueLines)->update(['enrollment_status_id' => $this->enrollment_status]);
 
                     //Update/Insert in Enrollment List and Insert in Enrollment History
                     foreach ($requestData as $deviceData) {
+                        $enrollmentRecord = EnrollmentList::where('sales_order_no', $header_data->sales_order_no)
+                            ->where('serial_number', $deviceData->serial_number)
+                            ->first();
 
-                        EnrollmentList::updateOrCreate(
-                            [
-                                'sales_order_no' => $header_data->sales_order_no,
-                                'serial_number'  => $deviceData->serial_number
-                            ],
-                            [
+                        if ($enrollmentRecord) {
+                            $enrollmentRecord->update([
                                 'order_lines_id'    => $deviceData->order_line_id,
                                 'dep_company_id'    => $dep_company->id,
                                 'sales_order_no'    => $header_data->sales_order_no,
@@ -1710,8 +1700,8 @@ class ListOfOrdersController extends Controller
                                 'dep_status'        => $dep_status,
                                 'enrollment_status' => $this->enrollment_status,
                                 'status_message'    => $status_message,
-                            ],
-                        );
+                            ]);
+                        }
 
                         $insertToHistory = [ 
                             'order_lines_id' => $deviceData->order_line_id,
@@ -1737,7 +1727,7 @@ class ListOfOrdersController extends Controller
                         ->count();
 
                     $enrollmentOngoing = OrderLines::where('order_id', $orderId)
-                        ->where('enrollment_status_id', EnrollmentStatus::ONGOING['id'])
+                        ->where('enrollment_status_id', EnrollmentStatus::IN_PROGRESS['id'])
                         ->count();
 
                     if ($enrollmentStatusSuccess === $totalOrderLines) {
@@ -1752,7 +1742,7 @@ class ListOfOrdersController extends Controller
                         ]);
                     }else if ($enrollmentOngoing > 0) {
                         Order::where('id', $orderId)->update([
-                            'enrollment_status' => EnrollmentStatus::ONGOING['id'],
+                            'enrollment_status' => EnrollmentStatus::IN_PROGRESS['id'],
                             'dep_order' => 1,
                         ]);
                     }
@@ -1766,7 +1756,7 @@ class ListOfOrdersController extends Controller
                     break;
 
                     case '13':
-                        $message = EnrollmentStatus::ONGOING['value'];
+                        $message = EnrollmentStatus::IN_PROGRESS['value'];
                         $status = 'success';
                     break;
 
@@ -1807,7 +1797,6 @@ class ListOfOrdersController extends Controller
             'lines' => $lines
         ]);
     }
-    
     
     public function getOrderLines(Request $request){
         $result = OrderLines::where('list_of_order_lines.order_id', $request->orderId)
