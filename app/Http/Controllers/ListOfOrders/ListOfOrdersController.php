@@ -79,7 +79,7 @@ class ListOfOrdersController extends Controller
     public function checkIfVoidable($id) {
 
         $enrollmentStatusSuccess = OrderLines::where('order_id', $id)
-            ->whereIn('enrollment_status_id', [EnrollmentStatus::ENROLLMENT_SUCCESS['id'], EnrollmentStatus::VOID_ERROR['id']])
+            ->whereIn('enrollment_status_id', [EnrollmentStatus::ENROLLMENT_SUCCESS['id'], EnrollmentStatus::VOID_ERROR['id'], EnrollmentStatus::OVERRIDE['id'], EnrollmentStatus::OVERRIDE_ERROR['id']])
             ->count();
 
         $isVoidable = $enrollmentStatusSuccess > 0 ? true : false;    
