@@ -185,7 +185,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                         ) : (
                             ""
                         )}
-                           {[3,7,11,13].includes(enrollmentStatus) && (
+                           {[3,2,7,11,13].includes(enrollmentStatus) && (
                             <button
                                 className="bg-primary flex-1 p-5 rounded-lg text-center hover:opacity-70"
                                 onClick={() => {
