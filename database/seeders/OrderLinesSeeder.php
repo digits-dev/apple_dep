@@ -59,7 +59,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 4, 
-            //     "order_id" => 1, 
+            //     "order_id" => 2, 
             //     "dep_company_id" => 10000, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -73,7 +73,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 5, 
-            //     "order_id" => 1, 
+            //     "order_id" => 2, 
             //     "dep_company_id" => 10000, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -87,7 +87,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 6, 
-            //     "order_id" => 1, 
+            //     "order_id" => 3, 
             //     "dep_company_id" => 10000, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -101,7 +101,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 7, 
-            //     "order_id" => 1, 
+            //     "order_id" => 3, 
             //     "dep_company_id" => 10000, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -115,7 +115,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 8, 
-            //     "order_id" => 1, 
+            //     "order_id" => 4, 
             //     "dep_company_id" => 10000, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -129,7 +129,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 9, 
-            //     "order_id" => 2, 
+            //     "order_id" => 4, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -143,7 +143,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 10, 
-            //     "order_id" => 2, 
+            //     "order_id" => 4, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -157,21 +157,21 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 11, 
-            //     "order_id" => 2, 
+            //     "order_id" => 5, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
             //     "brand" => 'APPLE', 
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
-            //     "serial_number" => 'C8HXFC12HG', 
+            //     "serial_number" => 'C8HXFC12HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
             // ],
             // [
             //     "id" => 12, 
-            //     "order_id" => 2, 
+            //     "order_id" => 5, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -185,7 +185,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 13, 
-            //     "order_id" => 2, 
+            //     "order_id" => 6, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -199,7 +199,7 @@ class OrderLinesSeeder extends Seeder
             // ],
             // [
             //     "id" => 14, 
-            //     "order_id" => 2, 
+            //     "order_id" => 6, 
             //     "dep_company_id" => 10002, 
             //     "digits_code" => '90003217', 
             //     "item_description" => 'IPHONE 7', 
@@ -207,6 +207,20 @@ class OrderLinesSeeder extends Seeder
             //     "wh_category" => 'APPLE', 
             //     "quantity" => '1', 
             //     "serial_number" => 'C8HXFC15HG7F', 
+            //     "enrollment_status_id" => 1, 
+            //     "created_at" => now(), 
+            //     "updated_at" => now()
+            // ],
+            // [
+            //     "id" => 15, 
+            //     "order_id" => 7, 
+            //     "dep_company_id" => 10000, 
+            //     "digits_code" => '90003217', 
+            //     "item_description" => 'IPHONE 7', 
+            //     "brand" => 'APPLE', 
+            //     "wh_category" => 'APPLE', 
+            //     "quantity" => '1', 
+            //     "serial_number" => 'C8HXFC03HG7F', 
             //     "enrollment_status_id" => 1, 
             //     "created_at" => now(), 
             //     "updated_at" => now()
@@ -284,22 +298,8 @@ class OrderLinesSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
-                "id" => 6, 
-                "order_id" => 3, 
-                "dep_company_id" => 10000, 
-                "digits_code" => '90003217', 
-                "item_description" => 'IPHONE 7', 
-                "brand" => 'APPLE', 
-                "wh_category" => 'APPLE', 
-                "quantity" => '1', 
-                "serial_number" => 'C8HXFC22HG7F', 
-                "enrollment_status_id" => 1, 
-                "created_at" => now(), 
-                "updated_at" => now()
-            ],
-            [
                 "id" => 7, 
-                "order_id" => 4, 
+                "order_id" => 3, 
                 "dep_company_id" => 10000, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -313,7 +313,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 8, 
-                "order_id" => 4, 
+                "order_id" => 3, 
                 "dep_company_id" => 10000, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -327,7 +327,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 9, 
-                "order_id" => 5, 
+                "order_id" => 4, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -341,7 +341,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 10, 
-                "order_id" => 5, 
+                "order_id" => 4, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -355,7 +355,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 11, 
-                "order_id" => 5, 
+                "order_id" => 4, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -369,7 +369,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 12, 
-                "order_id" => 6, 
+                "order_id" => 5, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -383,7 +383,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 13, 
-                "order_id" => 6, 
+                "order_id" => 5, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -397,7 +397,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 14, 
-                "order_id" => 7, 
+                "order_id" => 6, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -411,7 +411,7 @@ class OrderLinesSeeder extends Seeder
             ],
             [
                 "id" => 14, 
-                "order_id" => 7, 
+                "order_id" => 6, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
                 "item_description" => 'IPHONE 7', 
@@ -419,6 +419,20 @@ class OrderLinesSeeder extends Seeder
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
                 "serial_number" => 'C8HXFC31HG7F', 
+                "enrollment_status_id" => 1, 
+                "created_at" => now(), 
+                "updated_at" => now()
+            ],
+            [
+                "id" => 15, 
+                "order_id" => 7, 
+                "dep_company_id" => 10000, 
+                "digits_code" => '90003217', 
+                "item_description" => 'IPHONE 7', 
+                "brand" => 'APPLE', 
+                "wh_category" => 'APPLE', 
+                "quantity" => '1', 
+                "serial_number" => 'C8HXFC19HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()

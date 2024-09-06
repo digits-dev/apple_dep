@@ -1797,7 +1797,7 @@ class ListOfOrdersController extends Controller
         $order = Order::where('id', $request->orderId)->first();
         $lines = EnrollmentList::join('enrollment_statuses', 'enrollment_lists.enrollment_status', 'enrollment_statuses.id')
                                ->where('enrollment_lists.sales_order_no', $order->sales_order_no)
-                               ->whereIn('enrollment_lists.enrollment_status', [2, 3])
+                               ->whereIn('enrollment_lists.enrollment_status', [EnrollmentStatus::ENROLLMENT_ERROR['id'], EnrollmentStatus::ENROLLMENT_SUCCESS['id'], EnrollmentStatus::OVERRIDE['id']])
                                ->get();
         $depCompanies = DepCompany::select('id as value', 'dep_company_name as label')->get();
     
@@ -1820,7 +1820,7 @@ class ListOfOrdersController extends Controller
         foreach ($result as $orderLines) {
             $exists = OrderLines::where('digits_code', $orderLines->digits_code)
                 ->where('serial_number', $orderLines->serial_number)
-                ->whereIn('enrollment_status_id', [EnrollmentStatus::ENROLLMENT_ERROR['id'], EnrollmentStatus::ENROLLMENT_SUCCESS['id']])
+                ->whereIn('enrollment_status_id', [EnrollmentStatus::ENROLLMENT_ERROR['id'], EnrollmentStatus::ENROLLMENT_SUCCESS['id'], EnrollmentStatus::OVERRIDE['id']])
                 ->exists();
     
             if ($exists) {
