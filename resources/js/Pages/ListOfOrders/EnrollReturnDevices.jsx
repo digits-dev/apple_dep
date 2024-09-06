@@ -52,11 +52,11 @@ const allowedToReturn = [
     EnrollmentStatus.OVERRIDE,
 ];
 
-const allowedToOverride = [
-    EnrollmentStatus.ENROLLMENT_SUCCESS,
-    EnrollmentStatus.ENROLLMENT_ERROR,
-    EnrollmentStatus.OVERRIDE_ERROR,
-];
+// const allowedToOverride = [
+//     EnrollmentStatus.ENROLLMENT_SUCCESS,
+//     EnrollmentStatus.ENROLLMENT_ERROR,
+//     EnrollmentStatus.OVERRIDE_ERROR,
+// ];
 
 const allowedToOverrideSerial = [
     EnrollmentStatus.ENROLLMENT_ERROR,
@@ -529,7 +529,7 @@ const EnrollReturnDevices = ({
                         </button>
                     )}
 
-                    {allowedToOverride.includes(enrollmentStatus) && (
+                    {/* {allowedToOverride.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
                             onClick={() => {
@@ -539,7 +539,7 @@ const EnrollReturnDevices = ({
                         >
                             Override Order
                         </button>
-                    )}
+                    )} */}
                     {/* {allowedToOverrideSerial.includes(enrollmentStatus) && (
                         <button
                             className="w-full bg-black flex-1 p-5 rounded-lg text-center hover:opacity-70  cursor-pointer"
@@ -737,13 +737,7 @@ const EnrollReturnDevices = ({
                                                                 ? "<p>Return Device</p>"
                                                                 : ""
                                                         }
-                                                        ${
-                                                            allowedToOverride.includes(
-                                                                order.enrollment_status_id
-                                                            )
-                                                                ? "<p></p>Override Device</p>"
-                                                                : ""
-                                                        }
+                                                      
                                                     `}
                                             />
                                         )}
