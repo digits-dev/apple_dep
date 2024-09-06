@@ -306,7 +306,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC67HG7F', 
+                "serial_number" => 'C8HXFC68HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -320,7 +320,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC68HG7F', 
+                "serial_number" => 'C8HXFC69HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -334,7 +334,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC69HG7F', 
+                "serial_number" => 'C8HXFC70HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -348,7 +348,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC70HG7F', 
+                "serial_number" => 'C8HXFC71HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -362,7 +362,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC71HG7F', 
+                "serial_number" => 'C8HXFC72HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -376,7 +376,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC72HG7F', 
+                "serial_number" => 'C8HXFC73HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -390,7 +390,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC73HG7F', 
+                "serial_number" => 'C8HXFC74HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -404,7 +404,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC74HG7F', 
+                "serial_number" => 'C8HXFC75HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -418,7 +418,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC75HG7F', 
+                "serial_number" => 'C8HXFC76HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -432,7 +432,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC76HG7F', 
+                "serial_number" => 'C8HXFC77HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
