@@ -292,7 +292,7 @@ const EnrollmentListDetails = ({ enrollmentList }) => {
                             ) : (
                                 <div>
                                     <div className="font-nunito-sans mb-1">
-                                        <span className="font-bold text-red-500">
+                                        <span className="font-bold text-orange-500">
                                             Please wait transaction still processing...
                                         </span>
                                     </div>

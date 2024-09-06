@@ -178,7 +178,7 @@ const OverrideHeaderLevel = ({ handleShow, action, orderId }) => {
                     <InputComponent
                         name="ship_date"
                         type="date"
-                        displayName="New Ship date"
+                        displayName="Ship date"
                         value={forms.ship_date}
                         onChange={handleChange}
                     />
