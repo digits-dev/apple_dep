@@ -410,7 +410,7 @@ class OrderLinesSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
-                "id" => 14, 
+                "id" => 15, 
                 "order_id" => 6, 
                 "dep_company_id" => 10002, 
                 "digits_code" => '90003217', 
@@ -424,7 +424,7 @@ class OrderLinesSeeder extends Seeder
                 "updated_at" => now()
             ],
             [
-                "id" => 15, 
+                "id" => 16, 
                 "order_id" => 7, 
                 "dep_company_id" => 10000, 
                 "digits_code" => '90003217', 
