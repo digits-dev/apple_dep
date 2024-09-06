@@ -222,6 +222,31 @@ class EnrollmentListController extends Controller
                         OrderLines::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status_id' => 2]);
                         EnrollmentList::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status' => 2]);
                     }
+
+                     // Update order enrollment status to success if all lines are enrolled successfully
+                    $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+                    $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
+                        ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
+                        ->count();
+
+                    $orderUpdateData = [];
+
+                    if ($enrollmentStatusSuccess === $totalOrderLines) {
+                        $orderUpdateData = [
+                            'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
+                            'dep_order' => 1,
+                        ];
+                    } elseif ($enrollmentStatusSuccess > 0) {
+                        $orderUpdateData = [
+                            'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                            'dep_order' => 1,
+                        ];
+                    }
+                
+                    if (!empty($orderUpdateData)) {
+                        Order::where('id', $orderId)->update($orderUpdateData);
+                    }
                 }
             }
             
