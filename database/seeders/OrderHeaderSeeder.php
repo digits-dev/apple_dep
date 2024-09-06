@@ -74,8 +74,8 @@ class OrderHeaderSeeder extends Seeder
                 "dr_number" => '90000000025', 
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
-                "order_date" => '2017-01-09', 
-                "ship_date" => '2017-01-10',
+                "order_date" => '2017-01-10', 
+                "ship_date" => '2017-01-09',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],
@@ -87,8 +87,8 @@ class OrderHeaderSeeder extends Seeder
                 "dr_number" => '90000000026', 
                 "dep_order" => 1, 
                 "enrollment_status" => 1, 
-                "order_date" => '2017-01-12', 
-                "ship_date" => '2017-01-11',
+                "order_date" => '2017-01-11', 
+                "ship_date" => '2017-01-12',
                 "created_at" => now(), 
                 "updated_at" => now()
             ],

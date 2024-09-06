@@ -432,7 +432,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC77HG7F', 
+                "serial_number" => 'C8HXFC64HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
