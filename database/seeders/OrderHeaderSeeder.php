@@ -69,7 +69,7 @@ class OrderHeaderSeeder extends Seeder
             [
                 "id" => 5,
                 "sales_order_no" => '80000000105', 
-                "customer_id" => 10001, 
+                "customer_id" => 10002, 
                 "order_ref_no" => '10005', 
                 "dr_number" => '90000000025', 
                 "dep_order" => 1, 
@@ -82,7 +82,7 @@ class OrderHeaderSeeder extends Seeder
             [
                 "id" => 6,
                 "sales_order_no" => '80000000106', 
-                "customer_id" => 10001, 
+                "customer_id" => 10002, 
                 "order_ref_no" => '10006', 
                 "dr_number" => '90000000026', 
                 "dep_order" => 1, 
@@ -95,7 +95,7 @@ class OrderHeaderSeeder extends Seeder
             [
                 "id" => 7,
                 "sales_order_no" => '80000000107', 
-                "customer_id" => 10001, 
+                "customer_id" => 10002, 
                 "order_ref_no" => '10007', 
                 "dr_number" => '90000000027', 
                 "dep_order" => 1, 
