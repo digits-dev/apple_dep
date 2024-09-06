@@ -16,7 +16,7 @@ class OrderHeaderSeeder extends Seeder
         $data = [
             [
                 "id" => 1,
-                "sales_order_no" => '80000000021', 
+                "sales_order_no" => '80000000101', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10001', 
                 "dr_number" => '90000000021', 
@@ -29,7 +29,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 2,
-                "sales_order_no" => '80000000022', 
+                "sales_order_no" => '80000000102', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10002', 
                 "dr_number" => '90000000022', 
@@ -42,7 +42,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 3,
-                "sales_order_no" => '80000000023', 
+                "sales_order_no" => '80000000103', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10003', 
                 "dr_number" => '90000000023', 
@@ -55,7 +55,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 4,
-                "sales_order_no" => '80000000024', 
+                "sales_order_no" => '80000000104', 
                 "customer_id" => 10000, 
                 "order_ref_no" => '10004', 
                 "dr_number" => '90000000024', 
@@ -68,7 +68,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 5,
-                "sales_order_no" => '80000000025', 
+                "sales_order_no" => '80000000105', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10005', 
                 "dr_number" => '90000000025', 
@@ -81,7 +81,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 6,
-                "sales_order_no" => '80000000026', 
+                "sales_order_no" => '80000000106', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10006', 
                 "dr_number" => '90000000026', 
@@ -94,7 +94,7 @@ class OrderHeaderSeeder extends Seeder
             ],
             [
                 "id" => 7,
-                "sales_order_no" => '80000000027', 
+                "sales_order_no" => '80000000107', 
                 "customer_id" => 10002, 
                 "order_ref_no" => '10007', 
                 "dr_number" => '90000000027', 
