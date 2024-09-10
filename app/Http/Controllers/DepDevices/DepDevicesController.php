@@ -17,6 +17,7 @@ use App\Helpers\CommonHelpers;
 use App\Models\EnrollmentList;
 use App\Models\TransactionLog;
 use App\Models\EnrollmentStatus;
+use App\Models\Counter;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -341,8 +342,8 @@ class DepDevicesController extends Controller
             }
 
             $payload = $this->applePayloadController->generatePayload();
-
-            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'RE');
+            $counter = Counter::where('id',1)->first();
+            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $dep_company, 'RE', null, $counter);
 
             $payload['orders'][] = $ordersPayload;
 
@@ -406,6 +407,7 @@ class DepDevicesController extends Controller
                         'dep_status' => $dep_status,
                         'enrollment_status' => $this->enrollment_status,
                         'status_message' => $status_message,
+                        'rma_number'     => $header_data['sales_order_no'].'_RE'.$counter->code
                     ]);
 
                     if($this->enrollment_status == EnrollmentStatus::RETURNED['id']){
@@ -451,6 +453,9 @@ class DepDevicesController extends Controller
                     $message = EnrollmentStatus::RETURN_ERROR['value'];
                     $status = 'error';
             }
+
+            //update counter
+            $counter = Counter::where('id',1)->increment('code');
         
             $data = [
                 'message' => $message,
