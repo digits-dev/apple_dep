@@ -16,6 +16,7 @@ use App\Models\EnrollmentList;
 use App\Models\JsonRequest;
 use App\Models\JsonResponse;
 use App\Models\TransactionLog;
+use App\Models\Counter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -108,8 +109,17 @@ class ListOfOrdersController extends Controller
         $data['orders'] = $orders;
         $data['queryParams'] = request()->query();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
-        $data['order_number'] = Order::select('sales_order_no as value','sales_order_no as label')->whereIn('enrollment_status',[3,7,13])->get();
 
+        $sales_order_number = DB::table('orders')->select(DB::raw('sales_order_no as value, sales_order_no as label'))
+        ->whereIn('enrollment_status',[3,7,13])
+        ->get()->toArray();
+    
+        $rma_number = DB::table('enrollment_lists')->select(DB::raw('rma_number as value, rma_number as label'))
+            ->whereIn('enrollment_status',[3,5,7,13])
+            ->groupBy('rma_number')
+            ->get()->toArray();
+    
+        $data['order_number'] = array_merge($sales_order_number, $rma_number);
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
     }
@@ -435,7 +445,7 @@ class ListOfOrdersController extends Controller
             $id = $request->input('id'); 
             $header_data = OrderLines::where('list_of_order_lines.id',$id)->leftJoin('orders','list_of_order_lines.order_id','orders.id')->first();
             $this->depCompanyId = $header_data->dep_company_id;
-            
+
             //UPC CODE
             $item_master = DB::table('item_master')->where('digits_code',$header_data['digits_code'])->first();
 
@@ -449,9 +459,8 @@ class ListOfOrdersController extends Controller
             }
 
             $payload = $this->applePayloadController->generatePayload();
-
-            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $this->depCompanyId, 'RE');
-
+            $counter = Counter::where('id',1)->first();
+            $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data,  $this->depCompanyId, 'RE', null, $counter);
             $payload['orders'][] = $ordersPayload;
 
             $response = $this->appleService->unEnrollDevices($payload);
@@ -514,6 +523,7 @@ class ListOfOrdersController extends Controller
                         'dep_status' => $dep_status,
                         'enrollment_status' => $this->enrollment_status,
                         'status_message' => $status_message,
+                        'rma_number'     => $header_data['sales_order_no'].'_RE'.$counter->code
                     ]);
 
                     if($this->enrollment_status == EnrollmentStatus::RETURNED['id']){
@@ -559,6 +569,9 @@ class ListOfOrdersController extends Controller
                     $message = EnrollmentStatus::RETURN_ERROR['value'];
                     $status = 'error';
             }
+
+             //update counter
+             $counter = Counter::where('id',1)->increment('code');
         
             $data = [
                 'message' => $message,
@@ -852,7 +865,9 @@ class ListOfOrdersController extends Controller
      
                 $payload = $this->applePayloadController->generatePayload();
 
-                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data, $this->depCompanyId, 'RE', $devicePayload);
+                $counter = Counter::where('id',1)->first();
+            
+                $ordersPayload = $this->applePayloadController->generateOrdersPayload($header_data, $this->depCompanyId, 'RE', $devicePayload, $counter);
 
                 $payload['orders'][] = $ordersPayload;
 
@@ -923,6 +938,7 @@ class ListOfOrdersController extends Controller
                                 'dep_status' => $dep_status,
                                 'enrollment_status' => $this->enrollment_status,
                                 'status_message' => $status_message,
+                                'rma_number'     => $header_data->sales_order_no.'_RE'.$counter->code
                             ]);
         
                             if($this->enrollment_status == EnrollmentStatus::RETURNED['id']){
@@ -973,6 +989,9 @@ class ListOfOrdersController extends Controller
                     'message' => $message,
                     'status' => $status,
                 ];
+
+                //update counter
+                $counter = Counter::where('id',1)->increment('code');
         
                 return response()->json($data);
 
