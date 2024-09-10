@@ -552,7 +552,7 @@ class EnrollmentListController extends Controller
 
         try {
             // Extract IDs and update tables
-            $orderLinesId = $orderLines->pluck('id')->toArray();
+            $orderLinesId = $orderLines->pluck('order_lines_id')->toArray();
             
             OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => $enrollmentStatus]);
             EnrollmentList::where('transaction_id', $transactionId)->update(['enrollment_status' => $enrollmentStatus]);
