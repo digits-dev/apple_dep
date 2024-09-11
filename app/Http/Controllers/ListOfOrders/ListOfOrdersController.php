@@ -203,12 +203,11 @@ class ListOfOrdersController extends Controller
 
     public function exportText($logType,$orderId)
     {
-        if ($logType === 'Received') {
+        if ($logType === 'Response') {
             $data = JsonResponse::where('order_id', $orderId)->get();
         } else {
             $data = JsonRequest::where('order_id', $orderId)->get();
         }
-        
         $content = "";
         foreach ($data as $item) {
             $decodedData = json_decode($item->data);
