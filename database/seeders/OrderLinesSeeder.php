@@ -25,7 +25,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC01HG7F', 
+                "serial_number" => 'C8HXFC85HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -39,7 +39,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC02HG7F', 
+                "serial_number" => 'C8HXFC86HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -53,7 +53,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC03HG7F', 
+                "serial_number" => 'C8HXFC87HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -67,7 +67,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC04HG7F', 
+                "serial_number" => 'C8HXFC88HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -81,7 +81,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC05HG7F', 
+                "serial_number" => 'C8HXFC89HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -95,7 +95,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC07HG7F', 
+                "serial_number" => 'C8HXFC91HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -109,7 +109,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC08HG7F', 
+                "serial_number" => 'C8HXFC92HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -123,7 +123,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC09HG7F', 
+                "serial_number" => 'C8HXFC93HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -137,7 +137,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC10HG7F', 
+                "serial_number" => 'C8HXFC94HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -151,7 +151,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC11HG', 
+                "serial_number" => 'C8HXFC95HG', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -165,7 +165,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC12HG7F', 
+                "serial_number" => 'C8HXFC96HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -179,7 +179,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC13HG7F', 
+                "serial_number" => 'C8HXFC97HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -193,7 +193,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC14HG7F', 
+                "serial_number" => 'C8HXFC98HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -207,7 +207,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC15HG7F', 
+                "serial_number" => 'C8HXFC99HG7F', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
@@ -221,7 +221,7 @@ class OrderLinesSeeder extends Seeder
                 "brand" => 'APPLE', 
                 "wh_category" => 'APPLE', 
                 "quantity" => '1', 
-                "serial_number" => 'C8HXFC03HG7', 
+                "serial_number" => 'C8HXFC87HG7', 
                 "enrollment_status_id" => 1, 
                 "created_at" => now(), 
                 "updated_at" => now()
