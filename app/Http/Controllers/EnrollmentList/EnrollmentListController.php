@@ -114,7 +114,6 @@ class EnrollmentListController extends Controller
         ];
 
 
-
         $orderLines = EnrollmentList::where('transaction_id', $transactionId)->get();
 
         $orderLinesId = $orderLines->pluck('order_lines_id')->toArray();
@@ -186,69 +185,10 @@ class EnrollmentListController extends Controller
                     OrderLines::whereIn('id', $orderLinesId)->update(['enrollment_status_id' => $enrollmentStatus]);
                     EnrollmentList::where('transaction_id', $transactionId)->update(['enrollment_status' => $enrollmentStatus]);
 
-                    // Update order enrollment status 
-                    $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
-
-                    $orderLinesWithCurrStatus = OrderLines::where('order_id', $orderId)
-                        ->where('enrollment_status_id', $enrollmentStatus)
-                        ->count();
-
-
-                    if ($orderLinesWithCurrStatus === $totalOrderLines) {
-                        Order::where('id', $orderId)->update([
-                            'enrollment_status' => $enrollmentStatus,
-                            'dep_order' => 1,
-                        ]);
-                    }
+                    self::updateOrderHeaderStatus($orderId, $enrollmentStatus);
 
                 } else {
-                    $validDeviceIds = [];
-                    $invalidDeviceIds = [];
-            
-                    if (isset($response['orders'][0]['deliveries'][0]['devices'])) {
-                        foreach ($response['orders'][0]['deliveries'][0]['devices'] as $device) {
-                            if ($device['devicePostStatus'] == 'COMPLETE') {
-                                $validDeviceIds[] = $device['deviceId'];
-                            } else {
-                                $invalidDeviceIds[] = $device['deviceId'];
-                            }
-                        }
-                    }
-            
-                    if (!empty($validDeviceIds)) {
-                        OrderLines::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status_id' => 3]);
-                        EnrollmentList::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status' => 3]);
-                    }
-            
-                    if (!empty($invalidDeviceIds)) {
-                        OrderLines::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status_id' => 2]);
-                        EnrollmentList::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status' => 2]);
-                    }
-
-                     // Update order enrollment status to success if all lines are enrolled successfully
-                    $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
-
-                    $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
-                        ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
-                        ->count();
-
-                    $orderUpdateData = [];
-
-                    if ($enrollmentStatusSuccess === $totalOrderLines) {
-                        $orderUpdateData = [
-                            'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
-                            'dep_order' => 1,
-                        ];
-                    } elseif ($enrollmentStatusSuccess > 0) {
-                        $orderUpdateData = [
-                            'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
-                            'dep_order' => 1,
-                        ];
-                    }
-                
-                    if (!empty($orderUpdateData)) {
-                        Order::where('id', $orderId)->update($orderUpdateData);
-                    }
+                    self::processCompleteWithErrors($response, $orderId);
                 }
             }
             
@@ -414,7 +354,7 @@ class EnrollmentListController extends Controller
             DB::commit();
 
         } catch (\Exception $e) {
-            // Rollback the transaction if something went wrong
+
             DB::rollBack();
         
             Log::error($e->getMessage());
@@ -454,30 +394,7 @@ class EnrollmentListController extends Controller
 
             EnrollmentHistory::insert($enrollmentHistoryData);
 
-            // Update order enrollment status to success if all lines are enrolled successfully
-            $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
-
-            $enrollmentStatusSuccess = OrderLines::where('order_id', $orderId)
-                ->where('enrollment_status_id', EnrollmentStatus::ENROLLMENT_SUCCESS['id'])
-                ->count();
-
-            $orderUpdateData = [];
-
-            if ($enrollmentStatusSuccess === $totalOrderLines) {
-                $orderUpdateData = [
-                    'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
-                    'dep_order' => 1,
-                ];
-            } elseif ($enrollmentStatusSuccess > 0) {
-                $orderUpdateData = [
-                    'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
-                    'dep_order' => 1,
-                ];
-            }
-        
-            if (!empty($orderUpdateData)) {
-                Order::where('id', $orderId)->update($orderUpdateData);
-            }
+            self::updateOrderHeaderStatus($orderId, $enrollmentStatus, true);
 
             DB::commit();
 
@@ -491,6 +408,8 @@ class EnrollmentListController extends Controller
     }
 
     private function processOverride($orderId, $orderLines, $transactionId, $enrollmentStatus){
+
+        DB::beginTransaction();
 
         try{
 
@@ -519,13 +438,13 @@ class EnrollmentListController extends Controller
 
             EnrollmentHistory::insert($enrollmentHistoryData);
 
-            //Update header status
-            Order::where('id', $orderId)->update([
-                'enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id'],
-                'dep_order' => 1,
-            ]);
+            self::updateOrderHeaderStatus($orderId, EnrollmentStatus::ENROLLMENT_SUCCESS['id'], false, true);
+
+            DB::commit();
 
         } catch (\Exception $e) {
+
+            DB::rollBack();
 
             Log::error($e->getMessage());
 
@@ -589,6 +508,67 @@ class EnrollmentListController extends Controller
 
             throw $e;
         }
+    }
+
+    private function processCompleteWithErrors($response, $orderId){
+        $validDeviceIds = [];
+        $invalidDeviceIds = [];
+
+        if (isset($response['orders'][0]['deliveries'][0]['devices'])) {
+            foreach ($response['orders'][0]['deliveries'][0]['devices'] as $device) {
+                if ($device['devicePostStatus'] == 'COMPLETE') {
+                    $validDeviceIds[] = $device['deviceId'];
+                } else {
+                    $invalidDeviceIds[] = $device['deviceId'];
+                }
+            }
+        }
+
+        if (!empty($validDeviceIds)) {
+            OrderLines::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status_id' => EnrollmentStatus::ENROLLMENT_SUCCESS['id']]);
+            EnrollmentList::whereIn('serial_number', $validDeviceIds)->update(['enrollment_status' => EnrollmentStatus::ENROLLMENT_SUCCESS['id']]);
+        }
+
+        if (!empty($invalidDeviceIds)) {
+            OrderLines::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status_id' => EnrollmentStatus::ENROLLMENT_ERROR['id']]);
+            EnrollmentList::whereIn('serial_number', $invalidDeviceIds)->update(['enrollment_status' => EnrollmentStatus::ENROLLMENT_ERROR['id']]);
+        }
+
+        self::updateOrderHeaderStatus($orderId, EnrollmentStatus::ENROLLMENT_SUCCESS['id'], true);
+    }
+
+    private function updateOrderHeaderStatus($orderId, $enrollmentStatus, $withPartial = false, $updateWithoutCondition = false){
+        $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
+
+        $orderLinesWithCurrStatus = OrderLines::where('order_id', $orderId)
+            ->where('enrollment_status_id', $enrollmentStatus)
+            ->count();
+
+        if($updateWithoutCondition){
+            Order::where('id', $orderId)->update([
+                'enrollment_status' => $enrollmentStatus,
+                'dep_order' => 1,
+            ]);
+
+            return;
+        }
+
+
+        if ($orderLinesWithCurrStatus === $totalOrderLines) {
+            Order::where('id', $orderId)->update([
+                'enrollment_status' => $enrollmentStatus,
+                'dep_order' => 1,
+            ]);
+
+        } else if ($withPartial) {
+            if  ($orderLinesWithCurrStatus > 0) {
+                Order::where('id', $orderId)->update([
+                    'enrollment_status' => EnrollmentStatus::PARTIALLY_ENROLLED['id'],
+                    'dep_order' => 1,
+                ]);
+            }
+        }
+        
     }
 
 }
