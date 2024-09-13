@@ -41,10 +41,11 @@ const Modal = ({
                             <p className="font-nunito-sans font-extrabold text-lg">
                                 {title}
                             </p>
-                            <i
-                                className="fa-solid fa-x text-red-500 font-extrabold text-md cursor-pointer"
-                                onClick={onClose}
-                            ></i>
+                            <div className="hover:bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full cursor-pointer" onClick={onClose}>
+                                <i
+                                    className="fa-solid fa-x text-red-500 font-extrabold text-md "
+                                ></i>
+                            </div>
                         </div>
                         <main className="py-3 px-5 ">{children}</main>
                     </div>

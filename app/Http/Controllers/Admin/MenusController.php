@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin; 
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,11 @@ class MenusController extends Controller{
 
     public static function sidebarMenu(){
         return CommonHelpers::sidebarMenu();
+    }
+
+    public function getNotifications(){
+        $notifications = Notification::all();
+        return response()->json($notifications);
     }
 
     public function getIndex(Request $request){
