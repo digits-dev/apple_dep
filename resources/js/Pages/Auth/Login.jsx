@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { usePage, router, Link } from "@inertiajs/react";
 import Slider from "../../Components/LoginPage/Slider";
+import ChangePasswordModal from "../../Components/Modal/ChangePasswordModal";
 
 const LoginPage = () => {
     const { errors:initialErrors  } = usePage().props;
@@ -8,11 +9,13 @@ const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
+
         }, 1000);
 
         return () => clearInterval(interval);
@@ -53,11 +56,17 @@ const LoginPage = () => {
                     if (newErrors.password) {
                         setPassword("");
                     }
+                    if (newErrors.qwerty) {
+                        setEmail(newErrors.qwerty);
+                        setShowModal(true);
+                    }
                     setErrors(newErrors);
+
                 },
                 onFinish: () => setLoading(false),
             }
         );
+
     };
 
     return (
@@ -208,6 +217,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
+            <ChangePasswordModal show={showModal} width="xl" email={email}/>
         </div>
     );
 };

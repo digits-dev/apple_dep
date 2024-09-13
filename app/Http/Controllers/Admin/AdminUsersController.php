@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use DB;
 use App\Models\User;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -79,7 +80,13 @@ use Inertia\Response;
             ]);
             
             if(!$users){
-                User::create([$request]);
+                User::create([
+                    'email' => $request->email,
+                    'name' => $request->name,
+                    'privilege_id' => $request->privilege_id,
+                    'password_updated_at' => now(),
+                ]);
+                
                 return json_encode(["message"=>"Data Saved!", "type"=>"success"]);
             }else{
                 return json_encode(["message"=>"Users Exist!", "type"=>"danger"]);
@@ -108,6 +115,7 @@ use Inertia\Response;
                 'password'  => $password,
                 'id_adm_privileges' => $request->privilege_id,
                 'status'  => $request->status,
+                'password_updated_at' => now(),
               
             ]);
             if($update){
@@ -138,7 +146,7 @@ use Inertia\Response;
                     'new_password' => 'required',
                     'confirmation_password' => 'required|same:new_password'
                 ]);
-          
+                $user->password_updated_at = now();
                 $user->password = Hash::make($request->get('new_password'));
                 $user->save();
                 return json_encode(["message"=>"Password Updated, You Will Be Logged-Out.", "type"=>"success"]);
