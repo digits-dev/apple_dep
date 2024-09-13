@@ -111,7 +111,7 @@ const AppNavbar = () => {
                             Notifications
                         </p>
                     </div>
-                    {notifications ?
+                    {notifications &&
                         <div className="max-h-36 overflow-y-auto">
                             {notifications.map((item, index) => (
                             <div className="font-nunito-sans flex hover:bg-zinc-200 cursor-pointer px-1" key={index} 
@@ -132,15 +132,18 @@ const AppNavbar = () => {
                                 </div>
                             </div>
                             ))}
+                            {notifications?.length == 0 && (
+                                <div className="font-nunito-sans flex cursor-pointer px-1">
+                                    <i className="fa-solid fa-circle-info text-gray-500 p-5"></i>
+                                    <div className="overflow-hidden flex items-center max-w-[300px] ">
+                                        <p className="font-bold text-sm text-gray-500">You have no Notification</p>
+                                    </div>
+                                </div>
+                            )
+
+                            }
                         </div> 
-                        : 
-                        <div className="font-nunito-sans flex hover:bg-zinc-200 cursor-pointer px-1">
-                            <i className="fa-solid fa-circle-info text-gray-500 p-5"></i>
-                            <div className="overflow-hidden flex items-center max-w-[300px] ">
-                                <p className="font-bold text-sm text-gray-500">You have no Notification</p>
-                            </div>
-                        </div>
-                        }
+                          }
                     
                 
                  
