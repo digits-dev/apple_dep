@@ -10,6 +10,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [noteMessage, setNoteMessage] = useState('');
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
@@ -58,6 +59,7 @@ const LoginPage = () => {
                     }
                     if (newErrors.qwerty) {
                         setEmail(newErrors.qwerty);
+                        setNoteMessage(newErrors.qwerty_message);
                         setShowModal(true);
                     }
                     setErrors(newErrors);
@@ -217,7 +219,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
-            <ChangePasswordModal show={showModal} width="xl" email={email}/>
+            <ChangePasswordModal show={showModal} width="xl" email={email} note={noteMessage}/>
         </div>
     );
 };

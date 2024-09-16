@@ -7,7 +7,8 @@ const NotificationsModal = ({
     show,
     onClose,
     width = "lg",
-    email
+    email,
+    note
 }) => {
     if (!show) {
         return null;
@@ -75,7 +76,7 @@ const NotificationsModal = ({
                         </p>
                     </div>
                     <main className="pb-3 px-5 font-nunito-sans">
-                        <p className="text-sm py-3 "><span className="text-red-500 font-semibold">Warning:</span> We have detected that your password is still set to the default, posing a security risk, and recommend updating it immediately to a strong, unique password </p>
+                        <p className="text-sm py-3 "><span className="text-red-500 font-semibold">Warning: </span>{note}</p>
                         <form onSubmit={handleSubmit} className="whitespace-pre-line leading-loose text-sm border p-5 rounded-lg overflow-y-auto" action="POST">
                             <InputComponent
                                 name="new_password"
