@@ -55,6 +55,7 @@ class LoginController extends Controller
             $message = 'Incorrect Password';
             return redirect('login')->withErrors(['password'=>$message]);
         }
+        
         $session_details = self::getOtherSessionDetails($users->id_adm_privileges);
         if(!$session_details['priv']){
             $error = 'No privilege set! Please contact Administrator!';

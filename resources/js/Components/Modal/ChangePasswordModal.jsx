@@ -146,11 +146,11 @@ const NotificationsModal = ({
                                             : 'Strong Password'}
                                     </div>
                                     <div className="text-xs mt-1 text-gray-500">
-                                        <div className={`${isUpperCase && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Uppercase Letter</span></div>
-                                        <div className={`${isLowerCase && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Lowercase Letter</span></div>
-                                        <div className={`${isCorrectLength && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 8 Characters</span></div>
-                                        <div className={`${isSpecialChar && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Special Character</span></div>
-                                        <div className={`${isNumber && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Number</span></div>
+                                        <div className={`${isUpperCase && 'text-green-500'}`}><i className={`${isUpperCase ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 1 Uppercase Letter</span></div>
+                                        <div className={`${isLowerCase && 'text-green-500'}`}><i className={`${isLowerCase ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 1 Lowercase Letter</span></div>
+                                        <div className={`${isCorrectLength && 'text-green-500'}`}><i className={`${isCorrectLength ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 8 Characters Long</span></div>
+                                        <div className={`${isSpecialChar && 'text-green-500'}`}><i className={`${isSpecialChar ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 1 Special Character</span></div>
+                                        <div className={`${isNumber && 'text-green-500'}`}><i className={`${isNumber ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 1 Number</span></div>
                                     </div>
                                 </div>
                             )}
