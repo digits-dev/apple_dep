@@ -5,29 +5,41 @@ import { useForm } from "@inertiajs/react";
 
 const NotificationsModal = ({
     show,
-    onClose,
     width = "lg",
     email,
-    note
+    note,
+    isThreeMonths,
+    pp,
 }) => {
     if (!show) {
         return null;
     }
 
     const { data, setData, processing, reset, post, errors } = useForm({
+        pp: pp || "",
         email: email || "",
         new_password: "",
         confirm_password: "",
+        is_waive: "",
     });
+
 
     const [passwordStrength, setPasswordStrength] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isUpperCase, setIsUpperCase] = useState(false);
+    const [isLowerCase, setIsLowerCase] = useState(false);
+    const [isCorrectLength, setIsCorrectLength] = useState(false);
+    const [isSpecialChar, setIsSpecialChar] = useState(false);
+    const [isNumber, setIsNumber] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(true);
+    const [isDisabledWaive, setIsDisabledWaive] = useState(false);
+    const [waiveMessage, setWaiveMessage] = useState('');
 
     const handlePasswordChange = (e) => {
         const newPassword = e.target.value;
         setData("new_password", newPassword);
         setPasswordStrength(checkPasswordStrength(newPassword));
-    };
+    };[]
 
     const maxWidth = {
         md: "max-w-md",
@@ -44,14 +56,37 @@ const NotificationsModal = ({
 
     const checkPasswordStrength = (password) => {
         let strength = 0;
-        if (password.length >= 6) strength += 1;
-        if (/[A-Z]/.test(password)) strength += 1;
-        if (/[a-z]/.test(password)) strength += 1;
-        if (/[0-9]/.test(password)) strength += 1;
-        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
     
-        return (strength / 5) * 100; 
+        // 8 characters
+        setIsCorrectLength(password.length >= 8);
+        strength += password.length >= 8 ? 1 : 0;
+
+        // is Uppercase
+        setIsUpperCase(/[A-Z]/.test(password));
+        strength += /[A-Z]/.test(password) ? 1 : 0;
+        
+        // is Lowercase
+        setIsLowerCase(/[a-z]/.test(password));
+        strength += /[a-z]/.test(password) ? 1 : 0;
+        
+        // is Number
+        setIsNumber(/[0-9]/.test(password));
+        strength += /[0-9]/.test(password) ? 1 : 0;
+        
+        // is Special Char
+        setIsSpecialChar(/[^A-Za-z0-9]/.test(password));
+        strength += /[^A-Za-z0-9]/.test(password) ? 1 : 0;
+
+        if (strength == 5){
+            setIsDisabled(false)
+        }
+        else {
+            setIsDisabled(true)
+        }
+    
+        return (strength / 5) * 100;
     };
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -60,15 +95,23 @@ const NotificationsModal = ({
                 const { message } = data.props.auth.sessions;
                 
             },
+            onError: (newErrors) => {
+                console.log(newErrors);
+                if (newErrors.message){
+                    setWaiveMessage(newErrors.message);
+                    setIsDisabledWaive(true);
+                    reset();
+                }
+            }
         });
         
     };
 
     return (
         <>
-            <div className="modal-backdrop z-[100]">
+            <div className="modal-backdrop z-[100] overflow-y-auto h-screen">
                 <div
-                    className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5  max-h-[90vh]`}
+                    className={`bg-white rounded-lg shadow-custom ${maxWidth} w-full m-5 max-h-fit`}
                 >
                     <div className="flex justify-between p-5 border-b-2 items-center">
                         <p className="font-nunito-sans font-extrabold text-lg w-full text-center">
@@ -95,12 +138,19 @@ const NotificationsModal = ({
                                             }}
                                         ></div>
                                     </div>
-                                    <div className="text-sm mt-1">
+                                    <div className="text-xs mt-1">
                                         {passwordStrength < 40
                                             ? 'Weak Password'
                                             : passwordStrength < 70
                                             ? 'Medium Password'
                                             : 'Strong Password'}
+                                    </div>
+                                    <div className="text-xs mt-1 text-gray-500">
+                                        <div className={`${isUpperCase && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Uppercase Letter</span></div>
+                                        <div className={`${isLowerCase && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Lowercase Letter</span></div>
+                                        <div className={`${isCorrectLength && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 8 Characters</span></div>
+                                        <div className={`${isSpecialChar && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Special Character</span></div>
+                                        <div className={`${isNumber && 'text-green-500'}`}><i className="fa-solid fa-check mr-1"></i><span>Atleast 1 Number</span></div>
                                     </div>
                                 </div>
                             )}
@@ -137,15 +187,34 @@ const NotificationsModal = ({
                                 </div>
                             </div>
 
+                            {waiveMessage && (
+                                <span className="mt-1 inline-block w-full text-center text-red-500 font-base">
+                                    {waiveMessage}
+                                </span>
+                            )}
+
+                            <div className="flex space-x-2">
+                            {isThreeMonths && (
+                                <button
+                                    type="submit"
+                                    className="bg-green-800 w-full text-white font-nunito-sans  py-3 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                                    disabled={isDisabledWaive || processing}
+                                    onClick={() => setData({ is_waive: '1', email: email, pp: pp })}
+                                >
+                                    Waive
+                                </button>
+                            )}
                             <button
                                 type="submit"
                                 className="bg-primary w-full text-white font-nunito-sans  py-3 text-sm font-bold rounded-md mt-5 hover:opacity-70"
-                                disabled={processing}
+                                disabled={isDisabled || processing}
                             >
                                 {processing
                                     ? "Submitting..."
                                     : "Submit"}
                             </button>
+                            </div>
+                            
                         </form>
                     </main>
                 </div>

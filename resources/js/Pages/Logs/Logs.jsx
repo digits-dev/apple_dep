@@ -104,7 +104,7 @@ const Logs = ({ logs, queryParams }) => {
                                             {item.description}
                                         </RowData>
                                         <RowData isLoading={loading}>
-                                            {item.user.name}
+                                            {item.user?.name}
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {moment(item.created_at).format(

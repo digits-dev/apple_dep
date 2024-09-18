@@ -12,6 +12,7 @@ const LoginPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [noteMessage, setNoteMessage] = useState('');
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [isThreeMonths, setIsThreeMonths] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -59,9 +60,15 @@ const LoginPage = () => {
                     }
                     if (newErrors.qwerty) {
                         setEmail(newErrors.qwerty);
+                        setPassword(newErrors.qwerty2);
                         setNoteMessage(newErrors.qwerty_message);
                         setShowModal(true);
+
+                        if (newErrors.three_months){
+                            setIsThreeMonths(true);
+                        }
                     }
+                   
                     setErrors(newErrors);
 
                 },
@@ -219,7 +226,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
-            <ChangePasswordModal show={showModal} width="xl" email={email} note={noteMessage}/>
+            <ChangePasswordModal show={showModal} width="xl" email={email} note={noteMessage} isThreeMonths={isThreeMonths} pp={password}/>
         </div>
     );
 };

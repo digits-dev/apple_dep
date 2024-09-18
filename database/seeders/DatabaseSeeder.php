@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
-            // AdmModules::class,
+            AdmModules::class,
             // AdmMenus::class,
             // AdmSeeders::class,
             // AdmPrivileges::class,

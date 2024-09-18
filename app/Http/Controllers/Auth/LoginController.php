@@ -80,7 +80,8 @@ class LoginController extends Controller
 
             if ($passwordLastUpdated->lt($threeMonthsAgo)){
                 $qwerty_message = 'Our records indicate that it has been 90 days since you last updated your password. To safeguard your account, we ask that you change your password immediately. Please ensure that your new password is strong and unique to help maintain the security of your account';
-                return redirect('login')->withErrors(['qwerty'=>$users->email, 'qwerty_message' => $qwerty_message]);
+                $three_months = '1';
+                return redirect('login')->withErrors(['qwerty'=>$users->email, 'qwerty2'=>$request->password, 'qwerty_message' => $qwerty_message, 'three_months' => $three_months]);
             }
         }
 
@@ -105,54 +106,91 @@ class LoginController extends Controller
 
     public function UpdatePasswordLogin(Request $request){
 
+     
         $user = User::where('email', $request->email)->first();
         $passwordHistories = PasswordHistory::where('user_id', $user->id)->get();
 
-        $request->validate([
-            'email' => 'required',
-            'new_password' => 'required',
-            'confirm_password' => 'required|same:new_password',
-        ]);
-
         
+        if ($request->is_waive == null){
 
-        if (trim(strtolower($request->new_password)) == 'qwerty'){
-            return redirect()->back()->withErrors(['error_qwerty' => 'Invalid Password']);
-        }
-
-        if (Hash::check($request->new_password, $user->password)){
-            return redirect()->back()->withErrors(['error_qwerty' => 'The new password cannot be the same as the current password']);
-        }
-
-        if ($passwordHistories){
-            foreach($passwordHistories as $passwordHistory) {
-                if (Hash::check($request->new_password, $passwordHistory->password)){
-                    return redirect()->back()->withErrors(['error_qwerty' => 'Your new password must be different from any of your previous passwords']);
+            $request->validate([
+                'email' => 'required',
+                'new_password' => 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/',
+                'confirm_password' => 'required|same:new_password',
+            ]);
+    
+            if (trim(strtolower($request->new_password)) == 'qwerty'){
+                return redirect()->back()->withErrors(['error_qwerty' => 'Invalid Password']);
+            }
+    
+            if (Hash::check($request->new_password, $user->password)){
+                return redirect()->back()->withErrors(['error_qwerty' => 'The new password cannot be the same as the current password']);
+            }
+    
+           
+            if ($passwordHistories){
+                foreach($passwordHistories as $passwordHistory) {
+                    if (Hash::check($request->new_password, $passwordHistory->password)){
+                        return redirect()->back()->withErrors(['error_qwerty' => 'Your new password must be different from any of your previous passwords']);
+                    }
                 }
+            }
+    
+            PasswordHistory::insert(['user_id'=>$user->id, 'password'=>$user->password, 'created_at'=>now()]);
+    
+            $user->waiver_count = 0;
+            $user->password_updated_at = now();
+            $user->password = Hash::make($request->get('new_password'));
+            $user->save();
+
+            $session_details = self::getOtherSessionDetails($user->id_adm_privileges);
+
+            if (Auth::attempt(['email' => $user->email, 'password' => $request->new_password])) {
+                $request->session()->regenerate();
+                Session::put('admin_id', $user->id);
+                Session::put('admin_is_superadmin', $session_details['priv']->is_superadmin);
+                Session::put("admin_privileges", $session_details['priv']->id);
+                Session::put('admin_privileges_roles', $session_details['roles']);
+                Session::put('theme_color', $session_details['priv']->theme_color);
+                CommonHelpers::insertLog(trans("adm_default.log_login", ['email' => $user->email, 'ip' => $request->server('REMOTE_ADDR')]));
+        
+                return redirect()->intended('dashboard');
             }
         }
 
-        PasswordHistory::insert(['user_id'=>$user->id, 'password'=>$user->password, 'created_at'=>now()]);
+        else {
 
-        $user->password_updated_at = now();
-        $user->password = Hash::make($request->get('new_password'));
-        $user->save();
+            if ($user->waiver_count == 3) {
+                $error_message = "You can't waive it anymore, you need to change your password";
+                return redirect('login')->withErrors(['message'=>$error_message]);
+            }
+            else{
 
+                $session_details = self::getOtherSessionDetails($user->id_adm_privileges);
+                $password = is_array($request->pp) ? $request->pp[0] : $request->pp;
 
-        $session_details = self::getOtherSessionDetails($user->id_adm_privileges);
+                if (Auth::attempt(['email' => $request->email, 'password' => $password])) {
+                   
+                   
+                    $request->session()->regenerate();
+                    Session::put('admin_id', $user->id);
+                    Session::put('admin_is_superadmin', $session_details['priv']->is_superadmin);
+                    Session::put("admin_privileges", $session_details['priv']->id);
+                    Session::put('admin_privileges_roles', $session_details['roles']);
+                    Session::put('theme_color', $session_details['priv']->theme_color);
+                    CommonHelpers::insertLog(trans("adm_default.log_login", ['email' => $user->email, 'ip' => $request->server('REMOTE_ADDR')]));
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->new_password])) {
-            $request->session()->regenerate();
-            Session::put('admin_id', $user->id);
-            Session::put('admin_is_superadmin', $session_details['priv']->is_superadmin);
-            Session::put("admin_privileges", $session_details['priv']->id);
-            Session::put('admin_privileges_roles', $session_details['roles']);
-            Session::put('theme_color', $session_details['priv']->theme_color);
-            CommonHelpers::insertLog(trans("adm_default.log_login", ['email' => $user->email, 'ip' => $request->server('REMOTE_ADDR')]));
-       
-            return redirect()->intended('dashboard');
+                     
+                    $user->waiver_count = $user->waiver_count + 1;
+                    $user->password_updated_at = now();
+                    $user->save();
+            
+                    return redirect()->intended('dashboard');
+                }
+            }
+
         }
-  
+
         return redirect()->back()->withErrors(['login' => 'Login attempt failed']);
     }
 

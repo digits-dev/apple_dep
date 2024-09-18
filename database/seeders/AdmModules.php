@@ -275,6 +275,16 @@ class AdmModules extends Seeder
                 'controller' => 'DepCompany\DepCompanyController',
                 'is_protected' => 0,
                 'is_active' => 1,
+            ],
+            [
+                'created_at' => date('Y-m-d H:i:s'),
+                'name' => 'Notification Management',
+                'icon' => 'fa fa-flag-o',
+                'path' => 'notif_manager',
+                'table_name' => 'notifications',
+                'controller' => 'NotificationManagementController',
+                'is_protected' => 1,
+                'is_active' => 1,
             ]
         ];
 
