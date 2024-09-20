@@ -19,6 +19,7 @@ use App\Models\TransactionLog;
 use App\Models\Counter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
@@ -293,6 +294,9 @@ class ListOfOrdersController extends Controller
                 $this->enrollment_status = EnrollmentStatus::ENROLLMENT_ERROR['id'];
 
             } else {
+
+                Log::error($response);
+
                 $data = [
                     'message' => 'Something went wrong in enrolling the device/s.',
                     'status' =>  'error',
