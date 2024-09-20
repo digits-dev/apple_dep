@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin; 
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
+use App\Models\PasswordHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -138,20 +139,50 @@ use Inertia\Response;
         }
 
         public function postUpdatePassword(Request $request){
-         
+        
             $user = User::find(CommonHelpers::myId());
+            $passwordHistories = PasswordHistory::where('user_id', CommonHelpers::myId())->get();
+            
+            
             if (Hash::check($request->all()['current_password'], $user->password)){
-          
+            
                 $request->validate([
-                    'new_password' => 'required',
-                    'confirmation_password' => 'required|same:new_password'
+                    'new_password' => 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[^A-Za-z0-9]/',
+                    'confirm_password' => 'required|same:new_password',
                 ]);
+    
+                if ($passwordHistories){
+                    foreach($passwordHistories as $passwordHistory) {
+                        if (Hash::check($request->new_password, $passwordHistory->password)){
+                            return back()->withErrors(['new_password' => 'Your new password must be different from any of your previous passwords']);
+                        }
+                    }
+                }
+    
+                if (Hash::check($request->new_password, $user->password)){
+                    return back()->withErrors(['new_password' => 'The new password cannot be the same as the current password']);
+                }
+    
+                PasswordHistory::insert(['user_id'=>$user->id, 'password'=>$user->password, 'created_at'=>now()]);
+        
+                $user->waiver_count = 0;
                 $user->password_updated_at = now();
                 $user->password = Hash::make($request->get('new_password'));
                 $user->save();
-                return json_encode(["message"=>"Password Updated, You Will Be Logged-Out.", "type"=>"success"]);
+    
+                $data = [
+                    'message' => "Change Password success you will be logout",
+                    'success' => "success"
+                ];
+                return back()->with($data);
+            
             } else {
-                return json_encode(["message"=>"Incorrect Current Password.", "type"=>"error"]);
+    
+                $data = [
+                    'current_password' => "Incorrect Current Password"
+                ];
+                
+                return back()->withErrors($data);
             }
         }
 

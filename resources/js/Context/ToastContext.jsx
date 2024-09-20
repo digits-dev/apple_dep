@@ -8,19 +8,21 @@ export function ToastProvider({ children }) {
 	const [messageType, setMessageType] = useState("");
 	const timeoutId = useRef(null);
 
-	const handleToast = useCallback((message, messageType, duration = 5000, ...params) => {
+	const handleToast = useCallback((message, messageType, isDissapering = true, duration = 5000, ...params) => {
 		document.getElementById("app-content").scrollIntoView(true);
 		setMessage(message);
 		setMessageType(messageType);
 
-		if (timeoutId.current) {
-			clearTimeout(timeoutId.current);
+		if (isDissapering){
+			if (timeoutId.current) {
+				clearTimeout(timeoutId.current);
+			}
+		
+			timeoutId.current = setTimeout(() => {
+				setMessage("");
+				timeoutId.current = null; 
+			},duration);
 		}
-	
-		timeoutId.current = setTimeout(() => {
-			setMessage("");
-			timeoutId.current = null; 
-		}, duration);
 
 		params.forEach((param) => {
 			if (typeof param === "function") {

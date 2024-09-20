@@ -1,174 +1,216 @@
-import React, { useState } from "react";
-import AppContent from "../../Layouts/layout/AppContent";
+import React, { useContext, useEffect, useState } from "react";
 import ContentPanel from "../../Components/Table/ContentPanel";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import animationData from '../../../../public/animations/password-anim.json'
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
-import TableButton from "../../Components/Table/Buttons/TableButton";
-import axios from "axios";
 import { useToast } from "../../Context/ToastContext";
+import { NavbarContext } from "../../Context/NavbarContext";
+import Lottie from 'lottie-react';
+import Checkbox from "../../Components/Checkbox/Checkbox";
 const ChangePassword = () => {
-    const [data, setData] = useState({
+    const { handleToast } = useToast();
+    const { setTitle } = useContext(NavbarContext);
+    const [passwordStrength, setPasswordStrength] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [isUpperCase, setIsUpperCase] = useState(false);
+    const [isLowerCase, setIsLowerCase] = useState(false);
+    const [isCorrectLength, setIsCorrectLength] = useState(false);
+    const [isSpecialChar, setIsSpecialChar] = useState(false);
+    const [isNumber, setIsNumber] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(true);
+    const [isFieldDisabled, setIsFieldDisabled] = useState(false);
+    
+
+    const { data, setData, processing, reset, post, errors } = useForm({
         current_password: "",
         new_password: "",
-        confirmation_password: "",
+        confirm_password: "",
     });
-    const { handleToast } = useToast();
-    const [errors, setErrors] = useState({});
 
-    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        setTimeout(() => {
+            setTitle("Change Password");
+        }, 5);
+    }, []);
 
-    function handleChange(e) {
-        const key = e.target.name;
-        const value = e.target.value;
-        setData((changePasswordData) => ({
-            ...changePasswordData,
-            [key]: value,
-        }));
-        setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
-    }
+  
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value;
+        setData("new_password", newPassword);
+        setPasswordStrength(checkPasswordStrength(newPassword));
+    };[]
 
-    const validate = () => {
-        const newErrors = {};
-        if (!data.current_password)
-            newErrors.current_password = "Current Password is required";
-        if (!data.new_password)
-            newErrors.new_password = "New Password is required";
-        if (!data.confirmation_password)
-            newErrors.confirmation_password = "Confirm Password is required";
-        if (data.new_password != data.confirmation_password) {
-            newErrors.confirmation_password = "Passwords not Match";
-            newErrors.new_password = "Passwords not Match";
+    const checkPasswordStrength = (password) => {
+        let strength = 0;
+    
+        // 8 characters
+        setIsCorrectLength(password.length >= 8);
+        strength += password.length >= 8 ? 1 : 0;
+
+        // is Uppercase
+        setIsUpperCase(/[A-Z]/.test(password));
+        strength += /[A-Z]/.test(password) ? 1 : 0;
+        
+        // is Lowercase
+        setIsLowerCase(/[a-z]/.test(password));
+        strength += /[a-z]/.test(password) ? 1 : 0;
+        
+        // is Number
+        setIsNumber(/[0-9]/.test(password));
+        strength += /[0-9]/.test(password) ? 1 : 0;
+        
+        // is Special Char
+        setIsSpecialChar(/[^A-Za-z0-9]/.test(password));
+        strength += /[^A-Za-z0-9]/.test(password) ? 1 : 0;
+
+        if (strength == 5){
+            setIsDisabled(false)
         }
-
-        return newErrors;
+        else {
+            setIsDisabled(true)
+        }
+    
+        return (strength / 5) * 100;
     };
 
-    const handleSubmit = async (e) => {
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const newErrors = validate();
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-        } else {
-            Swal.fire({
-                title: `<p class="font-nunito-sans text-3xl" >Change Password?</p>`,
-                showCancelButton: true,
-                confirmButtonText: "Confirm",
-                confirmButtonColor: "#000000",
-                icon: "question",
-                iconColor: "#000000",
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    setLoading(true);
-                    try {
-                        const response = await axios.post(
-                            "/postChangePassword",
-                            data,
-                            {
-                                headers: {
-                                    "Content-Type": "multipart/form-data",
-                                },
-                            }
-                        );
-                        if (response.data.type == "success") {
-                            handleToast(response.data.message, response.data.type);
-                
-                            setTimeout(() => router.post("logout"), 3000);
-                        } else {
-                            handleToast(response.data.message, response.data.type);
-                        }
-                    } catch (error) {
-                        if (error.response && error.response.status === 422) {
-                            setErrors(error.response.data.errors);
-                        } else {
-                            setErrors({
-                                general: "An error occurred. Please try again.",
-                            });
-                        }
-                    } finally {
-                        setLoading(false);
+        Swal.fire({
+            title: `<p class="font-nunito-sans text-3xl" >Change Password?</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            confirmButtonColor: "#000000",      
+            icon: "question",
+            iconColor: "#000000",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                post("/postChangePassword", {
+                    onSuccess: (data) => {
+                        const { message, success } = data.props.auth.sessions;
+                        handleToast(message, success);
+                        setIsFieldDisabled(true);
+                        setTimeout(() => router.post("logout"), 3000);
+                    },
+                    onError: (newErrors) => {
+                        console.log(newErrors);
                     }
-                }
-            });
-        }
+                }); 
+            }
+        });
+        
+        
     };
 
     return (
         <>
             <Head title="Change Password" />
-                <ContentPanel>
-                    <Link
-                        href="dashboard"
-                        className="font-nunito-sans text-red-500 font-semibold"
-                    >
-                        Go to Dashboard
-                    </Link>
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex justify-center my-16 font-nunito-sans gap-x-16 gap-y-5 items-center flex-wrap m-5"
-                    >
-                        <img
-                            src="images/others/changepass-image.png"
-                            className="w-80"
-                        />
-                        <div className="max-w-md">
-                            <p className="mb-5">
-                                If you wish to change the account password,
-                                kindly fill in the current password, new
-                                password, and re-type new password.
-                            </p>
-
+            <ContentPanel>
+                <form onSubmit={handleSubmit} className="h-full flex font-nunito-sans items-center flex-col md:flex-row">
+                    <div className="h-full w-full md:w-1/2">
+                        <Lottie animationData={animationData} loop={true} style={{ height: '100%', width: '100%' }} />
+                    </div>
+                    <div className="h-full w-full md:w-1/2 p-5">
+                        <p className="mb-5 text-sm md:text-base"><span className="text-red-500 font-bold">Note: </span>If you would like to update your account password, please provide your current password, followed by your new desired password. To confirm the change, kindly re-enter the new password to ensure accuracy and completion of the update process.</p>
+                        <div className="w-full h-full border-2 rounded-xl px-6 py-7">
                             <InputWithLogo
                                 label="Current Password"
                                 logo="images/login-page/password-icon.png"
                                 placeholder="Enter Current Password"
-                                type="password"
-                                onChange={handleChange}
                                 name="current_password"
-                                value={data.current_password}
+                                disabled={isFieldDisabled}
+                                type={showPassword ? "text" : "password"}
+                                onChange={(e) =>
+                                    setData("current_password", e.target.value)
+                                }
                             />
                             {errors.current_password && (
-                                <div className="font-nunito-sans font-bold text-red-600 text-sm mt-2">
+                                <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
                                     {errors.current_password}
-                                </div>
+                                </span>
                             )}
                             <InputWithLogo
                                 label="New Password"
-                                name="new_password"
                                 logo="images/login-page/password-icon.png"
                                 placeholder="Enter New Password"
-                                type="password"
-                                onChange={handleChange}
-                                value={data.new_password}
-                                marginTop={4}
+                                marginTop={3}
+                                name="new_password"
+                                disabled={isFieldDisabled}
+                                type={showPassword ? "text" : "password"}
+                                onChange={handlePasswordChange}
                             />
-                            {errors.new_password && (
-                                <div className="font-nunito-sans font-bold text-red-600 text-sm mt-2">
-                                    {errors.new_password}
+                            {data.new_password && (
+                                <div className="mt-3">
+                                    <div className="relative w-full h-3 bg-gray-200 rounded">
+                                        <div
+                                            className={`absolute top-0 left-0 h-full rounded transition-all ${passwordStrength < 40 ? 'bg-red-500': passwordStrength < 70 ? 'bg-yellow-400': 'bg-green-500'}`}
+                                            style={{
+                                                width: `${passwordStrength}%`
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <div className="text-xs mt-1">
+                                        {passwordStrength < 40
+                                            ? 'Weak Password'
+                                            : passwordStrength < 70
+                                            ? 'Medium Password'
+                                            : 'Strong Password'}
+                                    </div>
+                                    <div className="text-xs mt-1 text-gray-500">
+                                        <div className={`${isUpperCase && 'text-green-500'}`}><i className={`${isUpperCase ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Must include at least one uppercase letter</span></div>
+                                        <div className={`${isLowerCase && 'text-green-500'}`}><i className={`${isLowerCase ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Must include at least one uppercase letter</span></div>
+                                        <div className={`${isCorrectLength && 'text-green-500'}`}><i className={`${isCorrectLength ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Minimum length of 8 characters</span></div>
+                                        <div className={`${isSpecialChar && 'text-green-500'}`}><i className={`${isSpecialChar ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Must include at least one special character (e.g., @$;!%*#?&)</span></div>
+                                        <div className={`${isNumber && 'text-green-500'}`}><i className={`${isNumber ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Must contain at least one number</span></div>
+                                    </div>
                                 </div>
+                            )}
+                            {errors.new_password && (
+                                <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
+                                    {errors.new_password}
+                                </span>
                             )}
                             <InputWithLogo
                                 label="Confirm Password"
-                                name="confirmation_password"
                                 logo="images/login-page/password-icon.png"
-                                placeholder="Confirm New Password"
-                                type="password"
-                                onChange={handleChange}
-                                value={data.confirmation_password}
-                                marginTop={4}
+                                placeholder="Confirm Password"
+                                marginTop={3}
+                                disabled={isFieldDisabled}
+                                name="confirm_password"
+                                type={showPassword ? "text" : "password"}
+                                onChange={(e) =>
+                                    setData("confirm_password", e.target.value)
+                                }
                             />
-                            {errors.confirmation_password && (
-                                <div className="font-nunito-sans font-bold text-red-600 text-sm mt-2">
-                                    {errors.confirmation_password}
-                                </div>
+                            {errors.confirm_password && (
+                                <span className="mt-1 inline-block text-red-500 font-base text-xs md:text-sm">
+                                    {errors.confirm_password}
+                                </span>
                             )}
-                            <div className="flex justify-end mt-8">
-                                <TableButton type="submit">
-                                    {loading ? "Saving..." : "Save Changes"}
-                                </TableButton>
+                            <div className="mt-3">
+                                <div className="flex items-center justify-end">
+                                    <Checkbox type="checkbox" isChecked={showPassword} handleClick={togglePasswordVisibility}/>
+                                    <span className="text-xs md:text-sm font-semibold mr-3">Show Password</span>
+                                </div>
                             </div>
+                            <button
+                                type="submit"
+                                className="bg-primary w-full text-white font-nunito-sans py-3 text-xs md:text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                                disabled={isDisabled || processing}
+                            >
+                                {processing
+                                    ? "Please Wait..."
+                                    : "Change Password"}
+                            </button>
+
                         </div>
-                    </form>
-                </ContentPanel>
+                    </div>
+                </form>
+            </ContentPanel>
         </>
     );
 };

@@ -27,7 +27,7 @@ const Logs = ({ logs, queryParams }) => {
     }, []);
     return (
         <>
-            <Head title="Item Master" />
+            <Head title="Logs" />
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />

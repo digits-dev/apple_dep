@@ -239,7 +239,7 @@ const ResetPasswordEmail = ({ email }) => {
                                         <div className={`${isNumber && 'text-green-500'}`}><i className={`${isNumber ? 'fa-solid fa-check' : 'fa-solid fa-circle-info text-xs'} mr-1`}></i><span>Atleast 1 Number</span></div>
                                     </div>
                                 </div>
-                            )}
+                    )}
                     {errors.new_password && (
                         <div className="text-red-500 font-base mt-2">
                             {errors.new_password}

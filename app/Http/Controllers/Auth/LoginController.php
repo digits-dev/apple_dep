@@ -116,7 +116,7 @@ class LoginController extends Controller
 
             $request->validate([
                 'email' => 'required',
-                'new_password' => 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/',
+                'new_password' => 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[^A-Za-z0-9]/',
                 'confirm_password' => 'required|same:new_password',
             ]);
     
@@ -161,8 +161,8 @@ class LoginController extends Controller
 
         else {
 
-            if ($user->waiver_count == 3) {
-                $error_message = "You can't waive it anymore, you need to change your password";
+            if ($user->waiver_count == 4) {
+                $error_message = "You can't waive anymore, you need to change your password";
                 return redirect('login')->withErrors(['message'=>$error_message]);
             }
             else{

@@ -162,7 +162,7 @@ const Users = ({ users, options, queryParams }) => {
                         },
                     });
                     if (response.data.type == "success") {
-                        handleToast(response.data.message, response.data.type);
+                        handleToast(response.data.message, response.data.type, false);
                         setShowCreateModal(false);
                         router.reload({ only: ["users"] });
                     } else {
@@ -305,7 +305,7 @@ const Users = ({ users, options, queryParams }) => {
                     },
                 });
                 if (response.data.type === "success") {
-                    handleToast(response.data.message, response.data.type);
+                    handleToast(response.data.message, response.data.type, false);
                     setShowEditModal(false);
                     router.reload({ only: ["users"] });
                 } else {

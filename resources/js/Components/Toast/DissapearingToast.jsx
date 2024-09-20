@@ -31,11 +31,16 @@ const DissapearingToast = ({ type, message }) => {
                             className="w-10 h-10"
                         />
                     </div>
-                    <div className="p-4 ml-2">
+                    <div className="flex-1 p-4 ml-2">
                         <p className="font-extrabold text-[18px]">
                             {CapitalizeFirstLetter(type)}
                         </p>
                         <p>{message}</p>
+                    </div>
+                    <div className="flex-1 flex justify-end">
+                        <div className="hover:bg-gray-200 w-6 h-6 flex items-center justify-center rounded-full cursor-pointer mt-2 mr-2" onClick={()=>{setIsShow(false)}}>
+                            <i className="fa-solid fa-x text-gray-300 font-extrabold text-xs mt-[2px]"></i>
+                        </div>
                     </div>
                 </div>
             )}
