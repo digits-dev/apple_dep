@@ -438,7 +438,7 @@ class EnrollmentListController extends Controller
 
             EnrollmentHistory::insert($enrollmentHistoryData);
 
-            self::updateOrderHeaderStatus($orderId, EnrollmentStatus::ENROLLMENT_SUCCESS['id'], false, true);
+            self::updateOrderHeaderStatus($orderId, EnrollmentStatus::ENROLLMENT_SUCCESS['id'], true);
 
             DB::commit();
 
