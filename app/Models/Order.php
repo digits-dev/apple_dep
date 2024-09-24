@@ -138,12 +138,14 @@ class Order extends Model
             AND OEL.INVENTORY_ITEM_ID = MSI.INVENTORY_ITEM_ID
             AND MSI.ORGANIZATION_ID = OOD.ORGANIZATION_ID
             AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE' ,'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO')
-            and wnd.Confirm_Date between TO_DATE('2024/09/24 00:00:00','RRRR/MM/DD HH24:MI:SS') and TO_DATE('2024/09/24 23:59:59','RRRR/MM/DD HH24:MI:SS')
+            and wnd.Confirm_Date between TO_DATE('2024/09/23 00:00:00','RRRR/MM/DD HH24:MI:SS') and TO_DATE('2024/09/24 23:59:59','RRRR/MM/DD HH24:MI:SS')
             and (SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CRP' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DLR' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DIG' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CON'
-                )";
+                )
+            and OEH.HEADER_ID = '800070478';
+            ";
 
         $results = DB::connection('oracle')->select($query);
 
