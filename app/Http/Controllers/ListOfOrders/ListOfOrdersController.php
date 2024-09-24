@@ -111,7 +111,7 @@ class ListOfOrdersController extends Controller
         $data['queryParams'] = request()->query();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
 
-        $sales_order_number = DB::table('orders')->select(DB::raw('sales_order_no as value, sales_order_no as label'))
+        $sale_order_number = Order::select('sales_order_no as value', 'sales_order_no as label')
         ->whereIn('enrollment_status',[3,7,13])
         ->get()->toArray();
     
@@ -120,7 +120,7 @@ class ListOfOrdersController extends Controller
             ->groupBy('rma_number')
             ->get()->toArray();
     
-        $data['order_number'] = array_merge($sales_order_number, $rma_number);
+        $data['order_number'] = array_merge($sale_order_number, $rma_number);
         return Inertia::render('ListOfOrders/ListOfOrders', $data);
 
     }
