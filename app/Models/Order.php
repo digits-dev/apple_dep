@@ -91,6 +91,7 @@ class Order extends Model
             OEL.LINE_NUMBER,
             OEL.ORDERED_ITEM,
             MSI.DESCRIPTION,
+            OEH.CREATION_DATE AS order_date,
             MSI.ATTRIBUTE7 AS BRAND,
             MSI.ATTRIBUTE8 AS WH_CATEGORY,
             OEL.SHIPPED_QUANTITY,
