@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\Mailer;
+use App\Models\PasswordHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -40,7 +41,6 @@ class ResetPasswordController extends Controller
         $iv = session('encryption_iv');
 
         if (!$key || !$iv) {
-
             return json_encode(["message"=>"Request expired, please request another one", "type"=>"error"]);
         }
 
@@ -58,6 +58,10 @@ class ResetPasswordController extends Controller
             'confirm_password' => 'required|same:new_password'
         ]);
 
+        PasswordHistory::insert(['user_id'=>$user->id, 'password'=>$user->password, 'created_at'=>now()]);
+
+        $user->waiver_count = 0;
+        $user->password_updated_at = now();
         $user->password = Hash::make($request->get('new_password'));
         $user->save();
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { usePage, router, Link } from "@inertiajs/react";
 import Slider from "../../Components/LoginPage/Slider";
+import ChangePasswordModal from "../../Components/Modal/ChangePasswordModal";
 
 const LoginPage = () => {
     const { errors:initialErrors  } = usePage().props;
@@ -8,11 +9,15 @@ const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [noteMessage, setNoteMessage] = useState('');
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [isThreeMonths, setIsThreeMonths] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
+
         }, 1000);
 
         return () => clearInterval(interval);
@@ -53,11 +58,24 @@ const LoginPage = () => {
                     if (newErrors.password) {
                         setPassword("");
                     }
+                    if (newErrors.qwerty) {
+                        setEmail(newErrors.qwerty);
+                        setPassword(newErrors.qwerty2);
+                        setNoteMessage(newErrors.qwerty_message);
+                        setShowModal(true);
+
+                        if (newErrors.three_months){
+                            setIsThreeMonths(true);
+                        }
+                    }
+                   
                     setErrors(newErrors);
+
                 },
                 onFinish: () => setLoading(false),
             }
         );
+
     };
 
     return (
@@ -208,6 +226,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </div>
+            <ChangePasswordModal show={showModal} width="xl" email={email} note={noteMessage} isThreeMonths={isThreeMonths} pp={password}/>
         </div>
     );
 };

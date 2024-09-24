@@ -24,7 +24,7 @@ class ApplePayloadController
         return $payload;
     }
 
-    public function generateOrdersPayload($header_data, $dep_company, $orderType, $devicePayload = null){
+    public function generateOrdersPayload($header_data, $dep_company, $orderType, $devicePayload = null, $counter = null){
         $formattedDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->order_date));
         $formattedShipDate = date('Y-m-d\TH:i:s\Z', strtotime($header_data->ship_date));
         $depCompanyId = is_object($dep_company) ? $dep_company->id : $dep_company;
@@ -45,7 +45,7 @@ class ApplePayloadController
         ];
 
         $orderPayload = [
-            'orderNumber' => $header_data['sales_order_no'],
+            'orderNumber' => $counter ? $header_data['sales_order_no'].'_'.$orderType.''.$counter->code : $header_data['sales_order_no'],
             'orderDate' => $formattedDate,
             'orderType' => $orderType,
             'customerId' => (string)$depCompanyId,

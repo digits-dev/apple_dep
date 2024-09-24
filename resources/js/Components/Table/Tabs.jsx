@@ -32,9 +32,10 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
         axios({
             url: `/export-json/${logType}/${orderId}`,
             method: "GET",
-            responseType: "blob",
+            // responseType: "blob",
         })
             .then((response) => {
+                console.log(response.data);
                 const blob = new Blob([response.data], { type: "text/plain" });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement("a");
@@ -105,6 +106,107 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                         className={tab.id === activeTab ? "block" : "hidden"}
                     >
                         {tab.id === 1 && (
+                            <div>
+                                <div className="flex justify-between">
+                                    <h2 className="mb-4 italic">
+                                        Json Request
+                                    </h2>
+                                    <TableButton
+                                        extendClass="mr-1 mb-3"
+                                        onClick={(e) =>
+                                            handleJsonExport(
+                                                e,
+                                                "Request",
+                                                jsonSubmitted[0].order_id
+                                            )
+                                        }
+                                    >
+                                        Export
+                                    </TableButton>
+                                </div>
+
+                                <TableContainer autoHeight>
+                                    <Thead>
+                                        <Row>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order ID
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Lines ID
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                Order Type
+                                            </TableHeader>
+                                            <TableHeader
+                                                sortable={false}
+                                                justify="center"
+                                            >
+                                                JSON
+                                            </TableHeader>
+                                        </Row>
+                                    </Thead>
+                                    <Tbody data={jsonSubmitted}>
+                                        {jsonSubmitted.map((json) => {
+                                            return (
+                                                <Row key={json.id}>
+                                                    <RowData center>
+                                                        {json.order_id}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        {json.order_lines_id}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        {json.order_type}
+                                                    </RowData>
+                                                    <RowData center>
+                                                        <button
+                                                            className="text-gray-500 hover:text-gray-700"
+                                                            onClick={() => {
+                                                                openModal();
+                                                                setModalData(
+                                                                    json.data
+                                                                );
+                                                                setTitle(
+                                                                    "JSON Request Submitted"
+                                                                );
+                                                            }}
+                                                        >
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#123;
+                                                            </span>
+                                                            &nbsp;
+                                                            <span>JSON</span>
+                                                            &nbsp;
+                                                            <span
+                                                                style={{
+                                                                    color: "orange",
+                                                                }}
+                                                            >
+                                                                &#125;
+                                                            </span>
+                                                        </button>
+                                                    </RowData>
+                                                </Row>
+                                            );
+                                        })}
+                                    </Tbody>
+                                </TableContainer>
+                            </div>
+                        )}
+                        {tab.id === 2 && (
                             <div>
                                 <div className="flex justify-between">
                                     <h2 className="mb-4 italic">
@@ -190,107 +292,6 @@ const Tabs = ({ tabs, jsonSubmitted, jsonReceived, transactionLogs }) => {
                                                                 );
                                                                 setTitle(
                                                                     "JSON Response Received"
-                                                                );
-                                                            }}
-                                                        >
-                                                            <span
-                                                                style={{
-                                                                    color: "orange",
-                                                                }}
-                                                            >
-                                                                &#123;
-                                                            </span>
-                                                            &nbsp;
-                                                            <span>JSON</span>
-                                                            &nbsp;
-                                                            <span
-                                                                style={{
-                                                                    color: "orange",
-                                                                }}
-                                                            >
-                                                                &#125;
-                                                            </span>
-                                                        </button>
-                                                    </RowData>
-                                                </Row>
-                                            );
-                                        })}
-                                    </Tbody>
-                                </TableContainer>
-                            </div>
-                        )}
-                        {tab.id === 2 && (
-                            <div>
-                                <div className="flex justify-between">
-                                    <h2 className="mb-4 italic">
-                                        Json Request
-                                    </h2>
-                                    <TableButton
-                                        extendClass="mr-1 mb-3"
-                                        onClick={(e) =>
-                                            handleJsonExport(
-                                                e,
-                                                "Request",
-                                                jsonSubmitted[0].order_id
-                                            )
-                                        }
-                                    >
-                                        Export
-                                    </TableButton>
-                                </div>
-
-                                <TableContainer autoHeight>
-                                    <Thead>
-                                        <Row>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                Order ID
-                                            </TableHeader>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                Order Lines ID
-                                            </TableHeader>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                Order Type
-                                            </TableHeader>
-                                            <TableHeader
-                                                sortable={false}
-                                                justify="center"
-                                            >
-                                                JSON
-                                            </TableHeader>
-                                        </Row>
-                                    </Thead>
-                                    <Tbody data={jsonSubmitted}>
-                                        {jsonSubmitted.map((json) => {
-                                            return (
-                                                <Row key={json.id}>
-                                                    <RowData center>
-                                                        {json.order_id}
-                                                    </RowData>
-                                                    <RowData center>
-                                                        {json.order_lines_id}
-                                                    </RowData>
-                                                    <RowData center>
-                                                        {json.order_type}
-                                                    </RowData>
-                                                    <RowData center>
-                                                        <button
-                                                            className="text-gray-500 hover:text-gray-700"
-                                                            onClick={() => {
-                                                                openModal();
-                                                                setModalData(
-                                                                    json.data
-                                                                );
-                                                                setTitle(
-                                                                    "JSON Request Submitted"
                                                                 );
                                                             }}
                                                         >

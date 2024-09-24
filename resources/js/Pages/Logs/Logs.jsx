@@ -27,7 +27,7 @@ const Logs = ({ logs, queryParams }) => {
     }, []);
     return (
         <>
-            <Head title="Item Master" />
+            <Head title="Logs" />
                 <ContentPanel>
                     <TopPanel>
                         <TableSearch queryParams={queryParams} />
@@ -104,7 +104,7 @@ const Logs = ({ logs, queryParams }) => {
                                             {item.description}
                                         </RowData>
                                         <RowData isLoading={loading}>
-                                            {item.user.name}
+                                            {item.user?.name}
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {moment(item.created_at).format(

@@ -31,7 +31,7 @@ class EnrollmentHistory extends Model
     {
         static::creating(function ($model) {
             $model->created_at = now();
-            $model->created_by = auth()->user()->id;
+            $model->created_by = auth()->user()->id ?? null;
         });
 
     }

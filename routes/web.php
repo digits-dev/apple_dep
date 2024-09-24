@@ -47,6 +47,7 @@ Route::get('/get-item-master', [ItemMasterController::class, 'getItemMasterDataA
 
 Route::get('/', [LoginController::class, 'index']);
 Route::get('login', [LoginController::class, 'index'])->name('login');
+Route::post('/update-password-login', [LoginController::class, 'UpdatePasswordLogin']);
 
 // reset password
 Route::get('/reset_password', [ResetPasswordController::class, 'getIndex'])->name('reset_password');
@@ -76,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
+    Route::get('/notifications', [MenusController::class, 'getNotifications'])->name('notifications');
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
@@ -89,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
     //CHANGE PASSWORD
     Route::get('/change_password', [ChangePasswordController::class, 'getIndex'])->name('change_password');
     Route::post('/postChangePassword', [AdminUsersController::class, 'postUpdatePassword'])-> name('postChangePassword');
+   
     
     //PRIVILEGES
     Route::get('create-privileges', [PrivilegesController::class, 'createPrivilegesView'])->name('create-privileges');

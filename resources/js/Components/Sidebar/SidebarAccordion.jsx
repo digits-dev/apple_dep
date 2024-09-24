@@ -41,6 +41,13 @@ const SidebarAccordion = ({ open }) => {
             image: "/images/navigation/logs-icon.png",
             icon: "fa fa-database",
         },
+        {
+            title: "Notification Management",
+            url: "notif_manager",
+            image: "/images/navigation/logs-icon.png",
+            icon: "fa fa-database",
+        },
+       
     ];
 
     useEffect(() => {

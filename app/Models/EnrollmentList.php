@@ -23,6 +23,7 @@ class EnrollmentList extends Model
         'dep_company_id',
         'item_code',
         'serial_number',
+        'rma_number',
         'dep_transact_id',
         'transaction_id',
         'dep_company_id',
@@ -42,12 +43,12 @@ class EnrollmentList extends Model
     {
         static::creating(function ($model) {
             $model->created_at = now();
-            $model->created_by = auth()->user()->id;
+            $model->created_by = auth()->user()->id ?? null;
         });
 
         static::updating(function ($model) {
             $model->updated_at = now();
-            $model->updated_by = auth()->user()->id;
+            $model->updated_by = auth()->user()->id ?? null;
         });
     }
 
