@@ -46,8 +46,8 @@ class DatabaseSeeder extends Seeder
             // DepStatusSeeder::class,
             // AdmUsersSeeders::class,
             // AdmUsersStatuses::class,
-            OrderHeaderSeeder::class,
-            OrderLinesSeeder::class,
+            // OrderHeaderSeeder::class,
+            // OrderLinesSeeder::class,
 
         ]);
      
