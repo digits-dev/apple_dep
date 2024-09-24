@@ -14,6 +14,7 @@ class LogsController extends Controller{
     private $perPage;
     private $table_name;
     private $primary_key;
+    
     public function __construct() {
         $this->table_name  =  'adm_logs';
         $this->primary_key = 'id';

@@ -44,7 +44,7 @@ const SidebarAccordion = ({ open }) => {
         {
             title: "Notification Management",
             url: "notif_manager",
-            image: "/images/navigation/logs-icon.png",
+            image: "/images/navigation/notif-icon.png",
             icon: "fa fa-database",
         },
        

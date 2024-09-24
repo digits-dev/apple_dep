@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MenusController;
 use App\Http\Controllers\Admin\ModulsController;
 use App\Http\Controllers\Action\ActionController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Admin\NotificationManagementController;
 use App\Http\Controllers\Admin\PrivilegesController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -195,6 +196,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dep-companies', [DepCompanyController::class, 'store']);
     Route::put('/dep-companies/bulkupdate', [DepCompanyController::class, 'bulkUpdate']);
     Route::put('/dep-companies/{depCompany}', [DepCompanyController::class, 'update']);
+
+
+    // NOTIFICATION MANAGEMENT
+    Route::get('/notif_manager/add', [NotificationManagementController::class, 'AddNotif']);
+    Route::post('/notif_manager/add-save', [NotificationManagementController::class, 'CreateNotif']);
+    Route::get('/notif_manager/edit/{notif}', [NotificationManagementController::class, 'EditNotif']);
+    Route::post('/notif_manager/edit-save', [NotificationManagementController::class, 'EditSave']);
+
 
 });
 

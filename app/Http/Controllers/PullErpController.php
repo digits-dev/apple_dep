@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Services\AppleDeviceEnrollmentService;
-
+use Illuminate\Support\Facades\Cache;
 
 class PullErpController extends Controller
 {
@@ -281,12 +281,20 @@ class PullErpController extends Controller
             }
             
             foreach($insertData as $key => $insertLines){
-                $customer    = DB::table('customers')->where('customer_name',trim($insertLines->customer_name))->first();
-                $dep_company = DB::table('dep_companies')->where('customer_id',$customer->id)->first();
+                $customerkey = trim($insertLines->customer_name);
+                $customer = Cache::remember("customer{$customerkey}", 3600, function() use($insertLines){
+                    return DB::table('customers')->where('customer_name',trim($insertLines->customer_name))->limit(1)->value('id');
+                });
+
+                $depCompanyKey = $customer;
+                $dep_company = Cache::remember("dep{$depCompanyKey}", 3600, function() use($customer){
+                    return DB::table('dep_companies')->where('customer_id',$customer)->limit(1)->value('xxxx');
+                });
+
                 OrderLines::create(
                 [
                     'order_id'          => $insertLines->header_id,
-                    'dep_company_id'    => $dep_company->id ?? '',
+                    'dep_company_id'    => $dep_company ?? '',
                     'digits_code'       => $insertLines->ordered_item,
                     'item_description'  => $insertLines->description,
                     'brand'             => $insertLines->brand,

@@ -1,6 +1,5 @@
 import { router, Head } from "@inertiajs/react";
 import React, { useEffect, useState, useContext } from "react";
-import AppContent from "../../Layouts/layout/AppContent";
 import Modal from "../../Components/Modal/Modal";
 import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import axios from "axios";
@@ -39,6 +38,8 @@ const Users = ({ users, options, queryParams }) => {
     const [isCheck, setIsCheck] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const { setTitle } = useContext(NavbarContext);
+
+    console.log(options);
 
     //BULK ACTIONS
     useEffect(() => {

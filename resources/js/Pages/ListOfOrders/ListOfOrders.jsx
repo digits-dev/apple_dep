@@ -1,5 +1,4 @@
 import { Head, Link, router, usePage } from "@inertiajs/react";
-import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";

@@ -31,7 +31,7 @@ const DropdownSelect = ({ options, onChange, value, name, defaultSelect, display
         <div className="relative">
             <label
                 htmlFor={name}
-                className="block text-sm font-bold text-gray-700 font-nunito-sans"
+                className="block text-sm font-bold text-gray-700 font-nunito-sans mb-1"
             >
                 {displayName || FormatLabelName(name)}
             </label>
@@ -41,7 +41,7 @@ const DropdownSelect = ({ options, onChange, value, name, defaultSelect, display
                 placeholder={placeholder}
                 defaultValue={value}
                 name={name}
-                className="block w-full py-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="block w-full border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 onChange={onChange}
                 options={options.map(opt => ({ value: opt.id, label: opt.name, name: name }))}
             />
