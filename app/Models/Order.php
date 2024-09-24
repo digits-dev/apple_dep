@@ -144,7 +144,7 @@ class Order extends Model
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DIG' or
                 SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CON'
                 )
-            and OEH.ORDER_NUMBER = '800070478'
+            and OEH.ORDER_NUMBER = 800070478
             ";
 
         $results = DB::connection('oracle')->select($query);
