@@ -316,27 +316,30 @@ const EnrollReturnDevices = ({
                                 reset();
                             },
                         });
-                    } else {
-                        post(`/list_of_orders/${orderId}/override`, {
-                            onSuccess: (data) => {
-                                const { status, message } =
-                                    data.props.auth.sessions;
-                                handleToast(message, status);
-                            },
-                            onError: (data) => {
-                                const { status, message } =
-                                    data.props.auth.sessions;
-                                handleToast(message, status);
-                            },
-                            onFinish: () => {
-                                setLoading(false);
-                                reset();
-                            },
-                        });
-                    }
+                    } 
+                    
+                    // else {
+                    //     post(`/list_of_orders/${orderId}/override`, {
+                    //         onSuccess: (data) => {
+                    //             const { status, message } =
+                    //                 data.props.auth.sessions;
+                    //             handleToast(message, status);
+                    //         },
+                    //         onError: (data) => {
+                    //             const { status, message } =
+                    //                 data.props.auth.sessions;
+                    //             handleToast(message, status);
+                    //         },
+                    //         onFinish: () => {
+                    //             setLoading(false);
+                    //             reset();
+                    //         },
+                    //     });
+                    // }
                 }
             });
         };
+
 
         return (
             <>

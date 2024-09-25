@@ -10,8 +10,7 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'party_number',
-        'customer_code',
+        'note',
         'customer_name',
         'status',
         'created_at',

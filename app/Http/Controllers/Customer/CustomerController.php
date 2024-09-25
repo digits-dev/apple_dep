@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Imports\ImportCustomer;
 use App\ImportTemplates\ImportCustomerTemplate;
 use App\Models\Customer;
+use App\Models\DepCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -51,29 +52,54 @@ class CustomerController extends Controller
         }
 
         $request->validate([
-            'customer_code' => 'required|unique:customers,customer_code',
             'customer_name' => 'required|unique:customers,customer_name',
+            'note_customer' => 'required',
+            'note_dep_company' => 'required',
+            'dep_organization_id' => 'required|unique:dep_companies,dep_organization_id',
+            'dep_company_name' => "required|unique:dep_companies,dep_company_name",
+        ], [
+            'customer_name.required' => 'The Customer Name field is required.',
+            'customer_name.unique' => 'The Customer Name has already been taken.',
+            'note_customer.required' => 'You must add a Note for Customer.',
+            'note_dep_company.required' => 'You must add a Note for DEP Company.',
+            'dep_organization_id.required' => 'The DEP Organization Id is required.',
+            'dep_organization_id.unique' => 'The DEP Organization Id exist.',
+            'dep_company_name.required' => 'The DEP Company Name is required.',
+            'dep_company_name.unique' => 'The DEP Company Name has already been taken.'
         ]);
+
         
-        Customer::create([
-                        'party_number'=> $request->input('party_number'),
-                        'customer_code'=> $request->input('customer_code'),
-                        'customer_name'=> $request->input('customer_name')
-                        ]);
+        $customer_created = Customer::create([                     
+            'customer_name' => trim($request->input('customer_name')),
+            'note' => $request->input('note_customer'),
+        ]);
+
+
+        DepCompany::create([
+            'dep_company_name'=> trim($request->input('dep_company_name')),
+            'dep_organization_id' => $request->input('dep_organization_id'),
+            'customer_id' => $customer_created->id,
+            'note' => $request->input('note_dep_company'),
+            'created_by' => CommonHelpers::myId(),
+        ]);
 
         $data = [
-            'message' => "Successfully Added Customer.", 
+            'message' => "Customer added successfully", 
             'status' => 'success'
         ];
 
         return back()->with($data);
     }
+
     public function update(Request $request, Customer $customer){
+
+        // dd('update', $request->all());
 
         if(!CommonHelpers::isUpdate()) {
 
             $data = [
-                'message' => "You don't have permission to update.", 
+                'message' => "You don
+                't have permission to update.",
                 'status' => 'error'
             ];
 
@@ -81,18 +107,23 @@ class CustomerController extends Controller
         }
         $request->validate([
             'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
+            'note_customer' => 'required',
             'status' => 'required',
+        ],
+        [
+            'customer_name.required' => 'The Customer Name field is required.',
+            'customer_name.unique' => 'The Customer Name has already been taken.',
+            'note_customer.required' => 'You must add a Note for Customer.',
         ]);
 
         $customer->update([
-            'party_number'=> $request->input('party_number'),
-            'customer_code'=> $request->input('customer_code'), 
-            'customer_name'=> $request->input('customer_name'), 
+            'customer_name' => trim($request->input('customer_name')),
+            'note' => $request->input('note_customer'),
             'status' => $request->input('status')
         ]);
 
         $data = [
-            'message' => "Successfully Updated.", 
+            'message' => "Customer updated successfully", 
             'status' => 'success'
         ];
 

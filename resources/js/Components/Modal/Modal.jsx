@@ -47,7 +47,7 @@ const Modal = ({
                                 ></i>
                             </div>
                         </div>
-                        <main className="py-3 px-5 ">{children}</main>
+                        <main className="py-3 px-5 max-h-[70vh] overflow-y-auto">{children}</main>
                     </div>
                 </div>
             )}

@@ -18,7 +18,7 @@ class OrderLines extends Model
     }
 
     public function depCompanies() {
-        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
+        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'dep_organization_id');
     }
     
     public function scopeGetOrderLines()

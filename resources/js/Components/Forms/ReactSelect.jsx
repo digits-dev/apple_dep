@@ -9,6 +9,7 @@ const ReactSelect = ({
     placeholder,
     displayName,
     options,
+    disabled,
     menuPlacement = "bottom"
 }) => {
     return (
@@ -28,6 +29,7 @@ const ReactSelect = ({
                 placeholder={placeholder}
                 value={value}
                 name={name}
+                isDisabled={disabled}
                 className="text-sm"
                 onChange={onChange}
                 options={options}

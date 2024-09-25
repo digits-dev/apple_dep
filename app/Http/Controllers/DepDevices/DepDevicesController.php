@@ -100,18 +100,18 @@ class DepDevicesController extends Controller
         $data['devices'] = $devices;
 
 
-        foreach ($devices as $depDevice) {
-            $order = $depDevice->order;
-            $depDevice["dr_number"] =$order->dr_number;
-            $depDevice["order_ref_no"] =$order->order_ref_no;
-            $depDevice["order_date"] =$order->order_date;
-            $depDevice["sales_order_no"] =$order->sales_order_no;
-        }
+        // foreach ($devices as $depDevice) {
+        //     $order = $depDevice->order;
+        //     $depDevice["dr_number"] =$order->dr_number;
+        //     $depDevice["order_ref_no"] =$order->order_ref_no;
+        //     $depDevice["order_date"] =$order->order_date;
+        //     $depDevice["sales_order_no"] =$order->sales_order_no;
+        // }
 
         $data['enrollmentStatuses'] = EnrollmentStatus::select('id', 'enrollment_status as name')->get();
         $data['queryParams'] = request()->query();
         $data['options'] = DepCompany::get();
-        $data['depCompanies'] = DepCompany::select('id as value', 'dep_company_name as label')->get();
+        $data['depCompanies'] = DepCompany::select('dep_organization_id as value', 'dep_company_name as label')->get();
         $data['customers'] = Customer::select('id as value', 'customer_name as label')->get();
 
         //get all duplicate serials with different SO
@@ -472,6 +472,7 @@ class DepDevicesController extends Controller
 
     public function updateDepCompany(Request $request)
     {
+
         $validatedData = $request->validate([
             'depCompanyId' => 'required|integer|exists:dep_companies,id',
             'orderId' => 'required|integer|exists:list_of_order_lines,id',

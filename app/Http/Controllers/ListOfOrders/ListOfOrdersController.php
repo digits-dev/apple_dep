@@ -169,13 +169,14 @@ class ListOfOrdersController extends Controller
         $orderHeader = Order::where('id', $order->id)->select('customer_id')->first();
 
         $data['depCompanies'] = DepCompany::where('customer_id', $orderHeader->customer_id)
-        ->select('id as value', 'dep_company_name as label')
+        ->select('dep_organization_id as value', 'dep_company_name as label')
         ->get();
         
         return Inertia::render('ListOfOrders/EnrollReturnDevices', $data);
     }
 
     public function updateDepCompany(Request $request, OrderLines $order){
+
         
         if(!CommonHelpers::isUpdate()) {
 
@@ -187,7 +188,6 @@ class ListOfOrdersController extends Controller
             return back()->with($data);
         }
 
-   
         $request->validate([
             'dep_company_id' => "required",
         ]);

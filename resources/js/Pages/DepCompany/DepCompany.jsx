@@ -1,5 +1,4 @@
 import { Head, router, usePage } from "@inertiajs/react";
-import AppContent from "../../Layouts/layout/AppContent";
 import TableHeader from "../../Components/Table/TableHeader";
 import Pagination from "../../Components/Table/Pagination";
 import TableSearch from "../../Components/Table/TableSearch";
@@ -8,6 +7,7 @@ import TopPanel from "../../Components/Table/TopPanel";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import RowData from "../../Components/Table/RowData";
 import RowAction from "../../Components/Table/RowAction";
+import RowActions from "../../Components/Table/RowActions";
 import Row from "../../Components/Table/Row";
 import Import from "../../Components/Table/Buttons/Import";
 import Export from "../../Components/Table/Buttons/Export";
@@ -45,8 +45,11 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const [showDetails, setShowDetails] = useState (false);
     const [updateFormValues, setUpdateFormValues] = useState({
         currentId: "",
+        note: "",
+        dep_organization_id: "",
         dep_company_name: "",
         customer_id: "",
         status: Boolean,
@@ -61,6 +64,10 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
     };
+
+    const handleShowDetails = () => {
+        setShowDetails(!showDetails);
+    }
 
     const handleCheckboxChange = (itemId) => {
         if (selectedItems.includes(itemId)) {
@@ -200,6 +207,14 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                                 </TableHeader>}
 
                                 <TableHeader
+                                    name="id"
+                                    queryParams={queryParams}
+                                    width="lg"
+                                >
+                                    DEP Organization ID
+                                </TableHeader>
+
+                                <TableHeader
                                     name="dep_company_name"
                                     queryParams={queryParams}
                                     width="lg"
@@ -287,6 +302,10 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                                             />
                                         </RowData>}
 
+                                        <RowData isLoading={loading} >
+                                            {item.dep_organization_id}
+                                        </RowData>
+
                                         <RowData isLoading={loading}>
                                             {item.dep_company_name}
                                         </RowData>
@@ -327,21 +346,42 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
 
                                         {auth.access.isUpdate &&
                                         <RowData isLoading={loading} center sticky="right">
-                                            <RowAction
-                                                type="button"
-                                                onClick={() => {
-                                                    handleShowEdit();
-                                                    setUpdateFormValues({
-                                                        currentId: item.id,
-                                                        dep_company_name: item.dep_company_name,
-                                                        customer_id: item.customer_id,
-                                                        status: item.status,
-                                                    });
-                                                }}
-                                                action="edit"
-                                                size="md"
-                                                tooltipContent="Edit"
-                                            />
+                                            <RowActions>
+                                                <RowAction
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleShowEdit();
+                                                        setUpdateFormValues({
+                                                            currentId: item.id,
+                                                            note: item.note,
+                                                            dep_organization_id: item.dep_organization_id,
+                                                            dep_company_name: item.dep_company_name,
+                                                            customer_id: item.customer_id,
+                                                            status: item.status,
+                                                        });
+                                                    }}
+                                                    action="edit"
+                                                    size="md"
+                                                    tooltipContent="Edit"
+                                                />
+                                                <RowAction
+                                                    type="button"
+                                                    onClick={() => {
+                                                        handleShowDetails();
+                                                        setUpdateFormValues({
+                                                            currentId: item.id,
+                                                            dep_company_name: item.dep_company_name,
+                                                            dep_organization_id: item.dep_organization_id,
+                                                            note: item.note,
+                                                            customer_id: item.customer_id,
+                                                            status: item.status,
+                                                        });
+                                                    }}
+                                                    action="view"
+                                                    size="md"
+                                                    tooltipContent="Show Details"
+                                                />
+                                            </RowActions>
                                         </RowData>}
                                     </Row>
                                 ))}
@@ -354,7 +394,7 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                 <Modal
                     show={showCreate}
                     onClose={handleShowCreate}
-                    title="Add Dep Company"
+                    title="Add DEP Company"
                 >
                     <DepCompanyForm 
                         handleShow={handleShowCreate}
@@ -366,11 +406,23 @@ const DepCompany = ({ depCompanies, queryParams, customers}) => {
                 <Modal
                     show={showEdit}
                     onClose={handleShowEdit}
-                    title="Edit Dep Company"
+                    title="Edit DEP Company"
                 >
                     <DepCompanyForm
                         handleShow={handleShowEdit}
                         action="edit"
+                        updateFormValues={updateFormValues}
+                        customers={customers}
+                    />
+                </Modal>
+                <Modal
+                    show={showDetails}
+                    onClose={handleShowDetails}
+                    title="DEP Company Details"
+                >
+                    <DepCompanyForm
+                        handleShow={handleShowDetails}
+                        action="view"
                         updateFormValues={updateFormValues}
                         customers={customers}
                     />

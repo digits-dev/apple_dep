@@ -384,7 +384,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                             <TableHeader
                                 name="customer_id"
                                 queryParams={queryParams}
-                                width="md"
+                                width="lg"
                             >
                                 Customer Name
                             </TableHeader>

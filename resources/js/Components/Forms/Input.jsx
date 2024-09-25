@@ -9,6 +9,7 @@ const InputComponent = ({
     placeholder,
     displayName,
     checked,
+    disabled,
     extendedClass,
     extendedClass1
 }) => {
@@ -24,6 +25,7 @@ const InputComponent = ({
                 id={name}
                 type={type}
                 value={value}
+                disabled={disabled}
                 name={name}
                 onChange={onChange}
                 placeholder={placeholder}

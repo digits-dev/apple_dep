@@ -58,19 +58,28 @@ class DepCompanyController extends Controller{
 
         $request->validate([
             'customer_id' => 'required',
+            'note' => 'required',
+            'dep_organization_id' => 'required|unique:dep_companies,dep_organization_id',
             'dep_company_name' => 'required|unique:dep_companies,dep_company_name'
         ], [
-            'customer_id.required' => 'The customer name is required.',
-            'dep_company_name.required' => 'The dep company name is required.'
+            'customer_id.required' => 'The Customer Name is required.',
+            'note.required' => 'You must add a Note.',
+            'dep_organization_id.required' => 'The DEP Organization Id is required.',
+            'dep_organization_id.unique' => 'The DEP Organization Id exist.',
+            'dep_company_name.required' => 'The DEP Company Name is required.'
         ]);
         
+
         DepCompany::create([
-            'dep_company_name'=> $request->input('dep_company_name'),
+            'dep_company_name'=> trim($request->input('dep_company_name')),
+            'dep_organization_id' => $request->input('dep_organization_id'),
             'customer_id' => $request->input('customer_id'),
+            'note' => $request->input('note'),
+            'created_by' => CommonHelpers::myId(),
         ]);
 
         $data = [
-            'message' => "Successfully Added Dep Company.", 
+            'message' => "DEP Company added successfully", 
             'status' => 'success'
         ];
 
@@ -91,19 +100,30 @@ class DepCompanyController extends Controller{
 
         $request->validate([
             'customer_id' => 'required',
+            'note' => 'required',
+            'dep_organization_id' => 'required|unique:dep_companies,dep_organization_id,' . $depCompany->id,
             'dep_company_name' => "required|unique:dep_companies,dep_company_name,$depCompany->id,id",
             'status' => 'required',
-      
+        ], [
+            'customer_id.required' => 'The Customer Name is required.',
+            'note.required' => 'You must add a Note.',
+            'dep_organization_id.required' => 'The DEP Organization Id is required.',
+            'dep_organization_id.unique' => 'The DEP Organization Id exist.',
+            'dep_company_name.required' => 'The DEP Company Name is required.'
         ]);
+
         
         $depCompany->update([
+            'dep_company_name'=> trim($request->input('dep_company_name')),
+            'dep_organization_id' => $request->input('dep_organization_id'),
             'customer_id' => $request->input('customer_id'),
-            'dep_company_name'=> $request->input('dep_company_name'), 
-            'status' => $request->input('status')
+            'note' => $request->input('note'), 
+            'status' => $request->input('status'),
+            'updated_by' => CommonHelpers::myId(),
         ]);
 
         $data = [
-            'message' => "Successfully Updated.", 
+            'message' => "DEP Company updated successfully", 
             'status' => 'success'
         ];
 

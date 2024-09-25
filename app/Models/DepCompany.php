@@ -20,6 +20,8 @@ class DepCompany extends Model
 
     protected $fillable = [
         'customer_id',
+        'note',
+        'dep_organization_id',
         'dep_company_name',
         'status',
         'created_by',

@@ -8,6 +8,7 @@ import TopPanel from "../../Components/Table/TopPanel";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import RowData from "../../Components/Table/RowData";
 import RowAction from "../../Components/Table/RowAction";
+import RowActions from "../../Components/Table/RowActions";
 import Row from "../../Components/Table/Row";
 import Export from "../../Components/Table/Buttons/Export";
 import Thead from "../../Components/Table/Thead";
@@ -45,7 +46,8 @@ const Customer = ({ customers, queryParams }) => {
 
     const [showCreate, setShowCreate] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
-    const [updateFormValues, setUpdateFormValues] = useState({party_number: '',currentCusCodeValue: '', currentValue: '', currentId:'', status: Boolean});
+    const [showDetails, setShowDetails] = useState (false);
+    const [updateFormValues, setUpdateFormValues] = useState({customer_name: '', currentId:'', note:'', status: Boolean});
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
 
@@ -56,6 +58,10 @@ const Customer = ({ customers, queryParams }) => {
     const handleShowEdit = () => {
         setShowEdit(!showEdit);
     };
+
+    const handleShowDetails = () => {
+        setShowDetails(!showDetails);
+    }
 
     const handleCheckboxChange = (itemId) => {
 		if (selectedItems.includes(itemId)) {
@@ -180,21 +186,6 @@ const Customer = ({ customers, queryParams }) => {
                                 >
                                     Customer ID
                                 </TableHeader>
-
-                                <TableHeader
-                                    name="party_number"
-                                    queryParams={queryParams}
-                                >
-                                    Party Number
-                                </TableHeader>
-
-                                <TableHeader
-                                    name="customer_code"
-                                    queryParams={queryParams}
-                                >
-                                    Customer Code
-                                </TableHeader>
-
                                 <TableHeader
                                     name="customer_name"
                                     queryParams={queryParams}
@@ -244,10 +235,7 @@ const Customer = ({ customers, queryParams }) => {
                                     <RowData isLoading={loading} >
                                         {item.id}
                                     </RowData>
-                                    <RowData isLoading={loading} >
-                                        {item.party_number}
-                                    </RowData>
-                                    <RowData isLoading={loading}>{item.customer_code}</RowData>
+            
                                     <RowData isLoading={loading}>{item.customer_name}</RowData>
                                     <RowData isLoading={loading} >{item.created_at}</RowData>
                                     <RowStatus
@@ -260,13 +248,22 @@ const Customer = ({ customers, queryParams }) => {
 
                                     {auth.access.isUpdate &&
                                     <RowData isLoading={loading} center>
-                                        <RowAction
-                                            type="button"
-                                            onClick={()=>{handleShowEdit(); setUpdateFormValues({party_number:item.party_number,currentId:item.id, currentCusCodeValue:item.customer_code, currentValue:item.customer_name, status:item.status});}}
-                                            action="edit"
-                                            size="md"
-                                            tooltipContent="Edit"
-                                        />
+                                        <RowActions>
+                                            <RowAction
+                                                type="button"
+                                                onClick={()=>{handleShowEdit(); setUpdateFormValues({currentId:item.id, customer_name:item.customer_name, note:item.note, status:item.status});}}
+                                                action="edit"
+                                                size="md"
+                                                tooltipContent="Edit"
+                                            />
+                                            <RowAction
+                                                type="button"
+                                                action="view"
+                                                onClick={()=>{handleShowDetails(); setUpdateFormValues({currentId:item.id, customer_name:item.customer_name, note:item.note, status:item.status});}}
+                                                size="md"
+                                                tooltipContent="View Details"
+                                            />
+                                        </RowActions>
                                     </RowData>}
                                 </Row>
                             ))}
@@ -294,6 +291,17 @@ const Customer = ({ customers, queryParams }) => {
                 <CustomerForm 
                     handleShow={handleShowEdit} 
                     action="edit" 
+                    updateFormValues={updateFormValues} />
+            </Modal>
+
+            <Modal
+                show={showDetails}
+                onClose={handleShowDetails}
+                title="Customer Details"
+            >
+                <CustomerForm 
+                    handleShow={handleShowDetails} 
+                    action="view" 
                     updateFormValues={updateFormValues} />
             </Modal>
 

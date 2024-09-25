@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
-import React from 'react'
+import React, { useState } from 'react'
 import InputComponent from '../../Components/Forms/Input';
+import TextAreaInput from '../../Components/Forms/TextAreaInput';
 import Select from '../../Components/Forms/Select';
 import { useToast } from '../../Context/ToastContext';
 
@@ -8,11 +9,15 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
     const { handleToast } = useToast();
 
     const { data, setData, processing, reset, post, put, errors } = useForm({
-        customer_code: updateFormValues?.party_number || '',
-        customer_code: updateFormValues?.currentCusCodeValue || '',
-        customer_name: updateFormValues?.currentValue || '',
+        customer_name: updateFormValues?.customer_name || '',
+        note_customer: updateFormValues?.note || '',
         status: updateFormValues?.status,
+        dep_company_name: '',
+        dep_organization_id: '',
+        note_dep_company: '',
     });
+
+    const [afterAddCustomer, setAfterAddCustomer] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -38,15 +43,16 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
         }
     }
 
+
     return (
         <>
         <form className='space-y-4' onSubmit={handleSubmit}>
-            <InputComponent name="party_number" value={data.party_number} onChange={e => setData('party_number', e.target.value)}/>
-            <InputComponent name="customer_code" value={data.customer_code} onChange={e => setData('customer_code', e.target.value)}/>
-            {errors.customer_code && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.customer_code}</em></span>}
-            <InputComponent name="customer_name" value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}/>
-            {errors.customer_name && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.customer_name}</em></span>}
-           
+            <InputComponent name="customer_name" disabled={action == 'view' ? true : false} placeholder="Customer Name" value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}/>
+            {errors.customer_name && <span className='mt-1 inline-block text-sm text-red-400 font-base'>{errors.customer_name}</span>}
+
+            <TextAreaInput name="note_customer" rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (Customer)" isrequired={false} value={data.note_customer} onChange={e => setData('note_customer', e.target.value)} />
+            {errors.note_customer && <span className='mt-1 inline-block text-red-400 text-sm font-base'>{errors.note_customer}</span>}
+
             {action == 'edit' &&  
                 <Select name="status" 
                     value={data.status} 
@@ -57,13 +63,77 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
             }
             {errors.status && <span className='mt-1 inline-block text-red-400 font-base'><em>{errors.status}</em></span>}
 
-            <button
+            
+            {action == 'edit' && 
+                <button
                 type="submit"
                 className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
                 disabled={processing}
-            >
-                {action == 'edit' ? processing ? "Updating..." : "Update" : processing ? "Submitting..." : "Submit"}
-            </button>
+                >
+                    {action == 'edit' ? processing ? "Updating..." : "Update" : processing ? "Submitting..." : "Submit"}
+                </button>
+            }
+
+            {action == 'create' && 
+                <button
+                type="button"
+                disabled={afterAddCustomer == true ? 1 : 0}
+                onClick={() => {setAfterAddCustomer(true)}}
+                className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                >
+                    Add
+                </button>
+            }
+
+            {afterAddCustomer && 
+                <>
+                <InputComponent
+                    disabled={action == 'view' ? true : false}
+                    name="dep_company_name"
+                    displayName={"DEP Company Name"}
+                    placeholder="DEP Company Name"
+                    value={data.dep_company_name}
+                    onChange={(e) =>
+                        setData("dep_company_name", e.target.value)
+                    }
+                />
+
+                {errors.dep_company_name && (
+                    <span className="mt-1 inline-block text-sm text-red-400 font-base">
+                        {errors.dep_company_name}
+                    </span>
+                )}
+
+                <InputComponent
+                    name="dep_organization_id"
+                    disabled={action == 'view' ? true : false}
+                    value={data.dep_organization_id}
+                    placeholder={"DEP Organization Id"}
+                    displayName={"DEP Organization Id"}
+                    onChange={(e) =>
+                        setData("dep_organization_id", e.target.value)
+                    }
+                />
+
+                {errors.dep_organization_id && (
+                    <span className="mt-1 inline-block text-sm text-red-400 font-base">
+                        {errors.dep_organization_id}
+                    </span>
+                )}
+
+                <TextAreaInput name="note_dep_company" rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (DEP Company)" isrequired={false} value={data.note_dep_company} onChange={e => setData('note_dep_company', e.target.value)} />
+                {errors.note_dep_company && <span className='mt-1 inline-block text-red-400 text-sm font-base'>{errors.note_dep_company}</span>}
+
+                <button
+                type="submit"
+                className="bg-primary w-full text-white font-nunito-sans  py-2 text-sm font-bold rounded-md mt-5 hover:opacity-70"
+                disabled={processing}
+                >
+                    {processing ? "Submitting..." : "Submit"}
+                </button>
+                </>
+            }
+            
         </form>
    
         </>
