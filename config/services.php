@@ -1,3 +1,4 @@
+
 <?php
 
 return [
@@ -53,7 +54,8 @@ return [
 
     'item_master' => [
         'url' => env('ITEM_MASTER_URL'),
-        'key' => env('ITEM_MASTER_KEY')
+        'key' => env('ITEM_MASTER_KEY'),
+        'user_agent' => env('ITEM_MASTER_USER_AGENT', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36')
     ],
     
     'customers' => [

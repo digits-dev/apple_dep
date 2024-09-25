@@ -4,6 +4,9 @@ namespace App\Http\Controllers\ItemMaster;
 
 use App\Exports\ItemMasterExport;
 use app\Helpers\CommonHelpers;
+use App\Services\ItemMasterSyncService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Models\ItemMaster;
@@ -225,6 +228,48 @@ class ItemMasterController extends Controller
             }
         }
         \Log::info('Item Create: executed! items');
+    }
+
+    public function pullItemMaster(Request $request, ItemMasterSyncService $itemSync){
+        $request->validate(
+          [  
+            'datefrom' => ['required', 'date_format:Y-m-d', 'before:dateto'],
+            'dateto'   => ['required', 'date_format:Y-m-d', 'after:datefrom'],
+          ], [],
+          [
+            'datefrom' => 'date from',
+            'dateto' => 'date to'
+          ]
+        );
+
+        $response = $itemSync->syncItems(request())->original;
+
+        $data = [
+            'message' => $response['message'], 
+            'status' => $response['status']
+        ];
+
+        return back()->with($data);
+    }
+
+    public function getSyncItems(ItemMasterSyncService $itemSync){
+        //for testing
+        // $datefrom = '2024-09-15';
+        // $dateto = '2024-09-25';
+
+        $datefrom = Carbon::now()->format("Y-m-d");
+        $dateto = Carbon::now()->addDays(1)->format("Y-m-d");
+
+        $params = [
+            'datefrom' => $datefrom,
+            'dateto' => $dateto,
+        ];
+ 
+        $itemSync->syncItems(request()->merge($params));
+
+        Log::info("Items synced successfully from $datefrom to $dateto");
+
+        echo "Items synced successfully from $datefrom to $dateto";
     }
   
 }

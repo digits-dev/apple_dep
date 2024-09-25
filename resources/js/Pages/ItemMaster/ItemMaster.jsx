@@ -17,6 +17,7 @@ import Tbody from "../../Components/Table/Tbody";
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import Modal from "../../Components/Modal/Modal";
 import ItemMasterForm from "./ItemMasterForm";
+import ItemMasterSync from "./ItemMasterSync";
 import { useToast } from "../../Context/ToastContext";
 import RowAction from "../../Components/Table/RowAction";
 
@@ -26,6 +27,7 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
     const [loading, setLoading] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showItemSync, setShowItemSync] = useState(false);
     const { handleToast } = useToast();
     const [updateFormValues, setUpdateFormValues] = useState({
         digits_code: "",
@@ -51,6 +53,10 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
         setShowUpdateModal(!showUpdateModal);
     };
 
+    const handleItemSync = () => {
+        setShowItemSync(!showItemSync);
+    };
+
     useEffect(() => {
         setTimeout(() => {
             setTitle("Submaster - Item Master");
@@ -69,6 +75,10 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         <TableButton onClick={handleCreateModal}>
                             Add Item
                         </TableButton>}
+
+                        <TableButton onClick={handleItemSync}>
+                           Pull Items
+                        </TableButton>
                       
                         <Export 
                             path={`/item-master-export${window.location.search}`} 
@@ -280,6 +290,16 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                             handleShow={handleUpdateModal}
                             setUpdateFormValues={updateFormValues}
                             action="edit"
+                        />
+                    </Modal>
+                    <Modal
+                        show={showItemSync}
+                        onClose={handleItemSync}
+                        title="Pull Item Master"
+                        width="2xl"
+                    >
+                        <ItemMasterSync
+                            handleShow={handleItemSync}
                         />
                     </Modal>
                     <Pagination paginate={itemMaster} />

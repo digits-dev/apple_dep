@@ -11,7 +11,8 @@ const InputComponent = ({
     checked,
     disabled,
     extendedClass,
-    extendedClass1
+    extendedClass1,
+    ...props
 }) => {
     return (
         <div className="">
@@ -31,6 +32,7 @@ const InputComponent = ({
                 placeholder={placeholder}
                 className={`mt-1 block w-full px-3 py-2 border placeholder:text-sm placeholder:text-gray-300 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm ${extendedClass1}`}
                 checked={checked}
+                {...props}
             />
         </div>
     );

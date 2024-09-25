@@ -14,10 +14,10 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')->hourly();
         $schedule->call('\App\Http\Controllers\PullErpController@getListOfOrdersFromErpv1')->dailyAt('04:00');
-        $schedule->call('\App\Http\Controllers\ItemMaster\ItemMasterController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
         $schedule->call('\App\Http\Controllers\Customer\CustomerController@getCustomers')->hourly()->between('9:00', '23:00');
         $schedule->call('\App\Http\Controllers\EnrollmentList\EnrollmentListController@updateEnrollmentStatus')->everyFiveSeconds();
-        
+        $schedule->call('\App\Http\Controllers\ItemMaster\ItemMasterController@getSyncItems')->hourly()->between('9:00', '23:00');
+
         $schedule->command('mysql:backup')->daily()->at('06:00');
     }
 

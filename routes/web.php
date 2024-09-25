@@ -205,6 +205,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notif_manager/edit-save', [NotificationManagementController::class, 'EditSave']);
 
 
+    //For Item Master Pull
+    Route::post('/pull-item-master', [ItemMasterController::class, 'pullItemMaster']);
 });
 
 Route::group([
