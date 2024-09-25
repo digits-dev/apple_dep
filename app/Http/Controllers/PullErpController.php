@@ -242,7 +242,7 @@ class PullErpController extends Controller
         if($findDuplicateSerialInOrderLinesTable){
             self::savePullErpErrors($findDuplicateSerialInOrderLinesTable);
         }
-  
+   
         //SAVE HEADER
         $latestRequest = DB::table('orders')->select('id')->orderBy('id','DESC')->first();
         $latestRequestId = $latestRequest->id ?? 0;
@@ -288,9 +288,9 @@ class PullErpController extends Controller
 
                 $depCompanyKey = $customer;
                 $dep_company = Cache::remember("dep{$depCompanyKey}", 3600, function() use($customer){
-                    return DB::table('dep_companies')->where('customer_id',$customer)->limit(1)->value('xxxx');
+                    return DB::table('dep_companies')->where('customer_id',$customer)->limit(1)->value('dep_organization_id');
                 });
-
+                
                 OrderLines::create(
                 [
                     'order_id'          => $insertLines->header_id,
