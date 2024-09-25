@@ -330,7 +330,7 @@ const DepDevices = ({
                         }
                     />
                     <p className="text-red-500 text-sm">
-                        Note: When you use this button, it will override the
+                        Note: When you use this button, it will Override the
                         current serial and resubmit the new serial number to
                         Apple.
                     </p>
