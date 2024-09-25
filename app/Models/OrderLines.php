@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderLines extends Model
 {
+
     use HasFactory;
+    use SoftDeletes;
+
     protected $table = 'list_of_order_lines';
     protected $fillable = ['order_id', 'digits_code','item_description','brand','wh_category','quantity','serial_number', 'enrollment_status_id', 'dep_company_id'];
 
