@@ -97,8 +97,9 @@ class DepDevicesController extends Controller
 
         $devices = self::getAllData()->paginate($this->perPage)->withQueryString();
 
+        
         $data['devices'] = $devices;
-
+    
 
         // foreach ($devices as $depDevice) {
         //     $order = $depDevice->order;
