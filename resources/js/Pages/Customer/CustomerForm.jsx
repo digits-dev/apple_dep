@@ -50,7 +50,7 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
             <InputComponent name="customer_name" disabled={action == 'view' ? true : false} placeholder="Customer Name" value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}/>
             {errors.customer_name && <span className='mt-1 inline-block text-sm text-red-400 font-base'>{errors.customer_name}</span>}
 
-            <TextAreaInput name="note_customer" rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (Customer)" isrequired={false} value={data.note_customer} onChange={e => setData('note_customer', e.target.value)} />
+            <TextAreaInput name="note_customer" displayName={'Note'} rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (Customer)" isrequired={false} value={data.note_customer} onChange={e => setData('note_customer', e.target.value)} />
             {errors.note_customer && <span className='mt-1 inline-block text-red-400 text-sm font-base'>{errors.note_customer}</span>}
 
             {action == 'edit' &&  
@@ -121,7 +121,7 @@ const CustomerForm = ({action, handleShow, updateFormValues}) => {
                     </span>
                 )}
 
-                <TextAreaInput name="note_dep_company" rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (DEP Company)" isrequired={false} value={data.note_dep_company} onChange={e => setData('note_dep_company', e.target.value)} />
+                <TextAreaInput name="note_dep_company" displayName={'Note'} rows={2} is_disabled={action == 'view' ? true : false} placeholder="Add Note (DEP Company)" isrequired={false} value={data.note_dep_company} onChange={e => setData('note_dep_company', e.target.value)} />
                 {errors.note_dep_company && <span className='mt-1 inline-block text-red-400 text-sm font-base'>{errors.note_dep_company}</span>}
 
                 <button

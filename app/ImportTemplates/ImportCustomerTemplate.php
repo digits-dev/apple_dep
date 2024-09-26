@@ -15,10 +15,7 @@ class ImportCustomerTemplate implements FromArray, WithHeadings, ShouldAutoSize,
     public function headings(): array
     {
         return [
-            'Party Number',
-            'Customer Code',
             'Customer Name',
-            'Created Date',
         ];
     }
 
@@ -26,16 +23,10 @@ class ImportCustomerTemplate implements FromArray, WithHeadings, ShouldAutoSize,
     {
         return [
             [
-                '22501',
-                'CUS-0001',
-                'Acme Corporation',
-                '29/04/2019 10:38:14'
+                'Acme Corporation'
             ],
             [   
-                '22502',
-                'CUS-0002',
-                'Acme2 Corporation',
-                '29/04/2019 10:38:14'
+                'Acme2 Corporation'
             ],
         ];
     }

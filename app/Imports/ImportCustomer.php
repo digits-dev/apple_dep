@@ -2,7 +2,9 @@
 
 namespace App\Imports;
 
+use app\Helpers\CommonHelpers;
 use App\Models\Customer;
+use App\Models\DepCompany;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
@@ -23,12 +25,22 @@ class ImportCustomer implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVa
             return null;
         }
 
-        return new Customer([
-            'party_number' => trim($row['party_number']),
-            'created_at' => $this->transformDate($row['created_at']),
-            'customer_code' => trim($row['customer_code']),
+        $customerCreate = Customer::create([
             'customer_name' => trim($row['customer_name']),
+            'created_at' => now(),
+            'note' => 'From Import',
         ]);
+
+        DepCompany::create([
+            'dep_company_name'=> trim($row['customer_name']),
+            'dep_organization_id' => null,
+            'customer_id' => $customerCreate->id,
+            'note' => 'From Import',
+            'created_by' => CommonHelpers::myId(),
+        ]);
+
+
+        return $customerCreate; 
 
     }
 
@@ -51,8 +63,6 @@ class ImportCustomer implements ToModel, SkipsEmptyRows, WithHeadingRow,  WithVa
     public function rules(): array
     {
         return [ 
-            '*.party_number' => 'required',
-            '*.created_at' => 'required',
             '*.customer_name' => 'required',
         ];
     }
