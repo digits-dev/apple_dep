@@ -208,6 +208,12 @@ const EnrollmentHistory = ({ enrollmentHistory, queryParams, enrollmentStatuses,
                                 >
                                     Transaction ID
                                 </TableHeader>
+                                <TableHeader
+                                    name="transaction_id"
+                                    queryParams={queryParams}
+                                >
+                                    Type
+                                </TableHeader>
 
                                 <TableHeader
                                     name="dep_companies"
@@ -278,6 +284,9 @@ const EnrollmentHistory = ({ enrollmentHistory, queryParams, enrollmentStatuses,
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item.transaction_id}
+                                        </RowData>
+                                        <RowData isLoading={loading}>
+                                            {item.type}
                                         </RowData>
                                         <RowData isLoading={loading}>
                                             {item?.dep_company?.name}
