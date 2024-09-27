@@ -129,6 +129,6 @@ class EnrollmentHistory extends Model
     }
   
     public function depCompany(){
-        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'id');
+        return $this->belongsTo(DepCompany::class, 'dep_company_id', 'dep_organization_id');
     }
 }

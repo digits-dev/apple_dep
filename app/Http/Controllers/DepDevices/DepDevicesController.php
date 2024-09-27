@@ -130,10 +130,33 @@ class DepDevicesController extends Controller
         $orderHeader = Order::find($orderId);
 
         $depCompanies = DepCompany::where('customer_id', $orderHeader->customer_id)
-            ->select('id as value', 'dep_company_name as label')
+            ->select('dep_organization_id as value', 'dep_company_name as label')
             ->get();
     
         return response()->json($depCompanies);
+    }
+
+    public function updateDepCompany(Request $request)
+    {
+   
+        $request->validate([
+            'depCompanyId' => 'required|integer|exists:dep_companies,dep_organization_id',
+            'orderId' => 'required|integer|exists:list_of_order_lines,id',
+        ]);
+        
+        $updated = DepDevice::updateDepCompany($request->depCompanyId, $request->orderId);
+
+        if ($updated) {
+
+            $data = [
+                'message' =>'DEP Company updated successfully.',
+                'status' => 'success'
+            ];
+
+            return response()->json($data, 200);
+        } else {
+            return response()->json(['message' => 'Something went wrong!'], 404);
+        }
     }
 
     public function enrollDevices(Request $request)
@@ -471,28 +494,7 @@ class DepDevicesController extends Controller
         }
     }
 
-    public function updateDepCompany(Request $request)
-    {
-
-        $validatedData = $request->validate([
-            'depCompanyId' => 'required|integer|exists:dep_companies,id',
-            'orderId' => 'required|integer|exists:list_of_order_lines,id',
-        ]);
-        
-        $updated = DepDevice::updateDepCompany($validatedData['depCompanyId'], $validatedData['orderId']);
-
-        if ($updated) {
-
-            $data = [
-                'message' =>'DEP Company updated successfully.',
-                'status' => 'success'
-            ];
-
-            return response()->json($data, 200);
-        } else {
-            return response()->json(['message' => 'Something went wrong!'], 404);
-        }
-    }
+  
 
     public function getDepCompany($orderId)
     {

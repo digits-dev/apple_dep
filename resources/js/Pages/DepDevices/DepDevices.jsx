@@ -191,7 +191,7 @@ const DepDevices = ({
         useEffect(() => {
             if (id) {
                 const defaultOption = depOptions.find(
-                    (option) => option.value === id
+                    (option) => option.value == id
                 );
 
                 setSelectedOption(defaultOption || null);
@@ -247,6 +247,7 @@ const DepDevices = ({
 
         const handleSelectChange = (selectedOption) => {
             setSelectedOption(selectedOption);
+
         };
 
         return (

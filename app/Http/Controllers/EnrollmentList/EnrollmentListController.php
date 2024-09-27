@@ -47,7 +47,7 @@ class EnrollmentListController extends Controller
             'createdBy:id,name', 
             'updatedBy:id,name', 
             'returnedBy:id,name',
-            'depCompany:id,dep_company_name as name',
+            'depCompany:dep_organization_id,dep_company_name as name',
         ]);
 
         $filter = $query->searchAndFilter(request());

@@ -67,14 +67,6 @@ const CreateNotification = () => {
       
   };
 
-  const [text, setText] = useState('• ');
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      setData('',prevText + '\n• ');
-    }
-  };
 
   return (
     <>

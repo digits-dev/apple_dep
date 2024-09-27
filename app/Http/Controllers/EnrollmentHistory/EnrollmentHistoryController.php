@@ -38,7 +38,7 @@ class EnrollmentHistoryController extends Controller{
             'dStatus:id,dep_status,color', 
             'eStatus:id,enrollment_status,color', 
             'createdBy:id,name', 
-            'depCompany:id,dep_company_name as name',
+            'depCompany:dep_organization_id,dep_company_name as name',
         ]);
 
         $filter = $query->searchAndFilter(request());
