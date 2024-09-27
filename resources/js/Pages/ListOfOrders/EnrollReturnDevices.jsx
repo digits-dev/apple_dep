@@ -24,6 +24,7 @@ import { useToast } from "../../Context/ToastContext";
 import ReactSelect from "../../Components/Forms/ReactSelect";
 import DuplicateIcon from "../../Components/Table/Icons/DuplicateIcon";
 import InputComponent from "../../Components/Forms/Input";
+import { set } from "lodash";
 
 const EnrollmentStatus = Object.freeze({
     PENDING: 1,
@@ -84,6 +85,8 @@ const EnrollReturnDevices = ({
     const [showOverrideSerial, setShowOverrideSerial] = useState(false);
     const [depCompanyId, setDepCompanyId] = useState(null);
     const [serial, setSerial] = useState(null);
+    const [orgItem, setOrgItem] = useState(null);
+    const [isUniqueCompanies, setIsUniqueCompany] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
@@ -109,11 +112,30 @@ const EnrollReturnDevices = ({
         setShowOverrideSerial(!showOverrideSerial);
     };
 
-    const handleCheckboxChange = (itemId) => {
+    const handleCheckboxChange = (itemId, companyId) => {
         if (selectedItems.includes(itemId)) {
-            setSelectedItems(selectedItems.filter((id) => id !== itemId));
+            // Remove the item from selectedItems
+            const updatedSelectedItems = selectedItems.filter(
+                (id) => id !== itemId,
+            );
+            setSelectedItems(updatedSelectedItems);
+
+            // Check if any selected items still match the current orgItem
+            const remainingSelectedItems = orderLines.filter(
+                (order) =>
+                    updatedSelectedItems.includes(order.id) &&
+                    order.dep_company_id === orgItem,
+            );
+
+            if (remainingSelectedItems.length === 0) {
+                setOrgItem(null);
+            }
         } else {
             setSelectedItems([...selectedItems, itemId]);
+
+            if (selectedItems.length === 0 || orgItem === null) {
+                setOrgItem(companyId);
+            }
         }
     };
 
@@ -121,14 +143,29 @@ const EnrollReturnDevices = ({
         if (selectAll) {
             setSelectedItems([]);
         } else {
-            const allItemIds = orderLines?.map((item) => item.id);
-            setSelectedItems(allItemIds);
+            const companyIds = orderLines.map((line) => line.dep_company_id);
+            const uniqueCompanies = new Set(companyIds);
+            console.log(companyIds, uniqueCompanies);
+            const hasUniqueCompanies = uniqueCompanies.size >= 2;
+            console.log(uniqueCompanies.size);
+            if (hasUniqueCompanies) {
+                setIsUniqueCompany(true);
+                handleToast(
+                    "You cannot select all, multiple DEP Company Found.",
+                    "Error",
+                );
+            } else {
+                setIsUniqueCompany(false);
+                const allItemIds = orderLines?.map((item) => item.id);
+                setSelectedItems(allItemIds);
+            }
         }
         setSelectAll(!selectAll);
     };
 
     const resetCheckbox = () => {
         setSelectedItems([]);
+        setOrgItem(null);
         setSelectAll(false);
     };
 
@@ -178,12 +215,12 @@ const EnrollReturnDevices = ({
                             //it only get the selected pending status within selected checkbox
                             const filteredIds = orderLines
                                 ?.filter((item) =>
-                                    selectedItems.includes(item.id)
+                                    selectedItems.includes(item.id),
                                 )
                                 .filter((item) =>
                                     allowedToEnroll.includes(
-                                        item.enrollment_status_id
-                                    )
+                                        item.enrollment_status_id,
+                                    ),
                                 )
                                 .map((item) => item.id);
 
@@ -192,26 +229,26 @@ const EnrollReturnDevices = ({
                                     "/list_of_orders/bulk-enroll",
                                     {
                                         ids: filteredIds,
-                                    }
+                                    },
                                 );
 
                                 if (response.data.status == "success") {
                                     handleToast(
                                         response.data.message,
-                                        response.data.status
+                                        response.data.status,
                                     );
                                     router.reload({ only: ["orderLines"] });
                                 } else {
                                     handleToast(
                                         response.data.message,
-                                        response.data.status
+                                        response.data.status,
                                     );
                                     router.reload({ only: ["orderLines"] });
                                 }
                             } else {
                                 handleToast(
                                     "The selected items are either already enrolled or it cannot be enroll.",
-                                    "Error"
+                                    "Error",
                                 );
                             }
                             // Return Device Logic
@@ -221,12 +258,12 @@ const EnrollReturnDevices = ({
                             //it only get the selected pending status within selected checkbox
                             const filteredIds = orderLines
                                 ?.filter((item) =>
-                                    selectedItems.includes(item.id)
+                                    selectedItems.includes(item.id),
                                 )
                                 .filter((item) =>
                                     allowedToReturn.includes(
-                                        item.enrollment_status_id
-                                    )
+                                        item.enrollment_status_id,
+                                    ),
                                 )
                                 .map((item) => item.id);
 
@@ -235,33 +272,33 @@ const EnrollReturnDevices = ({
                                     "/list_of_orders/bulk-return",
                                     {
                                         ids: filteredIds,
-                                    }
+                                    },
                                 );
 
                                 if (response.data.status == "success") {
                                     handleToast(
                                         response.data.message,
-                                        response.data.status
+                                        response.data.status,
                                     );
                                     router.reload({ only: ["orderLines"] });
                                 } else {
                                     handleToast(
                                         response.data.message,
-                                        response.data.status
+                                        response.data.status,
                                     );
                                     router.reload({ only: ["orderLines"] });
                                 }
                             } else {
                                 handleToast(
                                     "The selected items are either already returned or haven't been enrolled yet.",
-                                    "Error"
+                                    "Error",
                                 );
                             }
                         }
                     } catch (error) {
                         handleToast(
                             "Something went wrong, please try again later.",
-                            "Error"
+                            "Error",
                         );
                     } finally {
                         resetCheckbox();
@@ -278,7 +315,7 @@ const EnrollReturnDevices = ({
         const { data, setData, processing, reset, put, post, errors } = useForm(
             {
                 dep_company_id: depCompanyId,
-            }
+            },
         );
 
         const handleSubmit = (e) => {
@@ -316,8 +353,8 @@ const EnrollReturnDevices = ({
                                 reset();
                             },
                         });
-                    } 
-                    
+                    }
+
                     // else {
                     //     post(`/list_of_orders/${orderId}/override`, {
                     //         onSuccess: (data) => {
@@ -340,7 +377,6 @@ const EnrollReturnDevices = ({
             });
         };
 
-
         return (
             <>
                 <form className="space-y-4" onSubmit={handleSubmit}>
@@ -351,7 +387,7 @@ const EnrollReturnDevices = ({
                         options={depCompanies}
                         value={depCompanies.find(
                             (depCompany) =>
-                                depCompany.value == data.dep_company_id
+                                depCompany.value == data.dep_company_id,
                         )}
                         onChange={(e) => setData("dep_company_id", e.value)}
                     />
@@ -370,8 +406,8 @@ const EnrollReturnDevices = ({
                         {processing
                             ? "Updating..."
                             : isEdit
-                            ? "Update"
-                            : "Override"}
+                              ? "Update"
+                              : "Override"}
                     </button>
                 </form>
             </>
@@ -383,7 +419,7 @@ const EnrollReturnDevices = ({
         const { data, setData, processing, reset, put, post, errors } = useForm(
             {
                 serial_number: "",
-            }
+            },
         );
 
         const handleSubmit = (e) => {
@@ -435,7 +471,7 @@ const EnrollReturnDevices = ({
                         onChange={(e) =>
                             setData(
                                 "serial_number",
-                                e.target.value.toUpperCase()
+                                e.target.value.toUpperCase(),
                             )
                         }
                     />
@@ -504,7 +540,7 @@ const EnrollReturnDevices = ({
             } catch (error) {
                 handleToast(
                     "Something went wrong, please try again later.",
-                    "Error"
+                    "Error",
                 );
             } finally {
                 setLoading(false);
@@ -607,7 +643,9 @@ const EnrollReturnDevices = ({
                                     name="selectAll"
                                     id="selectAll"
                                     handleClick={handleSelectAll}
-                                    isChecked={selectAll}
+                                    isChecked={
+                                        !isUniqueCompanies ? selectAll : ""
+                                    }
                                 />
                             </TableHeader>
                             <TableHeader
@@ -671,11 +709,18 @@ const EnrollReturnDevices = ({
                                         type="checkbox"
                                         id={order.id}
                                         handleClick={() =>
-                                            handleCheckboxChange(order.id)
+                                            handleCheckboxChange(
+                                                order.id,
+                                                order.dep_company_id,
+                                            )
                                         }
                                         isChecked={selectedItems.includes(
-                                            order.id
+                                            order.id,
                                         )}
+                                        disabled={
+                                            orgItem !== null &&
+                                            orgItem !== order.dep_company_id
+                                        }
                                     />
                                 </RowData>
                                 <RowStatus
@@ -692,7 +737,7 @@ const EnrollReturnDevices = ({
                                 {duplicateSerials.length != 0 && (
                                     <RowData>
                                         {duplicateSerials.includes(
-                                            order.serial_number
+                                            order.serial_number,
                                         ) && <DuplicateIcon />}
                                     </RowData>
                                 )}
@@ -700,7 +745,7 @@ const EnrollReturnDevices = ({
                                 <RowData>
                                     {order?.dep_companies?.dep_company_name}
                                 </RowData>
-                                
+
                                 <RowData center sticky="right">
                                     <RowActions>
                                         {![
@@ -708,34 +753,37 @@ const EnrollReturnDevices = ({
                                             EnrollmentStatus["CANCELLED"],
                                         ].includes(order?.status?.id) && (
                                             <RowAction
-                                                disabled={ order?.status
-                                                    ?.enrollment_status == "In Progress"}
+                                                disabled={
+                                                    order?.status
+                                                        ?.enrollment_status ==
+                                                    "In Progress"
+                                                }
                                                 action="add"
                                                 type="button"
                                                 onClick={() => {
                                                     handleOpenModal();
                                                     setOrderId(order.id);
                                                     setDepCompanyId(
-                                                        order.dep_company_id
+                                                        order.dep_company_id,
                                                     );
                                                     setEnrollmentStatus(
-                                                        order.enrollment_status_id
+                                                        order.enrollment_status_id,
                                                     );
                                                     setSerial(
-                                                        order.serial_number
+                                                        order.serial_number,
                                                     );
                                                 }}
                                                 tooltipContent={`
                                                         ${
                                                             allowedToEnroll.includes(
-                                                                order.enrollment_status_id
+                                                                order.enrollment_status_id,
                                                             )
                                                                 ? "<p>Enroll Device</p>"
                                                                 : ""
                                                         }
                                                         ${
                                                             allowedToReturn.includes(
-                                                                order.enrollment_status_id
+                                                                order.enrollment_status_id,
                                                             )
                                                                 ? "<p>Return Device</p>"
                                                                 : ""
@@ -752,7 +800,7 @@ const EnrollReturnDevices = ({
                                                 handleShowEdit();
                                                 setOrderId(order.id);
                                                 setDepCompanyId(
-                                                    order.dep_company_id
+                                                    order.dep_company_id,
                                                 );
                                             }}
                                             disabled={
@@ -761,7 +809,7 @@ const EnrollReturnDevices = ({
                                                     "Returned",
                                                 ].includes(
                                                     order?.status
-                                                        ?.enrollment_status
+                                                        ?.enrollment_status,
                                                 )
                                             }
                                             tooltipContent="Edit"

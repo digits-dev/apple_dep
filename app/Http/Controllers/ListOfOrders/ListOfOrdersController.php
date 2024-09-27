@@ -369,6 +369,7 @@ class ListOfOrdersController extends Controller
                 }
 
                 //Insert in Enrollment History 
+                $insertData['type'] = 'OR';
                 EnrollmentHistory::create($insertData);
 
                 $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
@@ -548,6 +549,7 @@ class ListOfOrdersController extends Controller
                     'serial_number' => $header_data['serial_number'],
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
+                    'type' => 'RE',
                     'enrollment_status' => $this->enrollment_status,
                     'status_message' => $status_message,
                 ];
@@ -664,6 +666,7 @@ class ListOfOrdersController extends Controller
 
                 $payload['orders'][] = $ordersPayload;
 
+
                 $response = $this->appleService->enrollDevices($payload);
 
                 //Device Enrollment
@@ -747,6 +750,7 @@ class ListOfOrdersController extends Controller
                             'dep_company_id' => $this->depCompanyId,
                             'sales_order_no' =>  $header_data->sales_order_no,
                             'item_code' => $deviceData->digits_code,
+                            'type' => 'OR',
                             'serial_number' => $deviceData->serial_number,
                             'transaction_id' => $transaction_id,
                             'dep_status' => $dep_status,
@@ -966,6 +970,7 @@ class ListOfOrdersController extends Controller
                             'serial_number' => $deviceData->serial_number,
                             'transaction_id' => $transaction_id,
                             'dep_status' => $dep_status,
+                            'type' => 'RE',
                             'enrollment_status' => $this->enrollment_status,
                             'status_message' => $status_message,
                         ];
@@ -1164,6 +1169,7 @@ class ListOfOrdersController extends Controller
                     'serial_number' => $deviceData->serial_number,
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
+                    'type' => 'VD',
                     'enrollment_status' => $this->enrollment_status,
                     'status_message' => $status_message,
                 ];
@@ -1339,6 +1345,7 @@ class ListOfOrdersController extends Controller
                     'item_code' => $orderLine->digits_code,
                     'serial_number' => $orderLine->serial_number,
                     'transaction_id' => $transaction_id,
+                    'type' => 'OV',
                     'dep_status' => $dep_status,
                     'enrollment_status' => $this->enrollment_status,
                     'status_message' => $status_message,
@@ -1379,7 +1386,6 @@ class ListOfOrdersController extends Controller
  
     public function overrideOrderSerial(Request $request, OrderLines $orderLine)
     {
-        dd($request->all());
         if(!CommonHelpers::isOverride()) {
 
             $data = [

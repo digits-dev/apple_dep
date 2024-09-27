@@ -283,6 +283,7 @@ class DepDevicesController extends Controller
                 }
 
                 //Insert in Enrollment History 
+                $insertData['type'] = 'OR';
                 EnrollmentHistory::create($insertData);
 
                 $totalOrderLines = OrderLines::where('order_id', $orderId)->count();
@@ -453,6 +454,7 @@ class DepDevicesController extends Controller
                     'serial_number' => $header_data['serial_number'],
                     'transaction_id' => $transaction_id,
                     'dep_status' => $dep_status,
+                    'type' => 'RE',
                     'enrollment_status' => $this->enrollment_status,
                     'status_message' => $status_message,
                 ];
