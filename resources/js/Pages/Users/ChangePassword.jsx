@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import ContentPanel from "../../Components/Table/ContentPanel";
 import { Head, Link, router, useForm } from "@inertiajs/react";
-import animationData from '../../../../public/animations/password-anim.json'
 import InputWithLogo from "../../Components/Forms/InputWithLogo";
 import { useToast } from "../../Context/ToastContext";
 import { NavbarContext } from "../../Context/NavbarContext";
+import animationData from '../../../../public/animations/password-anim.json'
 import Lottie from 'lottie-react';
 import Checkbox from "../../Components/Checkbox/Checkbox";
 const ChangePassword = () => {

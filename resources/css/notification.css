@@ -1,0 +1,146 @@
+/* Default styles for common HTML elements */
+
+/* Headings */
+.wysiwyg h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin: 0.67em 0;
+}
+  
+  /* Paragraph */
+.wysiwyg p {
+    font-size: 1rem;
+}
+  
+/* Anchor (links) */
+.wysiwyg a {
+color: #0000EE; /* Default link color */
+text-decoration: underline;
+}
+
+.wysiwyg a:visited {
+color: #551A8B; /* Visited link color */
+}
+
+.wysiwyg a:hover {
+color: #EE0000; /* Link hover color */
+text-decoration: none;
+}
+
+/* List Styles */
+.wysiwyg ul, ol {
+margin: 1em 0;
+padding-left: 40px;
+}
+
+.wysiwyg ul {
+    list-style-type: disc;
+}
+
+.wysiwyg ol {
+    list-style-type: decimal;
+}
+
+.wysiwyg li {
+margin: 0.5em 0;
+}
+
+/* Blockquote */
+.wysiwyg blockquote {
+margin: 1em 40px;
+padding: 0.5em 10px;
+border-left: 5px solid #ccc;
+background: #f9f9f9;
+}
+
+/* Tables */
+.wysiwyg table {
+border-collapse: collapse;
+width: 100%;
+}
+
+.wysiwyg th, td {
+padding: 8px;
+border: 1px solid #ddd;
+}
+
+.wysiwyg th {
+background-color: #f2f2f2;
+font-weight: bold;
+}
+
+/* Forms */
+.wysiwyg input, textarea, select, button {
+font: inherit;
+margin: 0;
+}
+
+.wysiwyg input, select, textarea {
+padding: 0.2em 0.4em;
+border: 1px solid #ccc;
+border-radius: 3px;
+}
+
+.wysiwyg button {
+display: inline-block;
+padding: 0.3em 0.6em;
+border: 1px solid #000;
+background-color: #e7e7e7;
+cursor: pointer;
+font-weight: bold;
+}
+
+.wysiwyg button:hover {
+background-color: #d5d5d5;
+}
+
+/* Fieldset and legend */
+.wysiwyg fieldset {
+margin: 0 2px;
+padding: 0.35em 0.625em 0.75em;
+border: 1px solid silver;
+}
+
+.wysiwyg legend {
+font-weight: bold;
+padding: 0 10px;
+}
+
+/* Text elements */
+.wysiwyg strong {
+font-weight: bold;
+}
+
+.wysiwyg em {
+font-style: italic;
+}
+
+.wysiwyg code {
+font-family: monospace;
+background-color: #f4f4f4;
+
+border-radius: 4px;
+}
+
+/* Horizontal rule */
+.wysiwyg hr {
+border: 1px solid #ccc;
+margin: 1em 0;
+}
+
+/* Images */
+.wysiwyg img {
+max-width: 100%;
+height: auto;
+}
+
+/* Default body and html settings */
+.wysiwyg html, body {
+margin: 0;
+padding: 0;
+font-family: sans-serif;
+}
+
+.wysiwyg body {
+line-height: 1.6;
+}
+  

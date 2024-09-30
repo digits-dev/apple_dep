@@ -3,20 +3,28 @@ import { Link, router, usePage } from "@inertiajs/react";
 import { NavbarContext } from "../../Context/NavbarContext";
 import NotificationsModal from "../../Components/Modal/NotificationModal";
 import axios from "axios";
+import PatchNotesModal from "../../Components/Modal/PatchNotesModal";
 
 const AppNavbar = () => {
     const { title } = useContext(NavbarContext);
     const { auth } = usePage().props;
     const [showMenu, setShowMenu] = useState(false);
     const [showNotif, setShowNotif] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [showNotifModal, setShowNotifModal] = useState(false);
+    const [showPatchNoteModal, setShowPatchNoteModal] = useState(false);
     const [selectedNotif, setSelectedNotif] = useState({
         id: '',
         title: '',
         subject: '',
-        content: ''
+        changes: '',
+        fixes: '',
+        content: '',
+        notif_type: '',
+        is_notif: '',
     });
     const [notifications, setNotification] = useState([]);
+    const [isPatchNoteRead, setIsPatchNoteRead] = useState(null);
+    const [latestPatchNote, setLatestPatchNote] = useState(null);
 
     const menuRef = useRef(null);
 
@@ -24,7 +32,11 @@ const AppNavbar = () => {
         const fetchNotifications = async () => {
             try {
                 const response = await axios.get("/notifications");
-                setNotification(response.data);
+  
+                setNotification(response.data.notifications);
+                setIsPatchNoteRead(response.data.is_patchnote_read);
+                setLatestPatchNote(response.data.latest_patchnote);
+                
             } catch (error) {
                 console.error("There was an error fetching the Notification data!", error);
             }
@@ -33,6 +45,23 @@ const AppNavbar = () => {
         fetchNotifications();
 
     }, []);
+
+    useEffect(() => {
+       
+        if (isPatchNoteRead === 0 && latestPatchNote) {
+            setSelectedNotif({
+                title: latestPatchNote.title,
+                subject: latestPatchNote.subject,
+                content: latestPatchNote.content,
+                changes: latestPatchNote.changes,
+                fixes: latestPatchNote.fixes,
+                notif_type: latestPatchNote.notif_type,
+                is_notif: '0',
+            });
+    
+            handlePatchoNoteModalToggle();
+        }
+    }, [isPatchNoteRead]);
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
@@ -82,7 +111,10 @@ const AppNavbar = () => {
     };
 
     const handleModalToggle = () => {
-        setShowModal(!showModal);
+        setShowNotifModal(!showNotifModal);
+    }
+    const handlePatchoNoteModalToggle = () => {
+        setShowPatchNoteModal(!showPatchNoteModal);
     }
 
     return (
@@ -116,16 +148,26 @@ const AppNavbar = () => {
                             {notifications.map((item, index) => (
                             <div className="font-nunito-sans flex hover:bg-zinc-200 cursor-pointer px-1" key={index} 
                                 onClick={()=> {
-                                    handleModalToggle();  
+                                    if (item.notif_type == 'Patch Note'){
+                                        handlePatchoNoteModalToggle();
+                                    }
+                                    else{
+                                        handleModalToggle();  
+                                    }
                                     setSelectedNotif({
                                         id: item.id,
                                         title: item.title,
                                         subject: item.subject,
-                                        content: item.content
+                                        content: item.content,
+                                        changes: item.changes,
+                                        fixes: item.fixes,
+                                        notif_type: item.notif_type,
+                                        is_notif : '1',
+
                                     });
                                 }
                             }>
-                                <i className="fa-solid fa-circle-info text-zinc-500 p-5"></i>
+                                <i className={`${item.notif_type == 'Notification' ? 'fa-regular fa-bell' : 'fa-solid fa-wrench'} text-zinc-500 p-5`}></i>
                                 <div className="overflow-hidden py-2 max-w-[300px] ">
                                     <p className="font-bold text-sm">{item.title}</p>
                                     <p className="text-xs">{item.subject}</p>
@@ -204,7 +246,8 @@ const AppNavbar = () => {
                     </div>
                 </div>
             )}
-            <NotificationsModal show={showModal} onClose={handleModalToggle} title={selectedNotif.title} subject={selectedNotif.subject} content={selectedNotif.content} width="3xl"/>
+            <NotificationsModal show={showNotifModal} onClose={handleModalToggle} title={selectedNotif.title} subject={selectedNotif.subject} content={selectedNotif.content} notif_type={selectedNotif.notif_type} width="2xl"/>
+            <PatchNotesModal show={showPatchNoteModal} onClose={handlePatchoNoteModalToggle} title={selectedNotif.title} subject={selectedNotif.subject} changes={selectedNotif.changes} fixes={selectedNotif.fixes} notif_type={selectedNotif.notif_type} isNotif={selectedNotif.is_notif} width="2xl"/>
         </div>
     );
 };

@@ -7,6 +7,7 @@ import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import TextAreaInput from '../../Components/Forms/TextAreaInput';
 import { useToast } from "../../Context/ToastContext";
 import Modal from "../../Components/Modal/Modal";
+import Wysiwyg from '../../Components/Forms/Wysiwyg';
 
 const EditNotification = ({notification}) => {
 
@@ -16,10 +17,13 @@ const EditNotification = ({notification}) => {
   const { handleToast } = useToast();
   const [showLoadingModal, setshowLoadingModal] = useState(false);
   const { data, setData, processing, reset, post, errors } = useForm({
+      id: notification.id,
       title: notification?.title || '',
       subject: notification?.subject ||'',
       notif_type: notification?.notif_type || '',
       content: notification?.content || '',
+      changes: notification?.changes || '',
+      fixes: notification?.fixes || '',
       selected: {value: notification?.notif_type, label: notification?.notif_type}
   });
 
@@ -53,7 +57,7 @@ const EditNotification = ({notification}) => {
       }).then(async (result) => {
           if (result.isConfirmed) {
               setshowLoadingModal(true);
-              post("/notif_manager/edit-save", {
+              post(`/notif_manager/edit-save/${data.id}`, {
                   onSuccess: (data) => {
                       const { message, success } = data.props.auth.sessions;
                       handleToast(message, success);
@@ -68,6 +72,16 @@ const EditNotification = ({notification}) => {
       });
       
       
+  };
+
+  const handleChangesOnChange = (value) => {
+    setData('changes', value);
+  };
+  const handleFixesOnChange = (value) => {
+    setData('fixes', value);
+  };
+  const handleContentOnChange = (value) => {
+    setData('content', value);
   };
 
   return (
@@ -85,6 +99,7 @@ const EditNotification = ({notification}) => {
                   onChange={handleChange}
                   value={data.title}
                 />
+                <p className='py-2'>If the notification type is Patch Note just type <span className='text-red-500'>Patch Note</span> in the title field</p>
                 {errors.title && (
                     <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
                         {errors.title}
@@ -116,24 +131,55 @@ const EditNotification = ({notification}) => {
               value={data.subject}
               onChange={handleChange}
             />
+            <p className='py-2'>If the notification type is Patch Note just type the <span className='text-red-500'>Patch Note's version</span> in the subject field <span className='text-gray-500'>eg: version 1.0</span></p>
             {errors.subject && (
                 <span className=" inline-block text-red-500 font-base mb-2 text-xs md:text-sm">
                     {errors.subject}
                 </span>
             )}
-            <TextAreaInput
-              name="content"
-              type="text"
-              placeholder="Your Content"
-              rows={12}
-              value={data.content}
-              onChange={handleChange}
-              isrequired={false}
-            />
-            {errors.content && (
-                <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
-                    {errors.content}
-                </span>
+            {data.notif_type == 'Notification' && (
+              <>
+                
+              <Wysiwyg 
+                placeholder="Add Content here" 
+                name='content'
+                onChange={handleContentOnChange}
+                value={data.content}
+                />
+              {errors.content && (
+                  <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
+                      {errors.content}
+                  </span>
+              )}
+              </>
+            )}
+
+            {data.notif_type == 'Patch Note' && (
+              <>
+                <p className='py-2'><span className='text-red-500'>Note:</span> Please add each changes/fixes in bullet form</p>
+                <Wysiwyg 
+                placeholder="Add Changes here" 
+                name='changes'
+                onChange={handleChangesOnChange}
+                value={data.changes}
+                />
+                {errors.changes && (
+                    <span className=" inline-block text-red-500 font-base text-xs md:text-sm">
+                        {errors.changes}
+                    </span>
+                )}
+                <Wysiwyg 
+                    placeholder="Add Fixes here" 
+                    name='fixes'
+                    onChange={handleFixesOnChange}
+                    value={data.fixes}
+                />
+                {errors.fixes && (
+                    <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
+                        {errors.fixes}
+                    </span>
+                )}
+              </>
             )}
             <div className='flex justify-between'>
               <Link

@@ -7,6 +7,7 @@ import DropdownSelect from "../../Components/Dropdown/Dropdown";
 import TextAreaInput from '../../Components/Forms/TextAreaInput';
 import { useToast } from "../../Context/ToastContext";
 import Modal from "../../Components/Modal/Modal";
+import Wysiwyg from '../../Components/Forms/Wysiwyg';
 
 const CreateNotification = () => {
 
@@ -67,6 +68,15 @@ const CreateNotification = () => {
       
   };
 
+  const handleChangesOnChange = (value) => {
+    setData('changes', value);
+  };
+  const handleFixesOnChange = (value) => {
+    setData('fixes', value);
+  };
+  const handleContentOnChange = (value) => {
+    setData('content', value);
+  };
 
   return (
     <>
@@ -82,6 +92,7 @@ const CreateNotification = () => {
                   placeholder="Enter Title"
                   onChange={handleChange}
                 />
+                <p className='py-2'>If the notification type is Patch Note just type <span className='text-red-500'>Patch Note</span> in the title field</p>
                 {errors.title && (
                     <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
                         {errors.title}
@@ -92,7 +103,7 @@ const CreateNotification = () => {
                 <DropdownSelect
                     placeholder="Choose Type"
                     selectType="select2"
-                    displayName="Select Notification Type"
+                    displayName="Notification Type"
                     name="notif_type"
                     options={[{id: 'Notification', name: 'Notification'}, {id: 'Patch Note', name: 'Patch Note'}]}
                     value={data.type}
@@ -112,21 +123,23 @@ const CreateNotification = () => {
               extendedClass1={'mb-2'}
               onChange={handleChange}
             />
+            <p className='py-2'>If the notification type is Patch Note just type the <span className='text-red-500'>Patch Note's version</span> in the subject field <span className='text-gray-500'>eg: version 1.0</span></p>
             {errors.subject && (
                 <span className=" inline-block text-red-500 font-base mb-2 text-xs md:text-sm">
                     {errors.subject}
                 </span>
             )}
+
+            
             {data.notif_type == 'Notification' && (
               <>
-                <TextAreaInput
-                name="content"
-                type="text"
-                placeholder="Your Content"
-                rows={12}
-                onChange={handleChange}
-                isrequired={false}
-              />
+                
+              <Wysiwyg 
+                placeholder="Add Content here" 
+                name='content'
+                onChange={handleContentOnChange}
+                value={data.content}
+                />
               {errors.content && (
                   <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
                       {errors.content}
@@ -138,33 +151,28 @@ const CreateNotification = () => {
             {data.notif_type == 'Patch Note' && (
               <>
                 <p className='py-2'><span className='text-red-500'>Note:</span> Please add each changes/fixes in bullet form</p>
-                <TextAreaInput
-                name="changes"
-                type="text"
-                placeholder="Add Changes"
-                rows={8}
-                onChange={handleChange}
-                isrequired={false}
-                extendClass1='mb-2'
-              />
-              {errors.changes && (
-                  <span className=" inline-block text-red-500 font-base text-xs md:text-sm">
-                      {errors.changes}
-                  </span>
-              )}
-                <TextAreaInput
-                name="fixes"
-                type="text"
-                placeholder="Add Fixes"
-                rows={8}
-                onChange={handleChange}
-                isrequired={false}
-              />
-              {errors.fixes && (
-                  <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
-                      {errors.fixes}
-                  </span>
-              )}
+                <Wysiwyg 
+                placeholder="Add Changes here" 
+                name='changes'
+                onChange={handleChangesOnChange}
+                value={data.changes}
+                />
+                {errors.changes && (
+                    <span className=" inline-block text-red-500 font-base text-xs md:text-sm">
+                        {errors.changes}
+                    </span>
+                )}
+                <Wysiwyg 
+                    placeholder="Add Fixes here" 
+                    name='fixes'
+                    onChange={handleFixesOnChange}
+                    value={data.fixes}
+                />
+                {errors.fixes && (
+                    <span className=" inline-block text-red-500 font-base mt-2 text-xs md:text-sm">
+                        {errors.fixes}
+                    </span>
+                )}
               </>
             )}
             
@@ -188,8 +196,8 @@ const CreateNotification = () => {
             </div>
           </form>
         </div>
-      <Modal show={showLoadingModal} modalLoading={true}/>
       </ContentPanel>
+      <Modal show={showLoadingModal} modalLoading={true}/>
     </>
   )
 }

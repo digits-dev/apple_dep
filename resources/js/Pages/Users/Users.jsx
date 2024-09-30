@@ -39,8 +39,6 @@ const Users = ({ users, options, queryParams }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const { setTitle } = useContext(NavbarContext);
 
-    console.log(options);
-
     //BULK ACTIONS
     useEffect(() => {
         setTimeout(() => {

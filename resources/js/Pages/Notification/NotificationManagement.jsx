@@ -68,6 +68,13 @@ const NotificationManagement = ({notification, queryParams}) => {
                   Date Created
               </TableHeader> 
               <TableHeader
+                  name="updated_at"
+                  queryParams={queryParams}
+                  width="md"
+              >
+                  Date Updated
+              </TableHeader> 
+              <TableHeader
 								sortable={false}
 								width="auto"
                                 justify="center"
@@ -93,6 +100,11 @@ const NotificationManagement = ({notification, queryParams}) => {
                     {moment(item.created_at).format(
                         "YYYY-MM-DD"
                     )}
+                </RowData>
+                <RowData isLoading={loading}>
+                    {item.updated_at ? moment(item.updated_at).format(
+                        "YYYY-MM-DD"
+                    ) : ''}
                 </RowData>
                 <RowData center>
                   <RowActions>

@@ -78,7 +78,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::get('/sidebar', [MenusController::class, 'sidebarMenu'])->name('sidebar');
-    Route::get('/notifications', [MenusController::class, 'getNotifications'])->name('notifications');
 
     //USERS
     Route::post('create-user', [AdminUsersController::class, 'postAddSave'])->name('create-user');
@@ -199,10 +198,13 @@ Route::middleware(['auth'])->group(function () {
 
 
     // NOTIFICATION MANAGEMENT
+    Route::get('/notifications', [MenusController::class, 'getNotifications'])->name('notifications');
     Route::get('/notif_manager/add', [NotificationManagementController::class, 'AddNotif']);
     Route::post('/notif_manager/add-save', [NotificationManagementController::class, 'CreateNotif']);
+    Route::post('/notif_manager/edit-save/{notif}', [NotificationManagementController::class, 'EditSave']);
     Route::get('/notif_manager/edit/{notif}', [NotificationManagementController::class, 'EditNotif']);
-    Route::post('/notif_manager/edit-save', [NotificationManagementController::class, 'EditSave']);
+    Route::post('/update_patchnote', [NotificationManagementController::class, 'updatePatchNote']);
+
 
 
     //For Item Master Pull

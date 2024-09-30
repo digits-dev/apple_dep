@@ -62,10 +62,15 @@ class NotificationManagementController extends Controller
     public function CreateNotif(Request $request)
     {
 
+
         $request->validate([
             'title' => 'required',
             'subject' => 'required',
             'notif_type' => 'required',
+        ], [
+            'title.required' => 'Title is required',
+            'subject.required' => 'Subject is required',
+            'notif_type.required' => 'Select Notification Type',
         ]);
 
         if ($request->notif_type == 'Notification') {
@@ -102,8 +107,8 @@ class NotificationManagementController extends Controller
                 'title' => 'required',
                 'subject' => 'required',
                 'notif_type' => 'required',
-                'changes' => 'required',
-                'fixes' => 'required',
+                'changes' => 'required_without:fixes',
+                'fixes' => 'required_without:changes',
             ]);
     
             Notification::insert([
@@ -116,6 +121,13 @@ class NotificationManagementController extends Controller
                 'created_at' => now()
                 
             ]);
+
+            $users = User::all();
+
+            foreach ($users as $user){
+                $user->is_patchnote_read = 0;
+                $user->save();
+            };
     
             $data = [
                 'message' => "Patch Note Creation Success",
@@ -138,8 +150,86 @@ class NotificationManagementController extends Controller
         return Inertia::render('Notification/EditNotification', $data);
     }
 
-    public function EditSave(Request $request){
+    public function EditSave(Request $request, Notification $notif){
        
+        
+        $request->validate([
+            'title' => 'required',
+            'subject' => 'required',
+            'notif_type' => 'required',
+        ], [
+            'title.required' => 'Title is required',
+            'subject.required' => 'Subject is required',
+            'notif_type.required' => 'Select Notification Type',
+        ]);
+
+        if ($request->notif_type == 'Notification') {
+
+            $request->validate([
+                'title' => 'required',
+                'subject' => 'required',
+                'notif_type' => 'required',
+                'content' => 'required',
+            ]);
+    
+            $notif->update([
+                'title' => $request->title,
+                'subject' => $request->subject,
+                'notif_type' => $request->notif_type,
+                'content' => $request->content,
+                
+            ]);
+    
+            $data = [
+                'message' => "Notification Update Success",
+                'success' => "success"
+            ];
+
+            return redirect('/notif_manager')->with($data);
+
+        }
+
+        if ($request->notif_type == 'Patch Note') {
+
+            $request->validate([
+                'title' => 'required',
+                'subject' => 'required',
+                'notif_type' => 'required',
+                'changes' => 'required_without:fixes',
+                'fixes' => 'required_without:changes',
+            ]);
+    
+            $notif->update([
+                'title' => $request->title,
+                'subject' => $request->subject,
+                'notif_type' => $request->notif_type,
+                'changes' => $request->changes,
+                'fixes' => $request->fixes,
+                
+            ]);
+    
+            $data = [
+                'message' => "Patch Note Update Success",
+                'success' => "success"
+            ];
+
+            return redirect('/notif_manager')->with($data);
+
+        }
+    }
+
+    public function updatePatchNote() {
+
+        $user = User::where('id', CommonHelpers::myId());
+
+        $user->update([
+            'is_patchnote_read' => 1,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Patch note status updated successfully',
+        ]);
     }
     
 }

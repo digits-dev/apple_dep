@@ -1,4 +1,5 @@
 import React from "react";
+import '../../../css/notification.css';
 
 const NotificationsModal = ({
     show,
@@ -7,6 +8,7 @@ const NotificationsModal = ({
     subject,
     content,
     width = "lg",
+    notif_type
 }) => {
     if (!show) {
         return null;
@@ -29,7 +31,7 @@ const NotificationsModal = ({
                 >
                     <div className="flex justify-between p-5 border-b-2 items-center">
                         <div className="flex justify-center items-center">
-                            <i className="fa-solid fa-circle-info text-zinc-500 mr-5 text-xl"></i>
+                            <i className={`${notif_type == 'Notification' ? 'fa-regular fa-bell' : 'fa-solid fa-wrench'} text-zinc-500 mr-5 text-xl`}></i>
                             <p className="font-nunito-sans font-extrabold text-lg">
                                 {title}
                             </p>
@@ -42,7 +44,10 @@ const NotificationsModal = ({
                     </div>
                     <main className="pb-3 px-5 font-nunito-sans">
                         <p className="text-base py-3 font-semibold">{subject}</p>
-                        <p className="whitespace-pre-line leading-loose text-sm border p-3 rounded-lg max-h-80 overflow-y-auto">{content}</p>
+                        <div className="wysiwyg">
+
+                        <div className="whitespace-pre-line leading-loose text-sm border p-3 rounded-lg max-h-80 overflow-y-auto" dangerouslySetInnerHTML={{__html: content}}></div>
+                        </div>
                     </main>
                 </div>
             </div>

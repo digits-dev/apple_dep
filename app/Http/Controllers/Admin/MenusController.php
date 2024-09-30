@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\CommonHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -13,12 +14,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 class MenusController extends Controller{
+
     private $sortBy;
     private $sortDir;
     private $perPage;
+
     public function __construct() {
-        $this->table_name  = 'adm_modules';
-        $this->primary_key = 'id';
         $this->sortBy = request()->get('sortBy', 'adm_modules.created_at');
         $this->sortDir = request()->get('sortDir', 'desc');
         $this->perPage = request()->get('perPage', 10);
@@ -29,8 +30,13 @@ class MenusController extends Controller{
     }
 
     public function getNotifications(){
-        $notifications = Notification::all();
-        return response()->json($notifications);
+        
+        $data = [];
+        $data['notifications'] = Notification::query()->orderBy('created_at', 'desc')->get();
+        $data['is_patchnote_read'] = User::where('id', CommonHelpers::myId())->value('is_patchnote_read');
+        $data['latest_patchnote'] = Notification::where('notif_type', 'Patch Note')->orderBy('created_at', 'desc')->first();
+
+        return response()->json($data);
     }
 
     public function getIndex(Request $request){
