@@ -271,6 +271,18 @@ class ListOfOrdersController extends Controller
     
                 return response()->json($data);
             }
+
+            $orgIdExist = DepCompany::where('dep_organization_id', $header_data->dep_company_id)->exists();
+
+            if(!$orgIdExist){
+                $data = [
+                    'message' => 'DEP Organization ID not found!',
+                    'status' => 'error' 
+                ];
+    
+                return response()->json($data);
+            }
+
   
             $payload = $this->applePayloadController->generatePayload();
 
@@ -459,6 +471,17 @@ class ListOfOrdersController extends Controller
                     'status' => 'error' 
                 ];
                 
+                return response()->json($data);
+            }
+
+            $orgIdExist = DepCompany::where('dep_organization_id', $header_data->dep_company_id)->exists();
+
+            if(!$orgIdExist){
+                $data = [
+                    'message' => 'DEP Organization ID not found!',
+                    'status' => 'error' 
+                ];
+    
                 return response()->json($data);
             }
 
@@ -654,11 +677,23 @@ class ListOfOrdersController extends Controller
                         return response()->json($data);
                     }
 
+                    $orgIdExist = DepCompany::where('dep_organization_id', $orderData->dep_company_id)->exists();
+
+                    if(!$orgIdExist){
+                        $data = [
+                            'message' => 'DEP Organization ID not found!',
+                            'status' => 'error' 
+                        ];
+            
+                        return response()->json($data);
+                    }
+
                     $devicePayload[$key] = [
                         'deviceId' => $orderData->serial_number,
                         'assetTag' => $orderData->serial_number,
                     ];
                 }
+
 
                 $payload = $this->applePayloadController->generatePayload();
 
@@ -860,6 +895,17 @@ class ListOfOrdersController extends Controller
                     if(!$item_master){
                         $data = [
                             'message' => 'Item Master not found!',
+                            'status' => 'error' 
+                        ];
+            
+                        return response()->json($data);
+                    }
+
+                    $orgIdExist = DepCompany::where('dep_organization_id', $orderData->dep_company_id)->exists();
+
+                    if(!$orgIdExist){
+                        $data = [
+                            'message' => 'DEP Organization ID not found!',
                             'status' => 'error' 
                         ];
             

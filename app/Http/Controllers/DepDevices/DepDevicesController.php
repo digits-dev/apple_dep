@@ -188,6 +188,17 @@ class DepDevicesController extends Controller
     
                 return response()->json($data);
             }
+
+            $orgIdExist = DepCompany::where('dep_organization_id', $header_data->dep_company_id)->exists();
+
+            if(!$orgIdExist){
+                $data = [
+                    'message' => 'DEP Organization ID not found!',
+                    'status' => 'error' 
+                ];
+    
+                return response()->json($data);
+            }
   
             $payload = $this->applePayloadController->generatePayload();
 
@@ -363,6 +374,17 @@ class DepDevicesController extends Controller
                     'status' => 'error' 
                 ];
                 
+                return response()->json($data);
+            }
+
+            $orgIdExist = DepCompany::where('dep_organization_id', $header_data->dep_company_id)->exists();
+
+            if(!$orgIdExist){
+                $data = [
+                    'message' => 'DEP Organization ID not found!',
+                    'status' => 'error' 
+                ];
+    
                 return response()->json($data);
             }
 
