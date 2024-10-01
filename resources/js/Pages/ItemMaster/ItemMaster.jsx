@@ -71,14 +71,18 @@ const ItemMaster = ({ itemMaster, queryParams }) => {
                         <TableSearch queryParams={queryParams} />
                         <PerPage queryParams={queryParams} />
 
-                        {auth.access.isCreate &&   
-                        <TableButton onClick={handleCreateModal}>
-                            Add Item
-                        </TableButton>}
+                        {auth.access.isCreate && 
+                        <>
+                            <TableButton onClick={handleCreateModal}>
+                                Add Item
+                            </TableButton>
+                            <TableButton onClick={handleItemSync}>
+                                Pull Items
+                            </TableButton>
+                        </>
+                        
+                        }
 
-                        <TableButton onClick={handleItemSync}>
-                           Pull Items
-                        </TableButton>
                       
                         <Export 
                             path={`/item-master-export${window.location.search}`} 
