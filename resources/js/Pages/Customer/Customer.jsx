@@ -143,11 +143,9 @@ const Customer = ({ customers, queryParams }) => {
                     />}
                     <TableSearch queryParams={queryParams} />
                     <PerPage queryParams={queryParams} />
-                    {auth.sessions.admin_is_superadmin == 1 &&
-                        <TableButton onClick={handleShowCreate}>
-                            Add Customer
-                        </TableButton>
-                    }
+                    <TableButton onClick={handleShowCreate}>
+                        Add Customer
+                    </TableButton>
                     {auth.sessions.admin_is_superadmin == 1 && 
                         <Import
                             importPath="/customers-import"

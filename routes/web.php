@@ -132,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/orders/override', [ListOfOrdersController::class, 'overrideHeaderLevel']);
     Route::get('/orders/get-current-shipdate', [ListOfOrdersController::class, 'getCurrentShipdate']);
     Route::get('/orders/get-order-lines', [ListOfOrdersController::class, 'getOrderLines']);
+
     //LIST OF ORDERS
     Route::get('/list_of_orders/{order}', [ListOfOrdersController::class, 'show']);
     Route::get('/list_of_orders/{order}/enroll-return', [ListOfOrdersController::class, 'showEnrollReturn']);
@@ -145,6 +146,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/list_of_orders/{orderLine}/override', [ListOfOrdersController::class, 'overrideOrder']);
     Route::post('/list_of_orders/{orderLine}/override_serial', [ListOfOrdersController::class, 'overrideOrderSerial']);
     Route::post('/list_of_orders/sod', [ListOfOrdersController::class, 'orderDetails']);
+    Route::post('/list_of_orders/create_order', [ListOfOrdersController::class, 'createOrder']);
+
+    Route::get('/get_dep_companies/{id}', [ListOfOrdersController::class, 'getDepCompanies']);
 
     //DEP DEVICES
     Route::post('/dep_devices/enroll', [DepDevicesController::class, 'enrollDevices']);

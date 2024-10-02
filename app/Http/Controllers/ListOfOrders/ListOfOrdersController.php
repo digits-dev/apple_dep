@@ -1907,4 +1907,68 @@ class ListOfOrdersController extends Controller
         return response()->json($overrideDatas);
     }
 
+    // FOR CREATE ORDER
+
+    public function getDepCompanies($id){
+
+        $companyData = DepCompany::where('customer_id', $id)->get();
+
+        return response()->json($companyData);
+    }
+
+    public function createOrder(Request $request){
+        
+        $request->validate([
+            'sales_order_no' => 'required',
+            'customer_id' => 'required',
+            'order_ref_no' => 'required',
+            'dr_number' => 'required',
+            'order_date' => 'required',
+            'ship_date' => 'required',
+            'dep_company_id' => 'required',
+            
+        ]);
+
+        if($request->dep_company_id === 0){
+            return back()->withErrors(['dep_company_id' => 'DEP Company field is required.']);
+        }
+
+        $order = Order::create(
+            [
+                'sales_order_no'    => $request->sales_order_no,
+                'customer_id'       => $request->customer_id,
+                'order_ref_no'      => $request->order_ref_no,
+                'dr_number'         => $request->dr_number,
+                'dep_order'         => 0,
+                'enrollment_status' => 1,
+                'ship_date'         => date("Y-m-d", strtotime($request->ship_date)),
+                'order_date'        => date("Y-m-d", strtotime($request->order_date))
+            ]
+        );
+
+        $linesData = $request->lines_data;
+
+        foreach ($linesData as $lineData) {
+            OrderLines::create(
+                [
+                    'order_id'          => $order->id,
+                    'dep_company_id'    => $request->dep_company,
+                    'digits_code'       => $lineData->digits_code,
+                    'item_description'  => $lineData->description,
+                    'brand'             => 'APPLE',
+                    'wh_category'       => $lineData->wh_category,
+                    'quantity'          => 1,
+                    'serial_number'     => $lineData->final_serial,
+                    'enrollment_status_id' => 1,
+                ]);
+        }
+
+        $data = [
+            'message' => "Order created successfully.",
+            'success' => "success"
+        ];
+        return back()->with($data);
+
+    }
+
 }

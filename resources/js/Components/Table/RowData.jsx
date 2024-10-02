@@ -8,9 +8,9 @@ const RowData = ({ children, sticky, center, isLoading }) => {
 
     return (
         <td
-            className={`px-5 py-3 bg-white  ${stickyClass} ${
+            className={`px-5 py-3 bg-white !border-none  ${stickyClass} ${
                 center && "text-center"
-            }`}
+        }`}
         >
             {isLoading ? (
                 <span className="animate-pulse inline-block w-3/4 rounded-lg h-4 p-auto bg-gray-200 ">

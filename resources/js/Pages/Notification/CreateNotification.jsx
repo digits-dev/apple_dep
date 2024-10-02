@@ -106,7 +106,7 @@ const CreateNotification = () => {
                     displayName="Notification Type"
                     name="notif_type"
                     options={[{id: 'Notification', name: 'Notification'}, {id: 'Patch Note', name: 'Patch Note'}]}
-                    value={data.type}
+                    value={data.notif_type}
                     onChange={handleChange}
                 />
                 {errors.notif_type && (

@@ -26,7 +26,7 @@ const colourStyles = {
     }),
 };
 
-const DropdownSelect = ({ options, onChange, value, name, defaultSelect, displayName, is_multi='', selectType = '', placeholder }) => {
+const DropdownSelect = ({required, menuPlacement, options, onChange, value, name, defaultSelect, displayName, is_multi='', selectType = '', placeholder }) => {
     return (
         <div className="relative">
             <label
@@ -41,6 +41,10 @@ const DropdownSelect = ({ options, onChange, value, name, defaultSelect, display
                 placeholder={placeholder}
                 defaultValue={value}
                 name={name}
+                maxMenuHeight={'150px'}
+                minMenuHeight={'100px'}
+                required={required}
+                menuPlacement={menuPlacement}
                 className="block w-full border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 onChange={onChange}
                 options={options.map(opt => ({ value: opt.id, label: opt.name, name: name }))}

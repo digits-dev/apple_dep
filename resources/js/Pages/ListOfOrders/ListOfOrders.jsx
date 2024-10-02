@@ -28,6 +28,7 @@ import SelectMulti from 'react-select';
 import TableButton from "../../Components/Table/Buttons/TableButton";
 import TransactionJsonTabs from "../../Components/Table/TransactionJsonTabs";
 import OverrideHeaderLevel from "./OverrideHeaderLevel";
+import CreateOrder from "./CreateOrder";
 
 const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, order_number }) => {
     queryParams = queryParams || {};
@@ -36,6 +37,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
         auth.access.isCreate || auth.access.isVoid ;
     const [loading, setLoading] = useState(false);
     const [showEditActionModal, setShowEditActionModal] = useState(false);
+    const [showAddOrderModal, setShowAddOrderModal] = useState(false);
     const [orderPath, setOrderPath] = useState(null);
     const [orderId, setOrderId] = useState(null);
     const { handleToast } = useToast();
@@ -308,6 +310,11 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
         setShowOverride(!showOverride);
     };
 
+    // ADD ORDER
+    const handleShowAddOrderModal = () => {
+        setShowAddOrderModal(!showAddOrderModal);
+    }
+
     return (
         <>
             <Head title="List of Orders" />
@@ -355,6 +362,9 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                             onChange={handleFilter}
                         />
                     </Filters>
+                    {auth.sessions.admin_is_superadmin == 1 && 
+                        <Button onClick={() => {handleShowAddOrderModal();}}>Create Order</Button>
+                    }
                     <Export
                         path={`/list-of-orders-export${window.location.search}`}
                         handleToast={handleToast}
@@ -577,6 +587,14 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                 title="Override Order"
             >
                 <OverrideHeaderLevel  orderId={orderId} handleShow={handleShowOverride} action="override"/>   
+            </Modal>
+            <Modal
+                width="4xl"
+                show={showAddOrderModal}
+                onClose={handleShowAddOrderModal}
+                title="Create Order"
+            >
+                <CreateOrder customers={customers}/>
             </Modal>
         </>
     );

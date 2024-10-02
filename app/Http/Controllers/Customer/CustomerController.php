@@ -41,15 +41,15 @@ class CustomerController extends Controller
 
     public function store(Request $request){
 
-        if(!CommonHelpers::isCreate()) {
+        // if(!CommonHelpers::isCreate()) {
 
-            $data = [
-                'message' => "You don't have permission to add.", 
-                'status' => 'error'
-            ];
+        //     $data = [
+        //         'message' => "You don't have permission to add.", 
+        //         'status' => 'error'
+        //     ];
 
-            return back()->with($data);
-        }
+        //     return back()->with($data);
+        // }
 
         $request->validate([
             'customer_name' => 'required|unique:customers,customer_name',
@@ -95,16 +95,16 @@ class CustomerController extends Controller
 
         // dd('update', $request->all());
 
-        if(!CommonHelpers::isUpdate()) {
+        // if(!CommonHelpers::isUpdate()) {
 
-            $data = [
-                'message' => "You don
-                't have permission to update.",
-                'status' => 'error'
-            ];
+        //     $data = [
+        //         'message' => "You don
+        //         't have permission to update.",
+        //         'status' => 'error'
+        //     ];
 
-            return back()->with($data);
-        }
+        //     return back()->with($data);
+        // }
         $request->validate([
             'customer_name' => "required|unique:customers,customer_name,$customer->id,id",
             'note_customer' => 'required',

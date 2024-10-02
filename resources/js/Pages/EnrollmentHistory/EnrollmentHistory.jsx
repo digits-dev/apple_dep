@@ -37,7 +37,7 @@ const EnrollmentHistory = ({ enrollmentHistory, queryParams, enrollmentStatuses,
         }, 5);
     }, []);
 
-    console.log(enrollmentHistory);
+
     router.on("start", () => setLoading(true));
     router.on("finish", () => setLoading(false));
 
