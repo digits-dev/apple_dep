@@ -206,13 +206,13 @@ class CommonHelpers {
                     if (substr($method->name, 0, 3) == 'get') {
                         $method_name = substr($method->name, 3);
                         $slug = array_filter(preg_split('/(?=[A-Z])/', $method_name));
-                        $slug = strtolower(implode('-', $slug));
+                        $slug = strtolower(implode('_', $slug));
                         $slug = ($slug == 'index') ? '' : $slug;
                         Route::get($prefix.$slug.$wildcards, ['uses' => $controller.'@'.$method->name, 'as' => $controller.'Get'.$method_name]);
                     } elseif (substr($method->name, 0, 4) == 'post') {
                         $method_name = substr($method->name, 4);
                         $slug = array_filter(preg_split('/(?=[A-Z])/', $method_name));
-                        Route::post($prefix.strtolower(implode('-', $slug)).$wildcards, [
+                        Route::post($prefix.strtolower(implode('_', $slug)).$wildcards, [
                             'uses' => $controller.'@'.$method->name,
                             'as' => $controller.'Post'.$method_name,
                         ]);
@@ -274,13 +274,13 @@ class CommonHelpers {
                     if (substr($method->name, 0, 3) == 'get') {
                         $method_name = substr($method->name, 3);
                         $slug = array_filter(preg_split('/(?=[A-Z])/', $method_name));
-                        $slug = strtolower(implode('-', $slug));
+                        $slug = strtolower(implode('_', $slug));
                         $slug = ($slug == 'index') ? '' : $slug;
                         Route::get($prefix.$slug.$wildcards, ['uses' => $controller.'@'.$method->name, 'as' => $controller.'Get'.$method_name]);
                     } elseif (substr($method->name, 0, 4) == 'post') {
                         $method_name = substr($method->name, 4);
                         $slug = array_filter(preg_split('/(?=[A-Z])/', $method_name));
-                        Route::post($prefix.strtolower(implode('-', $slug)).$wildcards, [
+                        Route::post($prefix.strtolower(implode('_', $slug)).$wildcards, [
                             'uses' => $controller.'@'.$method->name,
                             'as' => $controller.'Post'.$method_name,
                         ]);
@@ -300,7 +300,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_create;
                 }
             }
@@ -316,7 +316,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_visible;
                 }
             }
@@ -332,7 +332,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_edit;
                 }
             }
@@ -348,7 +348,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_read;
                 }
             }
@@ -364,7 +364,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_delete;
                 }
             }
@@ -379,7 +379,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_void;
                 }
             }
@@ -394,7 +394,7 @@ class CommonHelpers {
         $session = Session::get('admin_privileges_roles');
         if($session){
             foreach ($session as $v) {
-                if ($v->path == self::getModulePath()) {
+                if ($v->path == str_replace('-', '_', self::getModulePath())) {
                     return (bool) $v->is_override;
                 }
             }
