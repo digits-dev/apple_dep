@@ -4,9 +4,10 @@ import { useForm } from '@inertiajs/react';
 import DropdownSelect from '../../Components/Dropdown/Dropdown';
 import axios from "axios";
 import Modal from '../../Components/Modal/Modal';
+import { useToast } from "../../Context/ToastContext";
 
-const CreateOrder = ({customers}) => {
-
+const CreateOrder = ({customers, onClose}) => {
+    const { handleToast } = useToast();
     const [selectedDepCompany, setSelectedDepCompany] = useState(null);
     const [showLoadingModal, setshowLoadingModal] = useState(false);
     const [linesData, setLinesData] = useState([
@@ -145,6 +146,7 @@ const CreateOrder = ({customers}) => {
                         const { message, success } = data.props.auth.sessions;
                         handleToast(message, success);
                         setshowLoadingModal(false);
+                        onClose();
                     },
                     onError: (newErrors) => {
                   
@@ -272,7 +274,7 @@ const CreateOrder = ({customers}) => {
                                 selectType="select2"
                                 displayName="DEP Company Name"
                                 name="dep_company_id"
-                                // required={true}
+                                required={true}
                                 options={selectedDepCompany}
                                 value={data.dep_company_id === 0 ? '' : data.dep_company_id}
                                 onChange={handleDepCompanyChange}
@@ -367,7 +369,7 @@ const CreateOrder = ({customers}) => {
             <button
                 type="submit"
                 className="bg-primary w-fit text-white font-nunito-sans py-2 px-5 text-sm rounded-md mt-5 hover:opacity-70"
-                // disabled={!data.dep_company_id || processing}
+                disabled={!data.dep_company_id || processing}
             >
                 {processing
                     ? "Please Wait..."

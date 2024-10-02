@@ -594,7 +594,7 @@ const ListOfOrders = ({ orders, queryParams, enrollmentStatuses, customers, orde
                 onClose={handleShowAddOrderModal}
                 title="Create Order"
             >
-                <CreateOrder customers={customers}/>
+                <CreateOrder customers={customers} onClose={handleShowAddOrderModal}/>
             </Modal>
         </>
     );

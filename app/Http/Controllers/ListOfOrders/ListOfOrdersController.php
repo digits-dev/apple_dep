@@ -1952,13 +1952,13 @@ class ListOfOrdersController extends Controller
             OrderLines::create(
                 [
                     'order_id'          => $order->id,
-                    'dep_company_id'    => $request->dep_company,
-                    'digits_code'       => $lineData->digits_code,
-                    'item_description'  => $lineData->description,
+                    'dep_company_id'    => $request->dep_company_id,
+                    'digits_code'       => $lineData['digits_code'],
+                    'item_description'  => $lineData['item_description'],
                     'brand'             => 'APPLE',
-                    'wh_category'       => $lineData->wh_category,
+                    'wh_category'       => $lineData['wh_category'],
                     'quantity'          => 1,
-                    'serial_number'     => $lineData->final_serial,
+                    'serial_number'     => $lineData['serial_number'],
                     'enrollment_status_id' => 1,
                 ]);
         }
