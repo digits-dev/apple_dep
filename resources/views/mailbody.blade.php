@@ -46,7 +46,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img style="width: 50px" src="{{ $message->embed('images/login-page/digits-logo-colored.png') }}">
+            <img style="width: 50px" src="https://dam.digitstrading.ph/public/uploads/2021-12/ed9f170bd41082a958e58e1048885087.png">
         </div>
         <div class="content">
             <h2>Password Reset</h2>
