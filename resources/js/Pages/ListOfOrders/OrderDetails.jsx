@@ -68,6 +68,7 @@ const OrderDetails = ({
                             <TableHeader>Item Code</TableHeader>
                             <TableHeader>Item Description</TableHeader>
                             <TableHeader>Serial Number</TableHeader>
+                            <TableHeader>DEP Company</TableHeader>
                         </Row>
                     </Thead>
                     <Tbody data={orderLines}>
@@ -76,6 +77,9 @@ const OrderDetails = ({
                                 <RowData>{order.digits_code}</RowData>
                                 <RowData>{order.item_description}</RowData>
                                 <RowData>{order.serial_number}</RowData>
+                                <RowData>
+                                    {order?.dep_companies?.dep_company_name}
+                                </RowData>
                             </Row>
                         ))}
                     </Tbody>

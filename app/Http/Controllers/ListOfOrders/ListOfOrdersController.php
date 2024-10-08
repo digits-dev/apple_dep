@@ -129,7 +129,7 @@ class ListOfOrdersController extends Controller
     {
         $data = [];
         $data['order'] = $order->with('customer')->where('id', $order->id)->first();
-        $data['orderLines'] = OrderLines::where('order_id', $order->id)->get();
+        $data['orderLines'] = OrderLines::where('order_id', $order->id)->with('depCompanies')->get();
         $data['jsonSubmitted'] = JsonRequest::where('order_id', $order->id)->orderBy('created_at', 'desc')->get();
         $data['jsonReceived'] = JsonResponse::where('order_id', $order->id)->orderBy('created_at', 'desc')->get();
         $data['transactionLogs'] = TransactionLog::join('dep_statuses', 'dep_statuses.id', '=', 'transaction_logs.dep_status')
