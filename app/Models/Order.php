@@ -83,11 +83,10 @@ class Order extends Model
     }
 
 
-    public function scopeGetOrdersFromErp()
+    public function scopeGetOrdersFromErp($query, $datefrom, $dateto)
     {
-        $query = "
-        select
-
+        $sql = "
+        SELECT
             OEH.ORDER_NUMBER,
             OEH.CUST_PO_NUMBER,
             OEL.LINE_NUMBER,
@@ -100,19 +99,17 @@ class Order extends Model
             CustName.PARTY_NAME as Customer_name,
             wnd.Confirm_Date,
             wnd.NAME as DR,
-                MTRL.ATTRIBUTE12 SERIAL1,
-                MTRL.ATTRIBUTE13 SERIAL2,
-                MTRL.ATTRIBUTE14 SERIAL3,
-                MTRL.ATTRIBUTE15 SERIAL4,
-                MTRL.ATTRIBUTE4 SERIAL5,
-                MTRL.ATTRIBUTE5 SERIAL6,
-                MTRL.ATTRIBUTE6 SERIAL7,
-                MTRL.ATTRIBUTE7 SERIAL8,
-                MTRL.ATTRIBUTE8 SERIAL9,
-                MTRL.ATTRIBUTE9 SERIAL10
-
-
-        from
+            MTRL.ATTRIBUTE12 SERIAL1,
+            MTRL.ATTRIBUTE13 SERIAL2,
+            MTRL.ATTRIBUTE14 SERIAL3,
+            MTRL.ATTRIBUTE15 SERIAL4,
+            MTRL.ATTRIBUTE4 SERIAL5,
+            MTRL.ATTRIBUTE5 SERIAL6,
+            MTRL.ATTRIBUTE6 SERIAL7,
+            MTRL.ATTRIBUTE7 SERIAL8,
+            MTRL.ATTRIBUTE8 SERIAL9,
+            MTRL.ATTRIBUTE9 SERIAL10
+        FROM
             OE_ORDER_HEADERS_ALL OEH,
             OE_ORDER_LINES_ALL OEL,
             org_organization_definitions OOD,
@@ -121,39 +118,38 @@ class Order extends Model
             Wsh_delivery_assignments wda,
             hz_parties CustName,
             hz_cust_accounts CustAccount,
-            MTL_TXN_REQUEST_LINES  MTRL,
+            MTL_TXN_REQUEST_LINES MTRL,
             MTL_system_items MSI
-
-        where
-
+        WHERE
             OEH.HEADER_ID = OEL.HEADER_ID(+)
-            and OEH.SHIP_FROM_ORG_ID = OOD.ORGANIZATION_ID (+)
-            and OEL.LINE_ID = wdd.source_line_id (+)
-            and wdd.delivery_detail_id = wda.delivery_detail_id(+)
-            and wda.delivery_id = wnd.delivery_id(+)
-            and OEH.ORDER_CATEGORY_CODE != 'RETURN'
+            AND OEH.SHIP_FROM_ORG_ID = OOD.ORGANIZATION_ID (+)
+            AND OEL.LINE_ID = wdd.source_line_id (+)
+            AND wdd.delivery_detail_id = wda.delivery_detail_id(+)
+            AND wda.delivery_id = wnd.delivery_id(+)
+            AND OEH.ORDER_CATEGORY_CODE != 'RETURN'
             AND wdd.CUSTOMER_ID = CustAccount.cust_account_id
             AND CustAccount.Party_id = CustName.PARTY_ID
-            and OOD.ORGANIZATION_ID = 224
-            and wdd.INV_INTERFACED_FLAG = 'Y'
-            and wdd.OE_INTERFACED_FLAG = 'Y'
+            AND OOD.ORGANIZATION_ID = 224
+            AND wdd.INV_INTERFACED_FLAG = 'Y'
+            AND wdd.OE_INTERFACED_FLAG = 'Y'
             AND wdd.MOVE_ORDER_LINE_ID = MTRL.LINE_ID
             AND OEL.INVENTORY_ITEM_ID = MSI.INVENTORY_ITEM_ID
             AND MSI.ORGANIZATION_ID = OOD.ORGANIZATION_ID
-            AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE' ,'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO')
-            and wnd.Confirm_Date between TO_DATE('2024/09/23 00:00:00','RRRR/MM/DD HH24:MI:SS') and TO_DATE('2024/09/24 23:59:59','RRRR/MM/DD HH24:MI:SS')
-            and (SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CRP' or
-                SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DLR' or
-                SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'DIG' or
-                SUBSTR(CustName.PARTY_NAME,LENGTH(CustName.PARTY_NAME)-2,3) = 'CON'
-                )
-            and OEH.ORDER_NUMBER = 800070478
-            ";
-
-        $results = DB::connection('oracle')->select($query);
-
+            AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE', 'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO')
+            AND wnd.Confirm_Date BETWEEN TO_DATE(:datefrom || ' 00:00:00','YYYY/MM/DD HH24:MI:SS') 
+            AND TO_DATE(:dateto || ' 23:59:59','YYYY/MM/DD HH24:MI:SS')
+            AND (
+                SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) IN ('CRP', 'DLR', 'DIG', 'CON')
+            )
+        ";
+    
+        $results = DB::connection('oracle')->select($sql, [
+            'datefrom' => $datefrom,
+            'dateto' => $dateto,
+        ]);
+    
         return $results;
-
     }
+    
 
 }

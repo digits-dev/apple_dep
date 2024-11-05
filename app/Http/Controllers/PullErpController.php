@@ -114,9 +114,11 @@ class PullErpController extends Controller
     // }
 
     public function getListOfOrdersFromErpv1(Request $request){ 
-      
-        $orders =  Order::getOrdersFromErp();
-        dd($orders);
+        $datefrom = $request->datefrom ? date("Y-m-d", strtotime($request->datefrom)) : date("Y-m-d", strtotime("-5 hour"));
+        $dateto = $request->dateto ? date("Y/m/d", strtotime($request->dateto)) : date("Y/m/d", strtotime("-1 hour"));
+
+        $orders =  Order::getOrdersFromErp($datefrom, $dateto);
+
         //FIND SAME SERIAL IN SAME LINES
         $results = [];
         $duplicateSerialOrders = [];
