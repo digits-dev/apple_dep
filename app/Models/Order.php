@@ -136,8 +136,8 @@ class Order extends Model
             AND OEL.INVENTORY_ITEM_ID = MSI.INVENTORY_ITEM_ID
             AND MSI.ORGANIZATION_ID = OOD.ORGANIZATION_ID
             AND MSI.ATTRIBUTE8 IN ('APPLE IPHONE', 'APPLE IMAC', 'APPLE IPAD', 'APPLE MAC', 'APPLE DEMO')
-            AND wnd.Confirm_Date BETWEEN TO_DATE(:datefrom || ' 00:00:00','YYYY/MM/DD HH24:MI:SS') 
-            AND TO_DATE(:dateto || ' 23:59:59','YYYY/MM/DD HH24:MI:SS')
+            AND wnd.Confirm_Date BETWEEN TO_DATE(:datefrom || '00:00:00','YYYY/MM/DD HH24:MI:SS') 
+            AND TO_DATE(:dateto || '23:59:59','YYYY/MM/DD HH24:MI:SS')
             AND (
                 SUBSTR(CustName.PARTY_NAME, LENGTH(CustName.PARTY_NAME) - 2, 3) IN ('CRP', 'DLR', 'DIG', 'CON')
             )
